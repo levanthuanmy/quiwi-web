@@ -1,9 +1,20 @@
+// $theme-colors: (
+//   'info': tomato,
+//   'danger': teal,
+// );
+
+/* import bootstrap to set changes */
+@import '~bootstrap/scss/bootstrap';
+@import './typography.css';
+@import './border.css';
+
 html,
 body {
   padding: 0;
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  font-size: 16px;
 }
 
 a {

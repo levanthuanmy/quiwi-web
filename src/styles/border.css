@@ -1,0 +1,8 @@
+/* 
+* this file contains extra styles for borders
+* example: border-radius, border,...
+*/
+
+.rounded-8px {
+  border-radius: 8px;
+}
