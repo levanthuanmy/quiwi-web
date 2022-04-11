@@ -5,6 +5,12 @@ $theme-colors: (
 /* import bootstrap to set changes */
 @import '~bootstrap/scss/bootstrap';
 
+@import './border.css';
+@import './common.css';
+@import './padding.css';
+@import './sizing.css';
+@import './typography.css';
+
 html,
 body {
   padding: 0;

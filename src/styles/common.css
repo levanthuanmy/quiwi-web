@@ -1,3 +1,7 @@
 .cursor-pointer {
   cursor: pointer;
 }
+
+.transition-all-150ms {
+  transition: all 150ms ease;
+}

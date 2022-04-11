@@ -11,7 +11,7 @@ const SingleFloatingCardLayout: FC<SingleFloatingCardLayoutProps> = ({
   const router = useRouter()
 
   return (
-    <div className="bg-primary min-vh-100 d-flex justify-content-center align-items-center">
+    <div className="bg-primary bg-opacity-25 min-vh-100 d-flex justify-content-center align-items-center">
       <div className="bg-white px-4 py-5 rounded-20px text-center max-width-375px w-100 shadow">
         <Image
           src="/assets/logo-text.png"

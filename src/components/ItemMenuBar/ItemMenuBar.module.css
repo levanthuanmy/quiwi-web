@@ -1,0 +1,12 @@
+.container {
+  height: 48px;
+  transition: background-color 150ms ease;
+}
+
+.container:hover {
+  background-color: #f2f2f2;
+}
+
+.active {
+  background-color: #f2f2f2;
+}

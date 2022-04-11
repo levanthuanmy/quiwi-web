@@ -1,0 +1,9 @@
+.container {
+  transition: width 200ms ease;
+}
+
+.button {
+  width: 48px;
+  height: 48px;
+  right: 0;
+}
