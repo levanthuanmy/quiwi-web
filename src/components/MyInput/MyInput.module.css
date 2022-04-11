@@ -1,0 +1,12 @@
+.input:focus-within {
+  border-color: #009883;
+  box-shadow: 0 0 0 2px #009883;
+}
+
+.input:focus-within .icon {
+  color: #009883;
+}
+
+.input .icon {
+  color: #767676;
+}
