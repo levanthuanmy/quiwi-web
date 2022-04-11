@@ -10,9 +10,18 @@ const Home: NextPage = () => {
   return (
     <Container fluid="lg">
       <div className="fs-32px fw-medium">Hello world</div>
+
       <ExampleComponent>This is an ExampleComponent</ExampleComponent>
+
       <MyButton onClick={() => router.push('/sign-in')}>
-        To Sign In Page
+        Tới trang đăng nhập
+      </MyButton>
+
+      <br />
+      <br />
+
+      <MyButton onClick={() => router.push('/sign-up')}>
+        Tới trang đăng ký
       </MyButton>
     </Container>
   )
