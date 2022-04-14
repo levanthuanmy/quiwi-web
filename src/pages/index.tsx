@@ -47,7 +47,10 @@ const Home: NextPage = () => {
                     <div className="fs-22px fw-medium pb-4 w-100">
                       Tạo một quiz
                     </div>
-                    <MyButton className="fw-medium text-white">
+                    <MyButton
+                      className="fw-medium text-white"
+                      onClick={() => router.push(`/quiz/creator`)}
+                    >
                       Tạo mới ngay
                     </MyButton>
                   </div>
