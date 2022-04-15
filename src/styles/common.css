@@ -5,3 +5,7 @@
 .transition-all-150ms {
   transition: all 150ms ease;
 }
+
+.outline-none {
+  outline: none;
+}
