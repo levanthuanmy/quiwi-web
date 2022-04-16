@@ -1,5 +1,6 @@
 import { atom, selector } from 'recoil'
 import { TUser } from '../types/types'
+import Cookies from 'universal-cookie'
 
 const defaultUserState: TUser = {
   avatar: '',
@@ -21,6 +22,15 @@ const defaultUserState: TUser = {
 const userState = atom<TUser>({
   key: 'userState',
   default: defaultUserState,
+  effects: [
+    ({ onSet }) => {
+      const cookies = new Cookies()
+      onSet((newUser) => {
+        cookies.set('access-token', newUser.token.token)
+        cookies.set('refresh-token', newUser.token.refreshToken)
+      })
+    },
+  ],
 })
 
 const userTokensState = selector({
