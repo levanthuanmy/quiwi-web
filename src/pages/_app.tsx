@@ -9,13 +9,16 @@ import '../styles/padding.css'
 import '../styles/sizing.css'
 import '../styles/border.css'
 import '../styles/typography.css'
+import { RecoilRoot } from 'recoil'
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <SSRProvider>
-      <MyHead />
-      <Component {...pageProps} />
-    </SSRProvider>
+    <RecoilRoot>
+      <SSRProvider>
+        <MyHead />
+        <Component {...pageProps} />
+      </SSRProvider>
+    </RecoilRoot>
   )
 }
 

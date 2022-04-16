@@ -1,9 +1,13 @@
 import classNames from 'classnames'
 import React, { FC } from 'react'
-import { FormControl, FormControlProps } from 'react-bootstrap'
 import styles from './MyInput.module.css'
 
-type MyInputProps = FormControlProps & { iconClassName?: string }
+type MyInputProps = React.DetailedHTMLProps<
+  React.InputHTMLAttributes<HTMLInputElement>,
+  HTMLInputElement
+> & {
+  iconClassName?: string
+}
 const MyInput: FC<MyInputProps> = (props) => {
   return (
     <div
@@ -13,10 +17,7 @@ const MyInput: FC<MyInputProps> = (props) => {
         styles.input
       )}
     >
-      <FormControl
-        {...props}
-        className="border-0 m-0 h-100 w-100 shadow-none px-12px"
-      />
+      <input {...props} className="w-100 outline-none border-0 px-12px" />
       <div
         className={classNames(
           'align-self-center fs-24px pe-12px',

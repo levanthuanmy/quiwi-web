@@ -1,7 +1,8 @@
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Col, Container, Row } from 'react-bootstrap'
+import Cookies from 'universal-cookie'
 import MenuBar from '../components/MenuBar/MenuBar'
 import MyButton from '../components/MyButton/MyButton'
 import MyInput from '../components/MyInput/MyInput'
@@ -10,6 +11,13 @@ import NavBar from '../components/NavBar/NavBar'
 const Home: NextPage = () => {
   const router = useRouter()
   const [isExpand, setIsExpand] = useState<boolean>(true)
+
+  useEffect(() => {
+    const cookies = new Cookies()
+    if (!cookies.get('access-token') || !cookies.get('access-token').length) {
+      router.push('/sign-in')
+    }
+  }, [router])
 
   return (
     <>
@@ -146,14 +154,6 @@ const Home: NextPage = () => {
                 </Col>
               </Row>
             </div>
-
-            <MyButton onClick={() => router.push('/sign-in')}>
-              Tới trang đăng nhập
-            </MyButton>
-
-            <MyButton onClick={() => router.push('/sign-up')}>
-              Tới trang đăng ký
-            </MyButton>
           </Container>
         </div>
       </div>
