@@ -1,7 +1,9 @@
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Col, Container, Row } from 'react-bootstrap'
+import { useRecoilValue } from 'recoil'
+import { userTokensState } from '../atoms'
 import MenuBar from '../components/MenuBar/MenuBar'
 import MyButton from '../components/MyButton/MyButton'
 import MyInput from '../components/MyInput/MyInput'
@@ -10,6 +12,13 @@ import NavBar from '../components/NavBar/NavBar'
 const Home: NextPage = () => {
   const router = useRouter()
   const [isExpand, setIsExpand] = useState<boolean>(true)
+  const tokens = useRecoilValue(userTokensState)
+
+  useEffect(() => {
+    if (!tokens.token) {
+      router.push('/sign-in')
+    }
+  }, [router, tokens])
 
   return (
     <>
@@ -146,14 +155,6 @@ const Home: NextPage = () => {
                 </Col>
               </Row>
             </div>
-
-            <MyButton onClick={() => router.push('/sign-in')}>
-              Tới trang đăng nhập
-            </MyButton>
-
-            <MyButton onClick={() => router.push('/sign-up')}>
-              Tới trang đăng ký
-            </MyButton>
           </Container>
         </div>
       </div>
