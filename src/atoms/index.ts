@@ -1,6 +1,7 @@
 import { atom, selector } from 'recoil'
 import { TUser } from '../types/types'
 import Cookies from 'universal-cookie'
+import { JsonParse } from '../utils/helper'
 
 const defaultUserState: TUser = {
   avatar: '',
@@ -28,6 +29,7 @@ const userState = atom<TUser>({
       onSet((newUser) => {
         cookies.set('access-token', newUser.token.token)
         cookies.set('refresh-token', newUser.token.refreshToken)
+        localStorage.setItem('user', JSON.stringify(newUser))
       })
     },
   ],
@@ -41,4 +43,17 @@ const userTokensState = selector({
   },
 })
 
-export { userState, userTokensState }
+const userInfoState = selector({
+  key: 'userInfoState',
+  get: ({ get }) => {
+    const storedUser = localStorage.getItem('user')
+    const user = get(userState)
+    if (user.username.length) {
+      return user
+    } else {
+      return JsonParse(storedUser)
+    }
+  },
+})
+
+export { userState, userTokensState, userInfoState }
