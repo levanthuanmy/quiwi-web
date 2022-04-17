@@ -5,3 +5,15 @@
 .transition-all-150ms {
   transition: all 150ms ease;
 }
+
+.outline-none {
+  outline: none;
+}
+
+#avatar .dropdown-toggle::after {
+  border: none;
+  display: inline-block;
+  margin-left: 0px;
+  vertical-align: 0px;
+  content: '';
+}
