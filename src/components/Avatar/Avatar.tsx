@@ -1,20 +1,23 @@
 import { useRouter } from 'next/router'
 import React, { FC } from 'react'
-import { Dropdown, Image } from 'react-bootstrap'
-import { useRecoilValue } from 'recoil'
+import { Dropdown, Image, Spinner } from 'react-bootstrap'
+import useSWR from 'swr'
 import Cookies from 'universal-cookie'
-import { userInfoState } from '../../atoms'
+import { get } from '../../libs/api'
+import { TApiResponse, TUser } from '../../types/types'
 
 const Avatar: FC = () => {
   const router = useRouter()
-  const userInfo = useRecoilValue(userInfoState)
+  const { data, isValidating, error } = useSWR<TApiResponse<TUser>>(
+    ['/api/users/profile', true],
+    get
+  )
+
   const handleLogout = () => {
     const cookies = new Cookies()
 
     cookies.remove('access-token')
     cookies.remove('refresh-token')
-    localStorage.removeItem('user')
-
     router.push('/sign-in')
   }
 
@@ -30,8 +33,13 @@ const Avatar: FC = () => {
           alt="avatar"
           className="rounded-circle"
         />
+
         <span className="text-white ps-2 pe-1 fw-medium">
-          {userInfo?.name || userInfo?.username}
+          {isValidating ? (
+            <Spinner animation="border" variant="light" size="sm" />
+          ) : (
+            data?.response.name || data?.response.username
+          )}
         </span>
       </Dropdown.Toggle>
       <Dropdown.Menu>

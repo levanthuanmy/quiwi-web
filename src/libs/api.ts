@@ -1,4 +1,5 @@
 import axios, { ResponseType } from 'axios'
+import Cookies from 'universal-cookie'
 import { API_URL } from '../utils/constants'
 
 const headers = {
@@ -12,11 +13,17 @@ const client = axios.create({
 
 const get = async <T>(
   path: string,
+  isAuth: boolean = false,
   params: Record<string, any> = {},
   headers: Record<string, string> = {},
   responseType: ResponseType = 'json'
 ): Promise<T> => {
   try {
+    if (isAuth) {
+      const cookies = new Cookies()
+      headers['Authorization'] = `Bearer ${cookies.get('access-token')}`
+    }
+
     const resp = await client.get<T>(path, { params, headers, responseType })
     return resp.data
   } catch (error: any) {
@@ -45,9 +52,15 @@ const post = async <T>(
   path: string,
   params: Record<string, any> = {},
   data: Record<string, any> = {},
+  isAuth: boolean = false,
   headers: Record<string, string> = {}
 ): Promise<T> => {
   try {
+    if (isAuth) {
+      const cookies = new Cookies()
+      headers['Authorization'] = `Bearer ${cookies.get('access-token')}`
+    }
+
     const resp = await client.post<T>(path, data, { headers, params })
     return resp.data
   } catch (error: any) {
