@@ -8,7 +8,7 @@ const NavBar: FC = () => {
 
   return (
     <div
-      style={{ height: 64 }}
+      style={{ height: 64, zIndex: 10 }}
       className="bg-white border-bottom d-flex align-items-center px-3 justify-content-between position-fixed w-100"
     >
       <Image
