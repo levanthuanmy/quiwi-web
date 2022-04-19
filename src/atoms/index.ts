@@ -14,7 +14,7 @@ const defaultUserState: TUser = {
   token: {
     expiredIn: '',
     refreshToken: '',
-    token: '',
+    accessToken: '',
   },
   username: '',
 }
@@ -26,7 +26,7 @@ const userState = atom<TUser>({
     ({ onSet }) => {
       const cookies = new Cookies()
       onSet((newUser) => {
-        cookies.set('access-token', newUser.token.token)
+        cookies.set('access-token', newUser.token.accessToken)
         cookies.set('refresh-token', newUser.token.refreshToken)
       })
     },

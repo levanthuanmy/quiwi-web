@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router'
-import React, { FC } from 'react'
+import React, { FC, useEffect, useState } from 'react'
 import { Dropdown, Image, Spinner } from 'react-bootstrap'
 import useSWR from 'swr'
 import Cookies from 'universal-cookie'
@@ -8,14 +8,23 @@ import { TApiResponse, TUser } from '../../types/types'
 
 const Avatar: FC = () => {
   const router = useRouter()
-  const { data, isValidating, error } = useSWR<TApiResponse<TUser>>(
-    ['/api/users/profile', true],
+  const cookies = new Cookies()
+  const [shouldFetch, setShouldFetch] = useState<boolean>(false)
+
+  const { data, isValidating } = useSWR<TApiResponse<TUser>>(
+    shouldFetch ? ['/api/users/profile', true] : null,
     get
   )
 
-  const handleLogout = () => {
-    const cookies = new Cookies()
+  useEffect(() => {
+    const accessToken = String(cookies.get('access-token'))
+    if (accessToken && accessToken.length && accessToken !== 'undefined') {
+      setShouldFetch(true)
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cookies.get('access-token')])
 
+  const handleLogout = () => {
     cookies.remove('access-token')
     cookies.remove('refresh-token')
     router.push('/sign-in')

@@ -14,7 +14,7 @@ export type TUser = {
 export type TToken = {
   expiredIn: string
   refreshToken: string
-  token: string
+  accessToken: string
 }
 
 export type TApiResponse<T> = {
