@@ -21,7 +21,7 @@ const Avatar: FC = () => {
     if (accessToken && accessToken.length && accessToken !== 'undefined') {
       setShouldFetch(true)
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cookies.get('access-token')])
 
   const handleLogout = () => {
@@ -47,7 +47,7 @@ const Avatar: FC = () => {
           {isValidating ? (
             <Spinner animation="border" variant="light" size="sm" />
           ) : (
-            data?.response.name || data?.response.username
+            data?.response.name || data?.response.username || 'Guest'
           )}
         </span>
       </Dropdown.Toggle>
