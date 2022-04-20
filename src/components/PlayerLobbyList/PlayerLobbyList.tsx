@@ -1,10 +1,9 @@
 import { FC } from 'react'
 import { TPlayer } from '../../types/types'
-import PlayerLobbyItem from './PlayerLobbyItem'
+import PlayerLobbyItem from '../PlayerLobbyItem/PlayerLobbyItem'
 
-const PlayerLobyList: FC<{ players: TPlayer[] }> = (props) => {
+const PlayerLobbyList: FC<{ players: TPlayer[] }> = (props) => {
   const players = props.players as TPlayer[]
-  // const players: TPlayer[] = []
 
   const colors: string[] = [
     'bg-primary',
@@ -38,4 +37,4 @@ const PlayerLobyList: FC<{ players: TPlayer[] }> = (props) => {
   )
 }
 
-export default PlayerLobyList
+export default PlayerLobbyList

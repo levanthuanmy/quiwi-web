@@ -47,7 +47,11 @@ const LobbyPage: NextPage = () => {
         isLocked: false,
         isVerified: false,
         coin: 0,
-        token: { expiredIn: 'string', refreshToken: 'string', token: 'string' },
+        token: {
+          expiredIn: 'string',
+          refreshToken: 'string',
+          accessToken: 'string',
+        },
       },
     }
     delete p.user

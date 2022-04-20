@@ -38,7 +38,6 @@ const SignInPage: NextPage = () => {
     values: SignInForm,
     actions: FormikHelpers<SignInForm>
   ) => {
-    console.log('values', values)
     onSignIn(values, actions)
   }
 

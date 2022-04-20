@@ -3,6 +3,10 @@
 * example: border-radius, border,...
 */
 
+.rounded-6px {
+  border-radius: 6px;
+}
+
 .rounded-8px {
   border-radius: 8px;
 }
