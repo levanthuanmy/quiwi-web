@@ -12,12 +12,12 @@ const Home: NextPage = () => {
   const router = useRouter()
   const [isExpand, setIsExpand] = useState<boolean>(true)
 
-  useEffect(() => {
-    const cookies = new Cookies()
-    if (!cookies.get('access-token') || !cookies.get('access-token').length) {
-      router.push('/sign-in')
-    }
-  }, [router])
+  // useEffect(() => {
+  //   const cookies = new Cookies()
+  //   if (!cookies.get('access-token') || !cookies.get('access-token').length) {
+  //     router.push('/sign-in')
+  //   }
+  // }, [router])
 
   return (
     <>
@@ -42,7 +42,12 @@ const Home: NextPage = () => {
                         <MyInput placeholder="Nhập mã tham gia" />
                       </Col>
                       <Col xs="12" sm="4" xl="3" className="ps-sm-2">
-                        <MyButton className="fw-medium text-white w-100">
+                        <MyButton
+                          className="fw-medium text-white w-100"
+                          onClick={() => {
+                            router.push('/lobby/join')
+                          }}
+                        >
                           Tham gia ngay
                         </MyButton>
                       </Col>

@@ -31,6 +31,10 @@
   font-size: 32px;
 }
 
+.fs-48px {
+  font-size: 48px;
+}
+
 .fw-medium {
   font-weight: 500;
 }
