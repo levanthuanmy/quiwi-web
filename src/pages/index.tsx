@@ -12,12 +12,12 @@ const Home: NextPage = () => {
   const router = useRouter()
   const [isExpand, setIsExpand] = useState<boolean>(true)
 
-  // useEffect(() => {
-  //   const cookies = new Cookies()
-  //   if (!cookies.get('access-token') || !cookies.get('access-token').length) {
-  //     router.push('/sign-in')
-  //   }
-  // }, [router])
+  const checkAuth = () => {
+    const cookies = new Cookies()
+    if (!cookies.get('access-token') || !cookies.get('access-token').length) {
+      router.push('/sign-in')
+    }
+  }
 
   return (
     <>
@@ -45,6 +45,7 @@ const Home: NextPage = () => {
                         <MyButton
                           className="fw-medium text-white w-100"
                           onClick={() => {
+                            checkAuth()
                             router.push('/lobby/join')
                           }}
                         >
@@ -62,7 +63,10 @@ const Home: NextPage = () => {
                     </div>
                     <MyButton
                       className="fw-medium text-white"
-                      onClick={() => router.push('/quiz/creator')}
+                      onClick={() => {
+                        checkAuth()
+                        router.push('/quiz/creator')
+                      }}
                     >
                       Tạo mới ngay
                     </MyButton>

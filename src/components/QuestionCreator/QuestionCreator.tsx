@@ -1,7 +1,7 @@
-import { Formik, Field, Form as FormikForm } from 'formik'
+import { Field, Form as FormikForm, Formik } from 'formik'
 import { useRouter } from 'next/router'
 import React, { FC, useEffect, useState } from 'react'
-import { Col, Modal, Row, Form } from 'react-bootstrap'
+import { Col, Form, Modal, Row } from 'react-bootstrap'
 import IconQuestion, {
   QuestionType,
   questionTypeStyles,
@@ -11,7 +11,6 @@ import MyButton from '../MyButton/MyButton'
 import MyInput from '../MyInput/MyInput'
 import QuestionActionButton from '../QuestionActionButton/QuestionActionButton'
 import QuestionConfigBtn from '../QuestionConfigBtn/QuestionConfigBtn'
-import _, { fill } from 'lodash'
 
 type QuestionCreatorProps = {
   show: boolean
@@ -136,57 +135,74 @@ const QuestionCreator: FC<QuestionCreatorProps> = ({ show, onHide }) => {
 
           {type === 'fill' && (
             <div>
-              <div className='text-center mb-4 fs-18px fw-medium'>Đánh dấu một câu trả lời là đúng, nếu câu trả lời</div>
-
-              <div>
-                {fillAnswers.map((answer, key) => (
-                  <div key={key} className="d-flex mb-3 fw-medium">
-                    <div className="p-12px border rounded-8px w-100 bg-primary bg-opacity-25">
-                      {answer}
-                    </div>
-                    <MyButton
-                      className="ms-3 bg-danger shadow-none border-danger text-white"
-                      onClick={() => {
-                        const currentAns = [...fillAnswers]
-                        currentAns.splice(key, 1)
-                        setFillAnswers(currentAns)
-                      }}
-                    >
-                      <i className="bi bi-trash" />
-                    </MyButton>
-                  </div>
-                ))}
-
-                <Formik
-                  initialValues={{ newAnswer: '' }}
-                  onSubmit={(values, actions) => {
-                    if (values.newAnswer.length) {
-                      setFillAnswers([...fillAnswers, values.newAnswer])
-                    }
-                    actions.setSubmitting(false)
-                  }}
-                >
-                  {({ isSubmitting }) => (
-                    <FormikForm className="d-flex">
-                      <Field
-                        type="text"
-                        name="newAnswer"
-                        placeholder="Nhập đáp án mới"
-                        as={MyInput}
-                        className="mb-3"
-                      />
-
-                      <MyButton
-                        className="ms-3 text-white"
-                        type="submit"
-                        disabled={isSubmitting}
-                      >
-                        <i className="bi bi-plus-lg" />
-                      </MyButton>
-                    </FormikForm>
-                  )}
-                </Formik>
+              <div className="text-center mb-4 fs-18px fw-medium">
+                Đánh dấu một câu trả lời là đúng, nếu câu trả lời
               </div>
+
+              <Row>
+                <Col xs="12" sm="auto" className="mb-3 mb-sm-0">
+                  <Form.Select
+                    className="rounded-10px shadow-none"
+                    style={{ height: 50 }}
+                  >
+                    <option>Chính xác</option>
+                    <option>Chứa đựng</option>
+                    <option>Số lượng chính xác</option>
+                    <option>Đúng phần đầu</option>
+                    <option>Đúng phần cuối</option>
+                  </Form.Select>
+                </Col>
+
+                <Col>
+                  {fillAnswers.map((answer, key) => (
+                    <div key={key} className="d-flex mb-3 fw-medium">
+                      <div className="p-12px border rounded-8px w-100 bg-primary bg-opacity-25">
+                        {answer}
+                      </div>
+                      <MyButton
+                        className="ms-3 bg-danger shadow-none border-danger text-white"
+                        onClick={() => {
+                          const currentAns = [...fillAnswers]
+                          currentAns.splice(key, 1)
+                          setFillAnswers(currentAns)
+                        }}
+                      >
+                        <i className="bi bi-trash" />
+                      </MyButton>
+                    </div>
+                  ))}
+
+                  <Formik
+                    initialValues={{ newAnswer: '' }}
+                    onSubmit={(values, actions) => {
+                      if (values.newAnswer.length) {
+                        setFillAnswers([...fillAnswers, values.newAnswer])
+                      }
+                      actions.setSubmitting(false)
+                    }}
+                  >
+                    {({ isSubmitting }) => (
+                      <FormikForm className="d-flex">
+                        <Field
+                          type="text"
+                          name="newAnswer"
+                          placeholder="Nhập đáp án mới"
+                          as={MyInput}
+                          className="mb-3"
+                        />
+
+                        <MyButton
+                          className="ms-3 text-white"
+                          type="submit"
+                          disabled={isSubmitting}
+                        >
+                          <i className="bi bi-plus-lg" />
+                        </MyButton>
+                      </FormikForm>
+                    )}
+                  </Formik>
+                </Col>
+              </Row>
             </div>
           )}
         </div>

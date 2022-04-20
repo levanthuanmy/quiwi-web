@@ -2,7 +2,7 @@ import { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { Button } from 'react-bootstrap'
-import PlayerLobyList from '../../components/PlayerLobby/PlayerLobbyList'
+import PlayerLobbyList from '../../components/PlayerLobbyList/PlayerLobbyList'
 import { useLocalStorage } from '../../hooks/use-local-storage/useLocalStorage'
 import { TGameLobby, TPlayer } from '../../types/types'
 import { JsonParse } from '../../utils/helper'
@@ -25,7 +25,11 @@ const players: TPlayer[] = [
       isLocked: false,
       isVerified: false,
       coin: 0,
-      token: { expiredIn: 'string', refreshToken: 'string', token: 'string' },
+      token: {
+        expiredIn: 'string',
+        refreshToken: 'string',
+        accessToken: 'string',
+      },
     },
   },
   {
@@ -44,7 +48,11 @@ const players: TPlayer[] = [
       isLocked: false,
       isVerified: false,
       coin: 0,
-      token: { expiredIn: 'string', refreshToken: 'string', token: 'string' },
+      token: {
+        expiredIn: 'string',
+        refreshToken: 'string',
+        accessToken: 'string',
+      },
     },
   },
   {
@@ -63,7 +71,11 @@ const players: TPlayer[] = [
       isLocked: false,
       isVerified: false,
       coin: 0,
-      token: { expiredIn: 'string', refreshToken: 'string', token: 'string' },
+      token: {
+        expiredIn: 'string',
+        refreshToken: 'string',
+        accessToken: 'string',
+      },
     },
   },
   {
@@ -82,7 +94,11 @@ const players: TPlayer[] = [
       isLocked: false,
       isVerified: false,
       coin: 0,
-      token: { expiredIn: 'string', refreshToken: 'string', token: 'string' },
+      token: {
+        expiredIn: 'string',
+        refreshToken: 'string',
+        accessToken: 'string',
+      },
     },
   },
   {
@@ -164,7 +180,7 @@ const LobbyPage: NextPage = () => {
         </div>
 
         <div className="d-flex flex-wrap justify-content-center">
-          {PlayerLobyList({
+          {PlayerLobbyList({
             players: players,
           })}
         </div>
