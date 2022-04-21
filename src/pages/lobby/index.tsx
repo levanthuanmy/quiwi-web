@@ -2,9 +2,17 @@ import { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { Button } from 'react-bootstrap'
+import GameMode from '../../components/GameMode/GameMode'
 import PlayerLobbyList from '../../components/PlayerLobbyList/PlayerLobbyList'
 import { useLocalStorage } from '../../hooks/use-local-storage/useLocalStorage'
-import { TGameLobby, TPlayer } from '../../types/types'
+import { get } from '../../libs/api'
+import {
+  TApiResponse,
+  TGameLobby,
+  TPlayer,
+  TQuiz,
+  TUser,
+} from '../../types/types'
 import { JsonParse } from '../../utils/helper'
 
 const players: TPlayer[] = [
@@ -141,58 +149,191 @@ const LobbyPage: NextPage = () => {
   const [invitationCode, setInvitationCode] = useState('')
 
   const [lsGameSession, setLsGameSession] = useLocalStorage('game-session', '')
+  const [gameSession, setGameSession] = useState<TGameLobby | null>(null)
   const [lsPlayer, setLsPlayer] = useLocalStorage('game-session-player', '')
-  const timeout = setTimeout(() => {
-    if (!invitationCode) {
-      setInvitationCode('Con chó Mỹ')
+  const [lsUser, setLsUser] = useLocalStorage('user', '')
+  const [gameMode, setGameMode] = useState<string>('')
+  const [user, setUser] = useState<TUser | null>(null)
+  const [quiz, setQuiz] = useState<TQuiz | null>(null)
+  // if isHost, user is a host, else => a player
+  const [isHost, setIsHost] = useState(false)
+  const [isLoading, setLoading] = useState(true)
+  const [isLoadingGamePin, setLoadingGamePin] = useState(false)
+
+  // For host, after choosing game mode => emit event start-quiz
+  useEffect(() => {
+    const startQuiz = async () => {
+      if (user && quiz && gameMode) {
+        setLoadingGamePin(true)
+        // phần này bắn về xong get từ server
+
+        setInvitationCode('123456')
+        if (user.id === quiz.userId) {
+          const gameLobby: TGameLobby = {
+            hostId: user.id,
+            host: user,
+            invitationCode: '123456',
+            mode: gameMode,
+            players: [],
+            quizId: Number(quiz.id),
+            time: -1,
+            status: '00WAITING',
+          }
+          setLsGameSession(JSON.stringify(gameLobby))
+          setGameSession(gameLobby)
+          setIsHost(true)
+        } else {
+          alert('Không phải chủ quiz')
+        }
+        console.log('Zo')
+      }
     }
-  }, 1000)
+    if (gameMode) {
+      startQuiz()
+    }
+  }, [gameMode, user])
+
+  // Gọi API lấy quiz => kiểm tra tồn tại
+  useEffect(() => {
+    const getQuiz = async () => {
+      try {
+        const res: TApiResponse<TQuiz> = await get(
+          `/api/quizzes/quiz/${quizId}`
+        )
+        setQuiz(res.response)
+        if (!res.response) {
+          alert('Không tìm thấy quiz')
+          router.push('/')
+        }
+      } catch (error) {
+        console.log('getQuiz - error', error)
+        alert('Không tìm thấy quiz')
+        router.push('/')
+      }
+    }
+    if (router?.isReady) {
+      if (quizId) {
+        getQuiz()
+      } else {
+        alert('Vui lòng thêm tham số Quiz ID đi bạn')
+      }
+    }
+  }, [quizId])
+
+  // Sau khi emit event start-quiz sẽ nhận được game lobby từ server
+  // Phần này loading tạo mã PIN
+  useEffect(() => {
+    if (gameSession) {
+      setLoadingGamePin(false)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, quiz, gameMode, invitationCode, gameSession, isHost])
 
   useEffect(() => {
-    if (!lsGameSession) {
-      router.push('/lobby/join')
+    if (lsUser) {
+      const u = JsonParse(lsUser) as TUser
 
-      return
-    } else {
+      if (u) {
+        setUser(u)
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lsUser])
+
+  useEffect(() => {
+    if (lsGameSession) {
       const gameSession = JsonParse(lsGameSession) as TGameLobby
 
       setInvitationCode(gameSession.invitationCode)
-      clearTimeout(timeout)
+      setGameSession(gameSession)
+      setGameMode(gameSession.mode)
+      if (lsPlayer) {
+        setIsHost(false)
+      }
+      if (gameSession.hostId === user?.id) {
+        setIsHost(true)
+      }
     }
+    setLoading(false)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lsGameSession])
 
-  return lsGameSession ? (
-    invitationCode ? (
-      <div className="bg-secondary fw-medium bg-opacity-25 min-vh-100 d-flex flex-column justify-content-center align-items-center">
-        <div>Tham gia với mã mời</div>
-        <div className="fs-48px mb-3">{invitationCode}</div>
-        <div className="text-secondary ">
-          Game của <span className="text-primary">Thiện</span>
-        </div>
-        <div className="text-secondary">32 người tham gia</div>
+  useEffect(() => {
+    if (lsPlayer) {
+      setIsHost(false)
+    }
+    if (gameSession?.hostId === user?.id) {
+      setIsHost(true)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gameSession, lsPlayer, user])
 
-        {/* nếu là host thì hiện */}
-        <div className="p-12px mb-3">
-          <Button className="rounded-20px px-32px py-12px h-50px">
-            <span className="text-white fw-medium">BẮT ĐẦU</span>
-          </Button>
-        </div>
+  if (gameSession && !isLoading) {
+    if (!gameMode) {
+      return <GameMode setGameMode={setGameMode}></GameMode>
+    } else {
+      if (invitationCode) {
+        return (
+          <div className="bg-secondary fw-medium bg-opacity-25 min-vh-100 d-flex flex-column justify-content-center align-items-center">
+            <div>Tham gia với mã mời</div>
+            <div className="fs-48px mb-3">{invitationCode}</div>
+            {gameSession.host?.name ? (
+              <div className="text-secondary ">
+                Game của{' '}
+                <span className="text-primary">{gameSession.host?.name}</span>
+              </div>
+            ) : gameSession.host?.username ? (
+              <div className="text-secondary ">
+                Game của{' '}
+                <span className="text-primary">
+                  {gameSession.host?.username}
+                </span>
+              </div>
+            ) : null}
 
-        <div className="d-flex flex-wrap justify-content-center">
-          {PlayerLobbyList({
-            players: players,
-          })}
-        </div>
-      </div>
-    ) : lsPlayer ? null : (
-      <div className="bg-secondary fw-medium bg-opacity-25 min-vh-100 d-flex flex-column justify-content-center align-items-center">
-        <h1>Đang tạo mã mời...</h1>
+            <div className="text-secondary">32 người tham gia</div>
 
-        <div className="dots-bars"></div>
-      </div>
-    )
-  ) : null
+            {/* nếu là host thì hiện */}
+            {isHost ? (
+              <div className="p-12px mb-3">
+                <Button className="rounded-20px px-32px py-12px h-50px">
+                  <span className="text-white fw-medium">BẮT ĐẦU</span>
+                </Button>
+              </div>
+            ) : (
+              <div className="p-12px mb-3">
+                <Button className="rounded-20px px-32px py-12px h-50px">
+                  <span className="text-white fw-medium">RỜI PHÒNG</span>
+                </Button>
+              </div>
+            )}
+
+            <div className="d-flex flex-wrap justify-content-center">
+              <PlayerLobbyList players={players} />
+            </div>
+          </div>
+        )
+      } else if (isLoadingGamePin) {
+        return (
+          <div className="bg-secondary fw-medium bg-opacity-25 min-vh-100 d-flex flex-column justify-content-center align-items-center">
+            <h1>Đang tạo mã mời...</h1>
+
+            <div className="dots-bars"></div>
+          </div>
+        )
+      } else {
+        console.log('Xuống đây')
+        return <div>Loading</div>
+      }
+    }
+  } else if (!gameMode) {
+    return <GameMode setGameMode={setGameMode}></GameMode>
+  } else {
+    console.log('Ko load dc gameSession')
+    console.log('game session', gameSession)
+    console.log('loading', isLoading)
+    return <div>Loading...</div>
+  }
 }
 
 export default LobbyPage

@@ -17,17 +17,19 @@ const LobbyPage: NextPage = () => {
   const handleOnClick = () => {
     if (!nickname) {
       console.log('Nhập đi')
+      alert('Nhập nickname mày')
       return
     }
 
     // phần này get socket trả về game lobby và player
     const gameLobby: TGameLobby = {
       hostId: 1,
-      invitationCode: (invitationCode as string) ?? '',
+      invitationCode: (invitationCode as string) ?? 'con chó mỹ',
       quizId: 1,
       time: -1,
       mode: '10CLASSIC',
       players: [],
+      status: '00WAITING',
     }
 
     const p: TPlayer = {
@@ -54,11 +56,10 @@ const LobbyPage: NextPage = () => {
         },
       },
     }
-    delete p.user
     gameLobby.players.push(p)
     setLsGameSession(JSON.stringify(gameLobby))
     setLsPlayer(JSON.stringify(p))
-    router.push('/lobby')
+    router.push('/lobby?quizId=' + gameLobby.quizId)
   }
 
   return (

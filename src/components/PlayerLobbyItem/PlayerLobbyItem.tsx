@@ -2,7 +2,7 @@ import { FC } from 'react'
 import { Image } from 'react-bootstrap'
 import { TPlayer } from '../../types/types'
 
-const PlayerLobbyItem: FC<{ key: number; player: TPlayer; color: string }> = ({
+const PlayerLobbyItem: FC<{ player: TPlayer; color: string }> = ({
   player,
   color,
 }) => {

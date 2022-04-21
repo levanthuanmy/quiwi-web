@@ -41,6 +41,34 @@ export type TPlayer = {
   score: number
 }
 
+export type TQuiz = {
+  id: number
+
+  title: string
+
+  description: string
+
+  user?: User
+
+  userId: number
+
+  isPublic: boolean
+
+  isLocked: boolean
+
+  numPlayed: number
+
+  numUpvotes: number
+
+  numDownvotes: number
+
+  questions: Question[]
+
+  gameLobby: GameLobby[]
+}
+
+
+
 export type TGameLobby = {
   id?: number
 
@@ -50,7 +78,7 @@ export type TGameLobby = {
 
   quizId: number
 
-  // host: User
+  host?: User
 
   hostId: number
 
@@ -59,4 +87,8 @@ export type TGameLobby = {
   time: number
 
   invitationCode: string
+
+  status: string
+
+  gameMode?: BaseGameMode
 }
