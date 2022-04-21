@@ -1,6 +1,6 @@
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Col, Container, Row } from 'react-bootstrap'
 import Cookies from 'universal-cookie'
 import MenuBar from '../components/MenuBar/MenuBar'

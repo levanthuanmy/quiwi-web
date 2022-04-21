@@ -1,6 +1,7 @@
 import { atom, selector } from 'recoil'
 import { TUser } from '../types/types'
 import Cookies from 'universal-cookie'
+import _ from 'lodash'
 
 const defaultUserState: TUser = {
   avatar: '',
@@ -28,6 +29,11 @@ const userState = atom<TUser>({
       onSet((newUser) => {
         cookies.set('access-token', newUser.token.accessToken)
         cookies.set('refresh-token', newUser.token.refreshToken)
+
+        localStorage.setItem(
+          'user',
+          JSON.stringify({ ...newUser, token: null })
+        )
       })
     },
   ],
