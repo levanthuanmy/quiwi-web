@@ -11,6 +11,7 @@ import NavBar from '../components/NavBar/NavBar'
 const Home: NextPage = () => {
   const router = useRouter()
   const [isExpand, setIsExpand] = useState<boolean>(true)
+  const [invitationCode, setInvitationCode] = useState<string>('')
 
   const checkAuth = (to: string) => {
     const cookies = new Cookies()
@@ -21,6 +22,13 @@ const Home: NextPage = () => {
     }
   }
 
+  const onJoinRoom = () => {
+    if (invitationCode.trim().length === 0) {
+      alert('Nhập mã đi bạn')
+      return
+    }
+    router.push('/lobby/join?invitationCode=' + invitationCode)
+  }
   return (
     <>
       <NavBar />
@@ -41,14 +49,17 @@ const Home: NextPage = () => {
 
                     <Row>
                       <Col xs="12" sm="6" className="pe-sm-2 pb-3 pb-sm-0">
-                        <MyInput placeholder="Nhập mã tham gia" />
+                        <MyInput
+                          placeholder="Nhập mã tham gia"
+                          onChange={(e) => {
+                            setInvitationCode(e.target.value)
+                          }}
+                        />
                       </Col>
                       <Col xs="12" sm="4" xl="3" className="ps-sm-2">
                         <MyButton
                           className="fw-medium text-white w-100"
-                          onClick={() => {
-                            checkAuth('/lobby/join')
-                          }}
+                          onClick={onJoinRoom}
                         >
                           Tham gia ngay
                         </MyButton>

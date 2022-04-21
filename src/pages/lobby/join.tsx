@@ -17,6 +17,7 @@ const LobbyPage: NextPage = () => {
   const handleOnClick = () => {
     if (!nickname) {
       console.log('Nhập đi')
+      alert('Nhập nickname mày')
       return
     }
 
@@ -28,6 +29,7 @@ const LobbyPage: NextPage = () => {
       time: -1,
       mode: '10CLASSIC',
       players: [],
+      status: '00WAITING',
     }
 
     const p: TPlayer = {
@@ -57,7 +59,7 @@ const LobbyPage: NextPage = () => {
     gameLobby.players.push(p)
     setLsGameSession(JSON.stringify(gameLobby))
     setLsPlayer(JSON.stringify(p))
-    router.push('/lobby')
+    router.push('/lobby?quizId=' + gameLobby.quizId)
   }
 
   return (
