@@ -2,9 +2,10 @@ import { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { Button } from 'react-bootstrap'
+import GameMode from '../../components/GameMode/GameMode'
 import PlayerLobbyList from '../../components/PlayerLobbyList/PlayerLobbyList'
 import { useLocalStorage } from '../../hooks/use-local-storage/useLocalStorage'
-import { TGameLobby, TPlayer } from '../../types/types'
+import { TGameLobby, TPlayer, TUser } from '../../types/types'
 import { JsonParse } from '../../utils/helper'
 
 const players: TPlayer[] = [
@@ -141,12 +142,35 @@ const LobbyPage: NextPage = () => {
   const [invitationCode, setInvitationCode] = useState('')
 
   const [lsGameSession, setLsGameSession] = useLocalStorage('game-session', '')
+  const [gameSession, setGameSession] = useState<TGameLobby | null>(null)
   const [lsPlayer, setLsPlayer] = useLocalStorage('game-session-player', '')
-  const timeout = setTimeout(() => {
-    if (!invitationCode) {
-      setInvitationCode('Con chó Mỹ')
+  const [lsUser, setLsUser] = useLocalStorage('user', '')
+  const [gameMode, setGameMode] = useState<string>('')
+  const [user, setUser] = useState<TUser | null>(null)
+
+  const [isHost, setIsHost] = useState(false)
+
+  useEffect(() => {
+    if (lsUser) {
+      const u = JsonParse(lsUser) as TUser
+
+      if (u) {
+        setUser(u)
+      }
     }
-  }, 1000)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lsUser])
+
+  useEffect(() => {
+    if (router.isReady) {
+      if (quizId) {
+      } else {
+        console.log('Không có quiz id')
+        alert('Lỗi')
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [quizId])
 
   useEffect(() => {
     if (!lsGameSession) {
@@ -157,11 +181,25 @@ const LobbyPage: NextPage = () => {
       const gameSession = JsonParse(lsGameSession) as TGameLobby
 
       setInvitationCode(gameSession.invitationCode)
-      clearTimeout(timeout)
+      setGameSession(gameSession)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lsGameSession])
 
+  useEffect(() => {
+    if (!lsGameSession) {
+      router.push('/lobby/join')
+
+      return
+    } else {
+      const gameSession = JsonParse(lsGameSession) as TGameLobby
+
+      setInvitationCode(gameSession.invitationCode)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, lsGameSession])
+
+  return <GameMode setGameMode={setGameMode}></GameMode>
   return lsGameSession ? (
     invitationCode ? (
       <div className="bg-secondary fw-medium bg-opacity-25 min-vh-100 d-flex flex-column justify-content-center align-items-center">
@@ -180,9 +218,7 @@ const LobbyPage: NextPage = () => {
         </div>
 
         <div className="d-flex flex-wrap justify-content-center">
-          {PlayerLobbyList({
-            players: players,
-          })}
+          <PlayerLobbyList players={players} />
         </div>
       </div>
     ) : lsPlayer ? null : (
@@ -192,7 +228,9 @@ const LobbyPage: NextPage = () => {
         <div className="dots-bars"></div>
       </div>
     )
-  ) : null
+  ) : (
+    <GameMode></GameMode>
+  )
 }
 
 export default LobbyPage

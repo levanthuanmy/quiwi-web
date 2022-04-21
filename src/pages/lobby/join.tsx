@@ -23,7 +23,7 @@ const LobbyPage: NextPage = () => {
     // phần này get socket trả về game lobby và player
     const gameLobby: TGameLobby = {
       hostId: 1,
-      invitationCode: (invitationCode as string) ?? '',
+      invitationCode: (invitationCode as string) ?? 'con chó mỹ',
       quizId: 1,
       time: -1,
       mode: '10CLASSIC',
@@ -54,7 +54,6 @@ const LobbyPage: NextPage = () => {
         },
       },
     }
-    delete p.user
     gameLobby.players.push(p)
     setLsGameSession(JSON.stringify(gameLobby))
     setLsPlayer(JSON.stringify(p))

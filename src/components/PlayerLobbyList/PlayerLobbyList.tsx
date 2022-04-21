@@ -26,11 +26,7 @@ const PlayerLobbyList: FC<{ players: TPlayer[] }> = (props) => {
         players.map((player, idx) => {
           const colorIdx = getRndInteger(0, colors.length)
           const color = colors[colorIdx]
-          return PlayerLobbyItem({
-            key: idx,
-            player: player,
-            color: color,
-          })
+          return <PlayerLobbyItem key={idx} player={player} color={color} />
         })
       )}
     </>

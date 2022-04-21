@@ -12,6 +12,21 @@
   padding-bottom: 32px;
 }
 
+.py-128px {
+  padding-top: 128px;
+  padding-bottom: 128px;
+}
+
+.py-256px {
+  padding-top: 256px;
+  padding-bottom: 256px;
+}
+
+.px-128px {
+  padding-right: 128px;
+  padding-left: 128px;
+}
+
 .pb-32px {
   padding-bottom: 32px;
 }
