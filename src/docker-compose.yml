@@ -1,0 +1,43 @@
+version: '3'
+
+# networks:
+#   nexbus_nginx_default:
+#     external: true
+
+services:
+  web_build:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./:/quiwi_web
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    working_dir: /quiwi_web
+    # command: ["tail", "-f", "/dev/null"]
+    # command: ['./build.sh']
+
+  quiwi_web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    container_name: quiwi_web
+    volumes:
+      - ./:/quiwi_web
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    working_dir: /quiwi_web
+    environment:
+      - NODE_ENV=production
+      - VIRTUAL_HOST=web.quiwi.games
+      - VIRTUAL_PORT=3000
+      - LETSENCRYPT_HOST=web.quiwi.games
+      - LETSENCRYPT_EMAIL=18127121@student.hcmus.edu.vn
+      - TZ=Asia/Ho_Chi_Minh
+    command: ['yarn', 'run', 'start']
+    # ports:
+    #   -  3003:3000
+    # networks:
+    #   - nexbus_nginx_default
+    env_file: .env

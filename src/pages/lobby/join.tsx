@@ -6,7 +6,7 @@ import MyInput from '../../components/MyInput/MyInput'
 import { useLocalStorage } from '../../hooks/use-local-storage/useLocalStorage'
 import { TGameLobby, TPlayer } from '../../types/types'
 
-const LobbyPage: NextPage = () => {
+const JoiningPage: NextPage = () => {
   const router = useRouter()
 
   const { invitationCode } = router.query
@@ -95,4 +95,4 @@ const LobbyPage: NextPage = () => {
   )
 }
 
-export default LobbyPage
+export default JoiningPage
