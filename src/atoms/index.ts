@@ -1,7 +1,6 @@
 import { atom, selector } from 'recoil'
-import { TUser } from '../types/types'
 import Cookies from 'universal-cookie'
-import _ from 'lodash'
+import { TUser } from '../types/types'
 
 const defaultUserState: TUser = {
   avatar: '',

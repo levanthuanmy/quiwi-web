@@ -1,33 +1,23 @@
 import type { NextPage } from 'next'
-import { useRouter } from 'next/router'
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { Col, Container, Row } from 'react-bootstrap'
-import Cookies from 'universal-cookie'
 import MenuBar from '../components/MenuBar/MenuBar'
 import MyButton from '../components/MyButton/MyButton'
 import MyInput from '../components/MyInput/MyInput'
 import NavBar from '../components/NavBar/NavBar'
+import { useAuthNavigation } from '../hooks/useAuthNavigation/useAuthNavigation'
 
 const Home: NextPage = () => {
-  const router = useRouter()
   const [isExpand, setIsExpand] = useState<boolean>(true)
+  const authNavigate = useAuthNavigation()
   const [invitationCode, setInvitationCode] = useState<string>('')
-
-  const checkAuth = (to: string) => {
-    const cookies = new Cookies()
-    if (!cookies.get('access-token') || !cookies.get('access-token').length) {
-      router.push('/sign-in')
-    } else {
-      router.push(to)
-    }
-  }
 
   const onJoinRoom = () => {
     if (invitationCode.trim().length === 0) {
       alert('Nhập mã đi bạn')
       return
     }
-    router.push('/lobby/join?invitationCode=' + invitationCode)
+    authNavigate.navigate(`/lobby/join?invitationCode=${invitationCode}`)
   }
   return (
     <>
@@ -76,7 +66,7 @@ const Home: NextPage = () => {
                     <MyButton
                       className="fw-medium text-white"
                       onClick={() => {
-                        checkAuth('/quiz/creator')
+                        authNavigate.navigate('/quiz/creator')
                       }}
                     >
                       Tạo mới ngay

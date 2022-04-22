@@ -3,6 +3,7 @@ import React, { FC, useEffect, useState } from 'react'
 import { Dropdown, Image, Spinner } from 'react-bootstrap'
 import useSWR from 'swr'
 import Cookies from 'universal-cookie'
+import { useAuthNavigation } from '../../hooks/useAuthNavigation/useAuthNavigation'
 import { get } from '../../libs/api'
 import { TApiResponse, TUser } from '../../types/types'
 
@@ -10,6 +11,7 @@ const Avatar: FC = () => {
   const router = useRouter()
   const cookies = new Cookies()
   const [shouldFetch, setShouldFetch] = useState<boolean>(false)
+  const authNavigation = useAuthNavigation()
 
   const { data, isValidating } = useSWR<TApiResponse<TUser>>(
     shouldFetch ? ['/api/users/profile', true] : null,
@@ -51,8 +53,23 @@ const Avatar: FC = () => {
           )}
         </span>
       </Dropdown.Toggle>
-      <Dropdown.Menu>
-        <Dropdown.Item eventKey="1" onClick={handleLogout}>
+      <Dropdown.Menu className="rounded-10px p-0 overflow-hidden">
+        <div className="p-3 d-flex align-items-center gap-2 fw-medium">
+          <Image src="/assets/quiwi-coin.png" width={20} height={20} />
+          {data?.response.coin}
+        </div>
+        <Dropdown.Item
+          eventKey="0"
+          onClick={() => authNavigation.navigate('/profile')}
+          className="px-3 py-2"
+        >
+          Trang cá nhân
+        </Dropdown.Item>
+        <Dropdown.Item
+          eventKey="1"
+          onClick={handleLogout}
+          className="px-3 py-2"
+        >
           Đăng xuất
         </Dropdown.Item>
       </Dropdown.Menu>

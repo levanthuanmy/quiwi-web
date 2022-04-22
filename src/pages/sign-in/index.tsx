@@ -7,6 +7,7 @@ import { userState } from '../../atoms'
 import MyButton from '../../components/MyButton/MyButton'
 import MyInput from '../../components/MyInput/MyInput'
 import SingleFloatingCardLayout from '../../components/SingleFloatingCardLayout/SingleFloatingCardLayout'
+import { useAuthNavigation } from '../../hooks/useAuthNavigation/useAuthNavigation'
 import { post } from '../../libs/api'
 import { TApiResponse, TUser } from '../../types/types'
 
@@ -18,6 +19,7 @@ const SignInPage: NextPage = () => {
   const router = useRouter()
   const initialValues: SignInForm = { username: '', password: '' }
   const setUser = useSetRecoilState<TUser>(userState)
+  const authNavigate = useAuthNavigation()
 
   const onSignIn = async (
     body: SignInForm,
@@ -26,7 +28,7 @@ const SignInPage: NextPage = () => {
     try {
       const res: TApiResponse<TUser> = await post('/api/auth/login', {}, body)
       setUser(res.response)
-      router.push('/')
+      authNavigate.toPrevRoute()
     } catch (error) {
       console.log('onSignUp - error', error)
     } finally {

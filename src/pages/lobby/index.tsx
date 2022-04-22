@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { Button } from 'react-bootstrap'
 import GameMode from '../../components/GameMode/GameMode'
 import PlayerLobbyList from '../../components/PlayerLobbyList/PlayerLobbyList'
-import { useLocalStorage } from '../../hooks/use-local-storage/useLocalStorage'
+import { useLocalStorage } from '../../hooks/useLocalStorage/useLocalStorage'
 import { get } from '../../libs/api'
 import {
   TApiResponse,

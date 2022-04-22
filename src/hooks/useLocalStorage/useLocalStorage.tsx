@@ -3,7 +3,7 @@ import React from 'react'
 export const useLocalStorage = (
   key: string,
   defaultValue: string
-): [string, Function] => {
+): [string, (value: Function | string) => void] => {
   const [storedLSValue, setStoredLSValue] = React.useState(() => {
     try {
       const item =
@@ -26,5 +26,6 @@ export const useLocalStorage = (
       console.log(error)
     }
   }
+
   return [storedLSValue, setLSValue]
 }

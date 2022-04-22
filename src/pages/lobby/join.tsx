@@ -3,7 +3,7 @@ import { useRouter } from 'next/router'
 import { useState } from 'react'
 import { Button, Image } from 'react-bootstrap'
 import MyInput from '../../components/MyInput/MyInput'
-import { useLocalStorage } from '../../hooks/use-local-storage/useLocalStorage'
+import { useLocalStorage } from '../../hooks/useLocalStorage/useLocalStorage'
 import { TGameLobby, TPlayer } from '../../types/types'
 
 const JoiningPage: NextPage = () => {
