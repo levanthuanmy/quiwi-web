@@ -73,13 +73,14 @@ const JoiningPage: NextPage = () => {
         />
       </div>
 
-      <div className="text-center">
-        <div className="mb-2">Nhập tên hiển thị của bạn</div>
+      <div className="">
+        <div className="mb-2 text-center">Nhập tên hiển thị của bạn (50 ký tự)</div>
 
         <MyInput
           onChange={(e) => {
             setNickName(e.target.value)
           }}
+          maxLength={50}
           placeholder="Nhập tên hiển thị"
         />
       </div>
