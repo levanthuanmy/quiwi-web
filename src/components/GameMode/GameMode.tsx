@@ -1,6 +1,6 @@
 import classNames from 'classnames'
 import { Dispatch, FC, SetStateAction } from 'react'
-import { Row, Col, Container } from 'react-bootstrap'
+import { Col, Row } from 'react-bootstrap'
 import styles from './GameMode.module.css'
 
 type GameModeProps = {
@@ -8,13 +8,13 @@ type GameModeProps = {
   setGameMode: Dispatch<SetStateAction<string>>
 }
 
-type GameMode = {
+type TGameMode = {
   mode: string
   label: string
 }
 
 const GameMode: FC<GameModeProps> = ({ setGameMode }) => {
-  const modes: GameMode[] = [
+  const modes: TGameMode[] = [
     {
       mode: '10CLASSIC',
       label: 'Truyền thống',

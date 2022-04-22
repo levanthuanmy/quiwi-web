@@ -150,8 +150,8 @@ const LobbyPage: NextPage = () => {
 
   const [lsGameSession, setLsGameSession] = useLocalStorage('game-session', '')
   const [gameSession, setGameSession] = useState<TGameLobby | null>(null)
-  const [lsPlayer, setLsPlayer] = useLocalStorage('game-session-player', '')
-  const [lsUser, setLsUser] = useLocalStorage('user', '')
+  const [lsPlayer] = useLocalStorage('game-session-player', '')
+  const [lsUser] = useLocalStorage('user', '')
   const [gameMode, setGameMode] = useState<string>('')
   const [user, setUser] = useState<TUser | null>(null)
   const [quiz, setQuiz] = useState<TQuiz | null>(null)

@@ -10,7 +10,9 @@ const JoiningPage: NextPage = () => {
   const router = useRouter()
 
   const { invitationCode } = router.query
+  // eslint-disable-next-line no-unused-vars
   const [lsGameSession, setLsGameSession] = useLocalStorage('game-session', '')
+  // eslint-disable-next-line no-unused-vars
   const [lsPlayer, setLsPlayer] = useLocalStorage('game-session-player', '')
   const [nickname, setNickName] = useState('')
 

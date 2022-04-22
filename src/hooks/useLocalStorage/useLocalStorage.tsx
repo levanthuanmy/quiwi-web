@@ -3,7 +3,7 @@ import React from 'react'
 export const useLocalStorage = (
   key: string,
   defaultValue: string
-): [string, (value: Function | string) => void] => {
+): [string, Function] => {
   const [storedLSValue, setStoredLSValue] = React.useState(() => {
     try {
       const item =
