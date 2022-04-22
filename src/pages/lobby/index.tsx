@@ -214,8 +214,10 @@ const LobbyPage: NextPage = () => {
     if (router?.isReady) {
       if (quizId) {
         getQuiz()
+        setLoading(false)
       } else {
         alert('Vui lòng thêm tham số Quiz ID đi bạn')
+        router.push('/')
       }
     }
   }, [quizId])
@@ -254,7 +256,6 @@ const LobbyPage: NextPage = () => {
         setIsHost(true)
       }
     }
-    setLoading(false)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lsGameSession])
 
@@ -268,7 +269,10 @@ const LobbyPage: NextPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gameSession, lsPlayer, user])
 
-  if (gameSession && !isLoading) {
+  if (isLoading) {
+    console.log('loading', isLoading)
+    return <div>Loading...</div>
+  } else if (gameSession) {
     if (!gameMode) {
       return <GameMode setGameMode={setGameMode}></GameMode>
     } else {
@@ -308,7 +312,7 @@ const LobbyPage: NextPage = () => {
               </div>
             )}
 
-            <div className="d-flex flex-wrap justify-content-center">
+            <div className=" d-flex position-relative flex-wrap justify-content-center">
               <PlayerLobbyList players={players} />
             </div>
           </div>

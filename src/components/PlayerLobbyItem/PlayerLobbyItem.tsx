@@ -1,6 +1,7 @@
 import { FC } from 'react'
 import { Image } from 'react-bootstrap'
 import { TPlayer } from '../../types/types'
+import styles from './PlayerLobbyItem.module.css'
 
 const PlayerLobbyItem: FC<{ player: TPlayer; color: string }> = ({
   player,
@@ -9,7 +10,7 @@ const PlayerLobbyItem: FC<{ player: TPlayer; color: string }> = ({
   return (
     <>
       <div
-        className={`d-flex align-items-center max-with-120px m-1 py-1 px-2 rounded-20px ${color}`}
+        className={`d-flex align-items-center max-with-120px m-1 py-1 px-2 rounded-20px ${color} ${styles.tooltip}`}
       >
         {player.user?.avatar ? (
           <Image
@@ -21,6 +22,7 @@ const PlayerLobbyItem: FC<{ player: TPlayer; color: string }> = ({
           />
         ) : null}
         <span className="px-1 text-white text-truncate">{player.nickname}</span>
+        <span className={`${styles.tooltiptext}`}>{player.nickname}</span>
       </div>
     </>
   )
