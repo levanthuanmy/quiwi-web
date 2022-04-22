@@ -15,7 +15,7 @@ services:
       - /etc/timezone:/etc/timezone:ro
     working_dir: /quiwi_web
     # command: ["tail", "-f", "/dev/null"]
-    # command: ['./build.sh']
+    command: ['./build.sh']
 
   quiwi_web:
     build:

@@ -1,2 +1,3 @@
 #!/bin/sh
-yarn && yarn run build
+yarn
+yarn build

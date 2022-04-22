@@ -9,7 +9,3 @@ RUN npm install -g pm2
 RUN npm install --quiet -g node-gyp
 
 WORKDIR /quiwi_web
-
-RUN yarn
-
-CMD ["yarn", "run", "build"]
