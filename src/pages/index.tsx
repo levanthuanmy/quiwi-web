@@ -19,6 +19,7 @@ const Home: NextPage = () => {
     }
     authNavigate.navigate(`/lobby/join?invitationCode=${invitationCode}`)
   }
+
   return (
     <>
       <NavBar />

@@ -14,7 +14,7 @@ const MenuBar: FC<MenuBarProps> = ({ isExpand, setIsExpand }) => {
     { title: 'Trang chủ', url: '/', iconClassName: 'bi bi-house' },
     {
       title: 'Thư viện của tôi',
-      url: '/lib',
+      url: '/my-lib',
       iconClassName: 'bi bi-bookmarks',
     },
     { title: 'Khám phá', url: '/ex', iconClassName: 'bi bi-compass' },
