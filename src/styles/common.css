@@ -42,3 +42,7 @@
   border-top-left-radius: calc(0.75rem - 1px);
   border-top-right-radius: calc(0.75rem - 1px);
 }
+
+.line-height-normal {
+  line-height: normal;
+}

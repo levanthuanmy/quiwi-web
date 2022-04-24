@@ -1,13 +1,18 @@
 import { NextPage } from 'next'
-import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
-import { Button, Col, Container, Image, Modal, Row } from 'react-bootstrap'
+import { Button, Col, Container, Image, Row } from 'react-bootstrap'
 import useSWR from 'swr'
 import Cookies from 'universal-cookie'
-import FollowUserModal from '../../components/FollowUsersModal/FollowUserModal'
+import FollowerUser from '../../components/FollowerUser/FollowerUser'
+import FollowingUser from '../../components/FollowingUser/FollowingUser'
 import NavBar from '../../components/NavBar/NavBar'
-import { get } from '../../libs/api'
-import { TApiResponse, TUser } from '../../types/types'
+import { get, post } from '../../libs/api'
+import {
+  TApiResponse,
+  TFollowUsers,
+  TPaginationResponse,
+  TUser,
+} from '../../types/types'
 
 type UserProfile = {
   user: TUser
@@ -23,8 +28,11 @@ const ProfilePage: NextPage = () => {
   const cookies = new Cookies()
   const [shouldFetch, setShouldFetch] = useState<boolean>(false)
 
-  const [showFollowerUserModal, setShowFollowerUserModal] = useState(false)
-  const [showFollowingUsersModal, setShowFollowingUsersModal] = useState(false)
+  const [followingUsers, setFollowingUsers] =
+    useState<TPaginationResponse<TFollowUsers>>()
+
+  const [followerUsers, setFollowerUsers] =
+    useState<TPaginationResponse<TFollowUsers>>()
 
   const { data, isValidating } = useSWR<TApiResponse<UserProfile>>(
     shouldFetch ? ['/api/users/profile', true] : null,
@@ -46,10 +54,15 @@ const ProfilePage: NextPage = () => {
     }
   }, [data, isValidating])
 
+  useEffect(() => {
+    getFollowingUsers()
+    getFollowersUsers()
+  }, [user])
+
   const renderData = (data: number, label: string, showModal?: Function) => {
     return (
       <Col
-        className={`text-center py-1 mx-1 rounded-20px ${
+        className={`text-center py-1 rounded-20px ${
           showModal ? 'cursor-pointer' : null
         }`}
         onClick={() => {
@@ -62,9 +75,60 @@ const ProfilePage: NextPage = () => {
     )
   }
 
-  const renderList = () => {
-    return [1, 2, 3].map((i) => <div key={i}>i</div>)
+  const getFollowersUsers = async () => {
+    try {
+      const params = {
+        filter: { relations: ['user'] },
+      }
+      const res: TApiResponse<TPaginationResponse<TFollowUsers>> = await get(
+        `/api/users/followers`,
+        true,
+        params
+      )
+
+      setFollowerUsers(res.response)
+    } catch (error) {
+      console.log('getFollowersUsers - error', error)
+    }
   }
+
+  const getFollowingUsers = async () => {
+    try {
+      const params = {
+        filter: { relations: ['followingUser'] },
+      }
+      const res: TApiResponse<TPaginationResponse<TFollowUsers>> = await get(
+        `/api/users/following`,
+        true,
+        params
+      )
+
+      setFollowingUsers(res.response)
+    } catch (error) {
+      console.log('getFollowingUsers - error', error)
+    }
+  }
+
+  const unfollow = async (followingUserId: number) => {
+    try {
+      const params = {
+        followingUserId: followingUserId,
+      }
+      const res: TApiResponse<{ result: string }> = await post(
+        `/api/users/follow`,
+
+        params,
+        {},
+        true
+      )
+      alert(res.response.result)
+      await getFollowingUsers()
+    } catch (error) {
+      console.log(error)
+      alert('Lỗi')
+    }
+  }
+
   return userResponse ? (
     <>
       <NavBar />
@@ -115,14 +179,16 @@ const ProfilePage: NextPage = () => {
             </div>
             <Row>
               {renderData(userResponse?.badges.length, 'danh hiệu')}
-              {renderData(userResponse?.totalFollower, 'người theo dõi')}
-              {renderData(userResponse?.totalFollowing, 'đang theo dõi', () => {
-                setShowFollowingUsersModal(true)
-              })}
+
+              <FollowerUser followerUsers={followerUsers} />
+              <FollowingUser
+                followingUsers={followingUsers}
+                unfollowUser={unfollow}
+              />
             </Row>
           </Col>
         </Row>
-        <FollowUserModal
+        {/* <FollowUserModal
           handleClose={() => {
             setShowFollowingUsersModal(false)
           }}
@@ -130,7 +196,7 @@ const ProfilePage: NextPage = () => {
           title="Đang theo dõi"
         >
           {renderList()}
-        </FollowUserModal>
+        </FollowUserModal> */}
       </Container>
     </>
   ) : null
