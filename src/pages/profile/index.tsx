@@ -62,15 +62,14 @@ const ProfilePage: NextPage = () => {
   const renderData = (data: number, label: string, showModal?: Function) => {
     return (
       <Col
-        className={`text-center py-1 rounded-20px ${
-          showModal ? 'cursor-pointer' : null
-        }`}
+        className={`py-1 rounded-20px ${showModal ? 'cursor-pointer' : null}`}
         onClick={() => {
           showModal && showModal()
         }}
       >
-        <div className="fw-medium">{data} </div>
-        <span>{label}</span>
+        <div>
+          <span className="fw-medium">{data} </span> {label}
+        </div>
       </Col>
     )
   }
@@ -132,7 +131,7 @@ const ProfilePage: NextPage = () => {
   return userResponse ? (
     <>
       <NavBar />
-      <Container className="pt-64px min-vh-100 position-relative overflow-hidden">
+      <Container className="pt-64px min-vh-100 position-relative ">
         {/* <Image
           src="/assets/default-banner.svg"
           className="position-absolute w-100"
@@ -144,59 +143,55 @@ const ProfilePage: NextPage = () => {
             minHeight: 200,
           }}
         /> */}
-        <Row className="my-5">
-          <Col>
-            <Container className=" text-center">
-              <Image
-                fluid={true}
-                alt="avatar"
-                src="/assets/default-logo.png"
-                width={160}
-                height={160}
-                className="rounded-circle border border-2 border-white"
-              />
-
-              <div className="fs-24px fw-bold py-3">
-                {userResponse.user.name?.length > 0
-                  ? userResponse.user.name
-                  : userResponse.user.username}
-              </div>
-              <Button className="text-white">Chỉnh sửa</Button>
-            </Container>
+        <Row className="my-5 justify-content-center">
+          <Col xs={12} md={5} className="text-center">
+            <Image
+              fluid={true}
+              alt="avatar"
+              src="/assets/default-logo.png"
+              width={160}
+              height={160}
+              className="rounded-circle border border-2 border-white"
+            />
           </Col>
-          <Col className="text-center text-center">
-            <div className="py-3 d-flex justify-content-center align-items-center">
-              <Image
-                alt="avatar"
-                src="/assets/quiwi-coin.png"
-                width={32}
-                height={32}
-                className="me-3"
-              />
-              <span className="fs-32px text-primary fw-medium">
-                {userResponse.user.coin}
-              </span>
-            </div>
-            <Row>
-              {renderData(userResponse?.badges.length, 'danh hiệu')}
 
-              <FollowerUser followerUsers={followerUsers} />
-              <FollowingUser
-                followingUsers={followingUsers}
-                unfollowUser={unfollow}
-              />
+          <Col className="">
+            <div className="d-flex align-items-center">
+              <div className="me-5">
+                <div className="fs-24px fw-medium text-secondary">
+                  {userResponse.user.username}
+                </div>
+                <div> {userResponse.user.name}</div>
+              </div>
+              <div>
+                <Button className="text-white ">Chỉnh sửa</Button>
+              </div>
+            </div>
+
+            <Row>
+              <div className="py-2 d-flex align-items-center">
+                <Image
+                  alt="avatar"
+                  src="/assets/quiwi-coin.png"
+                  width={32}
+                  height={32}
+                  className="me-3"
+                />
+                <span className="fs-32px text-primary fw-medium">
+                  {userResponse.user.coin}
+                </span>
+              </div>
+              <Row className="">
+                {renderData(userResponse?.badges.length, 'danh hiệu')}
+                <FollowerUser followerUsers={followerUsers} />
+                <FollowingUser
+                  followingUsers={followingUsers}
+                  unfollowUser={unfollow}
+                />
+              </Row>
             </Row>
           </Col>
         </Row>
-        {/* <FollowUserModal
-          handleClose={() => {
-            setShowFollowingUsersModal(false)
-          }}
-          show={showFollowingUsersModal}
-          title="Đang theo dõi"
-        >
-          {renderList()}
-        </FollowUserModal> */}
       </Container>
     </>
   ) : null

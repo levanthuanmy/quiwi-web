@@ -69,14 +69,16 @@ const FollowingUser: FC<{
     })
   }
   return (
-    <Col className={`text-center py-1 rounded-20px cursor-pointer`}>
+    <Col className={`py-1 rounded-20px cursor-pointer`}>
       <div
         onClick={() => {
           setShowModal(true)
         }}
       >
-        <div className="fw-medium">{followingUsers?.items.length ?? 0}</div>
-        <span>đang theo dõi</span>
+        <div>
+          <span className="fw-medium">{followingUsers?.items.length ?? 0}</span> {' '}
+          đang theo dõi
+        </div>
       </div>
 
       <FollowUserModal
