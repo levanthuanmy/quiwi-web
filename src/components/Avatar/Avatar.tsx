@@ -49,14 +49,14 @@ const Avatar: FC = () => {
           {isValidating ? (
             <Spinner animation="border" variant="light" size="sm" />
           ) : (
-            data?.response.name || data?.response.username || 'Guest'
+            data?.response.user.name || data?.response.user.username || 'Guest'
           )}
         </span>
       </Dropdown.Toggle>
       <Dropdown.Menu className="rounded-10px p-0 overflow-hidden">
         <div className="p-3 d-flex align-items-center gap-2 fw-medium">
           <Image src="/assets/quiwi-coin.png" width={20} height={20} />
-          {data?.response.coin}
+          {data?.response.user.coin}
         </div>
         <Dropdown.Item
           eventKey="0"
