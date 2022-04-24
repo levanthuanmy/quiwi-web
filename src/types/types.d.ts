@@ -88,3 +88,10 @@ export type TPaginationResponse<T> = {
   hasNextPage: boolean
 }
 
+export type TUserProfile = {
+  user: TUser
+  badges: []
+  quests: []
+  totalFollower: number
+  totalFollowing: number
+}
