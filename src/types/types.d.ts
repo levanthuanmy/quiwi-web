@@ -71,11 +71,20 @@ export type TStartQuizRequest = {
   token?: string
 }
 
+export type TFollowUsers = {
+  id?: number
+  user?: TUser
+  userId: number
+  followingUser?: TUser
+  followingUserId: number
+}
+
 export type TPaginationResponse<T> = {
-  items: T
+  items: T[]
   pageSize: number
   pageIndex: number
   totalItems: number
   hasPrevPage: boolean
   hasNextPage: boolean
 }
+
