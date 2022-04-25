@@ -17,7 +17,7 @@ import {
   TStartQuizRequest,
   TUser,
 } from '../../types/types'
-import { API_URL } from '../../utils/constants'
+import { API_URL, homeMenuOptions } from '../../utils/constants'
 import { JsonParse } from '../../utils/helper'
 
 const socket = io(`${API_URL}/games`, { transports: ['websocket'] })
@@ -67,7 +67,12 @@ const MyLibPage: NextPage = () => {
     <>
       <NavBar />
       <div className="d-flex pt-64px min-vh-100">
-        <MenuBar isExpand={isExpand} setIsExpand={setIsExpand} />
+        <MenuBar
+          isExpand={isExpand}
+          setIsExpand={setIsExpand}
+          menuOptions={homeMenuOptions}
+          isFullHeight={true}
+        />
         <div
           style={{ paddingLeft: isExpand ? 240 : 48 }}
           className="w-100 transition-all-150ms bg-secondary bg-opacity-10"
