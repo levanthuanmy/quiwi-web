@@ -46,3 +46,18 @@
 .line-height-normal {
   line-height: normal;
 }
+
+/* 
+.menu .active {
+  font-weight: 500;
+  border-left: solid 1px var($primary);
+}
+
+.menu .menu-item {
+  padding: 0.5rem;
+  cursor: pointer;
+}
+
+.menu .menu-item:hover {
+  background-color: #f2f2f2;
+} */

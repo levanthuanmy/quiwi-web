@@ -1,4 +1,5 @@
 import { NextPage } from 'next'
+import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { Button, Col, Container, Image, Row } from 'react-bootstrap'
 import useSWR from 'swr'
@@ -12,19 +13,12 @@ import {
   TFollowUsers,
   TPaginationResponse,
   TUser,
+  TUserProfile,
 } from '../../types/types'
-
-type UserProfile = {
-  user: TUser
-  badges: []
-  quests: []
-  totalFollower: number
-  totalFollowing: number
-}
 
 const ProfilePage: NextPage = () => {
   const [user, setUser] = useState<TUser>()
-  const [userResponse, setUserReponse] = useState<UserProfile>()
+  const [userResponse, setUserReponse] = useState<TUserProfile>()
   const cookies = new Cookies()
   const [shouldFetch, setShouldFetch] = useState<boolean>(false)
 
@@ -34,7 +28,7 @@ const ProfilePage: NextPage = () => {
   const [followerUsers, setFollowerUsers] =
     useState<TPaginationResponse<TFollowUsers>>()
 
-  const { data, isValidating } = useSWR<TApiResponse<UserProfile>>(
+  const { data, isValidating } = useSWR<TApiResponse<TUserProfile>>(
     shouldFetch ? ['/api/users/profile', true] : null,
     get
   )
@@ -164,7 +158,9 @@ const ProfilePage: NextPage = () => {
                 <div> {userResponse.user.name}</div>
               </div>
               <div>
-                <Button className="text-white ">Chỉnh sửa</Button>
+                <Link href="/profile/edit" passHref={true}>
+                  <Button className="text-white">Chỉnh sửa</Button>
+                </Link>
               </div>
             </div>
 

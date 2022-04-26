@@ -6,6 +6,7 @@ import MyButton from '../components/MyButton/MyButton'
 import MyInput from '../components/MyInput/MyInput'
 import NavBar from '../components/NavBar/NavBar'
 import { useAuthNavigation } from '../hooks/useAuthNavigation/useAuthNavigation'
+import { homeMenuOptions } from '../utils/constants'
 
 const Home: NextPage = () => {
   const [isExpand, setIsExpand] = useState<boolean>(true)
@@ -24,7 +25,12 @@ const Home: NextPage = () => {
     <>
       <NavBar />
       <div className="d-flex pt-64px min-vh-100">
-        <MenuBar isExpand={isExpand} setIsExpand={setIsExpand} />
+        <MenuBar
+          isExpand={isExpand}
+          setIsExpand={setIsExpand}
+          menuOptions={homeMenuOptions}
+          isFullHeight={true}
+        />
         <div
           style={{ paddingLeft: isExpand ? 240 : 48 }}
           className="w-100 transition-all-150ms bg-secondary bg-opacity-10"

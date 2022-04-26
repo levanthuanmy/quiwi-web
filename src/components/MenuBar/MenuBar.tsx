@@ -7,24 +7,24 @@ import styles from './MenuBar.module.css'
 type MenuBarProps = {
   isExpand: boolean
   setIsExpand: React.Dispatch<React.SetStateAction<boolean>>
+  menuOptions: {
+    title: string
+    url: string
+    iconClassName: string
+  }[],
+  isFullHeight: boolean
 }
-const MenuBar: FC<MenuBarProps> = ({ isExpand, setIsExpand }) => {
+const MenuBar: FC<MenuBarProps> = ({ isExpand, setIsExpand, menuOptions, isFullHeight }) => {
   const router = useRouter()
-  const menuOptions = [
-    { title: 'Trang chủ', url: '/', iconClassName: 'bi bi-house' },
-    {
-      title: 'Thư viện của tôi',
-      url: '/my-lib',
-      iconClassName: 'bi bi-bookmarks',
-    },
-    { title: 'Khám phá', url: '/ex', iconClassName: 'bi bi-compass' },
-  ]
+
 
   return (
     <div
       className={classNames(
-        'border-end position-fixed h-100 bg-white overflow-hidden text-nowrap',
-        styles.container
+        'border-end position-fixed bg-white overflow-hidden text-nowrap',
+        styles.container,{
+          "h-100" : isFullHeight
+        }
       )}
       style={{ width: isExpand ? 240 : 48 }}
     >
