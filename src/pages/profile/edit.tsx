@@ -88,25 +88,7 @@ const EditProfilePage: NextPage = () => {
   ) => {
     onUpdatingProfile(values, actions)
   }
-  const options = [
-    { value: 'MALE', label: 'Nam' },
-    { value: 'FEMALE', label: 'Nữ' },
-  ]
-  const customSelectionInput = ({
-    field, // { name, value, onChange, onBlur }
-    form: { touched, errors }, // also values, setXXXX, handleXXXX, dirty, isValid, status, etc.
-    ...props
-  }) => (
-    <div>
-      <Form.Select aria-label="Default select example" {...field} {...props}>
-        <option value="MALE">Nam</option>
-        <option value="FEMALE">Nữ</option>
-      </Form.Select>
-      {touched[field.name] && errors[field.name] && (
-        <div className="error">{errors[field.name]}</div>
-      )}
-    </div>
-  )
+
   return userResponse ? (
     <>
       <NavBar />
@@ -233,7 +215,7 @@ const EditProfilePage: NextPage = () => {
                         as="select"
                         name="gender"
                         // component={customSelectionInput}
-                        className="form-control"
+                        className="form-control  rounded-10px h-50px d-flex px-12px overflow-hidden "
                       >
                         <option value="MALE">Nam</option>
                         <option value="FEMALE">Nữ</option>
