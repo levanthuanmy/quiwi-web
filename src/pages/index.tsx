@@ -1,4 +1,5 @@
 import type { NextPage } from 'next'
+import { useRouter } from 'next/router'
 import React, { useState } from 'react'
 import { Col, Container, Row } from 'react-bootstrap'
 import MenuBar from '../components/MenuBar/MenuBar'
@@ -12,13 +13,14 @@ const Home: NextPage = () => {
   const [isExpand, setIsExpand] = useState<boolean>(true)
   const authNavigate = useAuthNavigation()
   const [invitationCode, setInvitationCode] = useState<string>('')
+  const router = useRouter()
 
   const onJoinRoom = () => {
     if (invitationCode.trim().length === 0) {
       alert('Nhập mã đi bạn')
       return
     }
-    authNavigate.navigate(`/lobby/join?invitationCode=${invitationCode}`)
+    router.push(`/lobby/join?invitationCode=${invitationCode}`)
   }
 
   return (

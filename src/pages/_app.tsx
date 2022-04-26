@@ -10,13 +10,16 @@ import '../styles/sizing.css'
 import '../styles/border.css'
 import '../styles/typography.css'
 import { RecoilRoot } from 'recoil'
+import { SocketProvider } from '../hooks/useSocket/useSocket'
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <RecoilRoot>
       <SSRProvider>
-        <MyHead />
-        <Component {...pageProps} />
+        <SocketProvider>
+          <MyHead />
+          <Component {...pageProps} />
+        </SocketProvider>
       </SSRProvider>
     </RecoilRoot>
   )
