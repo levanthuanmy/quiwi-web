@@ -23,35 +23,41 @@ const JoiningPage: NextPage = () => {
   const { socket } = useSocket()
 
   const handleOnClick = () => {
-    if (!nickname) {
-      alert('Nhập nickname mày')
-      return
+    try {
+      if (!nickname) {
+        alert('Nhập nickname mày')
+        return
+      }
+
+      const cookies = new Cookies()
+      const accessToken: string = cookies.get('access-token')
+
+      let joinRoomRequest: Record<string, string | number> = {
+        nickname,
+        invitationCode,
+      }
+
+      if (accessToken?.length) {
+        const userId: number = JsonParse(lsUser)['id']
+        joinRoomRequest.token = accessToken
+        joinRoomRequest.userId = userId
+      }
+
+      socket.connect()
+
+      socket.emit('join-room', joinRoomRequest)
+
+      socket.on('joined-quiz', (data: TJoinQuizResponse) => {
+        console.log('socket.on - data', data)
+
+        setLsGameSession(JSON.stringify(data.gameLobby))
+        setLsPlayer(JSON.stringify(data.player))
+
+        router.push(`/lobby?quizId=${data.gameLobby.quizId}`)
+      })
+    } catch (error) {
+      console.log('handleOnClick - error', error)
     }
-
-    const cookies = new Cookies()
-    const accessToken: string = cookies.get('access-token')
-
-    let joinRoomRequest: Record<string, string | number> = {
-      nickname,
-      invitationCode,
-    }
-
-    if (accessToken?.length) {
-      const userId: number = JsonParse(lsUser)['id']
-      joinRoomRequest.token = accessToken
-      joinRoomRequest.userId = userId
-    }
-
-    socket.emit('join-room', joinRoomRequest)
-
-    socket.on('joined-quiz', (data: TJoinQuizResponse) => {
-      console.log('socket.on - data', data)
-
-      setLsGameSession(JSON.stringify(data.gameLobby))
-      setLsPlayer(JSON.stringify(data.player))
-
-      router.push(`/lobby?quizId=${data.gameLobby.quizId}`)
-    })
   }
 
   return (

@@ -108,6 +108,8 @@ const HostPage: NextPage = () => {
         token: accessToken,
       }
 
+      socket.connect()
+
       socket.emit('start-quiz', msg)
 
       socket.on('start-quiz', (data: TStartQuizResponse) => {

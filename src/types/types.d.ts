@@ -69,7 +69,7 @@ export type TStartQuizResponse = {
   host: TUser
   hostId: number
   invitationCode: string
-  players: []
+  players: TPlayer[]
   quiz: TQuiz
   quizId: number
   status: TGameStatus

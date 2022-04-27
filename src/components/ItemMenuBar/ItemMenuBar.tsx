@@ -1,6 +1,6 @@
 import classNames from 'classnames'
-import { useRouter } from 'next/router'
 import React, { FC } from 'react'
+import { useAuthNavigation } from '../../hooks/useAuthNavigation/useAuthNavigation'
 import styles from './ItemMenuBar.module.css'
 
 type ItemMenuBarProps = {
@@ -15,7 +15,7 @@ const ItemMenuBar: FC<ItemMenuBarProps> = ({
   url,
   isActive,
 }) => {
-  const router = useRouter()
+  const authNavigate = useAuthNavigation()
   const activeStyle = isActive
     ? `${styles.active} border-end border-5 border-primary text-primary fw-medium`
     : ''
@@ -26,7 +26,7 @@ const ItemMenuBar: FC<ItemMenuBarProps> = ({
         styles.container,
         activeStyle
       )}
-      onClick={() => router.push(url)}
+      onClick={() => authNavigate.navigate(url)}
     >
       <i className={classNames('fs-18px pe-3', iconClassName)} />
       {title}
