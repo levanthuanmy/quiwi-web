@@ -138,7 +138,7 @@ const ProfilePage: NextPage = () => {
           }}
         /> */}
         <Row className="my-5 justify-content-center">
-          <Col xs={12} md={5} className="text-center">
+          <Col xs={5} md={3} className="text-center">
             <Image
               fluid={true}
               alt="avatar"
@@ -149,7 +149,7 @@ const ProfilePage: NextPage = () => {
             />
           </Col>
 
-          <Col className="">
+          <Col xs={7} className="">
             <div className="d-flex align-items-center">
               <div className="me-5">
                 <div className="fs-24px fw-medium text-secondary">
