@@ -1,14 +1,23 @@
+import { Field, Formik, FormikHelpers } from 'formik'
 import { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { Col, Container, Form, Image, Row } from 'react-bootstrap'
 import ItemMenuBar from '../../components/ItemMenuBar/ItemMenuBar'
-import MenuBar from '../../components/MenuBar/MenuBar'
 import MyButton from '../../components/MyButton/MyButton'
+import MyInput from '../../components/MyInput/MyInput'
 import NavBar from '../../components/NavBar/NavBar'
-import { get } from '../../libs/api'
-import { TApiResponse, TUserProfile } from '../../types/types'
+import { get, post } from '../../libs/api'
+import { TApiResponse, TUser, TUserProfile } from '../../types/types'
 import { profileMenuOptions } from '../../utils/constants'
+import * as Yup from 'yup'
+
+type ProfileForm = {
+  name: string
+  phoneNumber: string
+  gender: string
+  email: string
+}
 
 const EditProfilePage: NextPage = () => {
   const [userResponse, setUserReponse] = useState<TUserProfile>()
@@ -29,9 +38,56 @@ const EditProfilePage: NextPage = () => {
         console.log(error)
       }
     }
-
-    !userResponse && getUser()
+    if (!userResponse) {
+      getUser()
+    }
   }, [userResponse])
+
+  const onUpdatingProfile = async (
+    body: ProfileForm,
+    actions: FormikHelpers<ProfileForm>
+  ) => {
+    console.log('==== ~ body', body)
+    try {
+      const res: TApiResponse<TUser> = await post(
+        '/api/users/profile',
+        {},
+        body,
+        true
+      )
+      console.log('==== ~ res', res)
+      alert('Cập nhật thành công')
+      if (res.response) {
+        userResponse && setUserReponse({ ...userResponse, user: res.response })
+      }
+
+      // setUser(res.response)
+      // authNavigate.toPrevRoute()
+    } catch (error) {
+      console.log('onUpdatingProfile - error', error)
+    } finally {
+      actions.setSubmitting(false)
+    }
+  }
+
+  const phoneRegExp =
+    /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
+
+  const ProfileSchema = Yup.object().shape({
+    name: Yup.string().min(2, 'Tên quá ngắn!').max(100, 'Tên quá dài!'),
+    email: Yup.string().email('Email không hợp lệ'),
+    phoneNumber: Yup.string()
+      .matches(phoneRegExp, 'Số điện thoại không hợp lệ')
+      .min(8, '')
+      .max(12, ''),
+  })
+
+  const handleUpdateProfile = (
+    values: ProfileForm,
+    actions: FormikHelpers<ProfileForm>
+  ) => {
+    onUpdatingProfile(values, actions)
+  }
 
   return userResponse ? (
     <>
@@ -53,7 +109,7 @@ const EditProfilePage: NextPage = () => {
           </Col>
           <Col className="p-4">
             <Row className=" justify-content-center align-items-center">
-              <Col lg={4} className="text-end">
+              <Col xs={2} lg={4} className="text-lg-end">
                 <Image
                   fluid={true}
                   alt="avatar"
@@ -68,23 +124,117 @@ const EditProfilePage: NextPage = () => {
               </Col>
             </Row>
 
-            <form>
-              <Row className="justify-content-center align-items-center py-2">
-                <Col xs={12} lg={4} className="text-lg-end fw-medium">
-                  Họ và Tên
-                </Col>
-                <Col>
-                  <Form.Control
-                    placeholder=""
-                    defaultValue={userResponse.user.name}
-                  />
-                </Col>
-              </Row>
+            <Formik
+              initialValues={
+                {
+                  email: userResponse.user.email,
+                  gender: userResponse.user.gender,
+                  name: userResponse.user.name,
+                  phoneNumber: userResponse.user.phoneNumber,
+                } as ProfileForm
+              }
+              onSubmit={handleUpdateProfile}
+              validationSchema={ProfileSchema}
+            >
+              {({
+                // values,
+                errors,
+                // touched,
+                // handleChange,
+                // handleBlur,
+                handleSubmit,
+                isSubmitting,
+              }) => (
+                <Form
+                  method="POST"
+                  onSubmit={(e) => {
+                    e.preventDefault()
+                    handleSubmit()
+                  }}
+                >
+                  <Row className="justify-content-center align-items-center py-2">
+                    <Col xs={12} lg={4} className="text-lg-end fw-medium">
+                      Họ và Tên
+                    </Col>
+                    <Col>
+                      <Field
+                        type="text"
+                        name="name"
+                        placeholder="Họ và tên"
+                        as={MyInput}
+                        // iconClassName="bi bi-person"
+                        // className="mb-3"
+                      />
 
-              <div className="text-center pt-3">
-                <MyButton className="text-white">Lưu thông tin</MyButton>
-              </div>
-            </form>
+                      {errors.name ? <div>{errors.name}</div> : null}
+                    </Col>
+                  </Row>
+
+                  <Row className="justify-content-center align-items-center py-2">
+                    <Col xs={12} lg={4} className="text-lg-end fw-medium">
+                      Email
+                    </Col>
+                    <Col>
+                      <Field
+                        type="email"
+                        name="email"
+                        placeholder="Email"
+                        as={MyInput}
+                        // iconClassName="bi bi-person"
+                        // className="mb-3"
+                      />
+                      {errors.email ? <div>{errors.email}</div> : null}
+                    </Col>
+                  </Row>
+
+                  <Row className="justify-content-center align-items-center py-2">
+                    <Col xs={12} lg={4} className="text-lg-end fw-medium">
+                      Số điện thoại
+                    </Col>
+                    <Col>
+                      <Field
+                        type="number"
+                        name="phoneNumber"
+                        placeholder="Số điện thoại"
+                        as={MyInput}
+                        // iconClassName="bi bi-person"
+                        // className="mb-3"
+                      />
+                      {errors.phoneNumber ? (
+                        <div>{errors.phoneNumber}</div>
+                      ) : null}
+                    </Col>
+                  </Row>
+
+                  <Row className="justify-content-center align-items-center py-2">
+                    <Col xs={12} lg={4} className="text-lg-end fw-medium">
+                      Giới tính
+                    </Col>
+                    <Col>
+                      <Field
+                        as="select"
+                        name="gender"
+                        // component={customSelectionInput}
+                        className="form-control  rounded-10px h-50px d-flex px-12px overflow-hidden "
+                      >
+                        <option value="MALE">Nam</option>
+                        <option value="FEMALE">Nữ</option>
+                      </Field>
+                    </Col>
+                  </Row>
+
+                  <div className="text-center pt-3">
+                    <MyButton
+                      className="text-white"
+                      type="submit"
+                      disabled={isSubmitting}
+                    >
+                      Lưu thông tin
+                    </MyButton>
+                  </div>
+                </Form>
+              )}
+            </Formik>
           </Col>
         </Row>
       </Container>
