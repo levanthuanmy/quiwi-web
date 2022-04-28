@@ -1,16 +1,14 @@
 import { Field, Formik, FormikHelpers } from 'formik'
 import { NextPage } from 'next'
-import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { Col, Container, Form, Image, Row } from 'react-bootstrap'
-import ItemMenuBar from '../../components/ItemMenuBar/ItemMenuBar'
+import * as Yup from 'yup'
+import LeftProfileMenuBar from '../../components/LeftProfileMenuBar/LeftProfileMenuBar'
 import MyButton from '../../components/MyButton/MyButton'
 import MyInput from '../../components/MyInput/MyInput'
 import NavBar from '../../components/NavBar/NavBar'
 import { get, post } from '../../libs/api'
 import { TApiResponse, TUser, TUserProfile } from '../../types/types'
-import { profileMenuOptions } from '../../utils/constants'
-import * as Yup from 'yup'
 
 type ProfileForm = {
   name: string
@@ -22,7 +20,6 @@ type ProfileForm = {
 const EditProfilePage: NextPage = () => {
   const [userResponse, setUserReponse] = useState<TUserProfile>()
 
-  const router = useRouter()
   useEffect(() => {
     const getUser = async () => {
       try {
@@ -74,7 +71,7 @@ const EditProfilePage: NextPage = () => {
     /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
 
   const ProfileSchema = Yup.object().shape({
-    name: Yup.string().min(2, 'Tên quá ngắn!').max(100, 'Tên quá dài!'),
+    name: Yup.string().min(3, 'Tên quá ngắn!').max(100, 'Tên quá dài!'),
     email: Yup.string().email('Email không hợp lệ'),
     phoneNumber: Yup.string()
       .matches(phoneRegExp, 'Số điện thoại không hợp lệ')
@@ -94,18 +91,8 @@ const EditProfilePage: NextPage = () => {
       <NavBar />
       <Container className="pt-64px  min-vh-100 position-relative">
         <Row className="border my-3">
-          <Col xs={3} className="border-end menu text-center p-0">
-            {profileMenuOptions.map((option, idx) => {
-              return (
-                <ItemMenuBar
-                  key={idx}
-                  iconClassName={option.iconClassName}
-                  title={option.title}
-                  url={option.url}
-                  isActive={router.pathname === option.url}
-                />
-              )
-            })}
+          <Col xs={3} md={4} className="border-end menu text-center p-0">
+            <LeftProfileMenuBar />
           </Col>
           <Col className="p-4">
             <Row className=" justify-content-center align-items-center">
@@ -166,7 +153,9 @@ const EditProfilePage: NextPage = () => {
                         // className="mb-3"
                       />
 
-                      {errors.name ? <div>{errors.name}</div> : null}
+                      {errors.name ? (
+                        <div className="text-danger">{errors.name}</div>
+                      ) : null}
                     </Col>
                   </Row>
 
@@ -183,7 +172,9 @@ const EditProfilePage: NextPage = () => {
                         // iconClassName="bi bi-person"
                         // className="mb-3"
                       />
-                      {errors.email ? <div>{errors.email}</div> : null}
+                      {errors.email ? (
+                        <div className="text-danger">{errors.email}</div>
+                      ) : null}
                     </Col>
                   </Row>
 
@@ -201,7 +192,7 @@ const EditProfilePage: NextPage = () => {
                         // className="mb-3"
                       />
                       {errors.phoneNumber ? (
-                        <div>{errors.phoneNumber}</div>
+                        <div className="text-danger">{errors.phoneNumber}</div>
                       ) : null}
                     </Col>
                   </Row>
@@ -215,7 +206,7 @@ const EditProfilePage: NextPage = () => {
                         as="select"
                         name="gender"
                         // component={customSelectionInput}
-                        className="form-control  rounded-10px h-50px d-flex px-12px overflow-hidden "
+                        className="form-control rounded-10px h-50px d-flex px-12px overflow-hidden "
                       >
                         <option value="MALE">Nam</option>
                         <option value="FEMALE">Nữ</option>

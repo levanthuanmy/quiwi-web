@@ -1,16 +1,16 @@
 import { Field, Formik, FormikHelpers } from 'formik'
 import { NextPage } from 'next'
-import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { Col, Container, Form, Image, Row } from 'react-bootstrap'
-import ItemMenuBar from '../../components/ItemMenuBar/ItemMenuBar'
+import { useSetRecoilState } from 'recoil'
+import * as Yup from 'yup'
+import { userState } from '../../atoms'
+import LeftProfileMenuBar from '../../components/LeftProfileMenuBar/LeftProfileMenuBar'
 import MyButton from '../../components/MyButton/MyButton'
 import MyInput from '../../components/MyInput/MyInput'
 import NavBar from '../../components/NavBar/NavBar'
 import { get, post } from '../../libs/api'
 import { TApiResponse, TUser, TUserProfile } from '../../types/types'
-import { profileMenuOptions } from '../../utils/constants'
-import * as Yup from 'yup'
 
 type PasswordForm = {
   oldPassword: string
@@ -20,8 +20,8 @@ type PasswordForm = {
 
 const ChangePasswordPage: NextPage = () => {
   const [userResponse, setUserReponse] = useState<TUserProfile>()
+  const setUser = useSetRecoilState<TUser>(userState)
 
-  const router = useRouter()
   useEffect(() => {
     const getUser = async () => {
       try {
@@ -42,12 +42,17 @@ const ChangePasswordPage: NextPage = () => {
     }
   }, [userResponse])
 
-  const onUpdatingProfile = async (
+  const onUpdatingPassword = async (
     body: PasswordForm,
     actions: FormikHelpers<PasswordForm>
   ) => {
-    console.log('==== ~ body', body)
-
+    if (body.confirmPassword !== body.oldPassword) {
+      actions.setErrors({
+        confirmPassword: 'Mật khẩu không khớp',
+        newPassword: 'Mật khẩu không khớp',
+      })
+      return
+    }
     try {
       const res: TApiResponse<TUser> = await post(
         '/api/auth/change-password',
@@ -55,7 +60,7 @@ const ChangePasswordPage: NextPage = () => {
         body,
         true
       )
-      console.log('==== ~ res', res)
+      setUser(res.response)
       alert('Cập nhật thành công')
       if (res.response) {
         userResponse && setUserReponse({ ...userResponse, user: res.response })
@@ -65,6 +70,7 @@ const ChangePasswordPage: NextPage = () => {
       // authNavigate.toPrevRoute()
     } catch (error) {
       console.log('onUpdatingProfile - error', error)
+      alert((error as Error)?.message)
     } finally {
       actions.setSubmitting(false)
     }
@@ -74,31 +80,24 @@ const ChangePasswordPage: NextPage = () => {
     values: PasswordForm,
     actions: FormikHelpers<PasswordForm>
   ) => {
-    onUpdatingProfile(values, actions)
+    onUpdatingPassword(values, actions)
   }
 
   const PasswordSchema = Yup.object().shape({
     oldPassword: Yup.string().min(6, 'Mật khẩu quá ngắn, tối thiểu 6 ký tự'),
-    newPassword: Yup.string().min(6, 'Mật khẩu quá ngắn'),
-    confirmPassword: Yup.string().min(6, 'Mật khẩu quá ngắn'),
+    newPassword: Yup.string().min(6, 'Mật khẩu quá ngắn, tối thiểu 6 ký tự'),
+    confirmPassword: Yup.string().min(
+      6,
+      'Mật khẩu quá ngắn, tối thiểu 6 ký tự'
+    ),
   })
   return userResponse ? (
     <>
       <NavBar />
       <Container className="pt-64px  min-vh-100 position-relative">
         <Row className="border my-3">
-          <Col xs={3} className="border-end menu text-center p-0">
-            {profileMenuOptions.map((option, idx) => {
-              return (
-                <ItemMenuBar
-                  key={idx}
-                  iconClassName={option.iconClassName}
-                  title={option.title}
-                  url={option.url}
-                  isActive={router.pathname === option.url}
-                />
-              )
-            })}
+          <Col xs={3} md={4} className="border-end menu text-center p-0">
+            <LeftProfileMenuBar />
           </Col>
           <Col className="p-4">
             <Row className=" justify-content-center align-items-center">
@@ -138,6 +137,7 @@ const ChangePasswordPage: NextPage = () => {
                 isSubmitting,
               }) => (
                 <Form
+                  autoComplete="off"
                   method="POST"
                   onSubmit={(e) => {
                     e.preventDefault()
@@ -150,6 +150,7 @@ const ChangePasswordPage: NextPage = () => {
                     </Col>
                     <Col>
                       <Field
+                        autoComplete="off"
                         type="password"
                         name="oldPassword"
                         placeholder="Nhập mật khẩu cũ"
@@ -157,7 +158,7 @@ const ChangePasswordPage: NextPage = () => {
                       />
 
                       {errors.oldPassword ? (
-                        <div>{errors.oldPassword}</div>
+                        <div className="text-danger">{errors.oldPassword}</div>
                       ) : null}
                     </Col>
                   </Row>
@@ -168,6 +169,7 @@ const ChangePasswordPage: NextPage = () => {
                     </Col>
                     <Col>
                       <Field
+                        autoComplete="off"
                         type="password"
                         name="newPassword"
                         placeholder="Nhập mật khẩu mới"
@@ -175,7 +177,7 @@ const ChangePasswordPage: NextPage = () => {
                       />
 
                       {errors.newPassword ? (
-                        <div>{errors.newPassword}</div>
+                        <div className="text-danger">{errors.newPassword}</div>
                       ) : null}
                     </Col>
                   </Row>
@@ -186,6 +188,7 @@ const ChangePasswordPage: NextPage = () => {
                     </Col>
                     <Col>
                       <Field
+                        autoComplete="off"
                         type="password"
                         name="confirmPassword"
                         placeholder="Nhập lại mật khẩu"
@@ -193,7 +196,9 @@ const ChangePasswordPage: NextPage = () => {
                       />
 
                       {errors.confirmPassword ? (
-                        <div>{errors.confirmPassword}</div>
+                        <div className="text-danger">
+                          {errors.confirmPassword}
+                        </div>
                       ) : null}
                     </Col>
                   </Row>

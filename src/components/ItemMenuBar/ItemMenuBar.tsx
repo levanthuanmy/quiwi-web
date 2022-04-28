@@ -22,7 +22,7 @@ const ItemMenuBar: FC<ItemMenuBarProps> = ({
   return (
     <div
       className={classNames(
-        'd-flex align-items-center px-3 cursor-pointer text-secondary',
+        'd-flex align-items-center px-3 cursor-pointer text-secondary text-truncate',
         styles.container,
         activeStyle
       )}
