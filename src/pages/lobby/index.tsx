@@ -38,6 +38,9 @@ const players: TPlayer[] = [
         refreshToken: 'string',
         accessToken: 'string',
       },
+      email: '',
+      gender: '',
+      phoneNumber: '',
     },
   },
   {
@@ -61,6 +64,9 @@ const players: TPlayer[] = [
         refreshToken: 'string',
         accessToken: 'string',
       },
+      email: '',
+      gender: '',
+      phoneNumber: '',
     },
   },
   {
@@ -84,6 +90,9 @@ const players: TPlayer[] = [
         refreshToken: 'string',
         accessToken: 'string',
       },
+      email: '',
+      gender: '',
+      phoneNumber: '',
     },
   },
   {
@@ -107,6 +116,9 @@ const players: TPlayer[] = [
         refreshToken: 'string',
         accessToken: 'string',
       },
+      email: '',
+      gender: '',
+      phoneNumber: '',
     },
   },
   {
