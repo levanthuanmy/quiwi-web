@@ -35,33 +35,33 @@ const MyLibPage: NextPage = () => {
     pageSize: 100,
   }
   const { data, isValidating } = useSWR<
-    TApiResponse<TPaginationResponse<TQuiz[]>>
+    TApiResponse<TPaginationResponse<TQuiz>>
   >(['/api/quizzes/my-quizzes', true, params], get)
 
-  const handleStartQuiz = (quizId: number) => {
-    try {
-      const cookies = new Cookies()
-      const accessToken = cookies.get('access-token')
+  // const handleStartQuiz = (quizId: number) => {
+  //   try {
+  //     const cookies = new Cookies()
+  //     const accessToken = cookies.get('access-token')
 
-      const user: TUser = JsonParse(userLS)
+  //     const user: TUser = JsonParse(userLS)
 
-      const msg: TStartQuizRequest = {
-        quizId: quizId,
-        userId: user.id,
-        gameMode: '10CLASSIC',
-        token: accessToken,
-      }
-      console.log('handleStartQuiz - msg', msg)
+  //     const msg: TStartQuizRequest = {
+  //       quizId: quizId,
+  //       userId: user.id,
+  //       gameMode: '10CLASSIC',
+  //       token: accessToken,
+  //     }
+  //     console.log('handleStartQuiz - msg', msg)
 
-      socket.emit('start-quiz', msg)
+  //     socket.emit('start-quiz', msg)
 
-      socket.on('start-quiz', (data) => {
-        console.log('socket.on - data', data)
-      })
-    } catch (error) {
-      console.log('handleStartQuiz - error', error)
-    }
-  }
+  //     socket.on('start-quiz', (data) => {
+  //       console.log('socket.on - data', data)
+  //     })
+  //   } catch (error) {
+  //     console.log('handleStartQuiz - error', error)
+  //   }
+  // }
 
   return (
     <>
