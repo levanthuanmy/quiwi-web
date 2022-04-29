@@ -1,8 +1,9 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { NextPage } from 'next'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { Button, Col, Container, Image, Row } from 'react-bootstrap'
-import useSWR from 'swr'
 import Cookies from 'universal-cookie'
 import FollowerUser from '../../components/FollowerUser/FollowerUser'
 import FollowingUser from '../../components/FollowingUser/FollowingUser'
@@ -16,37 +17,39 @@ import {
   TUserProfile,
 } from '../../types/types'
 
-const GetUserPage: NextPage = () => {
-  const [user, setUser] = useState<TUser>()
-  const [userResponse, setUserReponse] = useState<TUserProfile>()
-  const cookies = new Cookies()
-  const [shouldFetch, setShouldFetch] = useState<boolean>(false)
+type TUserProfileRespone = TUser & {
+  isFollowing: boolean
+}
 
+const GetUserPage: NextPage = () => {
+  const [user, setUser] = useState<TUserProfileRespone>()
+  const cookies = new Cookies()
+  const router = useRouter()
+  const { id } = router.query
   const [followingUsers, setFollowingUsers] =
     useState<TPaginationResponse<TFollowUsers>>()
 
   const [followerUsers, setFollowerUsers] =
     useState<TPaginationResponse<TFollowUsers>>()
 
-  const { data, isValidating } = useSWR<TApiResponse<TUserProfile>>(
-    shouldFetch ? ['/api/users/profile', true] : null,
-    get
-  )
+  const getUser = async () => {
+    try {
+      const res: TApiResponse<TUserProfileRespone> = await get(
+        `/api/users/user/${id}`,
+        true
+      )
+      if (res.response) {
+        setUser(res.response)
+      }
+    } catch (error) {
+      alert('Có lỗi nè')
+      console.log(error)
+    }
+  }
 
   useEffect(() => {
-    const accessToken = String(cookies.get('access-token'))
-    if (accessToken && accessToken.length && accessToken !== 'undefined') {
-      setShouldFetch(true)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cookies.get('access-token')])
-
-  useEffect(() => {
-    if (data) {
-      setUser(data.response.user)
-      setUserReponse(data.response)
-    }
-  }, [data, isValidating])
+    id && getUser()
+  }, [id])
 
   useEffect(() => {
     getFollowingUsers()
@@ -74,7 +77,7 @@ const GetUserPage: NextPage = () => {
         filter: { relations: ['user'] },
       }
       const res: TApiResponse<TPaginationResponse<TFollowUsers>> = await get(
-        `/api/users/followers`,
+        `/api/users/user/${user?.id}/followers`,
         true,
         params
       )
@@ -91,7 +94,7 @@ const GetUserPage: NextPage = () => {
         filter: { relations: ['followingUser'] },
       }
       const res: TApiResponse<TPaginationResponse<TFollowUsers>> = await get(
-        `/api/users/following`,
+        `/api/users/user/${user?.id}/following`,
         true,
         params
       )
@@ -122,21 +125,31 @@ const GetUserPage: NextPage = () => {
     }
   }
 
-  return userResponse ? (
+  const followOrUnfollowUser = async () => {
+    try {
+      const params = {
+        followingUserId: user?.id,
+      }
+      const res: TApiResponse<{ result: string }> = await post(
+        `/api/users/follow`,
+
+        params,
+        {},
+        true
+      )
+      alert(res.response.result)
+      await getFollowingUsers()
+      await getUser()
+    } catch (error) {
+      console.log(error)
+      alert((error as Error).message)
+    }
+  }
+
+  return user ? (
     <>
       <NavBar />
       <Container className="pt-64px min-vh-100 position-relative ">
-        {/* <Image
-          src="/assets/default-banner.svg"
-          className="position-absolute w-100"
-          alt="banner"
-          style={{
-            zIndex: -1,
-            objectFit: 'cover',
-            minWidth: 576,
-            minHeight: 200,
-          }}
-        /> */}
         <Row className="my-5 justify-content-center align-items-center">
           <Col xs={5} md={3} className="text-center">
             <Image
@@ -153,19 +166,24 @@ const GetUserPage: NextPage = () => {
             <div className="d-flex align-items-center">
               <div className="me-5">
                 <div className="fs-24px fw-medium text-secondary">
-                  {userResponse.user.username}
+                  {user.username}
                 </div>
-                <div> {userResponse.user.name}</div>
+                <div>{user.name}</div>
               </div>
               <div>
-                <Link href="/profile/edit" passHref={true}>
-                  <Button className="text-white">Theo doi</Button>
-                </Link>
+                <Button
+                  className={
+                    user.isFollowing ? 'bg-white border-dark ' : 'text-white'
+                  }
+                  onClick={followOrUnfollowUser}
+                >
+                  {user.isFollowing ? 'Bỏ theo dõi' : 'Theo dõi'}
+                </Button>
               </div>
             </div>
-            <div></div>
-            <Row className="d-flex pb-2">
-              {renderData(userResponse?.badges.length, 'danh hiệu')}
+
+            <Row className="d-flex pt-2">
+              {renderData(0, 'danh hiệu')}
               <FollowerUser followerUsers={followerUsers} />
               <FollowingUser
                 followingUsers={followingUsers}

@@ -114,10 +114,10 @@ const EditProfilePage: NextPage = () => {
             <Formik
               initialValues={
                 {
-                  email: userResponse.user.email,
-                  gender: userResponse.user.gender,
-                  name: userResponse.user.name,
-                  phoneNumber: userResponse.user.phoneNumber,
+                  email: userResponse.user.email ?? '',
+                  gender: userResponse.user.gender ?? 'MALE',
+                  name: userResponse.user.name ?? '',
+                  phoneNumber: userResponse.user.phoneNumber ?? '',
                 } as ProfileForm
               }
               onSubmit={handleUpdateProfile}
