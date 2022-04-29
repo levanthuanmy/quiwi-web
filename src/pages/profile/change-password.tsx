@@ -2,7 +2,9 @@ import { Field, Formik, FormikHelpers } from 'formik'
 import { NextPage } from 'next'
 import { useEffect, useState } from 'react'
 import { Col, Container, Form, Image, Row } from 'react-bootstrap'
+import { useSetRecoilState } from 'recoil'
 import * as Yup from 'yup'
+import { userState } from '../../atoms'
 import LeftProfileMenuBar from '../../components/LeftProfileMenuBar/LeftProfileMenuBar'
 import MyButton from '../../components/MyButton/MyButton'
 import MyInput from '../../components/MyInput/MyInput'
@@ -10,15 +12,15 @@ import NavBar from '../../components/NavBar/NavBar'
 import { get, post } from '../../libs/api'
 import { TApiResponse, TUser, TUserProfile } from '../../types/types'
 
-type ProfileForm = {
-  name: string
-  phoneNumber: string
-  gender: string
-  email: string
+type PasswordForm = {
+  oldPassword: string
+  newPassword: string
+  confirmPassword: string
 }
 
-const EditProfilePage: NextPage = () => {
+const ChangePasswordPage: NextPage = () => {
   const [userResponse, setUserReponse] = useState<TUserProfile>()
+  const setUser = useSetRecoilState<TUser>(userState)
 
   useEffect(() => {
     const getUser = async () => {
@@ -40,19 +42,25 @@ const EditProfilePage: NextPage = () => {
     }
   }, [userResponse])
 
-  const onUpdatingProfile = async (
-    body: ProfileForm,
-    actions: FormikHelpers<ProfileForm>
+  const onUpdatingPassword = async (
+    body: PasswordForm,
+    actions: FormikHelpers<PasswordForm>
   ) => {
-    console.log('==== ~ body', body)
+    if (body.confirmPassword !== body.oldPassword) {
+      actions.setErrors({
+        confirmPassword: 'Mật khẩu không khớp',
+        newPassword: 'Mật khẩu không khớp',
+      })
+      return
+    }
     try {
       const res: TApiResponse<TUser> = await post(
-        '/api/users/profile',
+        '/api/auth/change-password',
         {},
         body,
         true
       )
-      console.log('==== ~ res', res)
+      setUser(res.response)
       alert('Cập nhật thành công')
       if (res.response) {
         userResponse && setUserReponse({ ...userResponse, user: res.response })
@@ -62,30 +70,27 @@ const EditProfilePage: NextPage = () => {
       // authNavigate.toPrevRoute()
     } catch (error) {
       console.log('onUpdatingProfile - error', error)
+      alert((error as Error)?.message)
     } finally {
       actions.setSubmitting(false)
     }
   }
 
-  const phoneRegExp =
-    /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
-
-  const ProfileSchema = Yup.object().shape({
-    name: Yup.string().min(3, 'Tên quá ngắn!').max(100, 'Tên quá dài!'),
-    email: Yup.string().email('Email không hợp lệ'),
-    phoneNumber: Yup.string()
-      .matches(phoneRegExp, 'Số điện thoại không hợp lệ')
-      .min(8, '')
-      .max(12, ''),
-  })
-
-  const handleUpdateProfile = (
-    values: ProfileForm,
-    actions: FormikHelpers<ProfileForm>
+  const handleUpdatePassword = (
+    values: PasswordForm,
+    actions: FormikHelpers<PasswordForm>
   ) => {
-    onUpdatingProfile(values, actions)
+    onUpdatingPassword(values, actions)
   }
 
+  const PasswordSchema = Yup.object().shape({
+    oldPassword: Yup.string().min(6, 'Mật khẩu quá ngắn, tối thiểu 6 ký tự'),
+    newPassword: Yup.string().min(6, 'Mật khẩu quá ngắn, tối thiểu 6 ký tự'),
+    confirmPassword: Yup.string().min(
+      6,
+      'Mật khẩu quá ngắn, tối thiểu 6 ký tự'
+    ),
+  })
   return userResponse ? (
     <>
       <NavBar />
@@ -114,14 +119,13 @@ const EditProfilePage: NextPage = () => {
             <Formik
               initialValues={
                 {
-                  email: userResponse.user.email,
-                  gender: userResponse.user.gender,
-                  name: userResponse.user.name,
-                  phoneNumber: userResponse.user.phoneNumber,
-                } as ProfileForm
+                  oldPassword: '',
+                  newPassword: '',
+                  confirmPassword: '',
+                } as PasswordForm
               }
-              onSubmit={handleUpdateProfile}
-              validationSchema={ProfileSchema}
+              onSubmit={handleUpdatePassword}
+              validationSchema={PasswordSchema}
             >
               {({
                 // values,
@@ -133,6 +137,7 @@ const EditProfilePage: NextPage = () => {
                 isSubmitting,
               }) => (
                 <Form
+                  autoComplete="off"
                   method="POST"
                   onSubmit={(e) => {
                     e.preventDefault()
@@ -141,76 +146,60 @@ const EditProfilePage: NextPage = () => {
                 >
                   <Row className="justify-content-center align-items-center py-2">
                     <Col xs={12} lg={4} className="text-lg-end fw-medium">
-                      Họ và Tên
+                      Mật khẩu cũ
                     </Col>
                     <Col>
                       <Field
-                        type="text"
-                        name="name"
-                        placeholder="Họ và tên"
+                        autoComplete="off"
+                        type="password"
+                        name="oldPassword"
+                        placeholder="Nhập mật khẩu cũ"
                         as={MyInput}
-                        // iconClassName="bi bi-person"
-                        // className="mb-3"
                       />
 
-                      {errors.name ? (
-                        <div className="text-danger">{errors.name}</div>
+                      {errors.oldPassword ? (
+                        <div className="text-danger">{errors.oldPassword}</div>
                       ) : null}
                     </Col>
                   </Row>
 
                   <Row className="justify-content-center align-items-center py-2">
                     <Col xs={12} lg={4} className="text-lg-end fw-medium">
-                      Email
+                      Mật khẩu mới
                     </Col>
                     <Col>
                       <Field
-                        type="email"
-                        name="email"
-                        placeholder="Email"
+                        autoComplete="off"
+                        type="password"
+                        name="newPassword"
+                        placeholder="Nhập mật khẩu mới"
                         as={MyInput}
-                        // iconClassName="bi bi-person"
-                        // className="mb-3"
                       />
-                      {errors.email ? (
-                        <div className="text-danger">{errors.email}</div>
+
+                      {errors.newPassword ? (
+                        <div className="text-danger">{errors.newPassword}</div>
                       ) : null}
                     </Col>
                   </Row>
 
                   <Row className="justify-content-center align-items-center py-2">
                     <Col xs={12} lg={4} className="text-lg-end fw-medium">
-                      Số điện thoại
+                      Xác nhận mật khẩu
                     </Col>
                     <Col>
                       <Field
-                        type="number"
-                        name="phoneNumber"
-                        placeholder="Số điện thoại"
+                        autoComplete="off"
+                        type="password"
+                        name="confirmPassword"
+                        placeholder="Nhập lại mật khẩu"
                         as={MyInput}
-                        // iconClassName="bi bi-person"
-                        // className="mb-3"
                       />
-                      {errors.phoneNumber ? (
-                        <div className="text-danger">{errors.phoneNumber}</div>
-                      ) : null}
-                    </Col>
-                  </Row>
 
-                  <Row className="justify-content-center align-items-center py-2">
-                    <Col xs={12} lg={4} className="text-lg-end fw-medium">
-                      Giới tính
-                    </Col>
-                    <Col>
-                      <Field
-                        as="select"
-                        name="gender"
-                        // component={customSelectionInput}
-                        className="form-control rounded-10px h-50px d-flex px-12px overflow-hidden "
-                      >
-                        <option value="MALE">Nam</option>
-                        <option value="FEMALE">Nữ</option>
-                      </Field>
+                      {errors.confirmPassword ? (
+                        <div className="text-danger">
+                          {errors.confirmPassword}
+                        </div>
+                      ) : null}
                     </Col>
                   </Row>
 
@@ -235,4 +224,4 @@ const EditProfilePage: NextPage = () => {
   )
 }
 
-export default EditProfilePage
+export default ChangePasswordPage

@@ -56,6 +56,9 @@ const JoiningPage: NextPage = () => {
           refreshToken: 'string',
           accessToken: 'string',
         },
+        email: '',
+        gender: '',
+        phoneNumber: '',
       },
     }
     gameLobby.players.push(p)
