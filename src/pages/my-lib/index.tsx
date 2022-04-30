@@ -1,30 +1,17 @@
 import { NextPage } from 'next'
 import React, { useState } from 'react'
 import { Col, Container, Row } from 'react-bootstrap'
-import { io } from 'socket.io-client'
 import useSWR from 'swr'
-import Cookies from 'universal-cookie'
 import MenuBar from '../../components/MenuBar/MenuBar'
 import MyButton from '../../components/MyButton/MyButton'
 import NavBar from '../../components/NavBar/NavBar'
 import { useAuthNavigation } from '../../hooks/useAuthNavigation/useAuthNavigation'
-import { useLocalStorage } from '../../hooks/useLocalStorage/useLocalStorage'
 import { get } from '../../libs/api'
-import {
-  TApiResponse,
-  TPaginationResponse,
-  TQuiz,
-  TStartQuizRequest,
-  TUser,
-} from '../../types/types'
-import { API_URL, homeMenuOptions } from '../../utils/constants'
-import { JsonParse } from '../../utils/helper'
-
-const socket = io(`${API_URL}/games`, { transports: ['websocket'] })
+import { TApiResponse, TPaginationResponse, TQuiz } from '../../types/types'
+import { homeMenuOptions } from '../../utils/constants'
 
 const MyLibPage: NextPage = () => {
   const [isExpand, setIsExpand] = useState<boolean>(true)
-  const [userLS] = useLocalStorage('user', '')
   const authNavigate = useAuthNavigation()
 
   const params = {
@@ -37,31 +24,6 @@ const MyLibPage: NextPage = () => {
   const { data, isValidating } = useSWR<
     TApiResponse<TPaginationResponse<TQuiz>>
   >(['/api/quizzes/my-quizzes', true, params], get)
-
-  // const handleStartQuiz = (quizId: number) => {
-  //   try {
-  //     const cookies = new Cookies()
-  //     const accessToken = cookies.get('access-token')
-
-  //     const user: TUser = JsonParse(userLS)
-
-  //     const msg: TStartQuizRequest = {
-  //       quizId: quizId,
-  //       userId: user.id,
-  //       gameMode: '10CLASSIC',
-  //       token: accessToken,
-  //     }
-  //     console.log('handleStartQuiz - msg', msg)
-
-  //     socket.emit('start-quiz', msg)
-
-  //     socket.on('start-quiz', (data) => {
-  //       console.log('socket.on - data', data)
-  //     })
-  //   } catch (error) {
-  //     console.log('handleStartQuiz - error', error)
-  //   }
-  // }
 
   return (
     <>
@@ -94,7 +56,7 @@ const MyLibPage: NextPage = () => {
                       <MyButton
                         className="text-white mt-3 w-100"
                         onClick={() =>
-                          authNavigate.navigate(`/lobby?quizId=${quiz.id}`)
+                          authNavigate.navigate(`/host?quizId=${quiz.id}`)
                         }
                       >
                         Bắt đầu ngay

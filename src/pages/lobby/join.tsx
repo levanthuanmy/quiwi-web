@@ -1,85 +1,80 @@
 import { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
-import { Button, Image } from 'react-bootstrap'
+import { Form, Image } from 'react-bootstrap'
+import Cookies from 'universal-cookie'
+import MyButton from '../../components/MyButton/MyButton'
 import MyInput from '../../components/MyInput/MyInput'
 import { useLocalStorage } from '../../hooks/useLocalStorage/useLocalStorage'
-import { TGameLobby, TPlayer } from '../../types/types'
+import { useSocket } from '../../hooks/useSocket/useSocket'
+import { TJoinQuizResponse } from '../../types/types'
+import { JsonParse } from '../../utils/helper'
 
 const JoiningPage: NextPage = () => {
   const router = useRouter()
 
-  const { invitationCode } = router.query
+  const invitationCode = router.query?.invitationCode?.toString() || ''
   // eslint-disable-next-line no-unused-vars
   const [lsGameSession, setLsGameSession] = useLocalStorage('game-session', '')
   // eslint-disable-next-line no-unused-vars
   const [lsPlayer, setLsPlayer] = useLocalStorage('game-session-player', '')
-  const [nickname, setNickName] = useState('')
+  const [nickname, setNickName] = useState<string>('')
+  const [lsUser] = useLocalStorage('user', '')
+  const { socket } = useSocket()
 
   const handleOnClick = () => {
-    if (!nickname) {
-      console.log('Nhập đi')
-      alert('Nhập nickname mày')
-      return
-    }
+    try {
+      if (!nickname) {
+        alert('Nhập nickname mày')
+        return
+      }
 
-    // phần này get socket trả về game lobby và player
-    const gameLobby: TGameLobby = {
-      hostId: 1,
-      invitationCode: (invitationCode as string) ?? 'con chó mỹ',
-      quizId: 1,
-      time: -1,
-      mode: '10CLASSIC',
-      players: [],
-      status: '00WAITING',
-    }
+      const cookies = new Cookies()
+      const accessToken: string = cookies.get('access-token')
 
-    const p: TPlayer = {
-      id: 3,
-      gameLobbyId: 1,
-      nickname: 'naruto',
-      score: 0,
-      userId: 1,
-      user: {
-        avatar:
-          'https://www.pngitem.com/pimgs/m/650-6502360_8-bit-naruto-pixel-art-hd-png-download.png',
-        id: 1,
-        name: 'Con chó Mỹ',
-        username: 'conchomy',
-        role: 'user',
-        isBanned: false,
-        isLocked: false,
-        isVerified: false,
-        coin: 0,
-        token: {
-          expiredIn: 'string',
-          refreshToken: 'string',
-          accessToken: 'string',
-        },
-        email: '',
-        gender: '',
-        phoneNumber: '',
-      },
+      let joinRoomRequest: Record<string, string | number> = {
+        nickname,
+        invitationCode,
+      }
+
+      if (accessToken?.length) {
+        const userId: number = JsonParse(lsUser)['id']
+        joinRoomRequest.token = accessToken
+        joinRoomRequest.userId = userId
+      }
+
+      socket.connect()
+
+      socket.emit('join-room', joinRoomRequest)
+
+      socket.on('joined-quiz', (data: TJoinQuizResponse) => {
+        console.log('socket.on - data', data)
+
+        setLsGameSession(JSON.stringify(data.gameLobby))
+        setLsPlayer(JSON.stringify(data.player))
+
+        router.push(`/lobby?quizId=${data.gameLobby.quizId}`)
+      })
+    } catch (error) {
+      console.log('handleOnClick - error', error)
     }
-    gameLobby.players.push(p)
-    setLsGameSession(JSON.stringify(gameLobby))
-    setLsPlayer(JSON.stringify(p))
-    router.push('/lobby?quizId=' + gameLobby.quizId)
   }
 
   return (
     <div className="bg-secondary fw-medium bg-opacity-25 min-vh-100 d-flex flex-column justify-content-center align-items-center">
-      <div className="my-3">
-        <Image
-          src="/assets/logo-text.png"
-          width={133}
-          height={39}
-          alt="text-logo"
-        />
-      </div>
+      <div className="bg-white px-3 py-5 rounded-20px shadow-sm">
+        <div className="mb-5 text-center">
+          <Image
+            src="/assets/logo-text.png"
+            width={133}
+            height={39}
+            alt="text-logo"
+          />
+        </div>
 
-      <div className="">
-        <div className="mb-2 text-center">Nhập tên hiển thị của bạn (50 ký tự)</div>
+        <Form.Label className="mb-3 text-center">
+          Nhập tên hiển thị của bạn (tối đa 50 ký tự)
+        </Form.Label>
 
         <MyInput
           onChange={(e) => {
@@ -88,14 +83,9 @@ const JoiningPage: NextPage = () => {
           maxLength={50}
           placeholder="Nhập tên hiển thị"
         />
-      </div>
-      <div className="p-12px mb-3">
-        <Button
-          onClick={handleOnClick}
-          className="rounded-20px px-32px py-12px h-50px"
-        >
-          <span className="text-white fw-medium">VÀO PHÒNG</span>
-        </Button>
+        <MyButton onClick={handleOnClick} className="mt-3 text-white w-100">
+          Vào ngay
+        </MyButton>
       </div>
     </div>
   )
