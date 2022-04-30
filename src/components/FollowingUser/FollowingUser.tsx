@@ -17,7 +17,7 @@ const FollowingUser: FC<{
 
   const renderList = () => {
     if (followingUsers?.items.length === 0) {
-      return <div>Bạn chưa theo dõi ai</div>
+      return <div>Chưa có người theo dõi</div>
     }
     return followingUsers?.items.map((user, idx) => {
       return (
@@ -69,17 +69,16 @@ const FollowingUser: FC<{
     })
   }
   return (
-    <Col className={`py-1 rounded-20px cursor-pointer`}>
-      <div
+    <Col className={`py-1 `}>
+      <span
+        className="cursor-pointer"
         onClick={() => {
           setShowModal(true)
         }}
       >
-        <div>
-          <span className="fw-medium">{followingUsers?.items.length ?? 0}</span> {' '}
-          đang theo dõi
-        </div>
-      </div>
+        <span className="fw-medium">{followingUsers?.items.length ?? 0}</span>{' '}
+        đang theo dõi
+      </span>
 
       <FollowUserModal
         show={showModal}
