@@ -1,15 +1,15 @@
 import { useRouter } from 'next/router'
-import Cookies from 'universal-cookie'
+import { useRecoilValue } from 'recoil'
+import { isAuthState } from '../../atoms/auth'
 import { useLocalStorage } from '../useLocalStorage/useLocalStorage'
 
 export const useAuthNavigation = () => {
+  const isAuth = useRecoilValue(isAuthState)
   const router = useRouter()
   const [prevRoute, setPrevRoute] = useLocalStorage('prev-route', '/')
-  const cookies = new Cookies()
-  const accessToken = cookies.get('access-token')
 
   const navigate = (navigateTo: string) => {
-    if (!accessToken || !accessToken.length) {
+    if (!isAuth) {
       setPrevRoute(navigateTo)
       router.push(`/sign-in`)
     } else {

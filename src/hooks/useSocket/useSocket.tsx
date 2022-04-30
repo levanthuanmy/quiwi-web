@@ -14,6 +14,7 @@ export const SocketProvider = ({ children }: { children?: ReactNode }) => {
   const [socket] = useState(
     io(`${API_URL}/games`, { transports: ['websocket'] })
   )
+  console.log('SocketProvider - socket', socket.id)
 
   return (
     <SocketContext.Provider value={{ socket }}>
