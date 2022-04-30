@@ -34,7 +34,7 @@ const get = async <T>(
       console.log('error.response.data', error.response.data)
       console.log('error.response.status', error.response.status)
       console.log('error.response.headers', error.response.headers)
-      throw error.response.data.error
+      throw error.response.data
     } else if (error.request) {
       // The request was made but no response was received
       // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
@@ -71,7 +71,7 @@ const post = async <T>(
       console.log(error.response?.data?.error?.details)
       console.log(error.response.status)
       console.log(error.response.headers)
-      throw error.response.data.error
+      throw error.response.data
     } else if (error.request) {
       // The request was made but no response was received
       // `error.request` is an instance of XMLHttpRequest in the browser and an instance of

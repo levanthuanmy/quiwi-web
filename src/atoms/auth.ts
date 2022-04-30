@@ -17,6 +17,9 @@ const defaultUserState: TUser = {
     accessToken: '',
   },
   username: '',
+  email: '',
+  gender: '',
+  phoneNumber: ''
 }
 
 const userState = atom<TUser>({

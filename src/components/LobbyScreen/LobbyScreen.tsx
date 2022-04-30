@@ -12,15 +12,15 @@ type LobbyScreenProps = {
   invitationCode: string
   gameSession: TStartQuizResponse
   isHost: boolean
-  players: TPlayer[]
+  // players: TPlayer[]
 }
 const LobbyScreen: FC<LobbyScreenProps> = ({
   gameSession,
   invitationCode,
   isHost,
-  players,
+  // players,
 }) => {
-  const [playerList, setPlayerList] = useState<TPlayer[]>(players)
+  const [playerList, setPlayerList] = useState<TPlayer[]>([])
   const { socket } = useSocket()
   const [lsGameSession, setLsGameSession] = useLocalStorage('game-session', '')
   const router = useRouter()
@@ -29,25 +29,37 @@ const LobbyScreen: FC<LobbyScreenProps> = ({
     try {
       const gameSession: TStartQuizResponse = JsonParse(lsGameSession)
 
+      const lsPlayers: TPlayer[] = [...gameSession.players]
+      setPlayerList(lsPlayers)
+
       socket.on('new-player', (data) => {
         console.log('new-player', data)
-        setPlayerList((prev) => [...prev, data.newPlayer])
-        gameSession.players = [...playerList, data.newPlayer]
+
+        const newPlayerList: TPlayer[] = [...lsPlayers, data.newPlayer]
+        setPlayerList(newPlayerList)
+        gameSession.players = newPlayerList
         setLsGameSession(JSON.stringify(gameSession))
       })
 
       socket.on('player-left', (data) => {
         console.log('player-left', data)
+
         let _players = [...playerList]
         _.remove(_players, (player) => player.id === data.id)
         setPlayerList(_players)
-        gameSession.players = _players
+        gameSession.players = [..._players]
         setLsGameSession(JSON.stringify(gameSession))
+      })
+
+      socket.on('host-out', () => {
+        localStorage.removeItem('game-session')
+        localStorage.removeItem('game-session-player')
+        router.push('/')
       })
     } catch (error) {
       console.log('useEffect - error', error)
     }
-  }, [socket])
+  }, [socket, lsGameSession])
 
   const handleLeaveRoom = () => {
     localStorage.removeItem('game-session')

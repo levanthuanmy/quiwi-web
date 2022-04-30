@@ -9,6 +9,9 @@ export type TUser = {
   role: string
   token: TToken
   username: string
+  phoneNumber: string
+  gender: string
+  email: string
 }
 
 export type TToken = {

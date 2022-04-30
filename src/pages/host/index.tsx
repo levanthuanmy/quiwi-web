@@ -134,7 +134,7 @@ const HostPage: NextPage = () => {
           gameSession={gameSession}
           invitationCode={invitationCode}
           isHost
-          players={gameSession.players}
+          // players={gameSession.players}
         />
       )}
     </>
