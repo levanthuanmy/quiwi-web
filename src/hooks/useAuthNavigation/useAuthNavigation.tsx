@@ -6,9 +6,10 @@ export const useAuthNavigation = () => {
   const router = useRouter()
   const [prevRoute, setPrevRoute] = useLocalStorage('prev-route', '/')
   const cookies = new Cookies()
+  const accessToken = cookies.get('access-token')
 
   const navigate = (navigateTo: string) => {
-    if (!cookies.get('access-token') || !cookies.get('access-token').length) {
+    if (!accessToken || !accessToken.length) {
       setPrevRoute(navigateTo)
       router.push(`/sign-in`)
     } else {
