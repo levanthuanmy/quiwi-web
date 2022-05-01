@@ -87,6 +87,7 @@ export type TPaginationResponse<T> = {
   pageSize: number
   pageIndex: number
   totalItems: number
+  totalPages: number
   hasPrevPage: boolean
   hasNextPage: boolean
 }
@@ -97,4 +98,23 @@ export type TUserProfile = {
   quests: []
   totalFollower: number
   totalFollowing: number
+}
+
+export type TItemCategory = {
+  id: number
+  name: string
+  createdAt: Date
+  updatedAt: Date
+}
+
+export type TItem = {
+  id: number
+  name: string
+  avatar: string
+  type: string
+  description: string
+  price: number
+  itemCategory: TItemCategory
+  createdAt: Date
+  updatedAt: Date
 }
