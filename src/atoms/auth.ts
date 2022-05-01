@@ -19,7 +19,7 @@ const defaultUserState: TUser = {
   username: '',
   email: '',
   gender: '',
-  phoneNumber: ''
+  phoneNumber: '',
 }
 
 const userState = atom<TUser>({
@@ -41,12 +41,18 @@ const userState = atom<TUser>({
   ],
 })
 
-const userTokensState = selector({
-  key: 'userTokensState',
+const isAuthState = selector<boolean>({
+  key: 'isAuthState',
   get: ({ get }) => {
     const user = get(userState)
-    return user.token
+    const cookies = new Cookies()
+    const accessTokenCookie: string = cookies.get('access-token')
+    const accessToken: string = user.token.accessToken
+
+    const isAuth =
+      Boolean(accessTokenCookie.length) || Boolean(accessToken.length)
+    return isAuth
   },
 })
 
-export { userState, userTokensState }
+export { userState, isAuthState }

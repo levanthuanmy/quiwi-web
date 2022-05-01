@@ -4,31 +4,32 @@ import { Dropdown, Image, Spinner } from 'react-bootstrap'
 import useSWR from 'swr'
 import Cookies from 'universal-cookie'
 import { useAuthNavigation } from '../../hooks/useAuthNavigation/useAuthNavigation'
+import { useLocalStorage } from '../../hooks/useLocalStorage/useLocalStorage'
+import { useSocket } from '../../hooks/useSocket/useSocket'
 import { get } from '../../libs/api'
-import { TApiResponse, TUserProfile } from '../../types/types'
+import { TApiResponse, TUser, TUserProfile } from '../../types/types'
+import { JsonParse } from '../../utils/helper'
 
 const Avatar: FC = () => {
   const router = useRouter()
   const cookies = new Cookies()
-  const [shouldFetch, setShouldFetch] = useState<boolean>(false)
+  const [lsUser] = useLocalStorage('user', '')
+  const [user, setUser] = useState<TUser>()
   const authNavigation = useAuthNavigation()
-
-  const { data, isValidating } = useSWR<TApiResponse<TUserProfile>>(
-    shouldFetch ? ['/api/users/profile', true] : null,
-    get
-  )
+  const [isLoading, setIsLoading] = useState<boolean>(true)
+  const { socket } = useSocket()
 
   useEffect(() => {
-    const accessToken = String(cookies.get('access-token'))
-    if (accessToken && accessToken.length && accessToken !== 'undefined') {
-      setShouldFetch(true)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cookies.get('access-token')])
+    setIsLoading(true)
+    setUser(JsonParse(lsUser) as TUser)
+    setIsLoading(false)
+  }, [lsUser])
 
   const handleLogout = () => {
     cookies.remove('access-token')
     cookies.remove('refresh-token')
+    localStorage.removeItem('user')
+    socket.disconnect()
     router.push('/sign-in')
   }
 
@@ -36,9 +37,7 @@ const Avatar: FC = () => {
     <Dropdown id="avatar">
       <Dropdown.Toggle className="cursor-pointer p-1 rounded-pill">
         <Image
-          src={
-            '/assets/default-logo.png'
-          }
+          src={'/assets/default-logo.png'}
           width={30}
           height={30}
           alt="avatar"
@@ -46,10 +45,10 @@ const Avatar: FC = () => {
         />
 
         <span className="text-white ps-2 pe-1 fw-medium">
-          {isValidating ? (
+          {isLoading ? (
             <Spinner animation="border" variant="light" size="sm" />
           ) : (
-            data?.response.user.name || data?.response.user.username || 'Guest'
+            user?.name || user?.username || 'Khách'
           )}
         </span>
       </Dropdown.Toggle>
@@ -61,7 +60,7 @@ const Avatar: FC = () => {
             height={20}
             alt="coin"
           />
-          {data?.response.user.coin}
+          {user?.coin}
         </div>
         <Dropdown.Item
           eventKey="0"

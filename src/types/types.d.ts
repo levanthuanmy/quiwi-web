@@ -52,26 +52,30 @@ export type TQuiz = {
   gameLobby: GameLobby[]
 }
 
-export type TGameLobby = {
-  id?: number
-  players: TPlayer[]
-  // quiz: Quiz
-  quizId: number
-  host?: User
-  hostId: number
-  mode: string
-  time: number
-  invitationCode: string
-  status: string
-  gameMode?: BaseGameMode
-}
+export type TGameModeEnum = '10CLASSIC' | '20MRT'
+
+export type TGameStatus = '00WAITING' | '10PLAYING' | '20END'
 
 export type TStartQuizRequest = {
   userId: number
   quizId: number
-  gameMode: string
+  mode: TGameModeEnum
   deadline?: number
   token?: string
+}
+
+export type TStartQuizResponse = {
+  gameMode: {
+    curIndexQuestion: number
+  }
+  mode: TGameModeEnum
+  host: TUser
+  hostId: number
+  invitationCode: string
+  players: TPlayer[]
+  quiz: TQuiz
+  quizId: number
+  status: TGameStatus
 }
 
 export type TFollowUsers = {
@@ -117,4 +121,17 @@ export type TItem = {
   itemCategory: TItemCategory
   createdAt: Date
   updatedAt: Date
+}
+
+export type TJoinQuizResponse = {
+  gameLobby: TStartQuizResponse
+  player: TPlayer
+}
+
+export type TNewPlayerResponse = {
+  newPlayer: {
+    nickname: string
+    score: number
+    currentStreak: number
+  }
 }

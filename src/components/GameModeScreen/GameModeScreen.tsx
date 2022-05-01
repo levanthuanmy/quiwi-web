@@ -1,20 +1,21 @@
 import classNames from 'classnames'
 import { Dispatch, FC, SetStateAction } from 'react'
 import { Col, Row } from 'react-bootstrap'
-import styles from './GameMode.module.css'
+import { TGameModeEnum } from '../../types/types'
+import styles from './GameModeScreen.module.css'
 
-type GameModeProps = {
+type GameModeScreenProps = {
   //   title: string
-  setGameMode: Dispatch<SetStateAction<string>>
+  setGameMode: Dispatch<SetStateAction<TGameModeEnum | undefined>>
 }
 
-type TGameMode = {
-  mode: string
+type TGameModeOption = {
+  mode: TGameModeEnum
   label: string
 }
 
-const GameMode: FC<GameModeProps> = ({ setGameMode }) => {
-  const modes: TGameMode[] = [
+const GameModeScreen: FC<GameModeScreenProps> = ({ setGameMode }) => {
+  const modes: TGameModeOption[] = [
     {
       mode: '10CLASSIC',
       label: 'Truyền thống',
@@ -29,6 +30,7 @@ const GameMode: FC<GameModeProps> = ({ setGameMode }) => {
     const mode = modes[idx]
     setGameMode(mode.mode)
   }
+
   return (
     <div className="min-vh-100 d-flex flex-column justify-content-center align-items-center bg-secondary bg-opacity-10">
       <div className="fs-48px mb-5">Chọn chế độ chơi</div>
@@ -74,4 +76,4 @@ const GameMode: FC<GameModeProps> = ({ setGameMode }) => {
   )
 }
 
-export default GameMode
+export default GameModeScreen
