@@ -55,9 +55,9 @@ const MyLibPage: NextPage = () => {
                       </div>
                       <MyButton
                         className="text-white mt-3 w-100"
-                        onClick={() =>
+                        onClick={(e) => {
                           authNavigate.navigate(`/host?quizId=${quiz.id}`)
-                        }
+                        }}
                       >
                         Bắt đầu ngay
                       </MyButton>
