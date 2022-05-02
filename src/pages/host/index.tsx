@@ -8,10 +8,11 @@ import GameModeScreen from '../../components/GameModeScreen/GameModeScreen'
 import LobbyScreen from '../../components/LobbyScreen/LobbyScreen'
 import { useLocalStorage } from '../../hooks/useLocalStorage/useLocalStorage'
 import { useSocket } from '../../hooks/useSocket/useSocket'
-import { get } from '../../libs/api'
+import { get, post } from '../../libs/api'
 import {
   TApiResponse,
   TGameModeEnum,
+  TGamePlayBodyRequest,
   TQuiz,
   TStartQuizRequest,
   TStartQuizResponse,
@@ -91,7 +92,7 @@ const HostPage: NextPage = () => {
     }
   }, [gameModeEnum, isShowGameModeScreen])
 
-  const handleStartQuiz = (
+  const handleStartQuiz = async (
     quizId: number,
     mode: TGameModeEnum,
     userId: number
@@ -108,17 +109,32 @@ const HostPage: NextPage = () => {
         token: accessToken,
       }
 
-      socket.connect()
+      const body: TGamePlayBodyRequest<TStartQuizRequest> = {
+        socketId: socket.id,
+        data: msg,
+      }
 
-      socket.emit('start-quiz', msg)
+      const response: TApiResponse<TStartQuizResponse> = await post(
+        'api/games/start-quiz',
+        {},
+        body,
+        true
+      )
 
-      socket.on('start-quiz', (data: TStartQuizResponse) => {
-        console.log('socket.on - data', data)
+      const quiz = response.response
+      setLsGameSession(JSON.stringify(quiz))
+      setGameSession(quiz)
+      setInvitationCode(quiz.invitationCode)
 
-        setLsGameSession(JSON.stringify(data))
-        setGameSession(data)
-        setInvitationCode(data.invitationCode)
-      })
+      // socket.emit('start-quiz', msg)
+
+      // socket.on('start-quiz', (data: TStartQuizResponse) => {
+      //   console.log('socket.on - data', data)
+
+      //   setLsGameSession(JSON.stringify(data))
+      //   setGameSession(data)
+      //   setInvitationCode(data.invitationCode)
+      // })
     } catch (error) {
       console.log('handleStartQuiz - error', error)
     } finally {

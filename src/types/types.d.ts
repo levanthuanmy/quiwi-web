@@ -135,3 +135,8 @@ export type TNewPlayerResponse = {
     currentStreak: number
   }
 }
+
+export type TGamePlayBodyRequest<T> = {
+  socketId: string
+  data: T
+}

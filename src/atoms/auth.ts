@@ -50,7 +50,7 @@ const isAuthState = selector<boolean>({
     const accessToken: string = user.token.accessToken
 
     const isAuth =
-      Boolean(accessTokenCookie.length) || Boolean(accessToken.length)
+      Boolean(accessTokenCookie?.length) || Boolean(accessToken?.length)
     return isAuth
   },
 })
