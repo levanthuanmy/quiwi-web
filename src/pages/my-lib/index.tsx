@@ -4,6 +4,7 @@ import { Col, Container, Row } from 'react-bootstrap'
 import useSWR from 'swr'
 import MenuBar from '../../components/MenuBar/MenuBar'
 import MyButton from '../../components/MyButton/MyButton'
+import MyModal from '../../components/MyModal/MyModal'
 import NavBar from '../../components/NavBar/NavBar'
 import { useAuthNavigation } from '../../hooks/useAuthNavigation/useAuthNavigation'
 import { get } from '../../libs/api'
@@ -39,6 +40,18 @@ const MyLibPage: NextPage = () => {
           style={{ paddingLeft: isExpand ? 240 : 48 }}
           className="w-100 transition-all-150ms bg-secondary bg-opacity-10"
         >
+          <MyModal
+            show={true}
+            onHide={() => null}
+            header={<div className="h3">day la header</div>}
+            // activeButtonTitle="hello"
+            inActiveButtonTitle="goodbye"
+            // activeButtonCallback={() => {}}
+            // inActiveButtonCallback={() => {}}
+          >
+            day la content ben trong
+          </MyModal>
+
           <Container fluid="lg" className="p-3">
             {isValidating ? (
               'fetching...'
