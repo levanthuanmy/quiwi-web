@@ -23,38 +23,28 @@ const defaultUserState: TUser = {
 }
 
 const userState = atom<TUser | undefined>({
-  key: 'userState',
+  key: 'USER_STATE',
   default: defaultUserState,
   effects: [
     ({ onSet }) => {
-      const cookies = new Cookies()
-      onSet((newUser) => {
-        if (newUser !== undefined) {
-          cookies.set('access-token', newUser.token.accessToken)
-          cookies.set('refresh-token', newUser.token.refreshToken)
+      try {
+        const cookies = new Cookies()
+        onSet((newUser) => {
+          if (newUser !== undefined) {
+            cookies.set('access-token', newUser.token.accessToken)
+            cookies.set('refresh-token', newUser.token.refreshToken)
 
-          localStorage.setItem(
-            'user',
-            JSON.stringify({ ...newUser, token: undefined })
-          )
-        }
-      })
+            localStorage.setItem(
+              'user',
+              JSON.stringify({ ...newUser, token: undefined })
+            )
+          }
+        })
+      } catch (error) {
+        console.log('error', error)
+      }
     },
   ],
 })
 
-const isAuthState = selector<boolean>({
-  key: 'isAuthState',
-  get: ({ get }) => {
-    const user = get(userState)
-    const cookies = new Cookies()
-    const accessTokenCookie: string = cookies.get('access-token') || ''
-    const accessToken: string = user?.token.accessToken || ''
-
-    const isAuth =
-      Boolean(accessTokenCookie?.length) || Boolean(accessToken?.length)
-    return isAuth
-  },
-})
-
-export { userState, isAuthState }
+export { userState }

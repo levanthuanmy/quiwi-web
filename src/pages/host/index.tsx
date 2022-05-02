@@ -49,7 +49,7 @@ const HostPage: NextPage = () => {
 
     if (quizId && !isFetchingQuiz && (!quiz || fetchingQuizError)) {
       alert('Không tìm thấy quiz')
-      router.back()
+      // router.back()
     } else {
       const user: TUser = JsonParse(lsUser)
       const isHost = user.id === quiz?.userId
@@ -68,8 +68,6 @@ const HostPage: NextPage = () => {
           // hiện thị chọn game mode rồi tạo game session lưu xuống ls
           setIsShowGameModeScreen(true)
         }
-      } else if (!isHost) {
-        router.back()
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

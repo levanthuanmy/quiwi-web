@@ -11,14 +11,17 @@ import '../styles/border.css'
 import '../styles/typography.css'
 import { RecoilRoot } from 'recoil'
 import { SocketProvider } from '../hooks/useSocket/useSocket'
+import { AuthNavigationProvider } from '../hooks/useAuthNavigation/useAuthNavigation'
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <RecoilRoot>
       <SSRProvider>
         <SocketProvider>
-          <MyHead />
-          <Component {...pageProps} />
+          <AuthNavigationProvider>
+            <MyHead />
+            <Component {...pageProps} />
+          </AuthNavigationProvider>
         </SocketProvider>
       </SSRProvider>
     </RecoilRoot>
