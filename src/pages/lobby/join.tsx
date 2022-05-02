@@ -3,12 +3,24 @@ import { useRouter } from 'next/router'
 import { useState } from 'react'
 import { Form, Image } from 'react-bootstrap'
 import Cookies from 'universal-cookie'
+import { number } from 'yup'
 import MyButton from '../../components/MyButton/MyButton'
 import MyInput from '../../components/MyInput/MyInput'
 import { useLocalStorage } from '../../hooks/useLocalStorage/useLocalStorage'
 import { useSocket } from '../../hooks/useSocket/useSocket'
-import { TJoinQuizResponse } from '../../types/types'
+import { post } from '../../libs/api'
+import {
+  TApiResponse,
+  TGamePlayBodyRequest,
+  TJoinQuizResponse,
+} from '../../types/types'
 import { JsonParse } from '../../utils/helper'
+
+type TJoinQuizRequest = {
+  userId?: number
+  nickname: string
+  invitationCode: string
+}
 
 const JoiningPage: NextPage = () => {
   const router = useRouter()
@@ -22,7 +34,7 @@ const JoiningPage: NextPage = () => {
   const [lsUser] = useLocalStorage('user', '')
   const { socket } = useSocket()
 
-  const handleOnClick = () => {
+  const handleOnClick = async () => {
     try {
       if (!nickname) {
         alert('Nhập nickname mày')
@@ -32,31 +44,50 @@ const JoiningPage: NextPage = () => {
       const cookies = new Cookies()
       const accessToken: string = cookies.get('access-token')
 
-      let joinRoomRequest: Record<string, string | number> = {
+      let joinRoomRequest: TJoinQuizRequest = {
         nickname,
         invitationCode,
       }
 
+      const body: TGamePlayBodyRequest<TJoinQuizRequest> = {
+        socketId: socket.id,
+        data: joinRoomRequest,
+      }
+
       if (accessToken?.length) {
         const userId: number = JsonParse(lsUser)['id']
-        joinRoomRequest.token = accessToken
+        // joinRoomRequest.token = accessToken
         joinRoomRequest.userId = userId
       }
 
       socket.connect()
 
-      socket.emit('join-room', joinRoomRequest)
+      const response: TApiResponse<TJoinQuizResponse> = await post(
+        'api/games/join-room',
+        {},
+        body,
+        true
+      )
 
-      socket.on('joined-quiz', (data: TJoinQuizResponse) => {
-        console.log('socket.on - data', data)
+      const data = response.response
+      setLsGameSession(JSON.stringify(data.gameLobby))
+      setLsPlayer(JSON.stringify(data.player))
+      router.push(`/lobby?quizId=${data.gameLobby.quizId}`)
 
-        setLsGameSession(JSON.stringify(data.gameLobby))
-        setLsPlayer(JSON.stringify(data.player))
+      // socket.emit('join-room', joinRoomRequest)
+      // console.log('==== ~ handleOnClick ~ joinRoomRequest', joinRoomRequest)
 
-        router.push(`/lobby?quizId=${data.gameLobby.quizId}`)
-      })
+      // socket.on('joined-quiz', (data: TJoinQuizResponse) => {
+      //   console.log('socket.on - data', data)
+
+      //   setLsGameSession(JSON.stringify(data.gameLobby))
+      //   setLsPlayer(JSON.stringify(data.player))
+
+      //   router.push(`/lobby?quizId=${data.gameLobby.quizId}`)
+      // })
     } catch (error) {
-      console.log('handleOnClick - error', error)
+      console.log('Join quiz - error', error)
+      alert((error as Error).message)
     }
   }
 
