@@ -1,13 +1,13 @@
 import { useRouter } from 'next/router'
 import { FC, useEffect, useState } from 'react'
 import { Dropdown, Image, Spinner } from 'react-bootstrap'
-import useSWR from 'swr'
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 import Cookies from 'universal-cookie'
+import { isAuthState, userState } from '../../atoms/auth'
 import { useAuthNavigation } from '../../hooks/useAuthNavigation/useAuthNavigation'
 import { useLocalStorage } from '../../hooks/useLocalStorage/useLocalStorage'
 import { useSocket } from '../../hooks/useSocket/useSocket'
-import { get } from '../../libs/api'
-import { TApiResponse, TUser, TUserProfile } from '../../types/types'
+import { TUser } from '../../types/types'
 import { JsonParse } from '../../utils/helper'
 
 const Avatar: FC = () => {
@@ -18,19 +18,24 @@ const Avatar: FC = () => {
   const authNavigation = useAuthNavigation()
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const { socket } = useSocket()
+  const [atomUser, setAtomUser] = useRecoilState(userState)
+  const isAuth = useRecoilValue(isAuthState)
 
   useEffect(() => {
     setIsLoading(true)
-    setUser(JsonParse(lsUser) as TUser)
+
+    const storageUser: TUser = JsonParse(lsUser)
+    setUser(atomUser || storageUser)
+
     setIsLoading(false)
-  }, [lsUser])
+  }, [lsUser, atomUser])
 
   const handleLogout = () => {
     cookies.remove('access-token')
     cookies.remove('refresh-token')
     localStorage.removeItem('user')
     socket.disconnect()
-    router.push('/sign-in')
+    setAtomUser(undefined)
   }
 
   return (
@@ -47,8 +52,10 @@ const Avatar: FC = () => {
         <span className="text-white ps-2 pe-1 fw-medium">
           {isLoading ? (
             <Spinner animation="border" variant="light" size="sm" />
+          ) : isAuth ? (
+            user?.name || user?.username
           ) : (
-            user?.name || user?.username || 'Khách'
+            'Khách'
           )}
         </span>
       </Dropdown.Toggle>
@@ -71,10 +78,10 @@ const Avatar: FC = () => {
         </Dropdown.Item>
         <Dropdown.Item
           eventKey="1"
-          onClick={handleLogout}
+          onClick={isAuth ? handleLogout : () => router.push('/sign-in')}
           className="px-3 py-2"
         >
-          Đăng xuất
+          {isAuth ? 'Đăng xuất' : 'Đăng nhập'}
         </Dropdown.Item>
       </Dropdown.Menu>
     </Dropdown>
