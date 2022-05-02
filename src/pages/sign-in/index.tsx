@@ -18,7 +18,7 @@ type SignInForm = {
 const SignInPage: NextPage = () => {
   const router = useRouter()
   const initialValues: SignInForm = { username: '', password: '' }
-  const setUser = useSetRecoilState<TUser>(userState)
+  const setUser = useSetRecoilState(userState)
   const authNavigate = useAuthNavigation()
 
   const onSignIn = async (

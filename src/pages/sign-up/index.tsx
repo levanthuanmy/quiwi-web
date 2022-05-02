@@ -19,7 +19,7 @@ type SignUpForm = {
 const SignUpPage: NextPage = () => {
   const router = useRouter()
   const initialValues: SignUpForm = { username: '', password: '' }
-  const setUser = useSetRecoilState<TUser>(userState)
+  const setUser = useSetRecoilState(userState)
   const authNavigate = useAuthNavigation()
 
   const onSignUp = async (

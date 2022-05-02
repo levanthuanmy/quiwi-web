@@ -9,6 +9,7 @@ export const useAuthNavigation = () => {
   const [prevRoute, setPrevRoute] = useLocalStorage('prev-route', '/')
 
   const navigate = (navigateTo: string) => {
+    console.log('navigate - isAuth', isAuth)
     if (!isAuth) {
       setPrevRoute(navigateTo)
       router.push(`/sign-in`)
