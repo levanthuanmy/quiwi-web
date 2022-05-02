@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { Col, Container, Form, Image, Row } from 'react-bootstrap'
 import { useSetRecoilState } from 'recoil'
 import * as Yup from 'yup'
-import { userState } from '../../atoms'
+import { userState } from '../../atoms/auth'
 import LeftProfileMenuBar from '../../components/LeftProfileMenuBar/LeftProfileMenuBar'
 import MyButton from '../../components/MyButton/MyButton'
 import MyInput from '../../components/MyInput/MyInput'
@@ -20,7 +20,7 @@ type PasswordForm = {
 
 const ChangePasswordPage: NextPage = () => {
   const [userResponse, setUserReponse] = useState<TUserProfile>()
-  const setUser = useSetRecoilState<TUser>(userState)
+  const setUser = useSetRecoilState(userState)
 
   useEffect(() => {
     const getUser = async () => {
@@ -69,7 +69,6 @@ const ChangePasswordPage: NextPage = () => {
       // setUser(res.response)
       // authNavigate.toPrevRoute()
     } catch (error) {
-      console.log('onUpdatingProfile - error', error)
       alert((error as Error)?.message)
     } finally {
       actions.setSubmitting(false)

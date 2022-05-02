@@ -22,20 +22,22 @@ const defaultUserState: TUser = {
   phoneNumber: '',
 }
 
-const userState = atom<TUser>({
+const userState = atom<TUser | undefined>({
   key: 'userState',
   default: defaultUserState,
   effects: [
     ({ onSet }) => {
       const cookies = new Cookies()
       onSet((newUser) => {
-        cookies.set('access-token', newUser.token.accessToken)
-        cookies.set('refresh-token', newUser.token.refreshToken)
+        if (newUser !== undefined) {
+          cookies.set('access-token', newUser.token.accessToken)
+          cookies.set('refresh-token', newUser.token.refreshToken)
 
-        localStorage.setItem(
-          'user',
-          JSON.stringify({ ...newUser, token: null })
-        )
+          localStorage.setItem(
+            'user',
+            JSON.stringify({ ...newUser, token: undefined })
+          )
+        }
       })
     },
   ],
@@ -46,8 +48,8 @@ const isAuthState = selector<boolean>({
   get: ({ get }) => {
     const user = get(userState)
     const cookies = new Cookies()
-    const accessTokenCookie: string = cookies.get('access-token')
-    const accessToken: string = user.token.accessToken
+    const accessTokenCookie: string = cookies.get('access-token') || ''
+    const accessToken: string = user?.token.accessToken || ''
 
     const isAuth =
       Boolean(accessTokenCookie?.length) || Boolean(accessToken?.length)
