@@ -40,7 +40,7 @@ const MyLibPage: NextPage = () => {
           style={{ paddingLeft: isExpand ? 240 : 48 }}
           className="w-100 transition-all-150ms bg-secondary bg-opacity-10"
         >
-          <MyModal
+          {/* <MyModal
             show={true}
             onHide={() => null}
             header={<div className="h3">day la header</div>}
@@ -50,7 +50,7 @@ const MyLibPage: NextPage = () => {
             // inActiveButtonCallback={() => {}}
           >
             day la content ben trong
-          </MyModal>
+          </MyModal> */}
 
           <Container fluid="lg" className="p-3">
             {isValidating ? (
