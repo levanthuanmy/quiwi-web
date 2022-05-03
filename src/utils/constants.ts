@@ -9,6 +9,7 @@ export const homeMenuOptions = [
   },
   { title: 'Khám phá', url: '/ex', iconClassName: 'bi bi-compass' },
   { title: 'Cửa hàng', url: '/items', iconClassName: 'bi bi-shop' },
+  { title: 'Nhiệm vụ', url: '/quests', iconClassName: 'bi bi-archive' },
 ]
 
 export const profileMenuOptions = [
