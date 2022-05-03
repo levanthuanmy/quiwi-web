@@ -104,3 +104,25 @@
 .object-fit-cover {
   object-fit: cover;
 }
+
+.tab-with-green {
+  color: #009883;
+  border-radius: 4px;
+}
+
+.active-tab-with-green, .active-tab-with-green:hover {
+  background-color: #009883;
+  color: white;
+  border-radius: 4px;
+}
+
+.tab-with-green:hover {
+  color: #009883;
+  background-color: #caf8f2;
+  border-radius: 4px;
+}
+
+.navbar-quest {
+  border: #009883;
+  border-style:solid;
+}
