@@ -1,5 +1,6 @@
 import React, { FC, useState } from 'react'
-import { Col, Image, Row } from 'react-bootstrap'
+import { Col, Image, Placeholder, Row } from 'react-bootstrap'
+import { TQuiz } from '../../types/types'
 import {
   getUrl,
   storage,
@@ -8,7 +9,12 @@ import {
 } from '../../utils/firebaseConfig'
 import QuestionActionButton from '../QuestionActionButton/QuestionActionButton'
 
-const CardQuizInfo: FC = () => {
+type CardQuizInfoProps = {
+  quiz: TQuiz | undefined
+  isValidating: boolean
+}
+
+const CardQuizInfo: FC<CardQuizInfoProps> = ({ quiz, isValidating }) => {
   const [bannerUrl, setBannerUrl] = useState<string>('')
 
   const handleUploadImage = async (evt: any) => {
@@ -57,17 +63,32 @@ const CardQuizInfo: FC = () => {
       </div>
       <Row className="d-flex pt-12px">
         <Col>
-          <div className="fw-medium fs-18px">Đây là tên của quiz</div>
+          <div className="fw-medium fs-18px">
+            <TextSkeletonLoading
+              content={quiz?.title}
+              isValidating={isValidating}
+            />
+          </div>
 
-          <div className="fs-14px text-secondary mt-3">
+          <div className="text-secondary mt-3">
+            <TextSkeletonLoading
+              content={quiz?.description}
+              isValidating={isValidating}
+            />
+          </div>
+
+          <div className="fs-14px text-secondary">
             <div>
               <i className="bi bi-eye me-2 fs-16px" />
-              Công khai
+              <TextSkeletonLoading
+                content={quiz?.isPublic ? 'Công khai' : 'Riêng tư'}
+                isValidating={isValidating}
+              />
             </div>
-            <div>
+            {/* <div>
               <i className="bi bi-journals me-2 fs-16px" />
               Toán học, Tư duy
-            </div>
+            </div> */}
           </div>
         </Col>
         <Col xs="auto">
@@ -79,3 +100,16 @@ const CardQuizInfo: FC = () => {
 }
 
 export default CardQuizInfo
+
+const TextSkeletonLoading: FC<{
+  isValidating: boolean
+  content: string | number | undefined
+}> = ({ isValidating, content }) => {
+  return isValidating ? (
+    <Placeholder animation="glow">
+      <Placeholder xs="12" />
+    </Placeholder>
+  ) : (
+    <>{content}</>
+  )
+}

@@ -48,7 +48,7 @@ export type TQuiz = {
   numPlayed: number
   numUpvotes: number
   numDownvotes: number
-  questions: Question[]
+  questions: TQuestion[]
   gameLobby: GameLobby[]
 }
 
@@ -139,4 +139,31 @@ export type TNewPlayerResponse = {
 export type TGamePlayBodyRequest<T> = {
   socketId: string
   data: T
+}
+
+export type TQuizBodyRequest = {
+  title: string
+  description: string
+  isPublic: boolean
+  isLocked: boolean
+  numPlayed: number
+  numUpvotes: number
+  numDownvotes: number
+  questions: TQuestionRequest[]
+}
+
+export type TQuestionRequest = {
+  question: string
+  type: '10SG' | '20MUL'
+  difficulty: number
+  duration: number
+  orderPosition: number
+  questionAnswers: TAnswerRequest[]
+}
+
+export type TAnswerRequest = {
+  answer: string
+  isCorrect: boolean
+  orderPosition: number
+  media: string
 }

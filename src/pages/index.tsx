@@ -7,6 +7,8 @@ import MyButton from '../components/MyButton/MyButton'
 import MyInput from '../components/MyInput/MyInput'
 import NavBar from '../components/NavBar/NavBar'
 import { useAuthNavigation } from '../hooks/useAuthNavigation/useAuthNavigation'
+import { post } from '../libs/api'
+import { TApiResponse, TQuiz, TQuizBodyRequest } from '../types/types'
 import { homeMenuOptions } from '../utils/constants'
 
 const Home: NextPage = () => {
@@ -21,6 +23,31 @@ const Home: NextPage = () => {
       return
     }
     router.push(`/lobby/join?invitationCode=${invitationCode}`)
+  }
+
+  const handleToQuizCreator = async () => {
+    try {
+      const body: TQuizBodyRequest = {
+        title: 'Quiz chưa có tên',
+        description: '',
+        isPublic: false,
+        isLocked: false,
+        numPlayed: 0,
+        numUpvotes: 0,
+        numDownvotes: 0,
+        questions: [],
+      }
+      const res = await post<TApiResponse<TQuiz>>(
+        `/api/quizzes`,
+        {},
+        body,
+        true
+      )
+
+      router.push(`/quiz/creator/${res.response.id}`)
+    } catch (error) {
+      console.log('handleToQuizCreator - error', error)
+    }
   }
 
   return (
@@ -74,9 +101,7 @@ const Home: NextPage = () => {
                     </div>
                     <MyButton
                       className="fw-medium text-white"
-                      onClick={() => {
-                        authNavigate.navigate('/quiz/creator')
-                      }}
+                      onClick={handleToQuizCreator}
                     >
                       Tạo mới ngay
                     </MyButton>
