@@ -32,19 +32,40 @@ const QuestPage: NextPage = () => {
         />
         <div style={{ paddingLeft: isExpand ? 240 : 48 }}
           className="w-100 transition-all-150ms" >
-          <Row className = "justify-content-md-center">
-            <Col sm = {8}>
-            <nav className="nav flex-column flex-sm-row ">
-                <a className={"flex-sm-fill text-sm-center nav-link navbar-quest " + (toggleState === 1 ? " active-tab-with-green " : " tab-with-green ")} onClick={() => setToggleState(1)}>Nhiệm vụ ngày</a>
-                <a className={"flex-sm-fill text-sm-center nav-link navbar-quest" + (toggleState === 2 ? " active-tab-with-green " : " tab-with-green ")} onClick={() => setToggleState(2)}>Nhiệm vụ tuần</a>
-                <a className={"flex-sm-fill text-sm-center nav-link navbar-quest" + (toggleState === 3 ? " active-tab-with-green " : " tab-with-green ")} onClick={() => setToggleState(3)}>Nhiệm vụ tháng</a>
-                <a className={"flex-sm-fill text-sm-center nav-link navbar-quest" + (toggleState === 4 ? " active-tab-with-green " : " tab-with-green ")} onClick={() => setToggleState(4)}>Nhiệm vụ đặc biệt</a>
+          <Row className="justify-content-md-center" style={{ paddingBottom: "30px" }}>
+            <Col sm={8}>
+              <nav className="nav flex-column flex-sm-row ">
+                <a
+                  className={classNames("flex-sm-fill text-sm-center nav-link navbar-quest", {
+                    "active-tab-with-green": toggleState === 1,
+                    "tab-with-green": toggleState !== 1
+                  })} onClick={() => setToggleState(1)}>Nhiệm vụ ngày</a>
+                <a className={classNames("flex-sm-fill text-sm-center nav-link navbar-quest", {
+                  "active-tab-with-green": toggleState === 2,
+                  "tab-with-green": toggleState !== 2
+                })} onClick={() => setToggleState(2)}>Nhiệm vụ tuần</a>
+                <a className={classNames("flex-sm-fill text-sm-center nav-link navbar-quest", {
+                  "active-tab-with-green": toggleState === 3,
+                  "tab-with-green": toggleState !== 3
+                })} onClick={() => setToggleState(3)}>Nhiệm vụ tháng</a>
+                <a className={classNames("flex-sm-fill text-sm-center nav-link navbar-quest", {
+                  "active-tab-with-green": toggleState === 4,
+                  "tab-with-green": toggleState !== 4
+                })} onClick={() => setToggleState(4)}>Nhiệm vụ đặc biệt</a>
               </nav></Col>
-            </Row>
-            <Row className="justify-content-md-center">
-              <Col sm = {10}>
+          </Row>
+          <Row className="justify-content-md-center" style={{ paddingBottom: "17px" }}>
+            <Col sm={10} >
               <QuestItem></QuestItem></Col>
-            </Row>
+          </Row>
+          <Row className="justify-content-md-center" style={{ paddingBottom: "17px" }}>
+            <Col sm={10} >
+              <QuestItem></QuestItem></Col>
+          </Row>
+          <Row className="justify-content-md-center" style={{ paddingBottom: "17px" }}>
+            <Col sm={10} >
+              <QuestItem></QuestItem></Col>
+          </Row>
         </div>
       </div>
     </>
