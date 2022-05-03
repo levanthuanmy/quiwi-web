@@ -1,0 +1,19 @@
+.questitem {
+    color: #009883;
+  background-color: #B0E4DD;
+  border-radius: 16px;
+}
+
+.fonttitle {
+    font-size: 24;
+    font-weight: bold;
+}
+
+.fontdes {
+    font-size: 18;
+}
+
+.fontprogress {
+    font-size: 24;
+    font-weight: bold;
+}
