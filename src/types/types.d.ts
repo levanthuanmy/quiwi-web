@@ -50,6 +50,7 @@ export type TQuiz = {
   numDownvotes: number
   questions: TQuestion[]
   gameLobby: GameLobby[]
+  banner: string
 }
 
 export type TGameModeEnum = '10CLASSIC' | '20MRT'
@@ -154,7 +155,7 @@ export type TQuizBodyRequest = {
 
 export type TQuestionRequest = {
   question: string
-  type: '10SG' | '20MUL'
+  type: '10SG' | '20MUL' | '30TF' | '40IMG'
   difficulty: number
   duration: number
   orderPosition: number

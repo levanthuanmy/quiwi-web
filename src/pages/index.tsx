@@ -12,7 +12,7 @@ import { TApiResponse, TQuiz, TQuizBodyRequest } from '../types/types'
 import { homeMenuOptions } from '../utils/constants'
 
 const Home: NextPage = () => {
-  const [isExpand, setIsExpand] = useState<boolean>(true)
+  const [isExpand, setIsExpand] = useState<boolean>(false)
   const authNavigate = useAuthNavigation()
   const [invitationCode, setInvitationCode] = useState<string>('')
   const router = useRouter()
@@ -60,10 +60,7 @@ const Home: NextPage = () => {
           menuOptions={homeMenuOptions}
           isFullHeight={true}
         />
-        <div
-          style={{ paddingLeft: isExpand ? 240 : 48 }}
-          className="w-100 transition-all-150ms bg-secondary bg-opacity-10"
-        >
+        <div className="ps-5 w-100 transition-all-150ms bg-secondary bg-opacity-10">
           <div className="bg-white">
             <Container fluid="lg" className="p-3">
               <Row>
