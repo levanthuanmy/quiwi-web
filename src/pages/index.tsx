@@ -7,10 +7,12 @@ import MyButton from '../components/MyButton/MyButton'
 import MyInput from '../components/MyInput/MyInput'
 import NavBar from '../components/NavBar/NavBar'
 import { useAuthNavigation } from '../hooks/useAuthNavigation/useAuthNavigation'
+import { post } from '../libs/api'
+import { TApiResponse, TQuiz, TQuizBodyRequest } from '../types/types'
 import { homeMenuOptions } from '../utils/constants'
 
 const Home: NextPage = () => {
-  const [isExpand, setIsExpand] = useState<boolean>(true)
+  const [isExpand, setIsExpand] = useState<boolean>(false)
   const authNavigate = useAuthNavigation()
   const [invitationCode, setInvitationCode] = useState<string>('')
   const router = useRouter()
@@ -23,6 +25,31 @@ const Home: NextPage = () => {
     router.push(`/lobby/join?invitationCode=${invitationCode}`)
   }
 
+  const handleToQuizCreator = async () => {
+    try {
+      const body: TQuizBodyRequest = {
+        title: 'Quiz chưa có tên',
+        description: '',
+        isPublic: false,
+        isLocked: false,
+        numPlayed: 0,
+        numUpvotes: 0,
+        numDownvotes: 0,
+        questions: [],
+      }
+      const res = await post<TApiResponse<TQuiz>>(
+        `/api/quizzes`,
+        {},
+        body,
+        true
+      )
+
+      router.push(`/quiz/creator/${res.response.id}`)
+    } catch (error) {
+      console.log('handleToQuizCreator - error', error)
+    }
+  }
+
   return (
     <>
       <NavBar />
@@ -33,10 +60,7 @@ const Home: NextPage = () => {
           menuOptions={homeMenuOptions}
           isFullHeight={true}
         />
-        <div
-          style={{ paddingLeft: isExpand ? 240 : 48 }}
-          className="w-100 transition-all-150ms bg-secondary bg-opacity-10"
-        >
+        <div className="ps-5 w-100 transition-all-150ms bg-secondary bg-opacity-10">
           <div className="bg-white">
             <Container fluid="lg" className="p-3">
               <Row>
@@ -74,9 +98,7 @@ const Home: NextPage = () => {
                     </div>
                     <MyButton
                       className="fw-medium text-white"
-                      onClick={() => {
-                        authNavigate.navigate('/quiz/creator')
-                      }}
+                      onClick={handleToQuizCreator}
                     >
                       Tạo mới ngay
                     </MyButton>

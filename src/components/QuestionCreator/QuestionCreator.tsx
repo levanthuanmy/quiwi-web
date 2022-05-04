@@ -2,6 +2,13 @@ import { Field, Form as FormikForm, Formik } from 'formik'
 import { useRouter } from 'next/router'
 import React, { FC, useEffect, useState } from 'react'
 import { Col, Form, Modal, Row } from 'react-bootstrap'
+import { post } from '../../libs/api'
+import {
+  TAnswerRequest,
+  TApiResponse,
+  TQuestionRequest,
+  TQuiz,
+} from '../../types/types'
 import IconQuestion, {
   QuestionType,
   questionTypeStyles,
@@ -12,20 +19,94 @@ import MyInput from '../MyInput/MyInput'
 import QuestionActionButton from '../QuestionActionButton/QuestionActionButton'
 import QuestionConfigBtn from '../QuestionConfigBtn/QuestionConfigBtn'
 
+const defaultAnswer: TAnswerRequest = {
+  answer: '',
+  isCorrect: false,
+  orderPosition: 0,
+  media: '',
+}
+
 type QuestionCreatorProps = {
   show: boolean
   onHide: () => void
+  setQuiz: React.Dispatch<React.SetStateAction<TQuiz | undefined>>
+  quiz: TQuiz | undefined
 }
-const QuestionCreator: FC<QuestionCreatorProps> = ({ show, onHide }) => {
+const QuestionCreator: FC<QuestionCreatorProps> = ({
+  show,
+  onHide,
+  setQuiz,
+  quiz,
+}) => {
   const router = useRouter()
   const type: QuestionType =
     (router.query?.type?.toString() as QuestionType) || 'multiple'
-  const [numMultipleAnswer, setNumMultipleAnswer] = useState<number>(3)
+  const quizId = Number(router.query.id)
+  console.log('quizId', quizId)
   const [fillAnswers, setFillAnswers] = useState<string[]>([])
+  const [answers, setAnswers] = useState<TAnswerRequest[]>([
+    { ...defaultAnswer, orderPosition: 0 },
+    { ...defaultAnswer, orderPosition: 1 },
+    { ...defaultAnswer, orderPosition: 2 },
+  ])
+  const [newQuestion, setNewQuestion] = useState<TQuestionRequest>({
+    type: '10SG',
+    difficulty: 1,
+    duration: 100,
+    orderPosition: 1,
+    question: '',
+    questionAnswers: [],
+  })
+
+  console.log('answers', answers)
 
   const resetStates = () => {
-    setNumMultipleAnswer(3)
+    setAnswers([
+      { ...defaultAnswer, orderPosition: 0 },
+      { ...defaultAnswer, orderPosition: 1 },
+      { ...defaultAnswer, orderPosition: 2 },
+    ])
     setFillAnswers([])
+  }
+
+  const removeAnswerAtIndex = (index: number) => {
+    try {
+      const cloneAnswers = [...answers]
+      cloneAnswers.splice(index, 1)
+
+      for (let i = 0; i < cloneAnswers.length; i++) {
+        cloneAnswers[i].orderPosition = i
+      }
+
+      setAnswers(cloneAnswers)
+    } catch (error) {
+      console.log('removeAnswerAtIndex - error', error)
+    }
+  }
+
+  const onSaveQuestion = async () => {
+    try {
+      if (!quiz) return
+
+      const _newQuestion: TQuestionRequest = {
+        ...newQuestion,
+        questionAnswers: answers,
+      }
+
+      const body = { ...quiz, questions: [...quiz.questions, _newQuestion] }
+      const res = await post<TApiResponse<TQuiz>>(
+        `/api/quizzes/${quizId}`,
+        {},
+        body,
+        true
+      )
+
+      setQuiz(res.response)
+
+      onHide()
+    } catch (error) {
+      console.log('onSaveQuestion - error', error)
+    }
   }
 
   useEffect(() => {
@@ -94,6 +175,12 @@ const QuestionCreator: FC<QuestionCreatorProps> = ({ show, onHide }) => {
               <Form.Control
                 as="textarea"
                 className="border rounded-10px bg-white shadow-none fs-20px"
+                defaultValue={newQuestion.question}
+                onChange={(e) => {
+                  const cloneQuestion = { ...newQuestion }
+                  cloneQuestion.question = e.target.value
+                  setNewQuestion(cloneQuestion)
+                }}
                 style={{
                   height: 240,
                   resize: 'none',
@@ -107,19 +194,27 @@ const QuestionCreator: FC<QuestionCreatorProps> = ({ show, onHide }) => {
         <div className="bg-white p-3">
           {(type === 'multiple' || type === 'survey') && (
             <Row>
-              {Array(numMultipleAnswer)
-                .fill(0)
-                .map((_, key) => (
-                  <Col key={key} xs="12" sm="6" lg="4" xl="3" className="mb-3">
-                    <ItemMultipleAnswer />
-                  </Col>
-                ))}
+              {answers.map((answer, key) => (
+                <Col key={key} xs="12" sm="6" lg="4" xl="3" className="mb-3">
+                  <ItemMultipleAnswer
+                    index={key}
+                    answers={answers}
+                    setAnswers={setAnswers}
+                    onRemove={() => removeAnswerAtIndex(key)}
+                  />
+                </Col>
+              ))}
 
-              {numMultipleAnswer < 6 && (
+              {answers.length < 6 && (
                 <Col
                   xs="auto"
                   className="my-auto"
-                  onClick={() => setNumMultipleAnswer((prev) => prev + 1)}
+                  onClick={() =>
+                    setAnswers((prev) => [
+                      ...prev,
+                      { ...defaultAnswer, orderPosition: prev.length },
+                    ])
+                  }
                 >
                   <div className="bi bi-plus-circle-fill fs-1 mb-0 text-primary cursor-pointer" />
                 </Col>
@@ -215,7 +310,9 @@ const QuestionCreator: FC<QuestionCreatorProps> = ({ show, onHide }) => {
         >
           Huỷ
         </MyButton>
-        <MyButton className="text-white">Lưu</MyButton>
+        <MyButton className="text-white" onClick={onSaveQuestion}>
+          Lưu
+        </MyButton>
       </Modal.Footer>
     </Modal>
   )
