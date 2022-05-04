@@ -1,3 +1,19 @@
+/* 20px */
+
+.px-20px { 
+padding-left: 20px;
+padding-right: 20px;
+}
+
+.py-20px { 
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+.pt-20px {
+  padding-top: 20px;
+}
+
 /* 32px */
 .p-32px {
   padding: 32px;
@@ -75,7 +91,19 @@
   padding-right: 12px;
 }
 
+/* 50px */
+
+.py-50px {
+  padding-top: 50px;
+  padding-bottom: 50px;
+}
+
 /* 64px */
 .pt-64px {
+  padding-top: 64px;
+}
+
+/* == nav bar height */
+.nav-bar-pt {
   padding-top: 64px;
 }

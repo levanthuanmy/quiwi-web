@@ -140,3 +140,9 @@ export type TGamePlayBodyRequest<T> = {
   socketId: string
   data: T
 }
+
+export type TStartGameRequest = {
+  userId: number
+  invitationCode: string  
+  token?: string
+}
