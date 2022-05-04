@@ -19,7 +19,6 @@ const QuizCreatorPage: NextPage = () => {
     useState<boolean>(false)
   const [showModal, setShowModal] = useState<boolean>(false)
   const [quiz, setQuiz] = useState<TQuiz>()
-  const [questions, setQuestions] = useState<TQuestionRequest[]>([])
   const [isValidating, setIsValidating] = useState<boolean>(true)
 
   useEffect(() => {
@@ -43,7 +42,6 @@ const QuizCreatorPage: NextPage = () => {
         }
         if (res.response) {
           setQuiz(res.response)
-          setQuestions(res.response.questions)
         }
       } catch (error) {
         console.log('getQuiz - error', error)
@@ -68,7 +66,11 @@ const QuizCreatorPage: NextPage = () => {
             <AddingQuestionButtons quizId={quizId} />
           </Col>
           <Col xs="12" lg="4" className="mb-3 mb-lg-0 ps-12px ps-lg-0">
-            <CardQuizInfo quiz={quiz} isValidating={isValidating} />
+            <CardQuizInfo
+              quiz={quiz}
+              isValidating={isValidating}
+              setQuiz={setQuiz}
+            />
           </Col>
         </Row>
       </Container>
