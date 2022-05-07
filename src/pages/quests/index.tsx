@@ -86,30 +86,42 @@ const QuestPage: NextPage = () => {
               </nav>
             </Col>
           </Row>
-          <Row
-            className="justify-content-md-center"
-            style={{ paddingBottom: '17px' }}
-          >
-            <Col sm={10}>
-              <QuestItem></QuestItem>
-            </Col>
-          </Row>
-          <Row
-            className="justify-content-md-center"
-            style={{ paddingBottom: '17px' }}
-          >
-            <Col sm={10}>
-              <QuestItem></QuestItem>
-            </Col>
-          </Row>
-          <Row
-            className="justify-content-md-center"
-            style={{ paddingBottom: '17px' }}
-          >
-            <Col sm={10}>
-              <QuestItem></QuestItem>
-            </Col>
-          </Row>
+          
+          {toggleState === 1 ? (
+            <div>
+              <Row className="justify-content-md-center" style={{ paddingBottom: "17px" }}>
+                <Col sm={10} >
+                  <QuestItem currentValue={3} targetValue={5} name={'Top 1 thần thánh'} des={'Có 5 lần đạt top 1'} isDone={false}></QuestItem></Col>
+              </Row>
+              <Row className="justify-content-md-center" style={{ paddingBottom: "17px" }}>
+                <Col sm={10} >
+                  <QuestItem currentValue={1} targetValue={1} name={'Top 3 thần thánh'} des={'Có 1 lần đạt top 3'} isDone={true}></QuestItem></Col>
+              </Row>
+              <Row className="justify-content-md-center" style={{ paddingBottom: "17px" }}>
+                <Col sm={10} >
+                  <QuestItem currentValue={1} targetValue={5} name={'Top 2 thần thánh'} des={'Có 5 lần đạt top 2'} isDone={false}></QuestItem></Col>
+              </Row>
+              <Row className="justify-content-md-center" style={{ paddingBottom: "17px" }}>
+                <Col sm={10} >
+                  <QuestItem currentValue={10} targetValue={10} name={'Hoàn thành 10 bài quiz'} des={'Hoàn thành đầy đủ 10 bài quiz'} isDone={false}></QuestItem></Col>
+              </Row>
+            </div>
+          ) : toggleState === 3 ?
+            (
+              (
+                <div>
+                  <Row className="justify-content-md-center" style={{ paddingBottom: "17px" }}>
+                    <Col sm={10} >
+                      <QuestItem currentValue={3} targetValue={5} name={'Top 1 thần thánh'} des={'Có 5 lần đạt top 1'} isDone={false}></QuestItem></Col>
+                  </Row>
+                  <Row className="justify-content-md-center" style={{ paddingBottom: "17px" }}>
+                    <Col sm={10} >
+                      <QuestItem currentValue={10} targetValue={10} name={'Hoàn thành 10 bài quiz'} des={'Hoàn thành đầy đủ 10 bài quiz'} isDone={false}></QuestItem></Col>
+                  </Row>
+                </div>
+              )
+            )
+            : null}
         </div>
       </div>
     </>
