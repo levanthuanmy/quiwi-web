@@ -2,12 +2,14 @@ import classNames from 'classnames'
 import React, { FC } from 'react'
 import { Accordion, Col, Image, Row } from 'react-bootstrap'
 import { TQuestionRequest } from '../../types/types'
-import IconQuestion from '../IconQuestion/IconQuestion'
+import { MAPPED_QUESTION_TYPE } from '../../utils/constants'
+import IconQuestion, { QuestionType } from '../IconQuestion/IconQuestion'
 import QuestionActionButton from '../QuestionActionButton/QuestionActionButton'
 
 type ItemQuestionProps = {
   question: TQuestionRequest
 }
+
 const ItemQuestion: FC<ItemQuestionProps> = ({ question }) => {
   return (
     <Accordion id="itemQuestion" defaultActiveKey="0" className="mb-3">
@@ -15,7 +17,10 @@ const ItemQuestion: FC<ItemQuestionProps> = ({ question }) => {
         <Accordion.Header>
           <Row className="w-100 m-0">
             <Col className="d-flex align-items-center ps-0">
-              <IconQuestion type="multiple" className="me-3" />
+              <IconQuestion
+                type={MAPPED_QUESTION_TYPE[question.type]}
+                className="me-3"
+              />
               <div className="fw-medium">{question.orderPosition}</div>
             </Col>
             <Col className="d-flex align-items-center justify-content-end pe-0">
@@ -38,6 +43,17 @@ const ItemQuestion: FC<ItemQuestionProps> = ({ question }) => {
           <div className="fw-medium mb-3">
             <div className="fs-14px text-secondary">Câu hỏi</div>
             <div>{question.question}</div>
+            {question.media?.length ? (
+              <Image
+                src={question.media}
+                alt=""
+                width="100%"
+                height="160"
+                className="object-fit-cover rounded border mt-2"
+              />
+            ) : (
+              <></>
+            )}
           </div>
 
           <div className="fw-medium">
@@ -74,7 +90,7 @@ const ItemQuestion: FC<ItemQuestionProps> = ({ question }) => {
           <QuestionActionButton
             iconClassName="bi bi-clock"
             className="bg-white"
-            title="30 giây"
+            title={question.duration.toString()}
           />
         </div>
       </Accordion.Item>

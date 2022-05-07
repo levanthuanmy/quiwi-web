@@ -1,6 +1,8 @@
+import { QuestionType } from '../components/IconQuestion/IconQuestion'
+
 export const API_URL = process.env.NEXT_PUBLIC_API_URL
 
-export const homeMenuOptions = [
+export const HOME_MENU_OPTIONS = [
   { title: 'Trang chủ', url: '/', iconClassName: 'bi bi-house' },
   {
     title: 'Thư viện của tôi',
@@ -12,7 +14,7 @@ export const homeMenuOptions = [
   { title: 'Nhiệm vụ', url: '/quests', iconClassName: 'bi bi-archive' },
 ]
 
-export const profileMenuOptions = [
+export const PROFILE_MENU_OPTIONS = [
   { title: 'Chỉnh sửa thông tin', url: '/profile/edit', iconClassName: '' },
   {
     title: 'Đổi mật khẩu',
@@ -20,3 +22,10 @@ export const profileMenuOptions = [
     iconClassName: '',
   },
 ]
+
+export const MAPPED_QUESTION_TYPE: Record<string, QuestionType> = {
+  '10SG': 'single',
+  '20MUL': 'multiple',
+}
+
+export const TIMEOUT_OPTIONS = [15, 30, 60, 120, 180]

@@ -153,13 +153,16 @@ export type TQuizBodyRequest = {
   questions: TQuestionRequest[]
 }
 
+export type TQuestionType = '10SG' | '20MUL' | '30TEXT'
+
 export type TQuestionRequest = {
   question: string
-  type: '10SG' | '20MUL' | '30TF' | '40IMG'
+  type: TQuestionType
   difficulty: number
   duration: number
   orderPosition: number
   questionAnswers: TAnswerRequest[]
+  media: string
 }
 
 export type TAnswerRequest = {
@@ -167,4 +170,5 @@ export type TAnswerRequest = {
   isCorrect: boolean
   orderPosition: number
   media: string
+  type: '10TEXT' | '20SELECTION'
 }
