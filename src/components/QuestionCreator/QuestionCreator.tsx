@@ -1,14 +1,23 @@
 import { Field, Form as FormikForm, Formik } from 'formik'
 import { useRouter } from 'next/router'
 import React, { FC, useEffect, useState } from 'react'
-import { Col, Form, Modal, Row } from 'react-bootstrap'
+import { Col, Dropdown, Form, Image, Modal, Row } from 'react-bootstrap'
 import { post } from '../../libs/api'
 import {
   TAnswerRequest,
   TApiResponse,
   TQuestionRequest,
+  TQuestionType,
   TQuiz,
 } from '../../types/types'
+import { MAPPED_QUESTION_TYPE, TIMEOUT_OPTIONS } from '../../utils/constants'
+import {
+  storageRef,
+  storage,
+  uploadFile,
+  getUrl,
+} from '../../utils/firebaseConfig'
+import { getCurrentTrueAnswer } from '../../utils/helper'
 import IconQuestion, {
   QuestionType,
   questionTypeStyles,
@@ -24,6 +33,7 @@ const defaultAnswer: TAnswerRequest = {
   isCorrect: false,
   orderPosition: 0,
   media: '',
+  type: '20SELECTION',
 }
 
 type QuestionCreatorProps = {
@@ -40,9 +50,8 @@ const QuestionCreator: FC<QuestionCreatorProps> = ({
 }) => {
   const router = useRouter()
   const type: QuestionType =
-    (router.query?.type?.toString() as QuestionType) || 'multiple'
+    (router.query?.type?.toString() as QuestionType) || 'single'
   const quizId = Number(router.query.id)
-  console.log('quizId', quizId)
   const [fillAnswers, setFillAnswers] = useState<string[]>([])
   const [answers, setAnswers] = useState<TAnswerRequest[]>([
     { ...defaultAnswer, orderPosition: 0 },
@@ -52,13 +61,12 @@ const QuestionCreator: FC<QuestionCreatorProps> = ({
   const [newQuestion, setNewQuestion] = useState<TQuestionRequest>({
     type: '10SG',
     difficulty: 1,
-    duration: 100,
+    duration: 30,
     orderPosition: 1,
     question: '',
     questionAnswers: [],
+    media: '',
   })
-
-  console.log('answers', answers)
 
   const resetStates = () => {
     setAnswers([
@@ -87,10 +95,16 @@ const QuestionCreator: FC<QuestionCreatorProps> = ({
   const onSaveQuestion = async () => {
     try {
       if (!quiz) return
-
+      if (getCurrentTrueAnswer(answers) < 1) {
+        alert('Bạn cần có ít nhất 1 câu trả lời là đúng')
+        return
+      }
       const _newQuestion: TQuestionRequest = {
         ...newQuestion,
         questionAnswers: answers,
+        type: Object.keys(MAPPED_QUESTION_TYPE).find(
+          (key) => MAPPED_QUESTION_TYPE[key] === type
+        ) as TQuestionType,
       }
 
       const body = { ...quiz, questions: [...quiz.questions, _newQuestion] }
@@ -115,6 +129,24 @@ const QuestionCreator: FC<QuestionCreatorProps> = ({
     }
   }, [show])
 
+  const handleUploadImage = async (evt: any) => {
+    try {
+      const data: File = evt.target.files[0]
+
+      const path = `/images/${data.name}`
+      const ref = storageRef(storage, path)
+      await uploadFile(ref, data)
+      const url = await getUrl(ref)
+
+      setNewQuestion((prev) => ({
+        ...prev,
+        media: url,
+      }))
+    } catch (error) {
+      console.log('handleUploadImage - error', error)
+    }
+  }
+
   return (
     <Modal
       show={show}
@@ -130,71 +162,107 @@ const QuestionCreator: FC<QuestionCreatorProps> = ({
         <div className="bg-secondary bg-opacity-10 p-3">
           <Row>
             <Col xs="12" md="auto" className="mb-3 mb-md-0">
-              <QuestionConfigBtn
-                prefixIcon={
-                  <QuestionActionButton
-                    iconClassName="bi bi-image"
-                    className="bg-primary text-white"
-                  />
-                }
-                title="Thêm hình ảnh"
-                suffixIcon={<i className="bi bi-plus-lg fs-18px" />}
-                className="mb-2"
-              />
-              <QuestionConfigBtn
-                prefixIcon={<IconQuestion type={type} />}
-                title={questionTypeStyles[type].title}
-                suffixIcon={<i className="bi bi-chevron-down fs-18px" />}
-                className="mb-2"
-              />
-              {type === 'multiple' && (
+              <div className="position-relative">
+                <input
+                  type="file"
+                  onChange={handleUploadImage}
+                  onDropCapture={handleUploadImage}
+                  className="position-absolute top-0 w-100 h-100 opacity-0 cursor-pointer"
+                  accept="image/png, image/jpeg, image/jpg"
+                  style={{ left: 0 }}
+                />
                 <QuestionConfigBtn
                   prefixIcon={
                     <QuestionActionButton
-                      iconClassName="bi bi-grid"
+                      iconClassName="bi bi-image"
                       className="bg-primary text-white"
                     />
                   }
-                  title="Nhiều đáp án đúng"
-                  suffixIcon={<i className="bi bi-chevron-down fs-18px" />}
+                  title="Thêm hình ảnh"
+                  suffixIcon={<i className="bi bi-plus-lg fs-18px" />}
                   className="mb-2"
                 />
-              )}
+              </div>
+
               <QuestionConfigBtn
-                prefixIcon={
-                  <QuestionActionButton
-                    iconClassName="bi bi-clock"
-                    className="bg-primary text-white"
-                  />
-                }
-                title="30 giây"
-                suffixIcon={<i className="bi bi-chevron-down fs-18px" />}
+                prefixIcon={<IconQuestion type={type} />}
+                title={questionTypeStyles[type].title}
+                suffixIcon=""
+                className="mb-2"
               />
+              <Dropdown id="timeoutDropdown">
+                <Dropdown.Toggle
+                  id="dropdown-basic"
+                  className="w-100 p-0 bg-transparent border-0 shadow-none"
+                >
+                  <QuestionConfigBtn
+                    prefixIcon={
+                      <QuestionActionButton
+                        iconClassName="bi bi-clock"
+                        className="bg-primary text-white"
+                      />
+                    }
+                    title={`${newQuestion.duration} giây`}
+                    suffixIcon={<i className="bi bi-chevron-down fs-18px" />}
+                    className="text-start"
+                  />
+                </Dropdown.Toggle>
+
+                <Dropdown.Menu className="w-100 rounded-10px shadow-sm">
+                  {TIMEOUT_OPTIONS.map((item, key) => (
+                    <Dropdown.Item
+                      key={key}
+                      onClick={() =>
+                        setNewQuestion({ ...newQuestion, duration: item })
+                      }
+                    >
+                      {item} giây
+                    </Dropdown.Item>
+                  ))}
+                </Dropdown.Menu>
+              </Dropdown>
             </Col>
             <Col className="ps-12px ps-md-0">
-              <Form.Control
-                as="textarea"
-                className="border rounded-10px bg-white shadow-none fs-20px"
-                defaultValue={newQuestion.question}
-                onChange={(e) => {
-                  const cloneQuestion = { ...newQuestion }
-                  cloneQuestion.question = e.target.value
-                  setNewQuestion(cloneQuestion)
-                }}
-                style={{
-                  height: 240,
-                  resize: 'none',
-                }}
-                placeholder="Nhập câu hỏi của bạn ở đây..."
-              />
+              <Row className="flex-column-reverse flex-md-row border m-0 rounded-10px overflow-hidden">
+                {newQuestion?.media?.length ? (
+                  <Col xs="12" md="6" className="p-0">
+                    <Image
+                      src={newQuestion.media}
+                      width="100%"
+                      height="240"
+                      alt=""
+                      className="object-fit-cover"
+                    />
+                  </Col>
+                ) : (
+                  <></>
+                )}
+                <Col xs="12" md="6" className="p-0">
+                  <Form.Control
+                    as="textarea"
+                    className="bg-white shadow-none fs-20px border-0"
+                    defaultValue={newQuestion.question}
+                    onChange={(e) => {
+                      const cloneQuestion = { ...newQuestion }
+                      cloneQuestion.question = e.target.value
+                      setNewQuestion(cloneQuestion)
+                    }}
+                    style={{
+                      height: 240,
+                      resize: 'none',
+                    }}
+                    placeholder="Nhập câu hỏi của bạn ở đây..."
+                  />
+                </Col>
+              </Row>
             </Col>
           </Row>
         </div>
 
         <div className="bg-white p-3">
-          {(type === 'multiple' || type === 'survey') && (
+          {(type === 'multiple' || type === 'single') && (
             <Row>
-              {answers.map((answer, key) => (
+              {answers.map((_, key) => (
                 <Col key={key} xs="12" sm="6" lg="4" xl="3" className="mb-3">
                   <ItemMultipleAnswer
                     index={key}
@@ -220,12 +288,6 @@ const QuestionCreator: FC<QuestionCreatorProps> = ({
                 </Col>
               )}
             </Row>
-          )}
-
-          {type === 'essay' && (
-            <div className="text-center py-5 fs-18px">
-              Người tham gia sẽ điền câu trả lời của họ ở đây
-            </div>
           )}
 
           {type === 'fill' && (

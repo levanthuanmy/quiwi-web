@@ -9,7 +9,7 @@ import NavBar from '../components/NavBar/NavBar'
 import { useAuthNavigation } from '../hooks/useAuthNavigation/useAuthNavigation'
 import { post } from '../libs/api'
 import { TApiResponse, TQuiz, TQuizBodyRequest } from '../types/types'
-import { homeMenuOptions } from '../utils/constants'
+import { HOME_MENU_OPTIONS } from '../utils/constants'
 
 const Home: NextPage = () => {
   const [isExpand, setIsExpand] = useState<boolean>(false)
@@ -57,7 +57,7 @@ const Home: NextPage = () => {
         <MenuBar
           isExpand={isExpand}
           setIsExpand={setIsExpand}
-          menuOptions={homeMenuOptions}
+          menuOptions={HOME_MENU_OPTIONS}
           isFullHeight={true}
         />
         <div className="ps-5 w-100 transition-all-150ms bg-secondary bg-opacity-10">

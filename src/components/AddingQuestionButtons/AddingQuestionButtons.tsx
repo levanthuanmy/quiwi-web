@@ -19,35 +19,27 @@ const AddingQuestionButtons: FC<AddingQuestionButtonsProps> = ({ quizId }) => {
       <Row className="mt-3">
         <Col
           xs="6"
-          md="3"
+          sm="4"
           className="d-flex flex-column align-items-center mb-3 mb-md-0"
+          onClick={() => router.replace(`${mainRoute}?type=single`)}
+        >
+          <IconQuestion type="single" showTitle />
+        </Col>
+        <Col
+          xs="6"
+          sm="4"
+          className="d-flex flex-column align-items-center"
           onClick={() => router.replace(`${mainRoute}?type=multiple`)}
         >
           <IconQuestion type="multiple" showTitle />
         </Col>
         <Col
           xs="6"
-          md="3"
-          className="d-flex flex-column align-items-center"
-          onClick={() => router.replace(`${mainRoute}?type=survey`)}
-        >
-          <IconQuestion type="survey" showTitle />
-        </Col>
-        <Col
-          xs="6"
-          md="3"
+          sm="4"
           className="d-flex flex-column align-items-center"
           onClick={() => router.replace(`${mainRoute}?type=fill`)}
         >
           <IconQuestion type="fill" showTitle />
-        </Col>
-        <Col
-          xs="6"
-          md="3"
-          className="d-flex flex-column align-items-center"
-          onClick={() => router.replace(`${mainRoute}?type=essay`)}
-        >
-          <IconQuestion type="essay" showTitle />
         </Col>
       </Row>
     </div>

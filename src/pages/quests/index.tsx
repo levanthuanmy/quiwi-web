@@ -5,7 +5,7 @@ import { Col, Collapse, Container, Row } from 'react-bootstrap'
 import { useAuthNavigation } from '../../hooks/useAuthNavigation/useAuthNavigation'
 import MenuBar from '../../components/MenuBar/MenuBar'
 import NavBar from '../../components/NavBar/NavBar'
-import { homeMenuOptions } from '../../utils/constants'
+import { HOME_MENU_OPTIONS } from '../../utils/constants'
 import classNames from 'classnames'
 import QuestItem from '../../components/QuestItem/QuestItem'
 
@@ -25,7 +25,7 @@ const QuestPage: NextPage = () => {
         <MenuBar
           isExpand={isExpand}
           setIsExpand={setIsExpand}
-          menuOptions={homeMenuOptions}
+          menuOptions={HOME_MENU_OPTIONS}
           isFullHeight={true}
         />
         <div className="ps-5 w-100 transition-all-150ms">

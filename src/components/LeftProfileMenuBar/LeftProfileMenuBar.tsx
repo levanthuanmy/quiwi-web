@@ -1,13 +1,13 @@
 import { useRouter } from 'next/router'
 import { FC } from 'react'
-import { profileMenuOptions } from '../../utils/constants'
+import { PROFILE_MENU_OPTIONS } from '../../utils/constants'
 import ItemMenuBar from '../ItemMenuBar/ItemMenuBar'
 
 const LeftProfileMenuBar: FC<{}> = () => {
   const router = useRouter()
   return (
     <>
-      {profileMenuOptions.map((option, idx) => {
+      {PROFILE_MENU_OPTIONS.map((option, idx) => {
         return (
           <ItemMenuBar
             key={idx}

@@ -11,7 +11,7 @@ import NavBar from '../../components/NavBar/NavBar'
 //     TPaginationResponse,
 //     TQuiz
 // } from '../../types/types'
-import { homeMenuOptions } from '../../utils/constants'
+import { HOME_MENU_OPTIONS } from '../../utils/constants'
 import ItemShop from '../../components/ItemShop/ItemShop'
 import classNames from 'classnames'
 import {
@@ -218,7 +218,7 @@ const ItemPage: NextPage = () => {
         <MenuBar
           isExpand={isExpand}
           setIsExpand={setIsExpand}
-          menuOptions={homeMenuOptions}
+          menuOptions={HOME_MENU_OPTIONS}
           isFullHeight={true}
         />
         <div className="ps-5 w-100 transition-all-150ms">

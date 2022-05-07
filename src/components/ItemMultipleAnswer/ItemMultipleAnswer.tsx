@@ -1,4 +1,5 @@
 import classNames from 'classnames'
+import { useRouter } from 'next/router'
 import React, { FC, useState } from 'react'
 import { Form, Image } from 'react-bootstrap'
 import { TAnswerRequest } from '../../types/types'
@@ -8,6 +9,8 @@ import {
   storageRef,
   uploadFile
 } from '../../utils/firebaseConfig'
+import { getCurrentTrueAnswer } from '../../utils/helper'
+import { QuestionType } from '../IconQuestion/IconQuestion'
 import QuestionActionButton from '../QuestionActionButton/QuestionActionButton'
 
 type ItemMultipleAnswerProps = {
@@ -22,6 +25,9 @@ const ItemMultipleAnswer: FC<ItemMultipleAnswerProps> = ({
   index,
   onRemove,
 }) => {
+  const router = useRouter()
+  const type: QuestionType =
+    (router.query?.type?.toString() as QuestionType) || 'single'
   const [isCorrectAns, setIsCorrectAns] = useState(answers[index].isCorrect)
 
   const handleUploadImage = async (evt: any) => {
@@ -62,12 +68,31 @@ const ItemMultipleAnswer: FC<ItemMultipleAnswerProps> = ({
     }
   }
 
+  const validateMarkingTrueAnswer = (mark: boolean) => {
+    if (mark) {
+      const numTrueAnswer = getCurrentTrueAnswer(answers)
+      if (type === 'single' && numTrueAnswer === 0) {
+        return true
+      }
+      if (type === 'multiple') {
+        return true
+      }
+    }
+    if (!mark) {
+      return true
+    }
+    return false
+  }
+
   const handleMarkTrueAnswer = () => {
     try {
-      const newAnswer = { ...answers[index], isCorrect: !isCorrectAns }
-      setIsCorrectAns(!isCorrectAns)
-
-      editAnswer(newAnswer)
+      if (validateMarkingTrueAnswer(!isCorrectAns)) {
+        const newAnswer = { ...answers[index], isCorrect: !isCorrectAns }
+        setIsCorrectAns(!isCorrectAns)
+        editAnswer(newAnswer)
+      } else {
+        alert('Bạn chỉ có thể chọn cùng lúc 1 câu trả lời đúng')
+      }
     } catch (error) {
       console.log('handleMarkTrueAnswer - error', error)
     }

@@ -2,31 +2,26 @@ import classNames from 'classnames'
 import React, { FC } from 'react'
 import styles from './IconQuestion.module.css'
 
-export type QuestionType = 'multiple' | 'survey' | 'fill' | 'essay'
+export type QuestionType = 'single' | 'multiple' | 'fill'
 
 export const questionTypeStyles: Record<
   QuestionType,
   { icon: string; colorClassName: string; title: string }
 > = {
-  multiple: {
-    icon: 'bi bi-check2-circle',
+  single: {
+    icon: 'bi bi-check2',
     colorClassName: 'bg-primary',
-    title: 'Nhiều lựa chọn',
+    title: 'Một đáp án đúng',
   },
-  survey: {
-    icon: 'bi bi-bar-chart',
+  multiple: {
+    icon: 'bi bi-check2-all',
     colorClassName: 'bg-info',
-    title: 'Thăm dò ý kiến',
+    title: 'Nhiều đáp án đúng',
   },
   fill: {
     icon: 'bi bi-pencil-square',
     colorClassName: 'bg-warning',
-    title: 'Điền chỗ trống',
-  },
-  essay: {
-    icon: 'bi bi-justify-left',
-    colorClassName: 'bg-secondary',
-    title: 'Kết thúc mở',
+    title: 'Điền vào chỗ trống',
   },
 }
 

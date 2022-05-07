@@ -35,7 +35,7 @@ const ItemQuiz: FC<ItemQuizProps> = ({ quiz }) => {
       <div className="d-flex gap-3 mt-3">
         <MyButton
           variant="secondary"
-          className="text-white w-100 fs-14px"
+          className="text-white w-100 text-nowrap"
           onClick={(e) => {
             authNavigate.navigate(`/quiz/creator/${quiz.id}`)
           }}
@@ -43,7 +43,7 @@ const ItemQuiz: FC<ItemQuizProps> = ({ quiz }) => {
           Chỉnh Sửa
         </MyButton>
         <MyButton
-          className="text-white w-100 fs-14px"
+          className="text-white w-100 text-nowrap"
           onClick={(e) => {
             authNavigate.navigate(`/host?quizId=${quiz.id}`)
           }}
