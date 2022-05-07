@@ -44,7 +44,7 @@ const ItemQuestion: FC<ItemQuestionProps> = ({ question }) => {
             <div className="fs-14px text-secondary">Câu trả lời</div>
             <Row>
               {question.questionAnswers.map((answer, key) => (
-                <Col key={key} xs="6" className='d-flex align-items-center'>
+                <Col key={key} xs="6" className="d-flex align-items-center">
                   <div
                     className={classNames('bi bi-circle-fill me-2', {
                       'text-danger': !answer.isCorrect,
@@ -53,7 +53,7 @@ const ItemQuestion: FC<ItemQuestionProps> = ({ question }) => {
                   />
                   <div>
                     <div>{answer.answer}</div>
-                    {answer.media.length ? (
+                    {answer.media?.length ? (
                       <Image
                         src={answer.media}
                         alt=""

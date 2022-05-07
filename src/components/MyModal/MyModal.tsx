@@ -11,6 +11,7 @@ type MyModalProps = {
   inActiveButtonTitle?: string
   activeButtonCallback?: () => void
   inActiveButtonCallback?: () => void
+  fullscreen?: boolean
 }
 const MyModal: FC<MyModalProps> = ({
   show,
@@ -21,6 +22,7 @@ const MyModal: FC<MyModalProps> = ({
   inActiveButtonTitle,
   activeButtonCallback,
   inActiveButtonCallback,
+  fullscreen = false,
 }) => {
   return (
     <Modal
@@ -29,6 +31,7 @@ const MyModal: FC<MyModalProps> = ({
       aria-labelledby="contained-modal-title-vcenter"
       centered
       contentClassName="rounded-20px overflow-hidden"
+      fullscreen={fullscreen ? 'sm-down' : undefined}
     >
       <Modal.Header closeButton className="border-0">
         {header}
