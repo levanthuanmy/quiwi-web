@@ -31,14 +31,26 @@ const ItemQuiz: FC<ItemQuizProps> = ({ quiz }) => {
       <div className="fw-medium fs-18px">{quiz.title}</div>
       <div>Số câu: {quiz.questions.length}</div>
       <div>Trạng thái: {quiz.isPublic ? 'Công khai' : 'Riêng tư'}</div>
-      <MyButton
-        className="text-white mt-3 w-100"
-        onClick={(e) => {
-          authNavigate.navigate(`/host?quizId=${quiz.id}`)
-        }}
-      >
-        Bắt đầu ngay
-      </MyButton>
+
+      <div className="d-flex gap-3 mt-3">
+        <MyButton
+          variant="secondary"
+          className="text-white w-100 fs-14px"
+          onClick={(e) => {
+            authNavigate.navigate(`/quiz/creator/${quiz.id}`)
+          }}
+        >
+          Chỉnh Sửa
+        </MyButton>
+        <MyButton
+          className="text-white w-100 fs-14px"
+          onClick={(e) => {
+            authNavigate.navigate(`/host?quizId=${quiz.id}`)
+          }}
+        >
+          Bắt Đầu
+        </MyButton>
+      </div>
     </div>
   )
 }

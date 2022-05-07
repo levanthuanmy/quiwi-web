@@ -49,12 +49,12 @@ const CardQuizInfo: FC<CardQuizInfoProps> = ({
   return (
     <div className="rounded-10px border bg-white p-12px">
       <div
-        className="border rounded-10px position-relative overflow-hidden"
+        className="border rounded-10px overflow-hidden"
         style={{ height: 120 }}
       >
-        {bannerUrl.length ? (
+        {quiz?.banner?.length ? (
           <Image
-            src={bannerUrl}
+            src={quiz?.banner}
             alt=""
             width="100%"
             height="100%"
@@ -62,16 +62,7 @@ const CardQuizInfo: FC<CardQuizInfoProps> = ({
           />
         ) : (
           <div className="py-4 text-center fs-14px text-secondary">
-            <input
-              type="file"
-              onChange={handleUploadImage}
-              onDropCapture={handleUploadImage}
-              className="position-absolute top-0 w-100 h-100 opacity-0 cursor-pointer"
-              accept="image/png, image/jpeg, image/jpg"
-              style={{ left: 0 }}
-            />
             <div className="bi bi-image text-primary fs-32px"></div>
-            Bấm hoặc kéo thả tại đây để thêm ảnh bìa
           </div>
         )}
       </div>
@@ -117,6 +108,7 @@ const CardQuizInfo: FC<CardQuizInfoProps> = ({
         show={showModal}
         onHide={() => setShowModal(false)}
         header={<div className="fs-24px fw-medium">Chỉnh sửa Quiz</div>}
+        fullscreen
       >
         <Formik
           initialValues={{
@@ -168,7 +160,7 @@ const CardQuizInfo: FC<CardQuizInfoProps> = ({
                 ) : (
                   <div className="py-4 text-center fs-14px text-secondary">
                     <div className="bi bi-image text-primary fs-32px"></div>
-                    Bấm hoặc kéo thả tại đây để thêm ảnh bìa
+                    Bấm hoặc kéo thả tại đây để cập nhật ảnh bìa
                   </div>
                 )}
                 <input
