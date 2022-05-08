@@ -20,16 +20,15 @@ const Avatar: FC = () => {
     revalidateOnFocus: false,
   })
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     cookies.remove('access-token')
     cookies.remove('refresh-token')
     localStorage.removeItem('user')
     socket.disconnect()
     setAtomUser(undefined)
+    await router.push('/')
     router.reload()
   }
-
-  const isAuth = false
 
   return (
     <Dropdown id="avatar">
@@ -46,26 +45,32 @@ const Avatar: FC = () => {
         </span>
       </Dropdown.Toggle>
       <Dropdown.Menu className="rounded-10px p-0 overflow-hidden">
-        <div className="p-3 d-flex align-items-center gap-2 fw-medium">
-          <Image
-            src="/assets/quiwi-coin.png"
-            width={20}
-            height={20}
-            alt="coin"
-          />
-          {userRes?.response?.user?.coin}
-        </div>
-        <Dropdown.Item
-          eventKey="0"
-          onClick={() => authNavigation.navigate('/profile')}
-          className="px-3 py-2"
-        >
-          Trang cá nhân
-        </Dropdown.Item>
+        {authNavigation.isAuth && (
+          <>
+            <div className="p-3 d-flex align-items-center gap-2 fw-medium">
+              <Image
+                src="/assets/quiwi-coin.png"
+                width={20}
+                height={20}
+                alt="coin"
+              />
+              {userRes?.response?.user?.coin}
+            </div>
+            <Dropdown.Item
+              eventKey="0"
+              onClick={() => authNavigation.navigate('/profile')}
+              className="px-3 py-2"
+            >
+              Trang cá nhân
+            </Dropdown.Item>
+          </>
+        )}
         <Dropdown.Item
           eventKey="1"
           onClick={
-            authNavigation.isAuth ? handleLogout : () => router.push('/sign-in')
+            authNavigation.isAuth
+              ? handleLogout
+              : async () => await router.push('/sign-in')
           }
           className="px-3 py-2"
         >
