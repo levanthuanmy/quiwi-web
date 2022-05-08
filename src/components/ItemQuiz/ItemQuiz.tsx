@@ -1,13 +1,14 @@
 import React, { FC, memo } from 'react'
-import { Image } from 'react-bootstrap'
+import { Col, Image, Row } from 'react-bootstrap'
 import { useAuthNavigation } from '../../hooks/useAuthNavigation/useAuthNavigation'
 import { TQuiz } from '../../types/types'
 import MyButton from '../MyButton/MyButton'
 
 type ItemQuizProps = {
   quiz: TQuiz
+  exploreMode?: boolean
 }
-const ItemQuiz: FC<ItemQuizProps> = ({ quiz }) => {
+const ItemQuiz: FC<ItemQuizProps> = ({ quiz, exploreMode = false }) => {
   const authNavigate = useAuthNavigation()
 
   return (
@@ -28,9 +29,31 @@ const ItemQuiz: FC<ItemQuizProps> = ({ quiz }) => {
           <></>
         )}
       </div>
-      <div className="fw-medium fs-18px">{quiz.title}</div>
-      <div>Số câu: {quiz.questions.length}</div>
-      <div>Trạng thái: {quiz.isPublic ? 'Công khai' : 'Riêng tư'}</div>
+      <Row>
+        <Col>
+          <div className="fw-medium fs-18px">{quiz.title}</div>
+          <div className="fs-14px text-secondary mt-2">
+            <div>Số câu: {quiz.questions.length}</div>
+            <div>
+              {!exploreMode && (
+                <>Trạng thái: {quiz.isPublic ? 'Công khai' : 'Riêng tư'}</>
+              )}
+            </div>
+            <div>Lượt chơi: {quiz.numPlayed}</div>
+          </div>
+        </Col>
+        <Col
+          xs="auto"
+          className="text-secondary fs-14px ps-0 d-flex flex-column justify-content-center"
+        >
+          <div className="d-flex align-items-center">
+            <i className="bi bi-arrow-up-short fs-24px" /> {quiz.numUpvotes}
+          </div>
+          <div className="d-flex align-items-center">
+            <i className="bi bi-arrow-down-short fs-24px" /> {quiz.numDownvotes}
+          </div>
+        </Col>
+      </Row>
 
       <div className="d-flex gap-3 mt-3">
         <MyButton
