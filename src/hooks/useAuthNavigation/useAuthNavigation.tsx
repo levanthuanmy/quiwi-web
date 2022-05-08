@@ -5,13 +5,13 @@ import { useLocalStorage } from '../useLocalStorage/useLocalStorage'
 
 type UseAuthNavigationValue = {
   isAuth: boolean
-  toPrevRoute: () => void
-  navigate: (navigateTo: string) => void
+  toPrevRoute: () => Promise<void>
+  navigate: (navigateTo: string) => Promise<void>
 }
 const AuthNavigationContext = React.createContext<UseAuthNavigationValue>({
   isAuth: false,
-  toPrevRoute: () => {},
-  navigate: () => {},
+  toPrevRoute: async () => {},
+  navigate: async () => {},
 })
 
 export const AuthNavigationProvider = ({
@@ -31,22 +31,22 @@ export const AuthNavigationProvider = ({
     }
   }, [accessToken, router])
 
-  const navigate = (navigateTo: string) => {
+  const navigate = async (navigateTo: string) => {
     if (!isAuth) {
       console.log('navigate - isAuth)', isAuth)
       setPrevRoute(navigateTo)
-      router.push(`/sign-in`)
+      await router.push(`/sign-in`)
     } else {
       console.log(navigateTo)
 
-      router.push(navigateTo)
+      await router.push(navigateTo)
     }
   }
 
-  const toPrevRoute = () => {
+  const toPrevRoute = async () => {
     const temp = prevRoute
     setPrevRoute('/')
-    router.push(temp)
+    await router.push(temp)
   }
 
   const value = {
