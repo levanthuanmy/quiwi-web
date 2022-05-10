@@ -5,7 +5,12 @@ import Cookies from 'universal-cookie'
 import { string } from 'yup'
 import { useLocalStorage } from '../../hooks/useLocalStorage/useLocalStorage'
 import { useSocket } from '../../hooks/useSocket/useSocket'
-import { TPlayer, TStartGameRequest, TStartQuizResponse, TUser } from '../../types/types'
+import {
+  TPlayer,
+  TStartGameRequest,
+  TStartQuizResponse,
+  TUser,
+} from '../../types/types'
 import { JsonParse } from '../../utils/helper'
 import MyButton from '../MyButton/MyButton'
 import PlayerLobbyList from '../PlayerLobbyList/PlayerLobbyList'
@@ -25,7 +30,7 @@ const LobbyScreen: FC<LobbyScreenProps> = ({
   const [playerList, setPlayerList] = useState<TPlayer[]>([])
   const { socket } = useSocket()
   const [lsGameSession, setLsGameSession] = useLocalStorage('game-session', '')
-  const [lsUser, ] = useLocalStorage('game-session', '')
+  const [lsUser] = useLocalStorage('user', '')
   const [user, setUser] = useState<TUser>()
   const router = useRouter()
 
@@ -65,8 +70,8 @@ const LobbyScreen: FC<LobbyScreenProps> = ({
     }
   }, [socket, lsGameSession])
 
-  useEffect(() => {    
-    setUser(JsonParse(lsUser) as TUser) 
+  useEffect(() => {
+    setUser(JsonParse(lsUser) as TUser)
   }, [])
 
   const handleLeaveRoom = () => {
@@ -77,30 +82,26 @@ const LobbyScreen: FC<LobbyScreenProps> = ({
   }
 
   const handleStartGame = () => {
-      try {
-        const cookies = new Cookies()
-        const accessToken = cookies.get('access-token')
-        useLocalStorage
-        
-        if (user) {
-          const msg: TStartGameRequest = {
-            userId: user.id,
-            invitationCode: invitationCode,
-            token: accessToken,
+    try {
+      const cookies = new Cookies()
+      const accessToken = cookies.get('access-token')
+      useLocalStorage
+
+      if (user) {
+        const msg: TStartGameRequest = {
+          userId: user.id,
+          invitationCode: invitationCode,
+          token: accessToken,
         }
-  
+
         socket.emit('start-game', msg)
         socket.on('start-game', (data: TStartQuizResponse) => {
           console.log('socket.on - data', data)
-
         })
-        }
-        
-  
-        
-      } catch (error) {
-        console.log('handleStartGame - error', error)
       }
+    } catch (error) {
+      console.log('handleStartGame - error', error)
+    }
   }
 
   return (
@@ -128,7 +129,10 @@ const LobbyScreen: FC<LobbyScreenProps> = ({
         <br />
         <br />
         {isHost && (
-          <MyButton className="w-100 text-white fw-medium" onClick={handleStartGame}>
+          <MyButton
+            className="w-100 text-white fw-medium"
+            onClick={handleStartGame}
+          >
             BẮT ĐẦU
           </MyButton>
         )}

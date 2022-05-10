@@ -9,13 +9,23 @@ import QuestionActionButton from '../QuestionActionButton/QuestionActionButton'
 type ItemQuestionProps = {
   question: TQuestionRequest
   onRemove: () => void
+  onEditQuestion: () => void
 }
 
-const ItemQuestion: FC<ItemQuestionProps> = ({ question, onRemove }) => {
+const ItemQuestion: FC<ItemQuestionProps> = ({
+  question,
+  onRemove,
+  onEditQuestion,
+}) => {
   return (
     <Accordion id="itemQuestion" defaultActiveKey="0" className="mb-3">
       <Accordion.Item eventKey="0" className="overflow-hidden">
-        <CustomToggle eventKey="0" question={question} onRemove={onRemove} />
+        <CustomToggle
+          eventKey="0"
+          question={question}
+          onRemove={onRemove}
+          onEditQuestion={onEditQuestion}
+        />
         <Accordion.Body>
           <div className="fw-medium mb-3">
             <div className="fs-14px text-secondary">Câu hỏi</div>
@@ -81,10 +91,12 @@ function CustomToggle({
   eventKey,
   question,
   onRemove,
+  onEditQuestion,
 }: {
   eventKey: string
   question: TQuestionRequest
   onRemove: () => void
+  onEditQuestion: () => void
 }) {
   const [isToggle, setIsToggle] = useState<boolean>(true)
   const decoratedOnClick = useAccordionButton(eventKey, () =>
@@ -109,6 +121,7 @@ function CustomToggle({
         <QuestionActionButton
           iconClassName="bi bi-pencil"
           className="bg-white"
+          onClick={onEditQuestion}
         />
         <QuestionActionButton
           iconClassName={classNames('bi', {
