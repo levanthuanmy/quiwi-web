@@ -1,17 +1,18 @@
-import { truncate } from 'fs'
 import _ from 'lodash'
 import { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import React, { useEffect, useState } from 'react'
 import { Col, Container, Row } from 'react-bootstrap'
-import AddingQuestionButtons from '../../../components/AddingQuestionButtons/AddingQuestionButtons'
-import CardQuizInfo from '../../../components/CardQuizInfo/CardQuizInfo'
-import ItemQuestion from '../../../components/ItemQuestion/ItemQuestion'
-import MyModal from '../../../components/MyModal/MyModal'
-import NavBar from '../../../components/NavBar/NavBar'
-import QuestionCreator from '../../../components/QuestionCreator/QuestionCreator'
-import { get, post } from '../../../libs/api'
-import { TApiResponse, TQuestionResponse, TQuiz } from '../../../types/types'
+import AddingQuestionButtons from '../../../../components/AddingQuestionButtons/AddingQuestionButtons'
+import CardQuizInfo from '../../../../components/CardQuizInfo/CardQuizInfo'
+import ItemQuestion from '../../../../components/ItemQuestion/ItemQuestion'
+import MyButton from '../../../../components/MyButton/MyButton'
+import MyModal from '../../../../components/MyModal/MyModal'
+import NavBar from '../../../../components/NavBar/NavBar'
+import QuestionCreator from '../../../../components/QuestionCreator/QuestionCreator'
+import { get, post } from '../../../../libs/api'
+import { TApiResponse, TQuestionResponse, TQuiz } from '../../../../types/types'
+import { indexingQuestionsOrderPosition } from '../../../../utils/helper'
 
 export type TEditQuestion = {
   isEdit: boolean
@@ -99,16 +100,6 @@ const QuizCreatorPage: NextPage = () => {
     }
   }
 
-  const indexingQuestionsOrderPosition = (questions: TQuestionResponse[]) => {
-    const len = questions.length
-    let _q = [...questions]
-    for (let i = 0; i < len; i++) {
-      _q[i].orderPosition = i
-    }
-
-    return _q
-  }
-
   const onEditQuestion = (questionId: number) => {
     setIsEditQuestion({ isEdit: true, questionId })
     setIsShowQuestionCreator(true)
@@ -137,6 +128,14 @@ const QuizCreatorPage: NextPage = () => {
               isValidating={isValidating}
               setQuiz={setQuiz}
             />
+            <div className="mt-3">
+              <MyButton
+                className="text-white w-100"
+                onClick={() => router.push(`/quiz/creator/${quizId}/sort`)}
+              >
+                Thay đổi thứ tự câu hỏi
+              </MyButton>
+            </div>
           </Col>
         </Row>
       </Container>

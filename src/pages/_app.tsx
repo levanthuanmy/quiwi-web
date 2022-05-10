@@ -15,6 +15,8 @@ import { AuthNavigationProvider } from '../hooks/useAuthNavigation/useAuthNaviga
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import FullScreenLoader from '../components/FullScreenLoader/FullScreenLoader'
+import { DndProvider } from 'react-dnd'
+import { HTML5Backend } from 'react-dnd-html5-backend'
 
 function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter()
@@ -42,11 +44,13 @@ function MyApp({ Component, pageProps }: AppProps) {
     <RecoilRoot>
       <SSRProvider>
         <SocketProvider>
-          <AuthNavigationProvider>
-            <MyHead />
-            <Component {...pageProps} />
-            <FullScreenLoader isLoading={shouldLoad} />
-          </AuthNavigationProvider>
+          <DndProvider backend={HTML5Backend}>
+            <AuthNavigationProvider>
+              <MyHead />
+              <Component {...pageProps} />
+              <FullScreenLoader isLoading={shouldLoad} />
+            </AuthNavigationProvider>
+          </DndProvider>
         </SocketProvider>
       </SSRProvider>
     </RecoilRoot>

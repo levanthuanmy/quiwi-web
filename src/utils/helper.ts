@@ -1,4 +1,4 @@
-import { TAnswerRequest } from '../types/types'
+import { TAnswerRequest, TQuestionResponse } from '../types/types'
 
 export const JsonParse = (input: string | null) => {
   try {
@@ -19,4 +19,16 @@ export const getCurrentTrueAnswer = (answers: TAnswerRequest[]): number => {
     }
   }
   return numTrueAnswer
+}
+
+export const indexingQuestionsOrderPosition = (
+  questions: TQuestionResponse[]
+) => {
+  const len = questions.length
+  let _q = [...questions]
+  for (let i = 0; i < len; i++) {
+    _q[i].orderPosition = i
+  }
+
+  return _q
 }
