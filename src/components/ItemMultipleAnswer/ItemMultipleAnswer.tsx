@@ -1,13 +1,13 @@
 import classNames from 'classnames'
 import { useRouter } from 'next/router'
-import React, { FC, useState } from 'react'
+import React, { FC, memo, useEffect, useState } from 'react'
 import { Form, Image } from 'react-bootstrap'
 import { TAnswerRequest } from '../../types/types'
 import {
   getUrl,
   storage,
   storageRef,
-  uploadFile
+  uploadFile,
 } from '../../utils/firebaseConfig'
 import { getCurrentTrueAnswer } from '../../utils/helper'
 import { QuestionType } from '../IconQuestion/IconQuestion'
@@ -29,6 +29,10 @@ const ItemMultipleAnswer: FC<ItemMultipleAnswerProps> = ({
   const type: QuestionType =
     (router.query?.type?.toString() as QuestionType) || 'single'
   const [isCorrectAns, setIsCorrectAns] = useState(answers[index].isCorrect)
+
+  useEffect(() => {
+    setIsCorrectAns(answers[index].isCorrect)
+  }, [answers])
 
   const handleUploadImage = async (evt: any) => {
     try {
@@ -155,4 +159,4 @@ const ItemMultipleAnswer: FC<ItemMultipleAnswerProps> = ({
   )
 }
 
-export default ItemMultipleAnswer
+export default memo(ItemMultipleAnswer)

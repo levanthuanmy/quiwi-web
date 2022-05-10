@@ -3,14 +3,21 @@ import { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import React, { useEffect, useState } from 'react'
 import { Col, Container, Row } from 'react-bootstrap'
-import AddingQuestionButtons from '../../../components/AddingQuestionButtons/AddingQuestionButtons'
-import CardQuizInfo from '../../../components/CardQuizInfo/CardQuizInfo'
-import ItemQuestion from '../../../components/ItemQuestion/ItemQuestion'
-import MyModal from '../../../components/MyModal/MyModal'
-import NavBar from '../../../components/NavBar/NavBar'
-import QuestionCreator from '../../../components/QuestionCreator/QuestionCreator'
-import { get, post } from '../../../libs/api'
-import { TApiResponse, TQuestionResponse, TQuiz } from '../../../types/types'
+import AddingQuestionButtons from '../../../../components/AddingQuestionButtons/AddingQuestionButtons'
+import CardQuizInfo from '../../../../components/CardQuizInfo/CardQuizInfo'
+import ItemQuestion from '../../../../components/ItemQuestion/ItemQuestion'
+import MyButton from '../../../../components/MyButton/MyButton'
+import MyModal from '../../../../components/MyModal/MyModal'
+import NavBar from '../../../../components/NavBar/NavBar'
+import QuestionCreator from '../../../../components/QuestionCreator/QuestionCreator'
+import { get, post } from '../../../../libs/api'
+import { TApiResponse, TQuestionResponse, TQuiz } from '../../../../types/types'
+import { indexingQuestionsOrderPosition } from '../../../../utils/helper'
+
+export type TEditQuestion = {
+  isEdit: boolean
+  questionId: number | null
+}
 
 const QuizCreatorPage: NextPage = () => {
   const router = useRouter()
@@ -25,6 +32,10 @@ const QuizCreatorPage: NextPage = () => {
     questionId: number | null
   }>({
     show: false,
+    questionId: null,
+  }) // use when removing question
+  const [isEditQuestion, setIsEditQuestion] = useState<TEditQuestion>({
+    isEdit: false,
     questionId: null,
   })
 
@@ -68,8 +79,10 @@ const QuizCreatorPage: NextPage = () => {
     try {
       if (showModalAlert.questionId === null) return
 
-      const questions = [...(quiz?.questions as TQuestionResponse[])]
+      let questions = [...(quiz?.questions as TQuestionResponse[])]
+
       _.remove(questions, (item) => item.id === showModalAlert.questionId)
+      questions = [...indexingQuestionsOrderPosition(questions)]
 
       const body = { ...quiz, questions }
       const res = await post<TApiResponse<TQuiz>>(
@@ -87,6 +100,11 @@ const QuizCreatorPage: NextPage = () => {
     }
   }
 
+  const onEditQuestion = (questionId: number) => {
+    setIsEditQuestion({ isEdit: true, questionId })
+    setIsShowQuestionCreator(true)
+  }
+
   return (
     <>
       <NavBar />
@@ -98,6 +116,7 @@ const QuizCreatorPage: NextPage = () => {
                 key={key}
                 question={question}
                 onRemove={() => onRemoveQuestion(question.id)}
+                onEditQuestion={() => onEditQuestion(question.id)}
               />
             ))}
 
@@ -109,6 +128,14 @@ const QuizCreatorPage: NextPage = () => {
               isValidating={isValidating}
               setQuiz={setQuiz}
             />
+            <div className="mt-3">
+              <MyButton
+                className="text-white w-100"
+                onClick={() => router.push(`/quiz/creator/${quizId}/sort`)}
+              >
+                Thay đổi thứ tự câu hỏi
+              </MyButton>
+            </div>
           </Col>
         </Row>
       </Container>
@@ -117,6 +144,7 @@ const QuizCreatorPage: NextPage = () => {
         show={isShowQuestionCreator}
         onHide={() => {
           setIsShowQuestionCreator(false)
+          setIsEditQuestion({ isEdit: false, questionId: null })
           router.replace(`/quiz/creator/${quizId}`)
           const a = document.createElement('a')
           a.href = '#addingQuestion'
@@ -125,6 +153,7 @@ const QuizCreatorPage: NextPage = () => {
         }}
         quiz={quiz}
         setQuiz={setQuiz}
+        isEditQuestion={isEditQuestion}
       />
 
       <MyModal
