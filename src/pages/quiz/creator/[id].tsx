@@ -1,16 +1,16 @@
+import _ from 'lodash'
 import { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import React, { useEffect, useState } from 'react'
 import { Col, Container, Row } from 'react-bootstrap'
-import useSWR from 'swr'
 import AddingQuestionButtons from '../../../components/AddingQuestionButtons/AddingQuestionButtons'
 import CardQuizInfo from '../../../components/CardQuizInfo/CardQuizInfo'
 import ItemQuestion from '../../../components/ItemQuestion/ItemQuestion'
 import MyModal from '../../../components/MyModal/MyModal'
 import NavBar from '../../../components/NavBar/NavBar'
 import QuestionCreator from '../../../components/QuestionCreator/QuestionCreator'
-import { get } from '../../../libs/api'
-import { TApiResponse, TQuestionRequest, TQuiz } from '../../../types/types'
+import { get, post } from '../../../libs/api'
+import { TApiResponse, TQuestionResponse, TQuiz } from '../../../types/types'
 
 const QuizCreatorPage: NextPage = () => {
   const router = useRouter()
@@ -20,6 +20,13 @@ const QuizCreatorPage: NextPage = () => {
   const [showModal, setShowModal] = useState<boolean>(false)
   const [quiz, setQuiz] = useState<TQuiz>()
   const [isValidating, setIsValidating] = useState<boolean>(true)
+  const [showModalAlert, setShowModalAlert] = useState<{
+    show: boolean
+    questionId: number | null
+  }>({
+    show: false,
+    questionId: null,
+  })
 
   useEffect(() => {
     const questionType = router.query?.type?.toString()
@@ -53,6 +60,33 @@ const QuizCreatorPage: NextPage = () => {
     quizId && getQuiz()
   }, [quizId])
 
+  const onRemoveQuestion = (questionId: number) => {
+    setShowModalAlert({ show: true, questionId })
+  }
+
+  const onAcceptRemoveAlert = async () => {
+    try {
+      if (showModalAlert.questionId === null) return
+
+      const questions = [...(quiz?.questions as TQuestionResponse[])]
+      _.remove(questions, (item) => item.id === showModalAlert.questionId)
+
+      const body = { ...quiz, questions }
+      const res = await post<TApiResponse<TQuiz>>(
+        `/api/quizzes/${quizId}`,
+        {},
+        body,
+        true
+      )
+
+      setQuiz(res.response)
+    } catch (error) {
+      console.log('onRemoveQuestion - error', error)
+    } finally {
+      setShowModalAlert({ show: false, questionId: null })
+    }
+  }
+
   return (
     <>
       <NavBar />
@@ -60,7 +94,11 @@ const QuizCreatorPage: NextPage = () => {
         <Row className="flex-column-reverse flex-lg-row py-3">
           <Col xs="12" lg="8">
             {quiz?.questions?.map((question, key) => (
-              <ItemQuestion key={key} question={question} />
+              <ItemQuestion
+                key={key}
+                question={question}
+                onRemove={() => onRemoveQuestion(question.id)}
+              />
             ))}
 
             <AddingQuestionButtons quizId={quizId} />
@@ -96,6 +134,24 @@ const QuizCreatorPage: NextPage = () => {
         activeButtonCallback={() => router.push('/')}
       >
         <div className="text-center h3">Quiz không hợp lệ</div>
+      </MyModal>
+
+      <MyModal
+        show={showModalAlert.show}
+        onHide={() => setShowModalAlert({ show: false, questionId: null })}
+        activeButtonTitle="Đồng ý"
+        activeButtonCallback={onAcceptRemoveAlert}
+        inActiveButtonCallback={() =>
+          setShowModalAlert({ show: false, questionId: null })
+        }
+        inActiveButtonTitle="Huỷ"
+      >
+        <div className="text-center h3">
+          Bạn có chắc chắn muốn xoá câu hỏi này
+        </div>
+        <div className="text-center">
+          Bạn không thể hoàn tác lại hành động này
+        </div>
       </MyModal>
     </>
   )

@@ -48,7 +48,7 @@ export type TQuiz = {
   numPlayed: number
   numUpvotes: number
   numDownvotes: number
-  questions: TQuestion[]
+  questions: TQuestionResponse[]
   gameLobby: GameLobby[]
   banner: string
 }
@@ -169,6 +169,17 @@ export type TQuestionRequest = {
   orderPosition: number
   questionAnswers: TAnswerRequest[]
   media: string
+}
+
+export type TQuestionResponse = {
+  question: string
+  type: TQuestionType
+  difficulty: number
+  duration: number
+  orderPosition: number
+  questionAnswers: TAnswerRequest[]
+  media: string
+  id: number
 }
 
 export type TAnswerRequest = {
