@@ -7,7 +7,7 @@ type MyInputProps = React.DetailedHTMLProps<
   HTMLInputElement
 > & {
   iconClassName?: string
-  onIconClick?: React.MouseEventHandler<HTMLDivElement>
+  onIconClick?: React.MouseEventHandler<HTMLDivElement> | undefined
 }
 const MyInput: FC<MyInputProps> = (props) => {
   let value = ''

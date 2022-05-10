@@ -1,3 +1,11 @@
+.hiddenNav {
+
+}
+
+.emojiBar { 
+
+}
+
 .answerBoard {
   position: relative;
   left: 0;
@@ -6,48 +14,71 @@
   height: 300px;
 }
 
-.gameBackground { 
-  min-height: 100vh;  
-  background: #F2F2F2;
+.gameBackground {
+  min-height: 100vh;
+  background: #f2f2f2;
+  padding-top: 64px;
 }
 
-.gameView { 
-  position: relative;    
-  padding-top: 8px;  
+.gameView {
+  position: relative;
+  padding-top: 8px;
 }
 
-.gameCol { 
+.gameCol {
   /* height: 100%; */
 }
 
-.chatView {   
-  max-height: 90vh; 
+.chatView {
+  max-height: 90vh;
 }
 
-.playerList {   
-  max-height: 90vh; 
+.playerList {
+  max-height: 90vh;
 }
 
 /* // Small devices (landscape phones, 576px and up) */
-@media (min-width: 576px) {
+@media (max-width: 576px) {
+  .hiddenNav {
+    display: none;
+    visibility: hidden;
+  }
+
+  .emojiBar { 
+      display: none;
+      visibility: hidden;
+  }
+  .gameBackground {
+    height: 100vh;
+    padding-top: 0px;
+    overflow: hidden;
+  }
+  .gameView {
+    padding-top: 0px;
+  }
+  .chatView {
+    display: none;
+  }
+
+  .playerList {
+    display: none;
+  }
 
 }
 
 /* // Medium devices (tablets, 768px and up) */
 @media (min-width: 768px) {
-
 }
 
 /* // Large devices (desktops, 992px and up) */
 @media (min-width: 992px) {
-
 }
 
 /* // Extra large devices (large desktops, 1200px and up) */
 @media (min-width: 1200px) {
-  .gameBackground { 
+  /* màn bự mới có 2 cái padding 2 bên cho đều */
+  .gameBackground {
     padding-left: 64px;
     padding-right: 64px;
-
   }
 }

@@ -2,12 +2,12 @@ import classNames from 'classnames'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
 import React, { FC } from 'react'
-import Avatar from '../Avatar/Avatar'
 
-type NavBarProps = {
+
+type GameNavBarProps = {
   className?: string
 }
-const NavBar: FC<NavBarProps> = (props: NavBarProps) => {
+const GameNavBar: FC<GameNavBarProps> = (props: GameNavBarProps) => {
   const router = useRouter()
 
   return (
@@ -23,13 +23,12 @@ const NavBar: FC<NavBarProps> = (props: NavBarProps) => {
         width={133}
         height={39}
         alt="text-logo"
-        onClick={async () => await router.push('/')}
+        onClick={() => router.push('/')}
         className="cursor-pointer"
       />
 
-      <Avatar />
     </div>
   )
 }
 
-export default NavBar
+export default GameNavBar
