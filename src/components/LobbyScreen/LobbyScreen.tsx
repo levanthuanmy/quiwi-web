@@ -5,7 +5,14 @@ import Cookies from 'universal-cookie'
 import { string } from 'yup'
 import { useLocalStorage } from '../../hooks/useLocalStorage/useLocalStorage'
 import { useSocket } from '../../hooks/useSocket/useSocket'
-import { TPlayer, TStartGameRequest, TStartQuizResponse, TUser } from '../../types/types'
+import { post } from '../../libs/api'
+import {
+  TApiResponse,
+  TPlayer,
+  TStartGameRequest,
+  TStartQuizResponse,
+  TUser,
+} from '../../types/types'
 import { JsonParse } from '../../utils/helper'
 import MyButton from '../MyButton/MyButton'
 import PlayerLobbyList from '../PlayerLobbyList/PlayerLobbyList'
@@ -25,7 +32,7 @@ const LobbyScreen: FC<LobbyScreenProps> = ({
   const [playerList, setPlayerList] = useState<TPlayer[]>([])
   const { socket } = useSocket()
   const [lsGameSession, setLsGameSession] = useLocalStorage('game-session', '')
-  const [lsUser, ] = useLocalStorage('game-session', '')
+  const [lsUser] = useLocalStorage('user', '')
   const [user, setUser] = useState<TUser>()
   const router = useRouter()
 
@@ -60,13 +67,23 @@ const LobbyScreen: FC<LobbyScreenProps> = ({
         localStorage.removeItem('game-session-player')
         router.push('/')
       })
+
+      socket.on('game-started', (data) => {
+        console.log('game started', data)
+        router.push(`/game?questionId=0`)
+      })
+
+      socket.on('error', (data) => {
+        console.log('socket error', data)
+      })
     } catch (error) {
       console.log('useEffect - error', error)
     }
   }, [socket, lsGameSession])
 
-  useEffect(() => {    
-    setUser(JsonParse(lsUser) as TUser) 
+  useEffect(() => {
+    console.log(JsonParse(lsUser) as TUser)
+    setUser(JsonParse(lsUser) as TUser)
   }, [])
 
   const handleLeaveRoom = () => {
@@ -76,31 +93,23 @@ const LobbyScreen: FC<LobbyScreenProps> = ({
     router.back()
   }
 
-  const handleStartGame = () => {
-      try {
-        const cookies = new Cookies()
-        const accessToken = cookies.get('access-token')
-        useLocalStorage
-        
-        if (user) {
-          const msg: TStartGameRequest = {
-            userId: user.id,
-            invitationCode: invitationCode,
-            token: accessToken,
-        }
-  
-        socket.emit('start-game', msg)
-        socket.on('start-game', (data: TStartQuizResponse) => {
-          console.log('socket.on - data', data)
+  const handleStartGame = async () => {
+    try {
+      const cookies = new Cookies()
+      const accessToken = cookies.get('access-token')
+      useLocalStorage
 
-        })
+      if (user) {
+        const msg: TStartGameRequest = {
+          userId: user.id,
+          invitationCode: invitationCode,
+          token: accessToken,
         }
-        
-  
-        
-      } catch (error) {
-        console.log('handleStartGame - error', error)
+        socket.emit('start-game', msg)
       }
+    } catch (error) {
+      console.log('handleStartGame - error', error)
+    }
   }
 
   return (
@@ -128,7 +137,10 @@ const LobbyScreen: FC<LobbyScreenProps> = ({
         <br />
         <br />
         {isHost && (
-          <MyButton className="w-100 text-white fw-medium" onClick={handleStartGame}>
+          <MyButton
+            className="w-100 text-white fw-medium"
+            onClick={handleStartGame}
+          >
             BẮT ĐẦU
           </MyButton>
         )}

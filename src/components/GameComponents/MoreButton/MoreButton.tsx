@@ -7,22 +7,18 @@ import styles from "./MoreButton.module.css"
 type MoreButtonProps = {
   iconClassName: string
   className?: string
-  onClick?: React.MouseEventHandler<HTMLDivElement>
+  onClick?: () => void
   title?: string
 }
 
-const MoreButton: FC<MoreButtonProps> = ({
-  iconClassName,
-  className,
-  onClick,
-  title,
-}) => {
+const MoreButton: FC<MoreButtonProps> = (props) => {
   return (
     <Button      
-      className={classNames(styles.moreButton, className)}
+      className={classNames(styles.moreButton, props.className)}
+      onClick={props.onClick}
     >
-      <div className={classNames("fw-bold fs-5",styles.moreTitle)}>{title}</div>
-      <i className={classNames("fs-5 fw-bold", iconClassName, styles.moreButtonIcon)} />
+      <div className={classNames("fw-bold fs-5",styles.moreTitle)}>{props.title}</div>
+      <i className={classNames("fs-5 fw-bold", props.iconClassName, styles.moreButtonIcon)} />
     </Button>
   )
 }

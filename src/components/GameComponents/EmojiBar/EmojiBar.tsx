@@ -4,14 +4,14 @@ import MyButton from '../../MyButton/MyButton'
 import classNames from 'classnames'
 import MoreButton from '../MoreButton/MoreButton'
 
-const EmojiBar: FC = () => {
+const EmojiBar: FC<{className?: string | undefined}> = ({className}) => {
   return (
-    <div className={styles.emojiBar}>
+    <div className={classNames(styles.emojiBar, className)}>
       {/* "flex-grow-1 d-flex " */}
       <div
         className={classNames(     
           "flex-grow-1",
-          styles.emojiPicker          
+          styles.emojiPicker
         )}
       >
         {/* <div className="d-flex gap-2"> */}
