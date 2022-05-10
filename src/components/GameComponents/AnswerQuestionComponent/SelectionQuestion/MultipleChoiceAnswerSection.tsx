@@ -2,12 +2,12 @@ import React, { FC, useEffect } from 'react'
 import { Col, Row } from 'react-bootstrap'
 import styles from './MultipleChoiceAnswerSection.module.css'
 import classNames from 'classnames'
-import { TQuestion, TQuestionAnswer } from '../../../../types/types'
+import { TQuestionResponse } from '../../../../types/types'
 
 type MultipleChoiceAnswerSectionProps = {
   className?: string
   handleSubmitAnswer: (answerId: number) => void
-  option?: TQuestion
+  option?: TQuestionResponse
 }
 const colorArray: Array<string> = ['#009883', '#424171', '#B89A61', '#A9C77E']
 const MultipleChoiceAnswerSection: FC<MultipleChoiceAnswerSectionProps> = ({

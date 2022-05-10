@@ -53,23 +53,6 @@ export type TQuiz = {
   banner: string
 }
 
-export type TQuestion = {
-  duration: number
-  question: string
-  quizId: number
-  type: string
-  questionAnswers: TQuestionAnswer[]
-}
-
-export type TQuestionAnswer = {
-  id: number
-  answer: string
-  isCorrect: boolean
-  questionId: number
-  type: string  
-
-}
-
 export type TGameModeEnum = '10CLASSIC' | '20MRT'
 
 export type TGameStatus = '00WAITING' | '10PLAYING' | '20END'
@@ -195,7 +178,7 @@ export type TQuestionResponse = {
   difficulty: number
   duration: number
   orderPosition: number
-  questionAnswers: TAnswerRequest[]
+  questionAnswers: TAnswerResponse[]
   media: string
   id: number
 }
@@ -206,4 +189,13 @@ export type TAnswerRequest = {
   orderPosition: number
   media: string
   type: '10TEXT' | '20SELECTION'
+}
+
+export type TAnswerResponse = {
+  id: number
+  answer: string
+  isCorrect: boolean
+  questionId: number
+  media: string
+  type: string  
 }
