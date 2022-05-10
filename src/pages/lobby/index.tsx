@@ -44,6 +44,7 @@ const LobbyPage: NextPage = () => {
           gameSession={gameSession}
           invitationCode={invitationCode}
           isHost={false}
+          // players={gameSession.players}
         />
       )}
     </>

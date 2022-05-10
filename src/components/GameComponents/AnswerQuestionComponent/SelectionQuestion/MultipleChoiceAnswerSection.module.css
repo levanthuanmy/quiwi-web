@@ -1,0 +1,19 @@
+
+.selectionItem {
+  padding: 10px;
+}
+
+.alphaBetContainer { 
+  border-radius: 50%;
+  width: 46px;
+  height: 46px;
+  background-color: #E6F6F4;
+  color: #FF6060;
+  align-items: center;
+  display: flex;
+  justify-content: center;
+}
+
+.alphaBetText {
+  text-align: center;  
+}

@@ -142,6 +142,12 @@ export type TGamePlayBodyRequest<T> = {
   data: T
 }
 
+export type TStartGameRequest = {
+  userId: number
+  invitationCode: string
+  token?: string
+}
+
 export type TQuizBodyRequest = {
   title: string
   description: string
