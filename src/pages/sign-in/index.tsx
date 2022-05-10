@@ -28,7 +28,8 @@ const SignInPage: NextPage = () => {
     try {
       const res: TApiResponse<TUser> = await post('/api/auth/login', {}, body)
       setUser(res.response)
-      authNavigate.toPrevRoute()
+      await authNavigate.toPrevRoute()
+      router.reload()
     } catch (error) {
       console.log('onSignUp - error', error)
     } finally {

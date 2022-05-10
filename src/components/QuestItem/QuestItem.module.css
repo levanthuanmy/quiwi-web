@@ -1,0 +1,14 @@
+.questItem {
+    color: #009883;
+  background-color: #B0E4DD;
+  border-radius: 16px;
+}
+
+.fontTitle {
+    font-size: 24;
+    font-weight: bold;
+}
+
+.fontDes {
+    font-size: 18;
+}

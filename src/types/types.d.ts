@@ -48,8 +48,9 @@ export type TQuiz = {
   numPlayed: number
   numUpvotes: number
   numDownvotes: number
-  questions: Question[]
+  questions: TQuestion[]
   gameLobby: GameLobby[]
+  banner: string
 }
 
 export type TGameModeEnum = '10CLASSIC' | '20MRT'
@@ -143,6 +144,37 @@ export type TGamePlayBodyRequest<T> = {
 
 export type TStartGameRequest = {
   userId: number
-  invitationCode: string  
+  invitationCode: string
   token?: string
+}
+
+export type TQuizBodyRequest = {
+  title: string
+  description: string
+  isPublic: boolean
+  isLocked: boolean
+  numPlayed: number
+  numUpvotes: number
+  numDownvotes: number
+  questions: TQuestionRequest[]
+}
+
+export type TQuestionType = '10SG' | '20MUL' | '30TEXT'
+
+export type TQuestionRequest = {
+  question: string
+  type: TQuestionType
+  difficulty: number
+  duration: number
+  orderPosition: number
+  questionAnswers: TAnswerRequest[]
+  media: string
+}
+
+export type TAnswerRequest = {
+  answer: string
+  isCorrect: boolean
+  orderPosition: number
+  media: string
+  type: '10TEXT' | '20SELECTION'
 }

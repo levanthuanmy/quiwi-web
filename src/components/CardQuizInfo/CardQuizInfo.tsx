@@ -1,15 +1,35 @@
+import { Formik, Field, Form } from 'formik'
+import { useRouter } from 'next/router'
 import React, { FC, useState } from 'react'
-import { Col, Image, Row } from 'react-bootstrap'
+import { Col, FormCheck, Image, Placeholder, Row } from 'react-bootstrap'
+import { post } from '../../libs/api'
+import { TApiResponse, TQuiz } from '../../types/types'
 import {
   getUrl,
   storage,
   storageRef,
   uploadFile,
 } from '../../utils/firebaseConfig'
+import MyButton from '../MyButton/MyButton'
+import MyInput from '../MyInput/MyInput'
+import MyModal from '../MyModal/MyModal'
 import QuestionActionButton from '../QuestionActionButton/QuestionActionButton'
 
-const CardQuizInfo: FC = () => {
+type CardQuizInfoProps = {
+  quiz: TQuiz | undefined
+  isValidating: boolean
+  setQuiz: React.Dispatch<React.SetStateAction<TQuiz | undefined>>
+}
+
+const CardQuizInfo: FC<CardQuizInfoProps> = ({
+  quiz,
+  isValidating,
+  setQuiz,
+}) => {
   const [bannerUrl, setBannerUrl] = useState<string>('')
+  const [showModal, setShowModal] = useState<boolean>(false)
+  const router = useRouter()
+  const quizId = Number(router.query.id)
 
   const handleUploadImage = async (evt: any) => {
     try {
@@ -29,12 +49,12 @@ const CardQuizInfo: FC = () => {
   return (
     <div className="rounded-10px border bg-white p-12px">
       <div
-        className="border rounded-10px position-relative overflow-hidden"
+        className="border rounded-10px overflow-hidden"
         style={{ height: 120 }}
       >
-        {bannerUrl.length ? (
+        {quiz?.banner?.length ? (
           <Image
-            src={bannerUrl}
+            src={quiz?.banner}
             alt=""
             width="100%"
             height="100%"
@@ -42,40 +62,186 @@ const CardQuizInfo: FC = () => {
           />
         ) : (
           <div className="py-4 text-center fs-14px text-secondary">
-            <input
-              type="file"
-              onChange={handleUploadImage}
-              onDropCapture={handleUploadImage}
-              className="position-absolute top-0 w-100 h-100 opacity-0 cursor-pointer"
-              accept="image/png, image/jpeg, image/jpg"
-              style={{ left: 0 }}
-            />
             <div className="bi bi-image text-primary fs-32px"></div>
-            Bấm hoặc kéo thả tại đây để thêm ảnh bìa
           </div>
         )}
       </div>
       <Row className="d-flex pt-12px">
         <Col>
-          <div className="fw-medium fs-18px">Đây là tên của quiz</div>
+          <div className="fw-medium fs-18px">
+            <TextSkeletonLoading
+              content={quiz?.title}
+              isValidating={isValidating}
+            />
+          </div>
 
-          <div className="fs-14px text-secondary mt-3">
+          <div className="text-secondary mt-3">
+            <TextSkeletonLoading
+              content={quiz?.description}
+              isValidating={isValidating}
+            />
+          </div>
+
+          <div className="fs-14px text-secondary">
             <div>
               <i className="bi bi-eye me-2 fs-16px" />
-              Công khai
+              <TextSkeletonLoading
+                content={quiz?.isPublic ? 'Công khai' : 'Riêng tư'}
+                isValidating={isValidating}
+              />
             </div>
-            <div>
+            {/* <div>
               <i className="bi bi-journals me-2 fs-16px" />
               Toán học, Tư duy
-            </div>
+            </div> */}
           </div>
         </Col>
         <Col xs="auto">
-          <QuestionActionButton iconClassName="bi bi-pencil" />
+          <QuestionActionButton
+            iconClassName="bi bi-pencil"
+            onClick={() => setShowModal(true)}
+          />
         </Col>
       </Row>
+
+      <MyModal
+        show={showModal}
+        onHide={() => setShowModal(false)}
+        header={<div className="fs-24px fw-medium">Chỉnh sửa Quiz</div>}
+        fullscreen
+      >
+        <Formik
+          initialValues={{
+            title: quiz?.title ?? '',
+            description: quiz?.description ?? '',
+            isPublic: quiz?.isPublic ?? false,
+          }}
+          onSubmit={async (value, actions) => {
+            try {
+              if (!quiz) return
+
+              const body = { ...quiz, ...value, banner: bannerUrl }
+              const res = await post<TApiResponse<TQuiz>>(
+                `/api/quizzes/${quizId}`,
+                {},
+                body,
+                true
+              )
+
+              setQuiz(res.response)
+            } catch (error) {
+              console.log('onSaveQuestion - error', error)
+            } finally {
+              actions.setSubmitting(false)
+            }
+          }}
+          // validationSchema={ProfileSchema}
+        >
+          {({ handleSubmit, isSubmitting }) => (
+            <Form
+              method="POST"
+              onSubmit={(e) => {
+                e.preventDefault()
+                handleSubmit()
+              }}
+            >
+              <div
+                className="border rounded-10px position-relative overflow-hidden"
+                style={{ height: 120 }}
+              >
+                {bannerUrl.length ? (
+                  <Image
+                    src={bannerUrl}
+                    alt=""
+                    width="100%"
+                    height="100%"
+                    className="object-fit-cover"
+                  />
+                ) : (
+                  <div className="py-4 text-center fs-14px text-secondary">
+                    <div className="bi bi-image text-primary fs-32px"></div>
+                    Bấm hoặc kéo thả tại đây để cập nhật ảnh bìa
+                  </div>
+                )}
+                <input
+                  type="file"
+                  onChange={handleUploadImage}
+                  onDropCapture={handleUploadImage}
+                  className="position-absolute top-0 w-100 h-100 opacity-0 cursor-pointer"
+                  accept="image/png, image/jpeg, image/jpg"
+                  style={{ left: 0 }}
+                />
+              </div>
+              <Row className="justify-content-center align-items-center py-2">
+                <Col xs={12} lg={4} className="text-lg-end fw-medium">
+                  Tên
+                </Col>
+                <Col>
+                  <Field
+                    type="text"
+                    name="title"
+                    placeholder="Tên"
+                    as={MyInput}
+                  />
+                </Col>
+              </Row>
+
+              <Row className="justify-content-center align-items-center py-2">
+                <Col xs={12} lg={4} className="text-lg-end fw-medium">
+                  Mô tả
+                </Col>
+                <Col>
+                  <Field
+                    type="text"
+                    name="description"
+                    placeholder="Mô tả"
+                    as={MyInput}
+                  />
+                </Col>
+              </Row>
+
+              <Row className="justify-content-center align-items-center py-2">
+                <Col xs={12} lg={4} className="text-lg-end fw-medium">
+                  Công khai
+                </Col>
+                <Col>
+                  <Field
+                    type="switch"
+                    name="isPublic"
+                    placeholder="Công khai"
+                    as={FormCheck}
+                  />
+                </Col>
+              </Row>
+
+              <div className="text-center pt-3">
+                <MyButton
+                  className="text-white w-100"
+                  type="submit"
+                  disabled={isSubmitting}
+                >
+                  Lưu thông tin
+                </MyButton>
+              </div>
+            </Form>
+          )}
+        </Formik>
+      </MyModal>
     </div>
   )
 }
 
 export default CardQuizInfo
+
+const TextSkeletonLoading: FC<{
+  isValidating: boolean
+  content: string | number | undefined
+}> = ({ isValidating, content }) => {
+  return isValidating ? (
+    <Placeholder animation="glow">
+      <Placeholder xs="12" />
+    </Placeholder>
+  ) : (
+    <>{content}</>
+  )
+}
