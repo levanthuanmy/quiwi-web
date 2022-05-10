@@ -4,7 +4,7 @@ import styles from './AnswerBoard.module.css'
 import classNames from 'classnames'
 import MultipleChoiceAnswerSection from '../AnswerQuestionComponent/SelectionQuestion/MultipleChoiceAnswerSection'
 import { useLocalStorage } from '../../../hooks/useLocalStorage/useLocalStorage'
-import { TQuestion, TStartQuizResponse, TUser } from '../../../types/types'
+import { TQuestionResponse, TStartQuizResponse, TUser } from '../../../types/types'
 import { JsonParse } from '../../../utils/helper'
 import { useSocket } from '../../../hooks/useSocket/useSocket'
 import MoreButton from '../MoreButton/MoreButton'
@@ -22,8 +22,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
   onClick,
   title,
 }) => {
-  const [lsGameSession] = useLocalStorage('game-session', '')
-  const [questions, setQuestions] = useState<TQuestion[]>([])
+  const [lsGameSession] = useLocalStorage('game-session', '')  
   const { socket } = useSocket()
   const gameSession = useGameSession()
   const [lsUser] = useLocalStorage('user', '')

@@ -40,9 +40,7 @@ const GamePage: NextPage = () => {
 
           <Col lg="2" className={styles.playerList}>
             <PlayerList
-              playerList={[
-                1, 2, 3, 4, 5, 6, 7, 1, 2, 3, 4, 5, 6, 71, 2, 3, 4, 5, 6, 7,
-              ]}
+              playerList={[]}
             />
           </Col>
         </Row>

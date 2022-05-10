@@ -1,13 +1,13 @@
 import classNames from 'classnames'
 import React, { FC, useState } from 'react'
 import { Accordion, Col, Image, Row, useAccordionButton } from 'react-bootstrap'
-import { TQuestionRequest } from '../../types/types'
+import { TQuestionResponse } from '../../types/types'
 import { MAPPED_QUESTION_TYPE } from '../../utils/constants'
 import IconQuestion from '../IconQuestion/IconQuestion'
 import QuestionActionButton from '../QuestionActionButton/QuestionActionButton'
 
 type ItemQuestionProps = {
-  question: TQuestionRequest
+  question: TQuestionResponse
   onRemove: () => void
 }
 
@@ -83,7 +83,7 @@ function CustomToggle({
   onRemove,
 }: {
   eventKey: string
-  question: TQuestionRequest
+  question: TQuestionResponse
   onRemove: () => void
 }) {
   const [isToggle, setIsToggle] = useState<boolean>(true)
