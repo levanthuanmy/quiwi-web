@@ -98,13 +98,10 @@ const HostPage: NextPage = () => {
     setIsFetchingSocket(true)
     try {
       const cookies = new Cookies()
-      const accessToken = cookies.get('access-token')
-
       const msg: TStartQuizRequest = {
         quizId,
         userId,
         mode,
-        token: accessToken,
       }
 
       const body: TGamePlayBodyRequest<TStartQuizRequest> = {
@@ -124,15 +121,6 @@ const HostPage: NextPage = () => {
       setGameSession(quiz)
       setInvitationCode(quiz.invitationCode)
 
-      // socket.emit('start-quiz', msg)
-
-      // socket.on('start-quiz', (data: TStartQuizResponse) => {
-      //   console.log('socket.on - data', data)
-
-      //   setLsGameSession(JSON.stringify(data))
-      //   setGameSession(data)
-      //   setInvitationCode(data.invitationCode)
-      // })
     } catch (error) {
       console.log('handleStartQuiz - error', error)
     } finally {

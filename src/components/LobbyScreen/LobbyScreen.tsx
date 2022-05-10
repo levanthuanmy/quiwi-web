@@ -5,7 +5,9 @@ import Cookies from 'universal-cookie'
 import { string } from 'yup'
 import { useLocalStorage } from '../../hooks/useLocalStorage/useLocalStorage'
 import { useSocket } from '../../hooks/useSocket/useSocket'
+import { post } from '../../libs/api'
 import {
+  TApiResponse,
   TPlayer,
   TStartGameRequest,
   TStartQuizResponse,
@@ -65,6 +67,15 @@ const LobbyScreen: FC<LobbyScreenProps> = ({
         localStorage.removeItem('game-session-player')
         router.push('/')
       })
+
+      socket.on('game-started', (data) => {
+        console.log('game started', data)
+        router.push(`/game?questionId=0`)
+      })
+
+      socket.on('error', (data) => {
+        console.log('socket error', data)
+      })
     } catch (error) {
       console.log('useEffect - error', error)
     }
@@ -93,11 +104,7 @@ const LobbyScreen: FC<LobbyScreenProps> = ({
           invitationCode: invitationCode,
           token: accessToken,
         }
-
         socket.emit('start-game', msg)
-        socket.on('start-game', (data: TStartQuizResponse) => {
-          console.log('socket.on - data', data)
-        })
       }
     } catch (error) {
       console.log('handleStartGame - error', error)

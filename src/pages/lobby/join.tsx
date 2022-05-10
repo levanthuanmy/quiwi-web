@@ -13,6 +13,7 @@ import {
   TApiResponse,
   TGamePlayBodyRequest,
   TJoinQuizResponse,
+  TStartQuizResponse,
 } from '../../types/types'
 import { JsonParse } from '../../utils/helper'
 
@@ -61,7 +62,7 @@ const JoiningPage: NextPage = () => {
       }
 
       socket.connect()
-
+      console.log("qwdqwd ", body)
       const response: TApiResponse<TJoinQuizResponse> = await post(
         'api/games/join-room',
         {},
@@ -70,7 +71,12 @@ const JoiningPage: NextPage = () => {
       )
 
       const data = response.response
-      setLsGameSession(JSON.stringify(data.gameLobby))
+      // lưu lại nickname của mình để dùng
+      const gameSession: TStartQuizResponse = data.gameLobby
+      gameSession.nickName = nickname
+      console.log('==== ~ gameSession ~', gameSession)
+      setLsGameSession(JSON.stringify(gameSession))
+
       setLsPlayer(JSON.stringify(data.player))
       router.push(`/lobby?quizId=${data.gameLobby.quizId}`)
 

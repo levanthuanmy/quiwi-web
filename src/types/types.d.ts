@@ -53,6 +53,23 @@ export type TQuiz = {
   banner: string
 }
 
+export type TQuestion = {
+  duration: number
+  question: string
+  quizId: number
+  type: string
+  questionAnswers: TQuestionAnswer[]
+}
+
+export type TQuestionAnswer = {
+  id: number
+  answer: string
+  isCorrect: boolean
+  questionId: number
+  type: string  
+
+}
+
 export type TGameModeEnum = '10CLASSIC' | '20MRT'
 
 export type TGameStatus = '00WAITING' | '10PLAYING' | '20END'
@@ -66,6 +83,7 @@ export type TStartQuizRequest = {
 }
 
 export type TStartQuizResponse = {
+  nickName: string
   gameMode: {
     curIndexQuestion: number
   }
