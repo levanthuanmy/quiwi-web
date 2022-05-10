@@ -1,0 +1,9 @@
+.RowDisplay {
+    display: flex;
+    flex-direction: row;
+}
+
+.ColDisplay {
+    display: flex;
+    flex-direction: column;
+}
