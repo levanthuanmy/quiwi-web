@@ -2,12 +2,9 @@ import _ from 'lodash'
 import { useRouter } from 'next/router'
 import React, { FC, useEffect, useState } from 'react'
 import Cookies from 'universal-cookie'
-import { string } from 'yup'
 import { useLocalStorage } from '../../hooks/useLocalStorage/useLocalStorage'
 import { useSocket } from '../../hooks/useSocket/useSocket'
-import { post } from '../../libs/api'
 import {
-  TApiResponse,
   TPlayer,
   TStartGameRequest,
   TStartQuizResponse,
@@ -35,6 +32,10 @@ const LobbyScreen: FC<LobbyScreenProps> = ({
   const [lsUser] = useLocalStorage('user', '')
   const [user, setUser] = useState<TUser>()
   const router = useRouter()
+
+  useEffect(() => {
+    if (socket && socket.disconnected) socket.connect()
+  }, [])
 
   useEffect(() => {
     try {

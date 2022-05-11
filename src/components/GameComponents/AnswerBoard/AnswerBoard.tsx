@@ -4,11 +4,17 @@ import styles from './AnswerBoard.module.css'
 import classNames from 'classnames'
 import MultipleChoiceAnswerSection from '../AnswerQuestionComponent/SelectionQuestion/MultipleChoiceAnswerSection'
 import { useLocalStorage } from '../../../hooks/useLocalStorage/useLocalStorage'
-import { TQuestionResponse, TStartQuizResponse, TUser } from '../../../types/types'
+import {
+  TQuestionResponse,
+  TStartQuizResponse,
+  TUser,
+} from '../../../types/types'
 import { JsonParse } from '../../../utils/helper'
 import { useSocket } from '../../../hooks/useSocket/useSocket'
 import MoreButton from '../MoreButton/MoreButton'
 import { useGameSession } from '../../../hooks/useGameSession/useGameSession'
+import { useRouter } from 'next/router'
+import MyModal from '../../MyModal/MyModal'
 
 type AnswerBoardProps = {
   className?: string
@@ -22,13 +28,18 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
   onClick,
   title,
 }) => {
-  const [lsGameSession] = useLocalStorage('game-session', '')  
+  const [lsGameSession] = useLocalStorage('game-session', '')
   const { socket } = useSocket()
   const gameSession = useGameSession()
   const [lsUser] = useLocalStorage('user', '')
   const [isHost, setIsHost] = useState<boolean>(false)
-  const [id, setId] = useState<number>(0)
+  const [qid, setId] = useState<number>(0)
+  const [answerSet, setAnswerSet] = useState<Set<number>>(new Set())
+  const [isShowAnswer, setIsShowAnswer] = useState<boolean>(false)
+  const router = useRouter()
+  const [roomStatus, setRoomStatus] = useState<string>("Đang trả lời câu hỏi")
 
+  const [isFinish, setIsFinish] = useState<boolean>(false)
   useEffect(() => {
     const gameData: TStartQuizResponse = JsonParse(
       lsGameSession
@@ -37,8 +48,16 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
     const user: TUser = JsonParse(lsUser)
     setIsHost(user.id === gameData.hostId)
     setId(0)
-    console.log('danh sách câu hỏi ', gameData.quiz.questions)
   }, [])
+
+  const displayQuestionId = (questionId: number) => {
+    setIsShowAnswer(false)
+    setAnswerSet(new Set())
+    setId(questionId)
+    
+    console.log('displayQuestionId - questionId', gameSession?.quiz?.questions[qid])
+  }
+    
 
   useEffect(() => {
     socket?.on('new-submission', (data) => {
@@ -46,27 +65,41 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
     })
 
     socket?.on('next-question', (data) => {
-      console.log('next-question', data)
+      
+      setRoomStatus("Đang trả lời câu hỏi")
       if (data.currentQuestionIndex) {
-        console.log('data.currentQuestionIndex', data.currentQuestionIndex)
-        setId(data.currentQuestionIndex)
+        displayQuestionId(data.currentQuestionIndex)
       }
     })
 
+    socket?.on('view-result', (data) => {
+      console.log('view', data)
+      setRoomStatus("Đã có kết quả")
+      setIsShowAnswer(true)
+    })
+
     socket?.on('timeout', (data) => {
+      setIsShowAnswer(true)
+      setRoomStatus("Hết giờ")
       console.log('timeout', data)
     })
 
     socket?.on('error', (data) => {
-      console.log('error', data)
+      console.log('answerboard socket error', data)
     })
 
     socket?.on('ranking', (data) => {
       console.log('ranking', data)
     })
-  }, [socket])
+  }, [])
 
   const goToNextQuestion = () => {
+    console.log('goToNextQuestion - questionId', questionId)
+    if (qid == gameSession?.quiz?.questions.length - 1) {
+      setIsFinish(true)
+      return
+    }
+
     const msg = { invitationCode: gameSession.invitationCode }
     socket?.emit('next-question', msg)
     console.log(msg)
@@ -79,13 +112,27 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
   }
 
   const handleSubmitAnswer = (answerId: number) => {
+    if (isShowAnswer) return
+    // Chọn và bỏ chọn câu hỏi
+    const answers: Set<number> = answerSet
+    answers.has(answerId) ? answers.delete(answerId) : answers.add(answerId)
+    console.log('handleSubmitAnswer - answers', answers)
+    setAnswerSet(new Set(answers))
+
     const msg = {
       invitationCode: gameSession.invitationCode,
-      answerIds: [answerId],
+      answerIds: Array.from(answerSet),
       nickname: gameSession.nickName,
     }
-    console.log('submit', msg)
+
     socket.emit('submit-answer', msg)
+  }
+
+  const extiRoom = () => {
+    localStorage.removeItem('game-session')
+    localStorage.removeItem('game-session-player')
+    socket.close()
+    router.push('/')
   }
 
   return (
@@ -97,21 +144,30 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
       )}
     >
       <div className="fs-4 fw-semiBold pt-3">
-        {gameSession?.quiz?.questions[id]?.question}
+        {gameSession?.quiz?.questions[qid]?.question}
       </div>
       <MultipleChoiceAnswerSection
         handleSubmitAnswer={handleSubmitAnswer}
         className="flex-grow-1"
-        option={gameSession?.quiz?.questions[id]}
+        option={gameSession?.quiz?.questions[qid]}
+        selectedAnswers={answerSet}
+        showAnswer={isShowAnswer}
+        isHost={isHost}
       ></MultipleChoiceAnswerSection>
       {isHost && (
         <div className="d-flex gap-3 justify-content-between">
           <MoreButton
+            iconClassName="bi bi-x-circle-fill"
+            className={classNames('text-white fw-medium', styles.nextButton)}
+            title="Thoát phòng"
+            onClick={extiRoom}
+          />
+          <MoreButton
             iconClassName="bi bi-bar-chart"
             className={classNames('text-white fw-medium', styles.nextButton)}
-            title="Xem xếp hạng"
+            title={roomStatus}
             onClick={viewRanking}
-          />          
+          />
           <MoreButton
             iconClassName="bi bi-arrow-right-circle-fill"
             className={classNames('text-white fw-medium', styles.nextButton)}
@@ -121,6 +177,17 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
         </div>
       )}
 
+      <MyModal
+        show={isFinish}
+        onHide={() => {}}
+        activeButtonTitle="Thoát gmae"
+        activeButtonCallback={() => {
+          extiRoom()
+          router.push('/')
+        }}
+      >
+        <div className="text-center h3">Thoát game</div>
+      </MyModal>
     </div>
   )
 }

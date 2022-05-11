@@ -3,7 +3,6 @@ import { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import React, { useEffect, useState } from 'react'
 import useSWR from 'swr'
-import Cookies from 'universal-cookie'
 import GameModeScreen from '../../components/GameModeScreen/GameModeScreen'
 import LobbyScreen from '../../components/LobbyScreen/LobbyScreen'
 import { useLocalStorage } from '../../hooks/useLocalStorage/useLocalStorage'
@@ -43,6 +42,9 @@ const HostPage: NextPage = () => {
     quizId ? [`/api/quizzes/quiz/${quizId}`] : null,
     get
   )
+  useEffect(() => {
+    if (socket && socket.disconnected) socket.connect()
+  }, [socket])
 
   useEffect(() => {
     const quiz = quizResponse?.response
@@ -81,14 +83,18 @@ const HostPage: NextPage = () => {
   ])
 
   useEffect(() => {
+    console.log('useEffect - isShowGameModeScreen', isShowGameModeScreen)
+    console.log('useEffect - gameModeEnum', gameModeEnum)
     if (gameModeEnum && isShowGameModeScreen) {
       const user: TUser = JsonParse(lsUser)
-
       handleStartQuiz(Number(quizId), gameModeEnum, user.id)
-
-      setIsShowGameModeScreen(false)
     }
   }, [gameModeEnum, isShowGameModeScreen])
+
+  useEffect(() => {
+    if (gameSession) setIsShowGameModeScreen(false)
+    console.log('useEffect - gameSession', gameSession)
+  }, [gameSession])
 
   const handleStartQuiz = async (
     quizId: number,
@@ -97,7 +103,6 @@ const HostPage: NextPage = () => {
   ) => {
     setIsFetchingSocket(true)
     try {
-      const cookies = new Cookies()
       const msg: TStartQuizRequest = {
         quizId,
         userId,
@@ -120,7 +125,6 @@ const HostPage: NextPage = () => {
       setLsGameSession(JSON.stringify(quiz))
       setGameSession(quiz)
       setInvitationCode(quiz.invitationCode)
-
     } catch (error) {
       console.log('handleStartQuiz - error', error)
     } finally {
