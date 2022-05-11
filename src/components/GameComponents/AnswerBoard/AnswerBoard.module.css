@@ -1,0 +1,16 @@
+.container { 
+  /* border-radius: 4px; */
+  padding: 4px;
+}
+
+.nextButton { 
+  width: fit-content;
+  align-self: flex-end;
+}
+
+@media (min-width: 1200px) { 
+  .container { 
+    border-radius: 20px;
+    padding: 20px;
+  }
+}

@@ -2,7 +2,7 @@ import classNames from 'classnames'
 import React, { FC, memo, useRef, useState } from 'react'
 import { Accordion, Col, Image, Row, useAccordionButton } from 'react-bootstrap'
 import { useDrag, useDrop } from 'react-dnd'
-import { TQuestionRequest } from '../../types/types'
+import { TQuestion } from '../../types/types'
 import { MAPPED_QUESTION_TYPE } from '../../utils/constants'
 import IconQuestion from '../IconQuestion/IconQuestion'
 import QuestionActionButton from '../QuestionActionButton/QuestionActionButton'
@@ -14,7 +14,7 @@ type DragItem = {
 }
 
 type ItemQuestionProps = {
-  question: TQuestionRequest
+  question: TQuestion
   onRemove?: () => void
   onEditQuestion?: () => void
   showActionBtn?: boolean
@@ -171,7 +171,7 @@ function CustomToggle({
   showActionBtn,
 }: {
   eventKey: string
-  question: TQuestionRequest
+  question: TQuestion
   onRemove?: () => void
   onEditQuestion?: () => void
   showActionBtn: boolean

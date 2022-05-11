@@ -58,9 +58,9 @@ const post = async <T>(
   try {
     if (isAuth) {
       const cookies = new Cookies()
-      headers['Authorization'] = `Bearer ${cookies.get('access-token')}`
+      headers['Authorization'] = `Bearer ${cookies.get('access-token')}`      
     }
-
+    
     const resp = await client.post<T>(path, data, { headers, params })
     return resp.data
   } catch (error: any) {

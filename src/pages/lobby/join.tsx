@@ -13,6 +13,7 @@ import {
   TApiResponse,
   TGamePlayBodyRequest,
   TJoinQuizResponse,
+  TStartQuizResponse,
 } from '../../types/types'
 import { JsonParse } from '../../utils/helper'
 
@@ -60,8 +61,6 @@ const JoiningPage: NextPage = () => {
         joinRoomRequest.userId = userId
       }
 
-      socket.connect()
-
       const response: TApiResponse<TJoinQuizResponse> = await post(
         'api/games/join-room',
         {},
@@ -70,21 +69,13 @@ const JoiningPage: NextPage = () => {
       )
 
       const data = response.response
-      setLsGameSession(JSON.stringify(data.gameLobby))
+      // lưu lại nickname của mình để dùng
+      const gameSession: TStartQuizResponse = data.gameLobby
+      gameSession.nickName = nickname
+      
+      setLsGameSession(JSON.stringify(gameSession))
       setLsPlayer(JSON.stringify(data.player))
       router.push(`/lobby?quizId=${data.gameLobby.quizId}`)
-
-      // socket.emit('join-room', joinRoomRequest)
-      // console.log('==== ~ handleOnClick ~ joinRoomRequest', joinRoomRequest)
-
-      // socket.on('joined-quiz', (data: TJoinQuizResponse) => {
-      //   console.log('socket.on - data', data)
-
-      //   setLsGameSession(JSON.stringify(data.gameLobby))
-      //   setLsPlayer(JSON.stringify(data.player))
-
-      //   router.push(`/lobby?quizId=${data.gameLobby.quizId}`)
-      // })
     } catch (error) {
       console.log('Join quiz - error', error)
       alert((error as Error).message)

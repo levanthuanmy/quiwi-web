@@ -3,10 +3,12 @@ import { Image, Row } from 'react-bootstrap'
 import styles from './Message.module.css'
 import classNames from 'classnames'
 
-type MessageProps = {
+export type MessageProps = {
   avatar?: string
-  name?: string
+  name?: string  
   content?: string
+  vote: number | 0
+  onVoteUpdated?: (voteChange: number) => void
 }
 
 const Message: FC<MessageProps> = (props) => {
@@ -35,10 +37,7 @@ const Message: FC<MessageProps> = (props) => {
             `text-white w-100 fw-semiBold fs-6 text-start ` + styles.chatContent
           }
         > 
-        {props.content ?? `Lorem ipsum dolor, sit amet consectetur adipisicing elit. Ab
-          perferendis alias dignissimos voluptates vero, praesentium maxime
-          iusto culpa atque facilis quos possimus rem in harum est recusandae
-          aspernatur beatae sed!`}
+        {props.content ?? `Tin nhắn lỗi!`}
           
         </div>
       </div>
@@ -48,14 +47,16 @@ const Message: FC<MessageProps> = (props) => {
       <div className={`d-flex flex-column ${styles.vote}`}>
         <i
           className={`bi bi-hand-thumbs-up-fill text-primary fs-4 ${styles.voteIcon}`}
+          onClick={() =>  props.onVoteUpdated? props.onVoteUpdated(1) : undefined}
         />
-        <span className={`fw-semiBold ${styles.scoreLabel}`}>10</span>
-        <i
+        <span className={`fw-semiBold ${styles.scoreLabel}`}>{props.vote}</span>
+        <i        
           className={`bi bi-hand-thumbs-up-fill fs-4 ${styles.voteIcon} ${styles.rotate}`}
+          onClick={() => props.onVoteUpdated? props.onVoteUpdated(-1) : undefined}
         />
       </div>
     </div>
   )
 }
 
-export default Message
+export {Message}

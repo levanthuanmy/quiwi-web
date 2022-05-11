@@ -48,7 +48,7 @@ export type TQuiz = {
   numPlayed: number
   numUpvotes: number
   numDownvotes: number
-  questions: TQuestionResponse[]
+  questions: TQuestion[]
   gameLobby: GameLobby[]
   banner: string
 }
@@ -66,6 +66,7 @@ export type TStartQuizRequest = {
 }
 
 export type TStartQuizResponse = {
+  nickName: string
   gameMode: {
     curIndexQuestion: number
   }
@@ -156,33 +157,24 @@ export type TQuizBodyRequest = {
   numPlayed: number
   numUpvotes: number
   numDownvotes: number
-  questions: TQuestionRequest[]
+  questions: TQuestion[]
 }
 
 export type TQuestionType = '10SG' | '20MUL' | '30TEXT'
 
-export type TQuestionRequest = {
+export type TQuestion = {
+  id?: number
   question: string
   type: TQuestionType
   difficulty: number
   duration: number
   orderPosition: number
-  questionAnswers: TAnswerRequest[]
+  questionAnswers: TAnswer[]
   media: string
 }
 
-export type TQuestionResponse = {
-  question: string
-  type: TQuestionType
-  difficulty: number
-  duration: number
-  orderPosition: number
-  questionAnswers: TAnswerRequest[]
-  media: string
-  id: number
-}
-
-export type TAnswerRequest = {
+export type TAnswer = {
+  id?: number
   answer: string
   isCorrect: boolean
   orderPosition: number

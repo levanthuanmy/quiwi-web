@@ -6,7 +6,7 @@ import ItemQuestion from '../../../../../components/ItemQuestion/ItemQuestion'
 import { get, post } from '../../../../../libs/api'
 import {
   TApiResponse,
-  TQuestionResponse,
+  TQuestion,
   TQuiz,
 } from '../../../../../types/types'
 import update from 'immutability-helper'
@@ -22,7 +22,7 @@ const SortPage = () => {
     get
   )
 
-  const [questions, setQuestions] = useState<TQuestionResponse[]>()
+  const [questions, setQuestions] = useState<TQuestion[]>()
 
   useEffect(() => {
     if (data?.response) {
@@ -37,7 +37,7 @@ const SortPage = () => {
         update(prev, {
           $splice: [
             [dragIndex, 1],
-            [hoverIndex, 0, prev[dragIndex] as TQuestionResponse],
+            [hoverIndex, 0, prev[dragIndex] as TQuestion],
           ],
         })
     )
