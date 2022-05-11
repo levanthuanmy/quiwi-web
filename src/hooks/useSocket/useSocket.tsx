@@ -10,11 +10,16 @@ const SocketContext = React.createContext<SocketValue>(null as any)
 export const SocketProvider = ({ children }: { children?: ReactNode }) => {
   const [socket, setSocket] = useState<Socket | null>(null)
 
-  useEffect(() => {
+  useEffect(() => {    
     if (!socket) {
-      setSocket(io(`${API_URL}/games`, { transports: ['websocket'] }))
-    }
-
+      console.log('useEffect - hit Socket1', socket)
+      var sk = io(`${API_URL}/games`, { transports: ['websocket']})                        
+      setSocket(sk)
+      // console.log('useEffect - hit Socket', sk)
+    } else if (socket && socket.disconnected) {
+      socket.connect()
+      // console.log('useEffect - hit connect', socket)
+    } 
     return () => {
       socket?.close()
     }

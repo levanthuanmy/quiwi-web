@@ -68,6 +68,8 @@ const ItemQuiz: FC<ItemQuizProps> = ({ quiz, exploreMode = false }) => {
         <MyButton
           className="text-white w-100 text-nowrap"
           onClick={(e) => {
+            localStorage.removeItem('game-session')
+            localStorage.removeItem('game-session-player')
             authNavigate.navigate(`/host?quizId=${quiz.id}`)
           }}
         >
