@@ -75,7 +75,7 @@ const QuestionCreator: FC<QuestionCreatorProps> = ({
     { ...defaultAnswer, orderPosition: 2 },
   ])
   const [newQuestion, setNewQuestion] =
-    useState<TQuestionRequest>(defaultQuestion)
+    useState<TQuestionResponse>(defaultQuestion)
   const type: QuestionType = isEditQuestion.isEdit
     ? MAPPED_QUESTION_TYPE[newQuestion?.type]
     : (router.query?.type?.toString() as QuestionType) || 'single'
