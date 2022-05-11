@@ -1,16 +1,13 @@
+import _ from 'lodash'
 import { NextPage } from 'next'
 import React, { useEffect, useState } from 'react'
 import { Container, Dropdown } from 'react-bootstrap'
-import useSWR from 'swr'
 import MenuBar from '../../components/MenuBar/MenuBar'
 import NavBar from '../../components/NavBar/NavBar'
 import RankingBoard from '../../components/Ranking/RankingBoard'
 import { RankingProps } from '../../components/Ranking/RankingRow'
 import { useLocalStorage } from '../../hooks/useLocalStorage/useLocalStorage'
-import { get } from '../../libs/api'
-import {
-  TApiResponse, TUser
-} from '../../types/types'
+import { TUser } from '../../types/types'
 import { HOME_MENU_OPTIONS } from '../../utils/constants'
 import { JsonParse } from '../../utils/helper'
 import styles from './ranking.module.css'
@@ -35,32 +32,30 @@ const rankingDropdown: RankingDropdown[] = [
     type: RankingType.BADGE,
   },
 ]
+const url = process.env.NEXT_PUBLIC_API_URL
 
 const RankingPage: NextPage = () => {
   const [isExpand, setIsExpand] = useState<boolean>(false)
   const [rankingDropdownPos, setRankingDropdownPos] = useState<number>(0)
-  const [data, setData] = useState<TApiResponse<RankingProps[]>>()
+  const [data, setData] = useState<RankingProps[]>()
   useEffect(() => {
-    const { data } = useSWR<TApiResponse<RankingProps[]>
-    >([
-        `/api/users/user/ranking/${rankingDropdown[rankingDropdownPos].type}`,
-        true,
-      ],
-      get,
-      {
-        revalidateOnFocus: false,
+    const getData = async () => {
+      try {
+        const dataResponse = await fetch(
+          `${url}/api/users/user/ranking/${rankingDropdown[rankingDropdownPos].type}?userId=${user.id}`
+        )
+        setData(_.get(await dataResponse.json(), 'response'))
+      } catch (error) {
+        console.log('🚀 ~ getData ~ error', error)
       }
-    )
-    const fetchData = async () => {
-      setData(data)
-    };
-    fetchData();
+    }
+    getData()
   }, [rankingDropdownPos])
 
   // console.log(`data: ${JSON.stringify(data)}`)
   const [lsUser] = useLocalStorage('user', '')
   const user = JsonParse(lsUser) as TUser
-  // console.log('hihihi', user.username)
+  // console.log('hihihi', data)
 
   return (
     <>
@@ -96,13 +91,13 @@ const RankingPage: NextPage = () => {
                     </Dropdown.Menu>
                   </Dropdown>
                 </div>
-                <div className={styles.RowDisplay}>
+                {/* <div className={styles.RowDisplay}>
                   <div>Tìm kiếm:</div>
                   <div>Search</div>
-                </div>
+                </div> */}
               </div>
               <div>
-                <RankingBoard rankingList={data?.response} />
+                <RankingBoard rankingList={data} />
               </div>
             </div>
           </Container>

@@ -10,10 +10,10 @@ const RankingBoard: FC<RankingList> = ({ rankingList }) => {
   // console.log('ashgcshabcascsbcsahcb', JSON.stringify(rankingList))
   const list = rankingList?.map((d) => 
     <RankingRow key={d.rank}
-      rank={d.rank}
-      username={d.username}
-      quantity={d.quantity}
-    />
+    rank={d.rank}
+    username={d.username}
+    quantity={d.quantity} 
+    isHighlight={d.isHighlight}    />
   )
 
   return (
