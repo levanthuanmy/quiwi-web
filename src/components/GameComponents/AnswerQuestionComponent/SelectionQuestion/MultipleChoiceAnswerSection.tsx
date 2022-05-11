@@ -2,12 +2,12 @@ import React, { FC, useEffect } from 'react'
 import { Col, Row } from 'react-bootstrap'
 import styles from './MultipleChoiceAnswerSection.module.css'
 import classNames from 'classnames'
-import { TAnswerResponse, TQuestionResponse } from '../../../../types/types'
+import { TAnswer, TQuestion } from '../../../../types/types'
 
 type MultipleChoiceAnswerSectionProps = {
   className?: string
   handleSubmitAnswer: (answerId: number) => void
-  option?: TQuestionResponse
+  option?: TQuestion
   selectedAnswers?: Set<number>
   showAnswer: boolean
   isHost: boolean
@@ -22,9 +22,9 @@ const MultipleChoiceAnswerSection: FC<MultipleChoiceAnswerSectionProps> = ({
   showAnswer,
   isHost
 }) => {
-  const cssSelectionClassForAnswer = (answer: TAnswerResponse): string => {
+  const cssSelectionClassForAnswer = (answer: TAnswer): string => {
     // css cho câu trả lời đã chọn
-    if (selectedAnswers && selectedAnswers.has(answer.id)) {
+    if (selectedAnswers && answer.id && selectedAnswers.has(answer.id)) {
       if (!showAnswer) return styles.selectedBox
       return answer.isCorrect ? styles.selectAndCorrect : styles.selectAndIncorrect
     }
@@ -34,7 +34,7 @@ const MultipleChoiceAnswerSection: FC<MultipleChoiceAnswerSectionProps> = ({
   }
 
   // 2 case: 
-  const getBackgroundColorForAnswer = (answer: TAnswerResponse, index: number): string => {        
+  const getBackgroundColorForAnswer = (answer: TAnswer, index: number): string => {        
     // chưa show đáp án
     if (!showAnswer) return colorArray[index]
     // chỉ tô màu câu đúng
@@ -52,7 +52,7 @@ const MultipleChoiceAnswerSection: FC<MultipleChoiceAnswerSectionProps> = ({
               xs="12"
               className={classNames(styles.selectionItem)}
               key={index}
-              onClick={() => {if(!isHost) handleSubmitAnswer(item.id)}}
+              onClick={() => {if(!isHost && item.id) handleSubmitAnswer(item.id)}}
             >
               <div           
                 style={{

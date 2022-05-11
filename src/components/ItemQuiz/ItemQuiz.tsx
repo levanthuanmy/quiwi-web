@@ -75,7 +75,7 @@ const ItemQuiz: FC<ItemQuizProps> = ({ quiz, exploreMode = false }) => {
         >
           Bắt Đầu
         </MyButton>
-      </div>
+      </div>  
     </div>
   )
 }

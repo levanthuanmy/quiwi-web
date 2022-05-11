@@ -1,6 +1,5 @@
 import classNames from 'classnames'
 import React, { FC } from 'react'
-import { Col, Row } from 'react-bootstrap'
 import { Button, ButtonProps } from 'react-bootstrap'
 import styles from "./MoreButton.module.css"
 
@@ -9,11 +8,13 @@ type MoreButtonProps = {
   className?: string
   onClick?: () => void
   title?: string
+  isEnable?: boolean
 }
 
 const MoreButton: FC<MoreButtonProps> = (props) => {
   return (
-    <Button      
+    <Button    
+      disabled={!(props.isEnable ?? true)}  
       className={classNames(styles.moreButton, props.className)}
       onClick={props.onClick}
     >

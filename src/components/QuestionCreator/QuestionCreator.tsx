@@ -6,9 +6,9 @@ import { Col, Dropdown, Form, Image, Modal, Row } from 'react-bootstrap'
 import { post } from '../../libs/api'
 import { TEditQuestion } from '../../pages/quiz/creator/[id]'
 import {
-  TAnswerRequest,
+  TAnswer,
+  TQuestion,
   TApiResponse,
-  TQuestionRequest,
   TQuestionType,
   TQuiz,
 } from '../../types/types'
@@ -30,7 +30,7 @@ import MyInput from '../MyInput/MyInput'
 import QuestionActionButton from '../QuestionActionButton/QuestionActionButton'
 import QuestionConfigBtn from '../QuestionConfigBtn/QuestionConfigBtn'
 
-const defaultAnswer: TAnswerRequest = {
+const defaultAnswer: TAnswer = {
   answer: '',
   isCorrect: false,
   orderPosition: 0,
@@ -38,7 +38,7 @@ const defaultAnswer: TAnswerRequest = {
   type: '20SELECTION',
 }
 
-const defaultQuestion: TQuestionRequest = {
+const defaultQuestion: TQuestion = {
   type: '10SG',
   difficulty: 1,
   duration: 30,
@@ -69,13 +69,13 @@ const QuestionCreator: FC<QuestionCreatorProps> = ({
   const router = useRouter()
   const quizId = Number(router.query.id)
   const [fillAnswers, setFillAnswers] = useState<string[]>([])
-  const [answers, setAnswers] = useState<TAnswerRequest[]>([
+  const [answers, setAnswers] = useState<TAnswer[]>([
     { ...defaultAnswer, orderPosition: 0 },
     { ...defaultAnswer, orderPosition: 1 },
     { ...defaultAnswer, orderPosition: 2 },
   ])
   const [newQuestion, setNewQuestion] =
-    useState<TQuestionResponse>(defaultQuestion)
+    useState<TQuestion>(defaultQuestion)
   const type: QuestionType = isEditQuestion.isEdit
     ? MAPPED_QUESTION_TYPE[newQuestion?.type]
     : (router.query?.type?.toString() as QuestionType) || 'single'
@@ -85,12 +85,12 @@ const QuestionCreator: FC<QuestionCreatorProps> = ({
       setNewQuestion(
         quiz?.questions.find(
           (question) => question.id === isEditQuestion.questionId
-        ) as TQuestionRequest
+        ) as TQuestion
       )
       setAnswers(
         quiz?.questions.find(
           (question) => question.id === isEditQuestion.questionId
-        )?.questionAnswers as TAnswerRequest[]
+        )?.questionAnswers as TAnswer[]
       )
     } else {
       setNewQuestion(defaultQuestion)
@@ -128,7 +128,7 @@ const QuestionCreator: FC<QuestionCreatorProps> = ({
         alert('Bạn cần có ít nhất 1 câu trả lời là đúng')
         return
       }
-      const _newQuestion: TQuestionRequest = {
+      const _newQuestion: TQuestion = {
         ...newQuestion,
         questionAnswers: answers,
         type: isEditQuestion.isEdit

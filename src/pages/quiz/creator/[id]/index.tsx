@@ -11,7 +11,7 @@ import MyModal from '../../../../components/MyModal/MyModal'
 import NavBar from '../../../../components/NavBar/NavBar'
 import QuestionCreator from '../../../../components/QuestionCreator/QuestionCreator'
 import { get, post } from '../../../../libs/api'
-import { TApiResponse, TQuestionResponse, TQuiz } from '../../../../types/types'
+import { TApiResponse, TQuestion, TQuiz } from '../../../../types/types'
 import { indexingQuestionsOrderPosition } from '../../../../utils/helper'
 
 export type TEditQuestion = {
@@ -79,7 +79,7 @@ const QuizCreatorPage: NextPage = () => {
     try {
       if (showModalAlert.questionId === null) return
 
-      let questions = [...(quiz?.questions as TQuestionResponse[])]
+      let questions = [...(quiz?.questions as TQuestion[])]
 
       _.remove(questions, (item) => item.id === showModalAlert.questionId)
       questions = [...indexingQuestionsOrderPosition(questions)]
@@ -115,8 +115,8 @@ const QuizCreatorPage: NextPage = () => {
               <ItemQuestion
                 key={key}
                 question={question}
-                onRemove={() => onRemoveQuestion(question.id)}
-                onEditQuestion={() => onEditQuestion(question.id)}
+                onRemove={() => onRemoveQuestion(question.id!)}
+                onEditQuestion={() => onEditQuestion(question.id!)}
               />
             ))}
 

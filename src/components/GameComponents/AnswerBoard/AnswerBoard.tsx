@@ -5,7 +5,7 @@ import classNames from 'classnames'
 import MultipleChoiceAnswerSection from '../AnswerQuestionComponent/SelectionQuestion/MultipleChoiceAnswerSection'
 import { useLocalStorage } from '../../../hooks/useLocalStorage/useLocalStorage'
 import {
-  TQuestionResponse,
+  TQuestion,
   TStartQuizResponse,
   TUser,
 } from '../../../types/types'
@@ -38,6 +38,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
   const [isShowAnswer, setIsShowAnswer] = useState<boolean>(false)
   const router = useRouter()
   const [roomStatus, setRoomStatus] = useState<string>("Đang trả lời câu hỏi")
+  const [isShowNext, setIsShowNext] = useState<boolean>(false)
 
   const [isFinish, setIsFinish] = useState<boolean>(false)
   useEffect(() => {
@@ -65,7 +66,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
     })
 
     socket?.on('next-question', (data) => {
-      
+      setIsShowNext(false)
       setRoomStatus("Đang trả lời câu hỏi")
       if (data.currentQuestionIndex) {
         displayQuestionId(data.currentQuestionIndex)
@@ -74,7 +75,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
 
     socket?.on('view-result', (data) => {
       console.log('view', data)
-      setRoomStatus("Đã có kết quả")
+      setRoomStatus("Xem xếp hạng")
       setIsShowAnswer(true)
     })
 
@@ -108,7 +109,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
   const viewRanking = () => {
     const msg = { invitationCode: gameSession.invitationCode }
     socket?.emit('view-ranking', msg)
-    console.log(msg)
+    setIsShowNext(true)
   }
 
   const handleSubmitAnswer = (answerId: number) => {
@@ -169,6 +170,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
             onClick={viewRanking}
           />
           <MoreButton
+            isEnable={isShowNext}
             iconClassName="bi bi-arrow-right-circle-fill"
             className={classNames('text-white fw-medium', styles.nextButton)}
             title="Câu tiếp theo"
@@ -180,7 +182,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
       <MyModal
         show={isFinish}
         onHide={() => {}}
-        activeButtonTitle="Thoát gmae"
+        activeButtonTitle="Thoát game"
         activeButtonCallback={() => {
           extiRoom()
           router.push('/')
