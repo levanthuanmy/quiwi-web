@@ -12,6 +12,7 @@ export const HOME_MENU_OPTIONS = [
   { title: 'Khám phá', url: '/explore', iconClassName: 'bi bi-compass' },
   { title: 'Cửa hàng', url: '/items', iconClassName: 'bi bi-shop' },
   { title: 'Nhiệm vụ', url: '/quests', iconClassName: 'bi bi-archive' },
+  { title: 'Danh hiệu', url: '/badges', iconClassName: 'bi bi-award' },
 ]
 
 export const PROFILE_MENU_OPTIONS = [

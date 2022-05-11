@@ -1,0 +1,44 @@
+.cardStyle {
+    width: 300px;
+}
+
+.layoutImage {
+    padding-top: 20px;
+    padding-bottom: 40px;
+    display: flex;
+    justify-content: center;
+}
+
+.closeButtonStyle {
+    align-self: flex-end;
+    height: 30px;
+    width: 30px;
+}
+
+.progress {
+    height: 7px;
+    margin-left: 5%;
+    margin-right: 5%;
+}
+
+.badgeTitle {
+    font-weight: bold;
+    text-align: center;
+    padding-bottom: px;
+}
+
+.badgeDes {
+    padding-top: 15px;
+    text-align: center;
+    color: darkgrey;
+    padding-left: 7%;
+    padding-right: 7%;
+    padding-bottom: 60px;
+}
+
+.badgeCount {
+    font-weight: bold;
+    text-align: center;
+    padding-top: 30px;
+    padding-bottom: 15px;
+}
