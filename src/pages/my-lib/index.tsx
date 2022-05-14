@@ -7,14 +7,14 @@ import MenuBar from '../../components/MenuBar/MenuBar'
 import MyButton from '../../components/MyButton/MyButton'
 import MyModal from '../../components/MyModal/MyModal'
 import NavBar from '../../components/NavBar/NavBar'
-import { useAuthNavigation } from '../../hooks/useAuthNavigation/useAuthNavigation'
+import { useAuth } from '../../hooks/useAuth/useAuth'
 import { get } from '../../libs/api'
 import { TApiResponse, TPaginationResponse, TQuiz } from '../../types/types'
 import { HOME_MENU_OPTIONS } from '../../utils/constants'
 
 const MyLibPage: NextPage = () => {
   const [isExpand, setIsExpand] = useState<boolean>(false)
-  const authNavigate = useAuthNavigation()
+  const authNavigate = useAuth()
 
   const params = {
     filter: {

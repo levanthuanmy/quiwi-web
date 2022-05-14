@@ -2,7 +2,7 @@ import { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import React, { useEffect, useState } from 'react'
 import { Col, Collapse, Container, Row } from 'react-bootstrap'
-import { useAuthNavigation } from '../../hooks/useAuthNavigation/useAuthNavigation'
+import { useAuth } from '../../hooks/useAuth/useAuth'
 import MenuBar from '../../components/MenuBar/MenuBar'
 import NavBar from '../../components/NavBar/NavBar'
 import { HOME_MENU_OPTIONS } from '../../utils/constants'
@@ -11,7 +11,7 @@ import QuestItem from '../../components/QuestItem/QuestItem'
 
 const QuestPage: NextPage = () => {
   const [isExpand, setIsExpand] = useState<boolean>(false)
-  const authNavigate = useAuthNavigation()
+  const authNavigate = useAuth()
   const [toggleState, setToggleState] = useState<number>(1)
 
   const toggleTab = (index: number) => {

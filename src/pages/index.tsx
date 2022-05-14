@@ -6,14 +6,14 @@ import MenuBar from '../components/MenuBar/MenuBar'
 import MyButton from '../components/MyButton/MyButton'
 import MyInput from '../components/MyInput/MyInput'
 import NavBar from '../components/NavBar/NavBar'
-import { useAuthNavigation } from '../hooks/useAuthNavigation/useAuthNavigation'
+import { useAuth } from '../hooks/useAuth/useAuth'
 import { post } from '../libs/api'
 import { TApiResponse, TQuiz, TQuizBodyRequest } from '../types/types'
 import { HOME_MENU_OPTIONS } from '../utils/constants'
 
 const Home: NextPage = () => {
   const [isExpand, setIsExpand] = useState<boolean>(false)
-  const authNavigate = useAuthNavigation()
+  const authNavigate = useAuth()
   const [invitationCode, setInvitationCode] = useState<string>('')
   const router = useRouter()
 
