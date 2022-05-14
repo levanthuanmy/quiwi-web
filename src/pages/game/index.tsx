@@ -9,10 +9,11 @@ import styles from './GamePage.module.css'
 import ChatWindow from '../../components/GameComponents/ChatWindow/ChatWindow'
 import PlayerList from '../../components/GameComponents/PlayerList/PlayerList'
 import { useLocalStorage } from '../../hooks/useLocalStorage/useLocalStorage'
+import GameMenuBar from '../../components/GameMenuBar/GameMenuBar'
 const GamePage: NextPage = () => {
   const router = useRouter()
   const [isShowQuestionCreator, setIsShowQuestionCreator] =
-    useState<boolean>(false)  
+    useState<boolean>(false)
   const { questionId } = router.query
 
   // useEffect(() => {
@@ -21,29 +22,30 @@ const GamePage: NextPage = () => {
   //     setIsShowQuestionCreator(true)
   //   }1
   // }, [router.query])
+  const [isExpand, setIsExpand] = useState<boolean>(false)
 
   return (
     <>
       <NavBar className={styles.hiddenNav} />
-      <NavBar className={styles.hiddenNav} />
       <div className={`${styles.gameBackground}`}>
-        <Row className={`${styles.gameView}`}>
-          <Col lg="6" className={`d-flex flex-column gap-3 ${styles.gameCol}`}>
-            <AnswerBoard questionId={Number(questionId) ?? 0} className="flex-grow-1" />
-            <EmojiBar className={styles.emojiBar} />
-            <EmojiBar className={styles.emojiBar} />
-          </Col>
-
-          <Col lg="4" className={styles.chatView}>
-            <ChatWindow />
-          </Col>
-
-          <Col lg="2" className={styles.playerList}>
-            <PlayerList
-              playerList={[]}
+        <div className={`${styles.gameView} d-flex `}>
+          <div
+            className={`d-flex flex-column flex-grow-3 gap-3 ${styles.gameCol} me-lg-3 `}
+          >
+            <AnswerBoard
+              questionId={Number(questionId) ?? 0}
+              className="flex-grow-1"
             />
-          </Col>
-        </Row>
+            <EmojiBar className={styles.emojiBar} />
+            <EmojiBar className={styles.emojiBar} />
+          </div>
+
+          <GameMenuBar
+            isExpand={isExpand}
+            setIsExpand={setIsExpand}
+            isFullHeight={true}
+          />
+        </div>
       </div>
     </>
   )

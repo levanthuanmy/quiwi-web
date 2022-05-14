@@ -7,8 +7,6 @@
 }
 
 .playerList {
-  min-height: 70vh;
-  max-height: 90vh;
   height: 100%;  
   position: relative;
   padding-left: 12px;

@@ -1,0 +1,12 @@
+.container {
+  transition: width 200ms ease;
+  float: left;
+  right: 0;
+  z-index: 0;
+}
+
+.button {
+  width: 48px;
+  height: 48px;
+  left: 0;
+}

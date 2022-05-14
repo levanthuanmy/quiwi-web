@@ -13,14 +13,14 @@ const PlayerList: FC<PlayerListProps> = (props) => {
     <div
       className={classNames(
         props.className,
-        'rounded-20px bg-white d-flex flex-column w-100',
+        'rounded-20px bg-white d-flex flex-column w-100 ',
         styles.playerList
       )}
     >
-      <div className='d-flex align-items-center'>
-      <i
-        className={`bi bi-arrow-up-circle-fill flex-grow-1 text-primary fs-3 ${styles.buttonScroll}`}
-      />
+      <div className="d-flex align-items-center">
+        <i
+          className={`bi bi-arrow-up-circle-fill flex-grow-1 text-primary fs-3 ${styles.buttonScroll}`}
+        />
       </div>
       <div className={`${styles.scrollListContainer}`}>
         <div className={`${styles.scrollList}`}>
@@ -47,12 +47,11 @@ const PlayerList: FC<PlayerListProps> = (props) => {
           <div className={styles.blank} />
         </div>
       </div>
-      <div className='d-flex align-items-center'>
-      <i
-        className={`bi bi-arrow-down-circle-fill flex-grow-1 text-primary fs-3 ${styles.buttonScroll}`}
-      />
+      <div className="d-flex align-items-center">
+        <i
+          className={`bi bi-arrow-down-circle-fill flex-grow-1 text-primary fs-3 ${styles.buttonScroll}`}
+        />
       </div>
-      
     </div>
   )
 }
