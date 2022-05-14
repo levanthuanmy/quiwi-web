@@ -1,34 +1,28 @@
 import classNames from 'classnames'
-import { useRouter } from 'next/router'
 import React, { FC } from 'react'
-import { TStartQuizResponse } from '../../types/types'
+import { TStartQuizResponse, TUser } from '../../types/types'
 import ChatWindow from '../GameComponents/ChatWindow/ChatWindow'
 import PlayerList from '../GameComponents/PlayerList/PlayerList'
-import ItemMenuBar from '../ItemMenuBar/ItemMenuBar'
 import styles from './GameMenuBar.module.css'
 
 type GameMenuBarProps = {
   isExpand: boolean
   setIsExpand: React.Dispatch<React.SetStateAction<boolean>>
   gameSession: TStartQuizResponse
-  isFullHeight: boolean
+  user: TUser
 }
 const GameMenuBar: FC<GameMenuBarProps> = ({
   isExpand,
   setIsExpand,
   gameSession,
-  isFullHeight,
+  user,
 }) => {
-  const router = useRouter()
-
   return (
     <div
       className={classNames(
-        'd-flex flex-column border-end  bg-white  ',
+        'd-flex flex-column bg-white rounded-20px ',
         styles.container,
         {
-          // "h-100": isFullHeight,
-          // height: '100vh',
           minHeight: '976px',
           right: 0,
         }
@@ -36,7 +30,7 @@ const GameMenuBar: FC<GameMenuBarProps> = ({
       style={{ width: isExpand ? 350 : 48 }}
     >
       <div
-        className="position-relative cursor-pointer bg-primary"
+        className="position-relative cursor-pointer "
         style={{ height: 48 }}
         onClick={() => setIsExpand((prev) => !prev)}
       >
@@ -54,8 +48,31 @@ const GameMenuBar: FC<GameMenuBarProps> = ({
       {isExpand ? (
         <>
           <PlayerList playerList={gameSession.players} />
-          <hr></hr>
-          <ChatWindow gameSession={gameSession} />
+          <div
+            className={`${styles.slider} bg-primary`}
+            onMouseDown={(e) => {
+              let block = document.getElementById(
+                'playerList'
+              ) as HTMLDivElement
+              let dragX = e.clientY
+              // register a mouse move listener if mouse is down
+              document.onmousemove = function onMouseMove(e) {
+                // e.clientY will be the position of the mouse as it has moved a bit now
+                // offsetHeight is the height of the block-1
+                if (block) {
+                  block.style.height =
+                    block.offsetHeight + e.clientY - dragX + 'px'
+                  // update variable - till this pos, mouse movement has been handled
+                  dragX = e.clientY
+                }
+              }
+              document.onmouseup = () =>
+                (document.onmousemove = document.onmouseup = null)
+            }}
+          >
+            <i className="text-white bi bi-grip-horizontal"></i>
+          </div>
+          <ChatWindow gameSession={gameSession} user={user} />
         </>
       ) : null}
     </div>

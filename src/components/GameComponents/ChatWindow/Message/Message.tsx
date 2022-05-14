@@ -23,14 +23,16 @@ export type MessageProps = {
   userId?: number
 
   onVoteUpdated?: (voteChange: number) => void
+  isCurrentUser: boolean
 }
 
 const Message: FC<MessageProps> = (props) => {
-  const avatar = _.get(
-    props,
-    'user.avatar',
-    _.get(props, 'player.user.avatar', '/assets/default-user.png')
-  )
+  const avatar =
+    _.get(props, 'user.avatar', _.get(props, 'player.user.avatar')) ||
+    '/assets/default-user.png'
+
+  const nickname = _.get(props, 'user.name', _.get(props, 'player.nickname'))
+
   return (
     <div className="d-flex">
       <div className={`d-flex flex-grow-1 ${styles.messageContainer}`}>
@@ -46,8 +48,10 @@ const Message: FC<MessageProps> = (props) => {
                 className={styles.avatarImage}
               />
             </div>
+
+            <span> </span>
             <span className="text-white pe-1 fw-medium my-auto text-start">
-              Tên người chơi
+              {nickname} {props.isCurrentUser ? '(Bạn)' : null}
             </span>
           </div>
           {/* nội dung chat */}

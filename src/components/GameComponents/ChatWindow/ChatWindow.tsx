@@ -1,24 +1,22 @@
-import React, { FC, useEffect, useRef, useState } from 'react'
-import styles from './ChatWindow.module.css'
 import classNames from 'classnames'
-import { Message, MessageProps, SendMessageProps } from './Message/Message'
-import MyInput from '../../MyInput/MyInput'
-import { List, update } from 'lodash'
+import { FC, useEffect, useRef, useState } from 'react'
 import { useSocket } from '../../../hooks/useSocket/useSocket'
-import { TStartQuizResponse } from '../../../types/types'
+import { TStartQuizResponse, TUser } from '../../../types/types'
+import MyInput from '../../MyInput/MyInput'
+import styles from './ChatWindow.module.css'
+import { Message, MessageProps, SendMessageProps } from './Message/Message'
 
 const ChatWindow: FC<{
   gameSession: TStartQuizResponse
-}> = ({ gameSession }) => {
+  user: TUser
+}> = ({ gameSession, user }) => {
   const [chatValue, setChatValue] = useState<string>('')
   const [chatContent, setChatContent] = useState<MessageProps[]>([])
   const { socket } = useSocket()
 
   const sendMessage = (message: SendMessageProps) => {
     if (message.message?.length ?? 0 > 0) {
-      // setChatContent([...chatContent, message])
       setChatValue('')
-
       socket?.emit('chat', message)
     }
   }
@@ -29,10 +27,9 @@ const ChatWindow: FC<{
     }
   }
   socket?.on('chat', (data) => {
-    console.log('chat', data)
-    // setChatContent(prev => [...prev, data])
     receivedMessage(data as MessageProps)
   })
+
   const updateVoteForMessage = (voteChange: number, messageIndex: number) => {
     if (messageIndex < chatContent.length) {
       const cache: MessageProps[] = chatContent
@@ -65,6 +62,7 @@ const ChatWindow: FC<{
             <Message
               key={index}
               {...item}
+              isCurrentUser={item.userId === user.id || item.player?.userId === user.id}
               onVoteUpdated={(voteChange: number) => {
                 updateVoteForMessage(voteChange, index)
               }}

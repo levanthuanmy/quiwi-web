@@ -11,17 +11,14 @@ type PlayerListProps = {
 const PlayerList: FC<PlayerListProps> = (props) => {
   return (
     <div
+      id="playerList"
       className={classNames(
         props.className,
-        'rounded-20px bg-white d-flex flex-column w-100 ',
+        'bg-white d-flex flex-column w-100 ',
         styles.playerList
       )}
     >
-      <div className="d-flex align-items-center">
-        <i
-          className={`bi bi-arrow-up-circle-fill flex-grow-1 text-primary fs-3 ${styles.buttonScroll}`}
-        />
-      </div>
+      <div className="text-center fs-16px fw-bold text-primary">Danh sách người chơi</div>
       <div className={`${styles.scrollListContainer}`}>
         <div className={`${styles.scrollList}`}>
           <div className={styles.blank} />
@@ -46,11 +43,6 @@ const PlayerList: FC<PlayerListProps> = (props) => {
             })}
           <div className={styles.blank} />
         </div>
-      </div>
-      <div className="d-flex align-items-center">
-        <i
-          className={`bi bi-arrow-down-circle-fill flex-grow-1 text-primary fs-3 ${styles.buttonScroll}`}
-        />
       </div>
     </div>
   )
