@@ -1,13 +1,10 @@
 import { NextPage } from 'next'
 import { useRouter } from 'next/router'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import AnswerBoard from '../../components/GameComponents/AnswerBoard/AnswerBoard'
 import EmojiBar from '../../components/GameComponents/EmojiBar/EmojiBar'
 import GameMenuBar from '../../components/GameMenuBar/GameMenuBar'
 import { useGameSession } from '../../hooks/useGameSession/useGameSession'
-import { useLocalStorage } from '../../hooks/useLocalStorage/useLocalStorage'
-import { TStartQuizResponse, TUser } from '../../types/types'
-import { JsonParse } from '../../utils/helper'
 import styles from './GamePage.module.css'
 
 const GamePage: NextPage = () => {
@@ -16,14 +13,6 @@ const GamePage: NextPage = () => {
     useState<boolean>(false)
   const { questionId } = router.query
   const gameSession = useGameSession()
-  const [lsUser] = useLocalStorage('user', '')
-  const [user, setUser] = useState<TUser>()
-
-  useEffect(() => {
-    const userParsed: TUser = JsonParse(lsUser)
-    setUser(userParsed)
-  }, [])
-
   const [isExpand, setIsExpand] = useState<boolean>(false)
 
   return (
@@ -45,7 +34,6 @@ const GamePage: NextPage = () => {
             isExpand={isExpand}
             setIsExpand={setIsExpand}
             gameSession={gameSession}
-            user={user}
           />
         </div>
       </div>

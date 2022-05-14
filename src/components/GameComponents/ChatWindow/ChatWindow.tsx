@@ -1,18 +1,20 @@
 import classNames from 'classnames'
 import { FC, useEffect, useRef, useState } from 'react'
+import { useAuth } from '../../../hooks/useAuth/useAuth'
 import { useSocket } from '../../../hooks/useSocket/useSocket'
-import { TStartQuizResponse, TUser } from '../../../types/types'
+import { TStartQuizResponse } from '../../../types/types'
 import MyInput from '../../MyInput/MyInput'
 import styles from './ChatWindow.module.css'
 import { Message, MessageProps, SendMessageProps } from './Message/Message'
 
 const ChatWindow: FC<{
   gameSession: TStartQuizResponse
-  user: TUser
-}> = ({ gameSession, user }) => {
+}> = ({ gameSession }) => {
   const [chatValue, setChatValue] = useState<string>('')
   const [chatContent, setChatContent] = useState<MessageProps[]>([])
   const { socket } = useSocket()
+  const authContext = useAuth()
+  const user = authContext.getUser()
 
   const sendMessage = (message: SendMessageProps) => {
     if (message.message?.length ?? 0 > 0) {
@@ -62,7 +64,9 @@ const ChatWindow: FC<{
             <Message
               key={index}
               {...item}
-              isCurrentUser={item.userId === user.id || item.player?.userId === user.id}
+              isCurrentUser={
+                item.userId === user?.id || item.player?.userId === user?.id
+              }
               onVoteUpdated={(voteChange: number) => {
                 updateVoteForMessage(voteChange, index)
               }}
