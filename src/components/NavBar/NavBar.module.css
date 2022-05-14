@@ -1,0 +1,17 @@
+.container {
+  height: 80px;
+  z-index: 10;
+}
+
+.btn {
+  width: 48px;
+  height: 48px;
+  color: #6c757d;
+}
+
+.btn:hover {
+  color: white;
+  background-color: #6c757d;
+  box-shadow: 0 0 1rem rgb(0 0 0 / 0.3);
+  border: unset !important;
+}

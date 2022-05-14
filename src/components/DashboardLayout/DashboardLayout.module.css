@@ -1,0 +1,5 @@
+@media (min-width: 576px) {
+  .padOnSma {
+    padding-left: 80px !important;
+  }
+}

@@ -1,5 +1,5 @@
 import classNames from 'classnames'
-import React, { FC } from 'react'
+import React, { FC, memo } from 'react'
 import { useAuth } from '../../hooks/useAuth/useAuth'
 import styles from './ItemMenuBar.module.css'
 
@@ -16,22 +16,31 @@ const ItemMenuBar: FC<ItemMenuBarProps> = ({
   isActive,
 }) => {
   const authNavigate = useAuth()
-  const activeStyle = isActive
-    ? `${styles.active} border-end border-5 border-primary text-primary fw-medium`
-    : ''
   return (
     <div
       className={classNames(
-        'd-flex align-items-center px-3 cursor-pointer text-secondary text-truncate',
+        'd-flex align-items-center px-3 py-2 cursor-pointer text-secondary text-truncate gap-3',
         styles.container,
-        activeStyle
+        {
+          'fw-medium': isActive,
+        }
       )}
       onClick={() => authNavigate.navigate(url)}
     >
-      <i className={classNames('fs-18px pe-3', iconClassName)} />
-      {title}
+      <div
+        className={classNames(
+          'fs-20px d-flex justify-content-center align-items-center bg-primary rounded-10px',
+          {
+            'bg-opacity-100 text-white': isActive,
+            'bg-opacity-10 text-primary': !isActive,
+          },
+          styles.item,
+          iconClassName
+        )}
+      />
+      <div className="fs-18px">{title}</div>
     </div>
   )
 }
 
-export default ItemMenuBar
+export default memo(ItemMenuBar)
