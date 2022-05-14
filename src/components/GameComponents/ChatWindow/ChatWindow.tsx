@@ -1,55 +1,74 @@
-import React, { FC, useState } from 'react'
-import styles from './ChatWindow.module.css'
 import classNames from 'classnames'
-import { Message, MessageProps } from './Message/Message'
+import { FC, useEffect, useRef, useState } from 'react'
+import { useSocket } from '../../../hooks/useSocket/useSocket'
+import { TStartQuizResponse, TUser } from '../../../types/types'
 import MyInput from '../../MyInput/MyInput'
-import { List } from 'lodash'
+import styles from './ChatWindow.module.css'
+import { Message, MessageProps, SendMessageProps } from './Message/Message'
 
-const ChatWindow: FC = () => {
+const ChatWindow: FC<{
+  gameSession: TStartQuizResponse
+  user: TUser
+}> = ({ gameSession, user }) => {
   const [chatValue, setChatValue] = useState<string>('')
   const [chatContent, setChatContent] = useState<MessageProps[]>([])
+  const { socket } = useSocket()
 
-  const sendMessage = (message: MessageProps) => {
-    if (message.content?.length ?? 0 > 0) {
-      setChatContent([...chatContent, message])
+  const sendMessage = (message: SendMessageProps) => {
+    if (message.message?.length ?? 0 > 0) {
       setChatValue('')
+      socket?.emit('chat', message)
     }
   }
 
-  const updateVoteForMessage = (voteChange: number, messageIndex: number) => {    
+  const receivedMessage = (message: MessageProps) => {
+    if (message) {
+      setChatContent([...chatContent, message])
+    }
+  }
+  socket?.on('chat', (data) => {
+    receivedMessage(data as MessageProps)
+  })
+
+  const updateVoteForMessage = (voteChange: number, messageIndex: number) => {
     if (messageIndex < chatContent.length) {
       const cache: MessageProps[] = chatContent
       const updateItem = cache[messageIndex]
-      
+
       if (updateItem) {
-        cache[messageIndex] = {
-          avatar: updateItem.avatar,
-          name: updateItem.name,
-          content: updateItem.content,
-          vote: (updateItem.vote ?? 0) + voteChange,
-          onVoteUpdated: updateItem.onVoteUpdated,
-        }
+        Object.assign(cache[messageIndex], updateItem)
+
+        cache[messageIndex].vote = (updateItem.vote ?? 0) + voteChange
       }
       console.log(cache)
       setChatContent([...cache])
     }
   }
+  const messagesEndRef = useRef<HTMLDivElement>(null)
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'auto' })
+  }
+
+  useEffect(() => {
+    return scrollToBottom()
+  }, [chatContent])
 
   return (
     <div className={classNames(styles.chatWindow)}>
       <div className={styles.chatBox}>
         <div className={`d-flex flex-column gap-2 ${styles.chatList} `}>
-          {chatContent
-            .map((item, index) => (
-              <Message
-                key={index}
-                {...item}
-                onVoteUpdated={(voteChange: number) => {
-                  updateVoteForMessage(voteChange, index)
-                }}
-              />
-            ))
-            .reverse()}
+          {chatContent.map((item, index) => (
+            <Message
+              key={index}
+              {...item}
+              isCurrentUser={item.userId === user.id || item.player?.userId === user.id}
+              onVoteUpdated={(voteChange: number) => {
+                updateVoteForMessage(voteChange, index)
+              }}
+            />
+          ))}
+          <div ref={messagesEndRef} />
           <br></br>
         </div>
       </div>
@@ -59,11 +78,17 @@ const ChatWindow: FC = () => {
           iconClassName="bi bi-send-fill"
           onChange={(e) => setChatValue(e.target.value)}
           onIconClick={() => {
-            sendMessage({ content: chatValue, vote: 0 })
+            sendMessage({
+              message: chatValue,
+              invitationCode: gameSession.invitationCode,
+            })
           }}
           onKeyDown={(e) => {
             if (e.key === 'Enter') {
-              sendMessage({ content: chatValue, vote: 0 })
+              sendMessage({
+                message: chatValue,
+                invitationCode: gameSession.invitationCode,
+              })
             }
           }}
           // className={styles.chatInput}

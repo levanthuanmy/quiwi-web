@@ -1,9 +1,7 @@
 .hiddenNav {
-
 }
 
-.emojiBar { 
-
+.emojiBar {
 }
 
 .answerBoard {
@@ -23,19 +21,21 @@
 .gameView {
   position: relative;
   padding-top: 8px;
+  height: 80vh;
 }
 
 .gameCol {
   /* height: 100%; */
+  width: 100%;
 }
 
-.chatView {
+/* .chatView {
   max-height: 90vh;
 }
 
 .playerList {
   max-height: 90vh;
-}
+} */
 
 /* // Small devices (landscape phones, 576px and up) */
 @media (max-width: 576px) {
@@ -44,9 +44,9 @@
     visibility: hidden;
   }
 
-  .emojiBar { 
-      display: none;
-      visibility: hidden;
+  .emojiBar {
+    display: none;
+    visibility: hidden;
   }
   .gameBackground {
     height: 100vh;
@@ -63,7 +63,6 @@
   .playerList {
     display: none;
   }
-
 }
 
 /* // Medium devices (tablets, 768px and up) */
