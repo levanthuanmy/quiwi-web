@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import _ from 'lodash'
 import { useRouter } from 'next/router'
 import React, { FC, useEffect, useState } from 'react'
@@ -35,6 +36,7 @@ const LobbyScreen: FC<LobbyScreenProps> = ({
 
   useEffect(() => {
     if (socket && socket.disconnected) socket.connect()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {

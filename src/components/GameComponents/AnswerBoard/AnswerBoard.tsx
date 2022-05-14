@@ -1,20 +1,19 @@
-import React, { FC, useEffect, useState } from 'react'
-import { Button, Col, Row } from 'react-bootstrap'
-import styles from './AnswerBoard.module.css'
+/* eslint-disable react-hooks/exhaustive-deps */
 import classNames from 'classnames'
-import MultipleChoiceAnswerSection from '../AnswerQuestionComponent/SelectionQuestion/MultipleChoiceAnswerSection'
+import { useRouter } from 'next/router'
+import React, { FC, useEffect, useState } from 'react'
+import { useGameSession } from '../../../hooks/useGameSession/useGameSession'
 import { useLocalStorage } from '../../../hooks/useLocalStorage/useLocalStorage'
+import { useSocket } from '../../../hooks/useSocket/useSocket'
 import {
-  TQuestion,
   TStartQuizResponse,
-  TUser,
+  TUser
 } from '../../../types/types'
 import { JsonParse } from '../../../utils/helper'
-import { useSocket } from '../../../hooks/useSocket/useSocket'
-import MoreButton from '../MoreButton/MoreButton'
-import { useGameSession } from '../../../hooks/useGameSession/useGameSession'
-import { useRouter } from 'next/router'
 import MyModal from '../../MyModal/MyModal'
+import MultipleChoiceAnswerSection from '../AnswerQuestionComponent/SelectionQuestion/MultipleChoiceAnswerSection'
+import MoreButton from '../MoreButton/MoreButton'
+import styles from './AnswerBoard.module.css'
 
 type AnswerBoardProps = {
   className?: string

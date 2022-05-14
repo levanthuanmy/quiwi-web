@@ -1,21 +1,28 @@
 import classNames from 'classnames'
 import { FC, useEffect, useRef, useState } from 'react'
-import { useAuth } from '../../../hooks/useAuth/useAuth'
+import { useLocalStorage } from '../../../hooks/useLocalStorage/useLocalStorage'
 import { useSocket } from '../../../hooks/useSocket/useSocket'
-import { TStartQuizResponse } from '../../../types/types'
+import { TPlayer, TStartQuizResponse, TUser } from '../../../types/types'
+import { JsonParse } from '../../../utils/helper'
 import MyInput from '../../MyInput/MyInput'
 import styles from './ChatWindow.module.css'
 import { Message, MessageProps, SendMessageProps } from './Message/Message'
 
 const ChatWindow: FC<{
   gameSession: TStartQuizResponse
-}> = ({ gameSession }) => {
+  user?: TUser
+}> = ({ gameSession, user }) => {
   const [chatValue, setChatValue] = useState<string>('')
   const [chatContent, setChatContent] = useState<MessageProps[]>([])
   const { socket } = useSocket()
-  const authContext = useAuth()
-  const user = authContext.getUser()
+  const [lsPlayer, setLsPlayer] = useLocalStorage('game-session-player', '')
+  const [player, setPLayer] = useState<TPlayer>()
 
+  useEffect(() => {
+    if (lsPlayer) {
+      setPLayer(JsonParse(lsPlayer))
+    }
+  }, [lsPlayer])
   const sendMessage = (message: SendMessageProps) => {
     if (message.message?.length ?? 0 > 0) {
       setChatValue('')
@@ -65,7 +72,9 @@ const ChatWindow: FC<{
               key={index}
               {...item}
               isCurrentUser={
-                item.userId === user?.id || item.player?.userId === user?.id
+                item.userId === user?.id ||
+                item.player?.userId === user?.id ||
+                item.playerNickName === player?.nickname
               }
               onVoteUpdated={(voteChange: number) => {
                 updateVoteForMessage(voteChange, index)
