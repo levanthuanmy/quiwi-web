@@ -71,14 +71,15 @@ const RankingPage: NextPage = () => {
           <Container fluid="lg" className="p-3">
             <div>
               <div className={styles.RowDisplay}>
-                <div className={styles.RowDisplay}>
+                <div className="d-flex align-items-center gap-3">
                   <div>Xếp hạng theo:</div>
-                  <Dropdown
+                  <Dropdown 
+                    className='text-white'
                     onSelect={(eventKey: any) => {
                       setRankingDropdownPos(eventKey)
                     }}
                   >
-                    <Dropdown.Toggle variant="success" id="dropdown-basic">
+                    <Dropdown.Toggle  id="dropdown-basic">
                       {rankingDropdown[rankingDropdownPos].showType}
                     </Dropdown.Toggle>
 

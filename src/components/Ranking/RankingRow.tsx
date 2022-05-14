@@ -1,3 +1,4 @@
+import classNames from 'classnames'
 import React, { FC } from 'react'
 import { Image } from 'react-bootstrap'
 
@@ -15,7 +16,11 @@ const RankingRow: FC<RankingProps> = ({
   isHighlight,
 }) => {
   return (
-    <tr className={isHighlight ? 'bg-primary' : ''}>
+    <tr
+      className={classNames({
+        'text-white bg-primary': isHighlight,
+      },'p-5')}
+    >
       <td>{rank}</td>
       <td>
         <Image
@@ -25,7 +30,13 @@ const RankingRow: FC<RankingProps> = ({
           alt="avatar"
           className="rounded-circle"
         />
-        <span className="text-white ps-2 pe-1 fw-medium">{username}</span>
+        <span
+          className={classNames('ps-2 pe-1 fw-medium', {
+            'text-white': isHighlight,
+          })}
+        >
+          {username}
+        </span>
       </td>
       <td>{quantity}</td>
     </tr>

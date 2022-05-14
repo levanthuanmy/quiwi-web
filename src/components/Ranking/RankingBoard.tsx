@@ -8,16 +8,18 @@ type RankingList = {
 
 const RankingBoard: FC<RankingList> = ({ rankingList }) => {
   // console.log('ashgcshabcascsbcsahcb', JSON.stringify(rankingList))
-  const list = rankingList?.map((d) => 
-    <RankingRow key={d.rank}
-    rank={d.rank}
-    username={d.username}
-    quantity={d.quantity} 
-    isHighlight={d.isHighlight}    />
-  )
+  const list = rankingList?.map((d) => (
+    <RankingRow
+      key={d.rank}
+      rank={d.rank}
+      username={d.username}
+      quantity={d.quantity}
+      isHighlight={d.isHighlight}
+    />
+  ))
 
   return (
-    <Table striped bordered hover>
+    <Table hover >
       <thead>
         <tr>
           <th>Thứ hạng</th>
@@ -25,9 +27,7 @@ const RankingBoard: FC<RankingList> = ({ rankingList }) => {
           <th>Số lượng đạt được</th>
         </tr>
       </thead>
-      <tbody>
-        {list}
-      </tbody>
+      <tbody>{list}</tbody>
     </Table>
   )
 }
