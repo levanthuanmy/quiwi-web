@@ -1,6 +1,6 @@
 import React, { FC, memo } from 'react'
 import { Col, Image, Row } from 'react-bootstrap'
-import { useAuthNavigation } from '../../hooks/useAuthNavigation/useAuthNavigation'
+import { useAuth } from '../../hooks/useAuth/useAuth'
 import { TQuiz } from '../../types/types'
 import MyButton from '../MyButton/MyButton'
 
@@ -9,7 +9,7 @@ type ItemQuizProps = {
   exploreMode?: boolean
 }
 const ItemQuiz: FC<ItemQuizProps> = ({ quiz, exploreMode = false }) => {
-  const authNavigate = useAuthNavigation()
+  const authNavigate = useAuth()
 
   return (
     <div className="bg-white h-100 p-12px border rounded-10px">
