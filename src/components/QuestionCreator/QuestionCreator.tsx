@@ -1,12 +1,14 @@
 import { Field, Form as FormikForm, Formik } from 'formik'
+import _ from 'lodash'
 import { useRouter } from 'next/router'
 import React, { FC, useEffect, useState } from 'react'
 import { Col, Dropdown, Form, Image, Modal, Row } from 'react-bootstrap'
 import { post } from '../../libs/api'
+import { TEditQuestion } from '../../pages/quiz/creator/[id]'
 import {
-  TAnswerRequest,
+  TAnswer,
+  TQuestion,
   TApiResponse,
-  TQuestionRequest,
   TQuestionType,
   TQuiz,
 } from '../../types/types'
@@ -28,7 +30,7 @@ import MyInput from '../MyInput/MyInput'
 import QuestionActionButton from '../QuestionActionButton/QuestionActionButton'
 import QuestionConfigBtn from '../QuestionConfigBtn/QuestionConfigBtn'
 
-const defaultAnswer: TAnswerRequest = {
+const defaultAnswer: TAnswer = {
   answer: '',
   isCorrect: false,
   orderPosition: 0,
@@ -36,37 +38,64 @@ const defaultAnswer: TAnswerRequest = {
   type: '20SELECTION',
 }
 
+const defaultQuestion: TQuestion = {
+  type: '10SG',
+  difficulty: 1,
+  duration: 30,
+  orderPosition: 0,
+  question: '',
+  questionAnswers: [
+    { ...defaultAnswer, orderPosition: 0 },
+    { ...defaultAnswer, orderPosition: 1 },
+    { ...defaultAnswer, orderPosition: 2 },
+  ],
+  media: '',
+}
+
 type QuestionCreatorProps = {
   show: boolean
   onHide: () => void
   setQuiz: React.Dispatch<React.SetStateAction<TQuiz | undefined>>
   quiz: TQuiz | undefined
+  isEditQuestion: TEditQuestion
 }
 const QuestionCreator: FC<QuestionCreatorProps> = ({
   show,
   onHide,
   setQuiz,
   quiz,
+  isEditQuestion,
 }) => {
   const router = useRouter()
-  const type: QuestionType =
-    (router.query?.type?.toString() as QuestionType) || 'single'
   const quizId = Number(router.query.id)
   const [fillAnswers, setFillAnswers] = useState<string[]>([])
-  const [answers, setAnswers] = useState<TAnswerRequest[]>([
+  const [answers, setAnswers] = useState<TAnswer[]>([
     { ...defaultAnswer, orderPosition: 0 },
     { ...defaultAnswer, orderPosition: 1 },
     { ...defaultAnswer, orderPosition: 2 },
   ])
-  const [newQuestion, setNewQuestion] = useState<TQuestionRequest>({
-    type: '10SG',
-    difficulty: 1,
-    duration: 30,
-    orderPosition: 1,
-    question: '',
-    questionAnswers: [],
-    media: '',
-  })
+  const [newQuestion, setNewQuestion] =
+    useState<TQuestion>(defaultQuestion)
+  const type: QuestionType = isEditQuestion.isEdit
+    ? MAPPED_QUESTION_TYPE[newQuestion?.type]
+    : (router.query?.type?.toString() as QuestionType) || 'single'
+
+  useEffect(() => {
+    if (isEditQuestion.isEdit) {
+      setNewQuestion(
+        quiz?.questions.find(
+          (question) => question.id === isEditQuestion.questionId
+        ) as TQuestion
+      )
+      setAnswers(
+        quiz?.questions.find(
+          (question) => question.id === isEditQuestion.questionId
+        )?.questionAnswers as TAnswer[]
+      )
+    } else {
+      setNewQuestion(defaultQuestion)
+    }
+  }, [isEditQuestion, quiz?.questions])
 
   const resetStates = () => {
     setAnswers([
@@ -99,15 +128,31 @@ const QuestionCreator: FC<QuestionCreatorProps> = ({
         alert('Bạn cần có ít nhất 1 câu trả lời là đúng')
         return
       }
-      const _newQuestion: TQuestionRequest = {
+      const _newQuestion: TQuestion = {
         ...newQuestion,
         questionAnswers: answers,
-        type: Object.keys(MAPPED_QUESTION_TYPE).find(
-          (key) => MAPPED_QUESTION_TYPE[key] === type
-        ) as TQuestionType,
+        type: isEditQuestion.isEdit
+          ? newQuestion.type
+          : (Object.keys(MAPPED_QUESTION_TYPE).find(
+              (key) => MAPPED_QUESTION_TYPE[key] === type
+            ) as TQuestionType),
+        orderPosition: isEditQuestion.isEdit
+          ? newQuestion.orderPosition
+          : quiz.questions.length,
       }
 
-      const body = { ...quiz, questions: [...quiz.questions, _newQuestion] }
+      let body = {}
+      if (isEditQuestion.isEdit) {
+        const _questions = [...quiz.questions]
+        for (let i = 0; i < _questions.length; i++) {
+          if (_questions[i].id === isEditQuestion.questionId) {
+            _questions[i] = { ..._newQuestion, id: isEditQuestion.questionId }
+          }
+        }
+        body = { ...quiz, questions: [..._questions] }
+      } else {
+        body = { ...quiz, questions: [...quiz.questions, _newQuestion] }
+      }
       const res = await post<TApiResponse<TQuiz>>(
         `/api/quizzes/${quizId}`,
         {},
@@ -116,6 +161,7 @@ const QuestionCreator: FC<QuestionCreatorProps> = ({
       )
 
       setQuiz(res.response)
+      setNewQuestion(defaultQuestion)
 
       onHide()
     } catch (error) {

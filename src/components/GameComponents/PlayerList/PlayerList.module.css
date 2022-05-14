@@ -1,0 +1,106 @@
+.name {
+  padding: 2px 16px 2px 2px;
+  gap: 4px;
+  width: fit-content;
+  background-color: #009883;
+  border-radius: 18px;
+}
+
+.playerList {
+  min-height: 70vh;
+  max-height: 90vh;
+  height: 100%;  
+  position: relative;
+  padding-left: 12px;
+  padding-right: 4px;
+}
+
+.scrollList {
+  height: 100%;
+  display: flex;
+  flex-direction: column;  
+  gap: 8px;
+  padding-right: 2px;
+  overflow-x: hidden;
+  overflow-y: scroll;
+}
+
+.avatarContainer {
+  flex: 0 0 32px;
+  background-color: #006557;
+  height: 32px;
+  width: 32px;
+  display:flex;
+  border-radius: 100%;
+}
+
+.avatarImage {
+  border-radius: 100%;
+  margin:2px;
+}
+
+.buttonScroll {
+  text-align: center;
+  padding-right: 8px;
+}
+
+.buttonScroll:hover {
+
+}
+
+.scrollListContainer {
+  flex-grow: 1;  
+  position: relative;
+  overflow-x: hidden;
+  overflow-y: hidden;
+}
+
+.scrollListContainer::after {
+  content  : "";
+  position : absolute;
+  z-index  : 1;
+  bottom   : 0;
+  left     : 0;
+  pointer-events   : none;
+  background-image : linear-gradient(to bottom, 
+                    rgba(0,0,0,0) 0%, 
+                    rgb(255, 255, 255) 100%);
+  width    : 100vw;
+  height   : 16px;
+}
+
+.scrollListContainer::before {
+  content  : "";
+  position : absolute;
+  z-index  : 1;
+  top   : 0;
+  left     : 0;
+  pointer-events   : none;
+  background-image : linear-gradient(to top, 
+                    rgba(0,0,0,0) 00%, 
+                    rgb(255, 255, 255) 100%);
+  width    : 100vw;
+  height   : 16px;
+}
+
+.scrollList::-webkit-scrollbar {
+  width: 8px;  
+}
+
+/* Track */
+.scrollList::-webkit-scrollbar-track {
+  /* box-shadow: inset 0 0 5px grey;  */
+  box-shadow: inset 0 0 5px rgba(255, 255, 255, 0);
+  border-radius: 8px;
+}
+ 
+/* Handle */
+.scrollList::-webkit-scrollbar-thumb {
+  background: #00988469; 
+  border-radius: 8px;
+}
+
+/* Handle on hover */
+.scrollList::-webkit-scrollbar-thumb:hover {
+  background: #00655878;
+}

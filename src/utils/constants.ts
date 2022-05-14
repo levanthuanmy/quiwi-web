@@ -9,10 +9,11 @@ export const HOME_MENU_OPTIONS = [
     url: '/my-lib',
     iconClassName: 'bi bi-bookmarks',
   },
-  { title: 'Khám phá', url: '/ex', iconClassName: 'bi bi-compass' },
+  { title: 'Khám phá', url: '/explore', iconClassName: 'bi bi-compass' },
   { title: 'Cửa hàng', url: '/items', iconClassName: 'bi bi-shop' },
   { title: 'Nhiệm vụ', url: '/quests', iconClassName: 'bi bi-archive' },
   { title: 'Bảng xếp hạng', url: '/ranking', iconClassName: 'bi bi-bar-chart-line' },
+  { title: 'Danh hiệu', url: '/badges', iconClassName: 'bi bi-award' },
 ]
 
 export const PROFILE_MENU_OPTIONS = [

@@ -66,6 +66,7 @@ export type TStartQuizRequest = {
 }
 
 export type TStartQuizResponse = {
+  nickName: string
   gameMode: {
     curIndexQuestion: number
   }
@@ -142,6 +143,12 @@ export type TGamePlayBodyRequest<T> = {
   data: T
 }
 
+export type TStartGameRequest = {
+  userId: number
+  invitationCode: string
+  token?: string
+}
+
 export type TQuizBodyRequest = {
   title: string
   description: string
@@ -150,22 +157,24 @@ export type TQuizBodyRequest = {
   numPlayed: number
   numUpvotes: number
   numDownvotes: number
-  questions: TQuestionRequest[]
+  questions: TQuestion[]
 }
 
 export type TQuestionType = '10SG' | '20MUL' | '30TEXT'
 
-export type TQuestionRequest = {
+export type TQuestion = {
+  id?: number
   question: string
   type: TQuestionType
   difficulty: number
   duration: number
   orderPosition: number
-  questionAnswers: TAnswerRequest[]
+  questionAnswers: TAnswer[]
   media: string
 }
 
-export type TAnswerRequest = {
+export type TAnswer = {
+  id?: number
   answer: string
   isCorrect: boolean
   orderPosition: number

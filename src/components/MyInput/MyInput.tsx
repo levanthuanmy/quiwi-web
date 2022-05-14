@@ -1,5 +1,5 @@
 import classNames from 'classnames'
-import React, { FC } from 'react'
+import React, { FC, useState } from 'react'
 import styles from './MyInput.module.css'
 
 type MyInputProps = React.DetailedHTMLProps<
@@ -7,8 +7,10 @@ type MyInputProps = React.DetailedHTMLProps<
   HTMLInputElement
 > & {
   iconClassName?: string
+  onIconClick?: React.MouseEventHandler<HTMLDivElement> | undefined
 }
 const MyInput: FC<MyInputProps> = (props) => {
+  let value = ''
   return (
     <div
       className={classNames(
@@ -24,6 +26,7 @@ const MyInput: FC<MyInputProps> = (props) => {
           styles.icon,
           props.iconClassName
         )}
+        onClick={props.onIconClick}
       />
     </div>
   )

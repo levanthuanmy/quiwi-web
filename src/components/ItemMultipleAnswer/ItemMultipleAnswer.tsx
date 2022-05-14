@@ -1,21 +1,21 @@
 import classNames from 'classnames'
 import { useRouter } from 'next/router'
-import React, { FC, useState } from 'react'
+import React, { FC, memo, useEffect, useState } from 'react'
 import { Form, Image } from 'react-bootstrap'
-import { TAnswerRequest } from '../../types/types'
+import { TAnswer } from '../../types/types'
 import {
   getUrl,
   storage,
   storageRef,
-  uploadFile
+  uploadFile,
 } from '../../utils/firebaseConfig'
 import { getCurrentTrueAnswer } from '../../utils/helper'
 import { QuestionType } from '../IconQuestion/IconQuestion'
 import QuestionActionButton from '../QuestionActionButton/QuestionActionButton'
 
 type ItemMultipleAnswerProps = {
-  answers: TAnswerRequest[]
-  setAnswers: React.Dispatch<React.SetStateAction<TAnswerRequest[]>>
+  answers: TAnswer[]
+  setAnswers: React.Dispatch<React.SetStateAction<TAnswer[]>>
   index: number
   onRemove: () => void
 }
@@ -29,6 +29,10 @@ const ItemMultipleAnswer: FC<ItemMultipleAnswerProps> = ({
   const type: QuestionType =
     (router.query?.type?.toString() as QuestionType) || 'single'
   const [isCorrectAns, setIsCorrectAns] = useState(answers[index].isCorrect)
+
+  useEffect(() => {
+    setIsCorrectAns(answers[index].isCorrect)
+  }, [answers])
 
   const handleUploadImage = async (evt: any) => {
     try {
@@ -57,7 +61,7 @@ const ItemMultipleAnswer: FC<ItemMultipleAnswerProps> = ({
     }
   }
 
-  const editAnswer = (newAnswer: TAnswerRequest) => {
+  const editAnswer = (newAnswer: TAnswer) => {
     try {
       const cloneAnswers = [...answers]
 
@@ -134,13 +138,13 @@ const ItemMultipleAnswer: FC<ItemMultipleAnswerProps> = ({
         placeholder="Nhập câu trả lời của bạn ở đây..."
         defaultValue={answers[index].answer}
         style={{
-          height: answers[index].media.length ? 100 : 280,
+          height: answers[index]?.media?.length ? 100 : 280,
           resize: 'none',
         }}
         onChange={handleAnswerChange}
         className="shadow-none border-0 rounded-0 bg-transparent"
       />
-      {answers[index].media.length ? (
+      {answers[index]?.media?.length ? (
         <Image
           src={answers[index].media}
           width="100%"
@@ -155,4 +159,4 @@ const ItemMultipleAnswer: FC<ItemMultipleAnswerProps> = ({
   )
 }
 
-export default ItemMultipleAnswer
+export default memo(ItemMultipleAnswer)

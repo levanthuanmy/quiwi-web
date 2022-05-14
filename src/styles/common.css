@@ -18,21 +18,6 @@
   content: '';
 }
 
-#itemQuestion .accordion-button::after {
-  content: none;
-}
-
-#itemQuestion .accordion-button {
-  box-shadow: none;
-  background-color: #f2f2f2;
-  color: black;
-  padding: 12px;
-  height: 56px;
-}
-#itemQuestion .collapsed {
-  border-bottom: 1px solid #dee2e6;
-}
-
 #itemQuestion .accordion-item:last-of-type {
   border-bottom-left-radius: calc(0.75rem - 1px);
   border-bottom-right-radius: calc(0.75rem - 1px);
@@ -130,4 +115,9 @@
 
 #timeoutDropdown .dropdown-toggle::after {
   content: none;
+}
+
+.badges-list {
+  display: flex;
+  flex-wrap: wrap;
 }

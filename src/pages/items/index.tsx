@@ -1,36 +1,20 @@
-import { NextPage } from 'next'
-import React, { useState, useEffect } from 'react'
-import { Col, Container, Pagination, Row, Tab, Tabs } from 'react-bootstrap'
-// import useSWR from 'swr'
-import MenuBar from '../../components/MenuBar/MenuBar'
-import NavBar from '../../components/NavBar/NavBar'
-// import { useAuthNavigation } from '../../hooks/useAuthNavigation/useAuthNavigation'
-// import { get } from '../../libs/api'
-// import {
-//     TApiResponse,
-//     TPaginationResponse,
-//     TQuiz
-// } from '../../types/types'
-import { HOME_MENU_OPTIONS } from '../../utils/constants'
-import ItemShop from '../../components/ItemShop/ItemShop'
 import classNames from 'classnames'
+import { NextPage } from 'next'
+import React, { useEffect, useState } from 'react'
+import { Col, Container, Pagination, Row } from 'react-bootstrap'
+import DashboardLayout from '../../components/DashboardLayout/DashboardLayout'
+import ItemShop from '../../components/ItemShop/ItemShop'
+import { get } from '../../libs/api'
 import {
   TApiResponse,
   TItem,
   TItemCategory,
-  TPaginationResponse,
-  TQuiz,
-  TStartQuizRequest,
-  TUser,
+  TPaginationResponse
 } from '../../types/types'
-import useSWR from 'swr'
-import { get } from '../../libs/api'
-import { resolveSoa } from 'dns'
 
 // const socket = io(`${API_URL}/games`, { transports: ['websocket'] })
 
 const ItemPage: NextPage = () => {
-  const [isExpand, setIsExpand] = useState<boolean>(false)
   const [toggleState, setToggleState] = useState<number>(1)
   const [itemsResponse, setItemsResponse] =
     useState<TPaginationResponse<TItem>>()
@@ -209,121 +193,103 @@ const ItemPage: NextPage = () => {
   // console.log(data);
 
   return (
-    <>
-      <NavBar />
-      <div
-        className="d-flex pt-64px min-vh-100"
-        style={{ backgroundColor: '#00A991' }}
-      >
-        <MenuBar
-          isExpand={isExpand}
-          setIsExpand={setIsExpand}
-          menuOptions={HOME_MENU_OPTIONS}
-          isFullHeight={true}
-        />
-        <div className="ps-5 w-100 transition-all-150ms">
-          <Container fluid="lg">
-            <Row className="mt-2 pt-2 align-items-center">
-              <Col
-                style={{
-                  color: 'white',
-                  fontWeight: 'bold',
-                  fontSize: '25px',
-                  textAlign: 'center',
-                }}
-                xs={2}
-              >
-                Cửa hàng vật phẩm
-              </Col>
-              <Col xs={8} style={{ display: 'flex', justifyContent: 'center' }}>
-                {itemCategoriesResponse?.items.map((category, idx) => (
-                  <div
-                    key={category.id}
-                    className={
-                      toggleState === category.id ? 'tabs active-tabs' : 'tabs'
-                    }
-                    onClick={() => toggleTab(category.id)}
-                  >
-                    {category.name}
-                  </div>
-                ))}
-              </Col>
-              <Col xs={2}>
-                <div
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'flex-start',
-                    backgroundColor: '#006557',
-                    fontSize: '25px',
-                    borderRadius: 10,
-                    padding: 2,
-                    fontWeight: 'bold',
-                    color: '#D1B550',
-                  }}
-                >
-                  <div
-                    className={classNames('bi bi-coin')}
-                    style={{ marginLeft: 10 }}
-                  ></div>
-                  <div style={{ paddingLeft: '10px' }}>800,000</div>
-                </div>
-              </Col>
-            </Row>
-            <Row
-              className={
-                toggleState === toggleState ? 'content' : 'deactive-content'
-              }
+    <DashboardLayout>
+      <div className="w-100">
+        <Container fluid="lg">
+          <Row className="mt-2 pt-2 align-items-center">
+            <Col
+              style={{
+                color: 'white',
+                fontWeight: 'bold',
+                fontSize: '25px',
+                textAlign: 'center',
+              }}
+              xs={2}
             >
-              {itemsResponse?.items.map((item, idx) => (
-                <Col key={item.id} className="p-3" xs={3}>
-                  <ItemShop />
-                </Col>
+              Cửa hàng vật phẩm
+            </Col>
+            <Col xs={8} style={{ display: 'flex', justifyContent: 'center' }}>
+              {itemCategoriesResponse?.items.map((category, idx) => (
+                <div
+                  key={category.id}
+                  className={
+                    toggleState === category.id ? 'tabs active-tabs' : 'tabs'
+                  }
+                  onClick={() => toggleTab(category.id)}
+                >
+                  {category.name}
+                </div>
               ))}
-            </Row>
-            <Row className="mt-3">
-              <Col style={{ display: 'flex', justifyContent: 'center' }}>
-                {itemsResponse ? (
-                  <Pagination>
-                    <Pagination.First
-                      onClick={() => getItems(toggleState, 1)}
-                    />
-                    <Pagination.Prev
-                      onClick={() =>
-                        getItems(toggleState, currentPagination - 1)
-                      }
-                    />
-                    {currentListPagination?.map((item, idx) =>
-                      item === currentPagination ? (
-                        <Pagination.Item active>{item}</Pagination.Item>
-                      ) : (
-                        <Pagination.Item
-                          onClick={() => getItems(toggleState, item)}
-                        >
-                          {item}
-                        </Pagination.Item>
-                      )
-                    )}
-
-                    <Pagination.Next
-                      onClick={() =>
-                        getItems(toggleState, currentPagination + 1)
-                      }
-                    />
-                    <Pagination.Last
-                      onClick={() =>
-                        getItems(toggleState, itemsResponse.totalPages)
-                      }
-                    />
-                  </Pagination>
-                ) : (
-                  <div></div>
-                )}
+            </Col>
+            <Col xs={2}>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'flex-start',
+                  backgroundColor: '#006557',
+                  fontSize: '25px',
+                  borderRadius: 10,
+                  padding: 2,
+                  fontWeight: 'bold',
+                  color: '#D1B550',
+                }}
+              >
+                <div
+                  className={classNames('bi bi-coin')}
+                  style={{ marginLeft: 10 }}
+                ></div>
+                <div style={{ paddingLeft: '10px' }}>800,000</div>
+              </div>
+            </Col>
+          </Row>
+          <Row
+            className={
+              toggleState === toggleState ? 'content' : 'deactive-content'
+            }
+          >
+            {itemsResponse?.items.map((item, idx) => (
+              <Col key={item.id} className="p-3" xs={3}>
+                <ItemShop />
               </Col>
-            </Row>
-          </Container>
-        </div>
+            ))}
+          </Row>
+          <Row className="mt-3">
+            <Col style={{ display: 'flex', justifyContent: 'center' }}>
+              {itemsResponse ? (
+                <Pagination>
+                  <Pagination.First onClick={() => getItems(toggleState, 1)} />
+                  <Pagination.Prev
+                    onClick={() => getItems(toggleState, currentPagination - 1)}
+                  />
+                  {currentListPagination?.map((item, idx) =>
+                    item === currentPagination ? (
+                      <Pagination.Item active>{item}</Pagination.Item>
+                    ) : (
+                      <Pagination.Item
+                        onClick={() => getItems(toggleState, item)}
+                      >
+                        {item}
+                      </Pagination.Item>
+                    )
+                  )}
+
+                  <Pagination.Next
+                    onClick={() => getItems(toggleState, currentPagination + 1)}
+                  />
+                  <Pagination.Last
+                    onClick={() =>
+                      getItems(toggleState, itemsResponse.totalPages)
+                    }
+                  />
+                </Pagination>
+              ) : (
+                <div></div>
+              )}
+            </Col>
+          </Row>
+        </Container>
       </div>
-    </>
+    </DashboardLayout>
   )
 }
 
