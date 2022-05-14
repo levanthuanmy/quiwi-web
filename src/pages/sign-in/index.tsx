@@ -2,12 +2,10 @@ import { Field, Form, Formik, FormikHelpers } from 'formik'
 import { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import React from 'react'
-import { useSetRecoilState } from 'recoil'
-import { userState } from '../../atoms/auth'
 import MyButton from '../../components/MyButton/MyButton'
 import MyInput from '../../components/MyInput/MyInput'
 import SingleFloatingCardLayout from '../../components/SingleFloatingCardLayout/SingleFloatingCardLayout'
-import { useAuthNavigation } from '../../hooks/useAuthNavigation/useAuthNavigation'
+import { useAuth } from '../../hooks/useAuth/useAuth'
 import { post } from '../../libs/api'
 import { TApiResponse, TUser } from '../../types/types'
 
@@ -18,8 +16,7 @@ type SignInForm = {
 const SignInPage: NextPage = () => {
   const router = useRouter()
   const initialValues: SignInForm = { username: '', password: '' }
-  const setUser = useSetRecoilState(userState)
-  const authNavigate = useAuthNavigation()
+  const authContext = useAuth()
 
   const onSignIn = async (
     body: SignInForm,
@@ -27,9 +24,8 @@ const SignInPage: NextPage = () => {
   ) => {
     try {
       const res: TApiResponse<TUser> = await post('/api/auth/login', {}, body)
-      setUser(res.response)
-      await authNavigate.toPrevRoute()
-      router.reload()
+      authContext.setUser(res.response)
+      await authContext.toPrevRoute()
     } catch (error) {
       console.log('onSignUp - error', error)
     } finally {

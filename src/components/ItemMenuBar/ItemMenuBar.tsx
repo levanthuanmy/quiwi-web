@@ -1,6 +1,6 @@
 import classNames from 'classnames'
 import React, { FC } from 'react'
-import { useAuthNavigation } from '../../hooks/useAuthNavigation/useAuthNavigation'
+import { useAuth } from '../../hooks/useAuth/useAuth'
 import styles from './ItemMenuBar.module.css'
 
 type ItemMenuBarProps = {
@@ -15,7 +15,7 @@ const ItemMenuBar: FC<ItemMenuBarProps> = ({
   url,
   isActive,
 }) => {
-  const authNavigate = useAuthNavigation()
+  const authNavigate = useAuth()
   const activeStyle = isActive
     ? `${styles.active} border-end border-5 border-primary text-primary fw-medium`
     : ''
