@@ -1,6 +1,7 @@
 import classNames from 'classnames'
 import { useRouter } from 'next/router'
 import React, { FC } from 'react'
+import { TStartQuizResponse } from '../../types/types'
 import ChatWindow from '../GameComponents/ChatWindow/ChatWindow'
 import PlayerList from '../GameComponents/PlayerList/PlayerList'
 import ItemMenuBar from '../ItemMenuBar/ItemMenuBar'
@@ -9,27 +10,33 @@ import styles from './GameMenuBar.module.css'
 type GameMenuBarProps = {
   isExpand: boolean
   setIsExpand: React.Dispatch<React.SetStateAction<boolean>>
-
+  gameSession: TStartQuizResponse
   isFullHeight: boolean
 }
 const GameMenuBar: FC<GameMenuBarProps> = ({
   isExpand,
   setIsExpand,
+  gameSession,
   isFullHeight,
 }) => {
   const router = useRouter()
 
   return (
     <div
-      className={classNames('border-end  bg-white  ', styles.container, {
-        // "h-100": isFullHeight,
-        height: '100vh',
-        right: 0,
-      })}
+      className={classNames(
+        'd-flex flex-column border-end  bg-white  ',
+        styles.container,
+        {
+          // "h-100": isFullHeight,
+          // height: '100vh',
+          minHeight: '976px',
+          right: 0,
+        }
+      )}
       style={{ width: isExpand ? 350 : 48 }}
     >
       <div
-        className="position-relative cursor-pointer"
+        className="position-relative cursor-pointer bg-primary"
         style={{ height: 48 }}
         onClick={() => setIsExpand((prev) => !prev)}
       >
@@ -44,24 +51,13 @@ const GameMenuBar: FC<GameMenuBarProps> = ({
           )}
         />
       </div>
-      <div className="d-flex flex-column justify-content-between h-100">
-        <PlayerList
-          playerList={[
-            {
-              nickname: ' kul',
-              gameLobbyId: 1,
-              score: 100,
-              id: 1
-            },
-          ]}
-        />
-        <hr></hr>
-        <ChatWindow />
-      </div>
-
-      {/* {menuOptions.map((item, key) => (
-        <ItemMenuBar key={key} {...item} />
-      ))} */}
+      {isExpand ? (
+        <>
+          <PlayerList playerList={gameSession.players} />
+          <hr></hr>
+          <ChatWindow gameSession={gameSession} />
+        </>
+      ) : null}
     </div>
   )
 }

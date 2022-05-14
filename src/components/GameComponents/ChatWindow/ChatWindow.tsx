@@ -1,34 +1,47 @@
 import React, { FC, useEffect, useRef, useState } from 'react'
 import styles from './ChatWindow.module.css'
 import classNames from 'classnames'
-import { Message, MessageProps } from './Message/Message'
+import { Message, MessageProps, SendMessageProps } from './Message/Message'
 import MyInput from '../../MyInput/MyInput'
-import { List } from 'lodash'
+import { List, update } from 'lodash'
+import { useSocket } from '../../../hooks/useSocket/useSocket'
+import { TStartQuizResponse } from '../../../types/types'
 
-const ChatWindow: FC = () => {
+const ChatWindow: FC<{
+  gameSession: TStartQuizResponse
+}> = ({ gameSession }) => {
   const [chatValue, setChatValue] = useState<string>('')
   const [chatContent, setChatContent] = useState<MessageProps[]>([])
+  const { socket } = useSocket()
 
-  const sendMessage = (message: MessageProps) => {
-    if (message.content?.length ?? 0 > 0) {
-      setChatContent([...chatContent, message])
+  const sendMessage = (message: SendMessageProps) => {
+    if (message.message?.length ?? 0 > 0) {
+      // setChatContent([...chatContent, message])
       setChatValue('')
+
+      socket?.emit('chat', message)
     }
   }
 
+  const receivedMessage = (message: MessageProps) => {
+    if (message) {
+      setChatContent([...chatContent, message])
+    }
+  }
+  socket?.on('chat', (data) => {
+    console.log('chat', data)
+    // setChatContent(prev => [...prev, data])
+    receivedMessage(data as MessageProps)
+  })
   const updateVoteForMessage = (voteChange: number, messageIndex: number) => {
     if (messageIndex < chatContent.length) {
       const cache: MessageProps[] = chatContent
       const updateItem = cache[messageIndex]
 
       if (updateItem) {
-        cache[messageIndex] = {
-          avatar: updateItem.avatar,
-          name: updateItem.name,
-          content: updateItem.content,
-          vote: (updateItem.vote ?? 0) + voteChange,
-          onVoteUpdated: updateItem.onVoteUpdated,
-        }
+        Object.assign(cache[messageIndex], updateItem)
+
+        cache[messageIndex].vote = (updateItem.vote ?? 0) + voteChange
       }
       console.log(cache)
       setChatContent([...cache])
@@ -67,11 +80,17 @@ const ChatWindow: FC = () => {
           iconClassName="bi bi-send-fill"
           onChange={(e) => setChatValue(e.target.value)}
           onIconClick={() => {
-            sendMessage({ content: chatValue, vote: 0 })
+            sendMessage({
+              message: chatValue,
+              invitationCode: gameSession.invitationCode,
+            })
           }}
           onKeyDown={(e) => {
             if (e.key === 'Enter') {
-              sendMessage({ content: chatValue, vote: 0 })
+              sendMessage({
+                message: chatValue,
+                invitationCode: gameSession.invitationCode,
+              })
             }
           }}
           // className={styles.chatInput}
