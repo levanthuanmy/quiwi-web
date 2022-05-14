@@ -2,13 +2,11 @@ import _ from 'lodash'
 import { NextPage } from 'next'
 import React, { useEffect, useState } from 'react'
 import { Container, Dropdown } from 'react-bootstrap'
-import MenuBar from '../../components/MenuBar/MenuBar'
-import NavBar from '../../components/NavBar/NavBar'
+import DashboardLayout from '../../components/DashboardLayout/DashboardLayout'
 import RankingBoard from '../../components/Ranking/RankingBoard'
 import { RankingProps } from '../../components/Ranking/RankingRow'
 import { useLocalStorage } from '../../hooks/useLocalStorage/useLocalStorage'
 import { TUser } from '../../types/types'
-import { HOME_MENU_OPTIONS } from '../../utils/constants'
 import { JsonParse } from '../../utils/helper'
 import styles from './ranking.module.css'
 
@@ -35,7 +33,6 @@ const rankingDropdown: RankingDropdown[] = [
 const url = process.env.NEXT_PUBLIC_API_URL
 
 const RankingPage: NextPage = () => {
-  const [isExpand, setIsExpand] = useState<boolean>(false)
   const [rankingDropdownPos, setRankingDropdownPos] = useState<number>(0)
   const [data, setData] = useState<RankingProps[]>()
   useEffect(() => {
@@ -58,53 +55,48 @@ const RankingPage: NextPage = () => {
   // console.log('hihihi', data)
 
   return (
-    <>
-      <NavBar />
-      <div className="d-flex pt-64px min-vh-100">
-        <MenuBar
-          isExpand={isExpand}
-          setIsExpand={setIsExpand}
-          menuOptions={HOME_MENU_OPTIONS}
-          isFullHeight={true}
-        />
-        <div className="ps-5 w-100 transition-all-150ms bg-secondary bg-opacity-10">
-          <Container fluid="lg" className="p-3">
-            <div>
-              <div className={styles.RowDisplay}>
-                <div className="d-flex align-items-center gap-3">
-                  <div>Xếp hạng theo:</div>
-                  <Dropdown 
-                    className='text-white'
-                    onSelect={(eventKey: any) => {
-                      setRankingDropdownPos(eventKey)
-                    }}
-                  >
-                    <Dropdown.Toggle  id="dropdown-basic">
-                      {rankingDropdown[rankingDropdownPos].showType}
-                    </Dropdown.Toggle>
+    <DashboardLayout>
+      <div className="w-100 bg-secondary bg-opacity-10">
+        <Container fluid="lg" className="p-3">
+          <div>
+            <div className={styles.RowDisplay}>
+              <div className="d-flex align-items-center gap-3">
+                <div>Xếp hạng theo:</div>
+                <Dropdown
+                  className="text-white"
+                  onSelect={(eventKey: any) => {
+                    setRankingDropdownPos(eventKey)
+                  }}
+                >
+                  <Dropdown.Toggle id="dropdown-basic">
+                    {rankingDropdown[rankingDropdownPos].showType}
+                  </Dropdown.Toggle>
 
-                    <Dropdown.Menu>
-                      {rankingDropdown.map((d, index) => (
-                        <Dropdown.Item href="#/action-1" eventKey={index}>
-                          {d.showType}
-                        </Dropdown.Item>
-                      ))}
-                    </Dropdown.Menu>
-                  </Dropdown>
-                </div>
-                {/* <div className={styles.RowDisplay}>
+                  <Dropdown.Menu>
+                    {rankingDropdown.map((d, index) => (
+                      <Dropdown.Item
+                        href="#/action-1"
+                        eventKey={index}
+                        key={index}
+                      >
+                        {d.showType}
+                      </Dropdown.Item>
+                    ))}
+                  </Dropdown.Menu>
+                </Dropdown>
+              </div>
+              {/* <div className={styles.RowDisplay}>
                   <div>Tìm kiếm:</div>
                   <div>Search</div>
                 </div> */}
-              </div>
-              <div>
-                <RankingBoard rankingList={data} />
-              </div>
             </div>
-          </Container>
-        </div>
+            <div>
+              <RankingBoard rankingList={data} />
+            </div>
+          </div>
+        </Container>
       </div>
-    </>
+    </DashboardLayout>
   )
 }
 

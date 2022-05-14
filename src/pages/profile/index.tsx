@@ -124,7 +124,7 @@ const ProfilePage: NextPage = () => {
 
   return userResponse ? (
     <>
-      <NavBar />
+      <NavBar showMenuBtn={false} isExpand={false} setIsExpand={() => null} />
       <Container className="pt-64px min-vh-100 position-relative ">
         {/* <Image
           src="/assets/default-banner.svg"
