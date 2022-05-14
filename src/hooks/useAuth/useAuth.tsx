@@ -11,6 +11,7 @@ type UseAuthValue = {
   toPrevRoute: () => Promise<void>
   navigate: (navigateTo: string) => Promise<void>
   signOut: () => Promise<void>
+  signIn: () => Promise<void>
   getUser: () => TUser | undefined
   setUser: (data: TUser) => void
 }
@@ -19,6 +20,7 @@ const AuthContext = React.createContext<UseAuthValue>({
   toPrevRoute: async () => {},
   navigate: async () => {},
   signOut: async () => {},
+  signIn: async () => {},
   getUser: () => undefined,
   setUser: () => {},
 })
@@ -73,6 +75,10 @@ export const AuthProvider = ({ children }: { children?: ReactNode }) => {
     await router.push('/')
   }
 
+  const signIn = async () => {
+    await router.push('/sign-in')
+  }
+
   const getUser = () => {
     return userState
   }
@@ -95,6 +101,7 @@ export const AuthProvider = ({ children }: { children?: ReactNode }) => {
     signOut,
     getUser,
     setUser,
+    signIn,
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
