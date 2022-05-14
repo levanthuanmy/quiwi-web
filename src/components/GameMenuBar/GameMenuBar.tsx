@@ -1,6 +1,6 @@
 import classNames from 'classnames'
 import React, { FC } from 'react'
-import { TStartQuizResponse, TUser } from '../../types/types'
+import { TStartQuizResponse } from '../../types/types'
 import ChatWindow from '../GameComponents/ChatWindow/ChatWindow'
 import PlayerList from '../GameComponents/PlayerList/PlayerList'
 import styles from './GameMenuBar.module.css'
@@ -9,13 +9,11 @@ type GameMenuBarProps = {
   isExpand: boolean
   setIsExpand: React.Dispatch<React.SetStateAction<boolean>>
   gameSession: TStartQuizResponse
-  user: TUser
 }
 const GameMenuBar: FC<GameMenuBarProps> = ({
   isExpand,
   setIsExpand,
   gameSession,
-  user,
 }) => {
   return (
     <div
@@ -72,7 +70,7 @@ const GameMenuBar: FC<GameMenuBarProps> = ({
           >
             <i className="text-white bi bi-grip-horizontal"></i>
           </div>
-          <ChatWindow gameSession={gameSession} user={user} />
+          <ChatWindow gameSession={gameSession} />
         </>
       ) : null}
     </div>
