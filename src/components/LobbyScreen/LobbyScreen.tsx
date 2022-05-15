@@ -164,7 +164,7 @@ const LobbyScreen: FC<LobbyScreenProps> = ({
         {/*QR code*/}
         <div className={"d-flex flex-column align-items-center gap-3"}>
           <div className={styles.qrContainer}>
-            <QRCode size={200} fgColor={"#009883"} bgColor={"#F0F1F2"} value="hey"
+            <QRCode size={200} fgColor={"#009883"} bgColor={"#F0F1F2"} value={`http://${window.location.host}/lobby/join?invitationCode=${invitationCode}`}
                     className={styles.qrModal}/>
           </div>
           <div>Quét mã để tham gia</div>
