@@ -1,10 +1,10 @@
-import React, { FC, useEffect, useState } from 'react'
-import { Image, Row } from 'react-bootstrap'
-import styles from './Message.module.css'
-import classNames from 'classnames'
-import { TPlayer, TUser } from '../../../../types/types'
 import _ from 'lodash'
+import { FC, useEffect, useState } from 'react'
+import { Image } from 'react-bootstrap'
 import { useSocket } from '../../../../hooks/useSocket/useSocket'
+import { TPlayer, TUser } from '../../../../types/types'
+import { MyTooltip } from '../../../MyToolTip/MyTooltip'
+import styles from './Message.module.css'
 
 export type SendMessageProps = {
   message: string
@@ -17,7 +17,7 @@ export type MessageProps = {
   vote: number | 0
   id?: string
   player?: TPlayer
-  isVotedByHost: boolean | false
+  voteFromHost: number
   playerNickName?: string
   socketId: string
   user?: TUser
@@ -46,6 +46,7 @@ const Message: FC<MessageProps> = (props) => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props])
+
   const handleVote = (vote: number) => {
     let newUpVote = vote
     if (upvote === vote) {
@@ -54,40 +55,52 @@ const Message: FC<MessageProps> = (props) => {
       newUpVote = vote
     }
     props.onVoteUpdated ? props.onVoteUpdated(newUpVote) : undefined
-
-    // console.log('==== ~ handleVote ~ props.votedByUsers', props.votedByUsers)
-    // for (const socketId in props.votedByUsers) {
-    //   console.log('==== ~ handleVote ~ socketId', socketId)
-    //   if (socketId === socket.id) {
-    //     setUpvote(newUpVote)
-    //   }
-    // }
   }
+  const vote = props.vote 
+  const voteColor = vote === 0 ? 'text-secondary' : vote === 1 ? 'text-primary' : 'text-danger'
   return (
     <div className="d-flex">
       <div className={`d-flex flex-grow-1 ${styles.messageContainer}`}>
         <div className={`d-flex flex-column flex-grow-1 ${styles.message}`}>
-          {/* name */}
-          <div className={'d-flex' + ' ' + styles.nameBox}>
-            <div className={styles.avatarContainer}>
-              <Image
-                src={avatar}
-                width={28}
-                height={28}
-                alt="avatar"
-                className={styles.avatarImage}
-              />
-            </div>
+          <div className="d-flex align-items-center ">
+            <div className={'d-flex' + ' ' + styles.nameBox}>
+              <div className={styles.avatarContainer}>
+                <Image
+                  src={avatar}
+                  width={28}
+                  height={28}
+                  alt="avatar"
+                  className={styles.avatarImage}
+                />
+              </div>
 
-            <span> </span>
-            <span className="text-white pe-1 fw-medium my-auto text-start">
-              {nickname} {props.isCurrentUser ? '(Bạn)' : null}
-            </span>
+              <span className="text-white fw-medium pe-1 my-auto text-start">
+                {nickname} {props.isCurrentUser ? '(Bạn)' : null}
+              </span>
+            </div>
+            <div className="ms-3">
+              {props.voteFromHost === 1 ? (
+                <MyTooltip title="Được xác thực bởi chủ phòng">
+                  <Image
+                    src="/assets/upvoted-chat.svg"
+                    alt="host-upvoted"
+                  ></Image>
+                </MyTooltip>
+              ) : props.voteFromHost === -1 ? (
+                <MyTooltip title="Kém tin cậy">
+                  <Image
+                    src="/assets/downvoted-chat.svg"
+                    alt="host-downvoted"
+                  ></Image>
+                </MyTooltip>
+              ) : null}
+            </div>
           </div>
+
           {/* nội dung chat */}
           <div
             className={
-              `text-white w-100 fw-semiBold fs-6 text-start ` +
+              `text-white w-100 text-start ` +
               styles.chatContent
             }
           >
@@ -105,7 +118,7 @@ const Message: FC<MessageProps> = (props) => {
           } fs-4 ${styles.voteIcon} ${styles.upvote}`}
           onClick={() => handleVote(1)}
         />
-        <span className={`fw-semiBold ${styles.scoreLabel}`}>{props.vote}</span>
+        <span className={`fw-semiBold ${styles.scoreLabel} ${voteColor}`}>{props.vote}</span>
         <i
           className={`bi ${
             upvote === -1

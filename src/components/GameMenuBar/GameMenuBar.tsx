@@ -60,7 +60,7 @@ const GameMenuBar: FC<GameMenuBarProps> = ({
           right: 0,
         }
       )}
-      style={{ width: isExpand ? 350 : 48 }}
+      style={{ width: isExpand ? 512 : 48 }}
     >
       <div
         className="position-relative cursor-pointer "
