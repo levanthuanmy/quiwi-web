@@ -151,7 +151,7 @@ const LobbyScreen: FC<LobbyScreenProps> = ({
 
       {renderPlayerList()}
       {/*Thoát + Bắt đầu*/}
-      {/*{functionalButtons()}*/}
+      {functionalButtons()}
 
       {/*Các view ẩn*/}
       {renderToast()}
