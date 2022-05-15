@@ -10,10 +10,8 @@ import {JsonParse} from '../../utils/helper'
 import MyButton from '../MyButton/MyButton'
 import PlayerLobbyList from '../PlayerLobbyList/PlayerLobbyList'
 import Head from "next/head";
-import classNames from "classnames";
 import styles from "./LobbyScreen.module.css"
-import {API_URL} from '../../utils/constants'
-import {Alert, Modal, Toast, ToastContainer} from "react-bootstrap";
+import {Modal, Toast, ToastContainer} from "react-bootstrap";
 import QRCode from "react-qr-code";
 import useIsMobile from "../../hooks/useIsMobile/useIsMobile";
 
@@ -119,7 +117,7 @@ const LobbyScreen: FC<LobbyScreenProps> = ({
   }
 
   const copyInvitationCode = () => {
-    navigator.clipboard.writeText(`${API_URL}/lobby/join?invitationCode=${invitationCode}`)
+    navigator.clipboard.writeText(`${window.location.host}/lobby/join?invitationCode=${invitationCode}`)
     setShowToast(true)
   }
 
