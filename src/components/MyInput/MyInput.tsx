@@ -10,7 +10,6 @@ type MyInputProps = React.DetailedHTMLProps<
   onIconClick?: React.MouseEventHandler<HTMLDivElement> | undefined
 }
 const MyInput: FC<MyInputProps> = (props) => {
-  let value = ''
   return (
     <div
       className={classNames(

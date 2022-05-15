@@ -1,6 +1,7 @@
-import { FC } from 'react'
+import React, { FC } from 'react'
 import { TPlayer } from '../../types/types'
 import PlayerLobbyItem from '../PlayerLobbyItem/PlayerLobbyItem'
+import Head from "next/head";
 
 const PlayerLobbyList: FC<{ players: TPlayer[] }> = (props) => {
   const players = props.players as TPlayer[]

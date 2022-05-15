@@ -1,7 +1,7 @@
 import 'bootstrap-icons/font/bootstrap-icons.css'
 import 'bootstrap/dist/css/bootstrap.min.css'
-import type { AppProps } from 'next/app'
-import { SSRProvider } from 'react-bootstrap'
+import type {AppProps} from 'next/app'
+import {SSRProvider} from 'react-bootstrap'
 import MyHead from '../components/MyHead/MyHead'
 import '../styles/global.scss'
 import '../styles/common.css'
@@ -9,16 +9,18 @@ import '../styles/padding.css'
 import '../styles/sizing.css'
 import '../styles/border.css'
 import '../styles/typography.css'
-import { RecoilRoot } from 'recoil'
-import { SocketProvider } from '../hooks/useSocket/useSocket'
-import { AuthNavigationProvider } from '../hooks/useAuthNavigation/useAuthNavigation'
-import { useRouter } from 'next/router'
-import { useEffect, useState } from 'react'
+import {RecoilRoot} from 'recoil'
+import {SocketProvider} from '../hooks/useSocket/useSocket'
+import {AuthNavigationProvider} from '../hooks/useAuthNavigation/useAuthNavigation'
+import {useRouter} from 'next/router'
+import {useEffect, useState} from 'react'
 import FullScreenLoader from '../components/FullScreenLoader/FullScreenLoader'
-import { DndProvider } from 'react-dnd'
-import { HTML5Backend } from 'react-dnd-html5-backend'
+import {DndProvider} from 'react-dnd'
+import {HTML5Backend} from 'react-dnd-html5-backend'
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 
-function MyApp({ Component, pageProps }: AppProps) {
+function MyApp({Component, pageProps}: AppProps) {
   const router = useRouter()
   const [shouldLoad, setShouldLoad] = useState<boolean>(false)
 
@@ -46,9 +48,9 @@ function MyApp({ Component, pageProps }: AppProps) {
         <SocketProvider>
           <DndProvider backend={HTML5Backend}>
             <AuthNavigationProvider>
-              <MyHead />
+              <MyHead/>
               <Component {...pageProps} />
-              <FullScreenLoader isLoading={shouldLoad} />
+              <FullScreenLoader isLoading={shouldLoad}/>
             </AuthNavigationProvider>
           </DndProvider>
         </SocketProvider>
