@@ -1,4 +1,69 @@
-.modeItem:hover {
-  box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.175) !important;
-  cursor: pointer;
+.modeTitle {
+    font-size: 40px;
+    margin-bottom: 40px;
 }
+
+.modeItemContainer {
+    width: 300px;
+    max-height: 400px;
+}
+
+.modeItem {
+    margin-left: 20px;
+    margin-right: 20px;
+    margin-bottom: 20px;
+    background-color: #009883;
+    font-size: 40px;
+    border-radius: 10px;
+}
+
+.modeBanner {
+    display: flex;
+    justify-content: center;
+    border-radius: 10px;
+    background-color: #F6F9F2;
+    margin: 20px;
+}
+
+.modeHeader {
+    border-radius: 10px 10px 0 0;
+    font-size: 28px;
+    width: 100%;
+    color: whitesmoke;
+    background-color: #f2b140;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.modeName {
+
+    margin: 20px;
+    border-radius: 10px;
+    font-size: 32px;
+    color: white;
+}
+.modeDescription {
+    font-size: 16px;
+    text-align: left;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-bottom: 16px;
+    font-weight: lighter;
+    color: rgba(255,255,255,0.6);
+}
+
+.slider {
+    width: 80vw;
+}
+
+.modeItem:hover {
+    box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.175) !important;
+    cursor: pointer;
+}
+
+.web {
+    display: flex;
+    gap: 20px;
+}
+
