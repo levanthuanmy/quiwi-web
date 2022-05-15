@@ -1,5 +1,5 @@
 import classNames from 'classnames'
-import React, { FC } from 'react'
+import React, { FC, useState } from 'react'
 import { TStartQuizResponse, TUser } from '../../types/types'
 import ChatWindow from '../GameComponents/ChatWindow/ChatWindow'
 import PlayerList from '../GameComponents/PlayerList/PlayerList'
@@ -16,6 +16,40 @@ const GameMenuBar: FC<GameMenuBarProps> = ({
   setIsExpand,
   gameSession,
 }) => {
+  const [chatContent, setChatContent] = useState(gameSession.chats)
+
+  const renderItems = (
+    <>
+      <PlayerList playerList={gameSession.players} />
+      <div
+        className={`${styles.slider} bg-primary`}
+        onMouseDown={(e) => {
+          let block = document.getElementById('playerList') as HTMLDivElement
+          let dragX = e.clientY
+          // register a mouse move listener if mouse is down
+          document.onmousemove = function onMouseMove(e) {
+            // e.clientY will be the position of the mouse as it has moved a bit now
+            // offsetHeight is the height of the block-1
+            if (block) {
+              block.style.height = block.offsetHeight + e.clientY - dragX + 'px'
+              // update variable - till this pos, mouse movement has been handled
+              dragX = e.clientY
+            }
+          }
+          document.onmouseup = () =>
+            (document.onmousemove = document.onmouseup = null)
+        }}
+      >
+        <i className="text-white bi bi-grip-horizontal bg-primary"></i>
+      </div>
+      <ChatWindow
+        gameSession={gameSession}
+        chatContent={chatContent}
+        setChatContent={setChatContent}
+      />
+    </>
+  )
+
   return (
     <div
       className={classNames(
@@ -44,36 +78,7 @@ const GameMenuBar: FC<GameMenuBarProps> = ({
           )}
         />
       </div>
-      {isExpand ? (
-        <>
-          <PlayerList playerList={gameSession.players} />
-          <div
-            className={`${styles.slider} bg-primary`}
-            onMouseDown={(e) => {
-              let block = document.getElementById(
-                'playerList'
-              ) as HTMLDivElement
-              let dragX = e.clientY
-              // register a mouse move listener if mouse is down
-              document.onmousemove = function onMouseMove(e) {
-                // e.clientY will be the position of the mouse as it has moved a bit now
-                // offsetHeight is the height of the block-1
-                if (block) {
-                  block.style.height =
-                    block.offsetHeight + e.clientY - dragX + 'px'
-                  // update variable - till this pos, mouse movement has been handled
-                  dragX = e.clientY
-                }
-              }
-              document.onmouseup = () =>
-                (document.onmousemove = document.onmouseup = null)
-            }}
-          >
-            <i className="text-white bi bi-grip-horizontal bg-primary"></i>
-          </div>
-          <ChatWindow gameSession={gameSession} />
-        </>
-      ) : null}
+      {isExpand ? renderItems : null}
     </div>
   )
 }

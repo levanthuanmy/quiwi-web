@@ -12,13 +12,14 @@ import { Message, MessageProps, SendMessageProps } from './Message/Message'
 
 const ChatWindow: FC<{
   gameSession: TStartQuizResponse
-}> = ({ gameSession }) => {
+  chatContent: MessageProps[]
+  setChatContent: Function
+}> = ({ gameSession, chatContent, setChatContent }) => {
   const [chatValue, setChatValue] = useState<string>('')
-  const [chatContent, setChatContent] = useState<MessageProps[]>(gameSession.chats)
   const { socket } = useSocket()
   const [lsPlayer, setLsPlayer] = useLocalStorage('game-session-player', '')
   const [player, setPLayer] = useState<TPlayer>()
-  const authContext =  useAuth()
+  const authContext = useAuth()
   const user = authContext.getUser()
 
   useEffect(() => {
@@ -34,14 +35,13 @@ const ChatWindow: FC<{
     }
   }
 
-  
   const receivedMessage = (message: MessageProps) => {
     if (message) {
       setChatContent([...chatContent, message])
     }
   }
 
-  const showError = (error: Error)=>{
+  const showError = (error: Error) => {
     alert(JSON.stringify(error))
   }
 
