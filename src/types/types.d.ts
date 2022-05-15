@@ -30,7 +30,7 @@ export type TPlayer = {
   id: number
   // gameLobby:
   // gameLobby: object
-  gameLobbyId: number
+  gameLobbyId?: number
   nickname: string
   user?: TUser
   userId?: number

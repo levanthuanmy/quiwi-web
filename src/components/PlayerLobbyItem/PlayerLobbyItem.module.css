@@ -1,7 +1,7 @@
 .tooltip {
   position: relative;
   cursor: default;
-  
+  padding: 4px 10px 4px 4px;
 }
 
 /* Tooltip text */
@@ -10,7 +10,6 @@
   top: 80%;
   background-color: rgba(0, 0, 0, 0.7);
   color: #fff;
-  width: 120px;
   text-align: center;
   padding: 5px 0;
   border-radius: 6px;
@@ -37,4 +36,8 @@
 .tooltip:hover .tooltiptext {
   visibility: visible;
   top: 110%;
+}
+
+.isHost {
+  border: 2px solid #f2b140;
 }

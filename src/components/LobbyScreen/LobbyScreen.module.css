@@ -18,15 +18,16 @@
 }
 
 .gameOfHost {
+    display: flex;
     font-size: 16px;
-    padding: 20px;
+    padding: 16px;
     font-weight: bold;
     color: #767676;
 }
 
 .playerCount {
     font-weight: bold;
-    font-size: 28px;
+    font-size: 16px;
     color: #767676;
 }
 
@@ -61,14 +62,36 @@
     gap: 10px;
 }
 
+.playerListcontainer {
+    /*overflow-x: hidden;*/
+
+
+}
+
+.playerList {
+    overflow-y: scroll;
+    height: 30vh;
+    max-width: 70vw;
+    border-radius: 10px;
+    background-color: white;
+    align-items: center;
+    justify-content: center;
+}
+
+
 /* // Small devices (landscape phones, 576px and up) */
 @media (max-width: 576px) {
 
-.qrModal {
-    /*để show đều popup*/
-    margin-top: 20px;
-    margin-bottom: 60px;
-}
+    .qrModal {
+        /*để show đều popup*/
+        margin-top: 20px;
+        margin-bottom: 60px;
+    }
+
+    .playerList {
+        max-width: 95vw;
+        height: 50vh;
+    }
 }
 
 /*primary color*/

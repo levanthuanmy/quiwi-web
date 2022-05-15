@@ -1,35 +1,45 @@
-import React, { FC } from 'react'
-import { TPlayer } from '../../types/types'
+import React, {FC} from 'react'
+import {TPlayer} from '../../types/types'
 import PlayerLobbyItem from '../PlayerLobbyItem/PlayerLobbyItem'
-import Head from "next/head";
 
-const PlayerLobbyList: FC<{ players: TPlayer[] }> = (props) => {
-  const players = props.players as TPlayer[]
+type PlayerLobbyListProps = {
+  className?: string
+  players: TPlayer[]
+}
+
+const PlayerLobbyList: FC<PlayerLobbyListProps> = (props: PlayerLobbyListProps) => {
 
   const colors: string[] = [
-    'bg-primary',
-    'bg-red-plume',
-    'bg-green',
-    'bg-orange',
-    'bg-blue',
+    '#009883',
+    '#E86262',
+    // '#22B139',
+    '#EF154A',
+    '#EF6415',
+    '#A9C77E',
+    '#B89A61',
+    '#AB89A6',
   ]
-  const getRndInteger = (min: number, max: number) => {
-    return Math.floor(Math.random() * (max - min)) + min
+
+  const getColorForString = (id: number) => {
+    return colors[id % colors.length]
   }
 
   return (
     <>
-      {players.length === 0 ? (
+      {props.players.length === 0 ? (
         <div className="bg-secondary text-white p-2 rounded-8px">
           Đang đợi người tham gia...
         </div>
       ) : (
-        players.map((player, idx) => {
-          const colorIdx = getRndInteger(0, colors.length)
-          const color = colors[colorIdx]
-          return <PlayerLobbyItem key={idx} player={player} color={color} />
+        props.players.map((player, idx) => {
+          return <PlayerLobbyItem
+            key={idx}
+            avatar={player.user?.avatar}
+            displayName={player.nickname}
+            bgColor={getColorForString(player.id)}/>
         })
-      )}
+      )
+      }
     </>
   )
 }

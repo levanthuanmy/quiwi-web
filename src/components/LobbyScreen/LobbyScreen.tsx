@@ -2,19 +2,20 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import _ from 'lodash'
 import Head from "next/head"
-import { useRouter } from 'next/router'
-import { FC, useEffect, useState } from 'react'
-import { Modal, Toast, ToastContainer } from "react-bootstrap"
+import {useRouter} from 'next/router'
+import {FC, useEffect, useState} from 'react'
+import {Modal, Toast, ToastContainer} from "react-bootstrap"
 import QRCode from "react-qr-code"
 import Cookies from 'universal-cookie'
 import useIsMobile from "../../hooks/useIsMobile/useIsMobile"
-import { useLocalStorage } from '../../hooks/useLocalStorage/useLocalStorage'
-import { useSocket } from '../../hooks/useSocket/useSocket'
-import { TPlayer, TStartGameRequest, TStartQuizResponse, TUser } from '../../types/types'
-import { JsonParse } from '../../utils/helper'
+import {useLocalStorage} from '../../hooks/useLocalStorage/useLocalStorage'
+import {useSocket} from '../../hooks/useSocket/useSocket'
+import {TPlayer, TStartGameRequest, TStartQuizResponse, TUser} from '../../types/types'
+import {JsonParse} from '../../utils/helper'
 import MyButton from '../MyButton/MyButton'
 import PlayerLobbyList from '../PlayerLobbyList/PlayerLobbyList'
 import styles from "./LobbyScreen.module.css"
+import PlayerLobbyItem from "../PlayerLobbyItem/PlayerLobbyItem";
 
 type LobbyScreenProps = {
   invitationCode: string
@@ -39,7 +40,7 @@ const LobbyScreen: FC<LobbyScreenProps> = ({
   const isMobile = useIsMobile()
   useEffect(() => {
     if (socket && socket.disconnected) socket.connect()
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
@@ -47,6 +48,18 @@ const LobbyScreen: FC<LobbyScreenProps> = ({
       const gameSession: TStartQuizResponse = JsonParse(lsGameSession)
 
       const lsPlayers: TPlayer[] = [...gameSession.players]
+      // setPlayerList(lsPlayers)
+      // test data
+
+      const names = ["Thiện Thiện Thiện", "Khoa", "Mỹ", "Thiện", "Mỹ Mỹ Mỹ", "Khoa Khoa Khoa"]
+      for (let i = 0; i < 50; i++) {
+        lsPlayers.push({
+          id: i,
+          gameLobbyId: 1,
+          nickname: names[i % names.length] + i.toString(),
+          score: 0,
+        },)
+      }
       setPlayerList(lsPlayers)
 
       socket.on('new-player', (data) => {
@@ -123,14 +136,16 @@ const LobbyScreen: FC<LobbyScreenProps> = ({
   }
 
   function renderHostName() {
+
+    let hostName = gameSession.host.name
+    if (hostName.length == 0) hostName = gameSession.host.username
     return <>
       <div className={styles.gameOfHost}>
-        Game của{' '}
-        <span className="text-primary text-decoration-underline">
-          {gameSession.host?.name || gameSession.host?.username}
-        </span>
+        <PlayerLobbyItem
+          isHost={true}
+          displayName={"Chủ phòng: " + hostName}
+          bgColor={'#009883'}/>
       </div>
-      <br/>
     </>;
   }
 
@@ -172,7 +187,8 @@ const LobbyScreen: FC<LobbyScreenProps> = ({
         </div>
 
         {/*Khoảng cách ở giữa*/}
-        <span className={"position-relative text-secondary text-opacity-75 flex-grow-1 align-self-end"}>{" hoặc "}</span>
+        <span
+          className={"position-relative text-secondary text-opacity-75 flex-grow-1 align-self-end"}>{" hoặc "}</span>
 
         {/*Mã phòng và copy link*/}
         <div className={"d-flex flex-column align-items-center gap-3"}>
@@ -182,7 +198,8 @@ const LobbyScreen: FC<LobbyScreenProps> = ({
           </div>
           {/*Copy*/}
           <div>Tham gia bằng
-            <span className={styles.joinLink} onClick={copyInvitationCode}>{' link '}<i className={`bi bi-clipboard-plus-fill`}/></span>
+            <span className={styles.joinLink} onClick={copyInvitationCode}>{' link '}<i
+              className={`bi bi-clipboard-plus-fill`}/></span>
           </div>
         </div>
       </>
@@ -246,10 +263,10 @@ const LobbyScreen: FC<LobbyScreenProps> = ({
   }
 
   function functionalButtons() {
-    return <div className="p-12px mb-3">
+    return <div className="d-flex gap-3 pt-12px">
       <MyButton
         variant="secondary"
-        className="w-100 text-white fw-medium bg-secondary"
+        className="text-white fw-medium bg-secondary px-12px"
         onClick={handleLeaveRoom}
       >
         RỜI PHÒNG
@@ -258,7 +275,7 @@ const LobbyScreen: FC<LobbyScreenProps> = ({
       <br/>
       {isHost && (
         <MyButton
-          className="w-100 text-white fw-medium"
+          className="text-white fw-medium px-12px"
           onClick={handleStartGame}
         >
           BẮT ĐẦU
@@ -270,7 +287,7 @@ const LobbyScreen: FC<LobbyScreenProps> = ({
   function renderPlayerList() {
     return <>
       <div className={styles.playerCount}>{playerList.length} người tham gia!</div>
-      <div className=" d-flex position-relative flex-wrap justify-content-center">
+      <div className={`d-flex flex-wrap ${styles.playerList}`}>
         <PlayerLobbyList players={playerList}/>
       </div>
     </>
