@@ -2,13 +2,12 @@ import { Field, Formik, FormikHelpers } from 'formik'
 import { NextPage } from 'next'
 import { useEffect, useState } from 'react'
 import { Col, Container, Form, Image, Row } from 'react-bootstrap'
-import { useSetRecoilState } from 'recoil'
 import * as Yup from 'yup'
-import { userState } from '../../atoms/auth'
 import LeftProfileMenuBar from '../../components/LeftProfileMenuBar/LeftProfileMenuBar'
 import MyButton from '../../components/MyButton/MyButton'
 import MyInput from '../../components/MyInput/MyInput'
 import NavBar from '../../components/NavBar/NavBar'
+import { useAuth } from '../../hooks/useAuth/useAuth'
 import { get, post } from '../../libs/api'
 import { TApiResponse, TUser, TUserProfile } from '../../types/types'
 
@@ -20,7 +19,7 @@ type PasswordForm = {
 
 const ChangePasswordPage: NextPage = () => {
   const [userResponse, setUserReponse] = useState<TUserProfile>()
-  const setUser = useSetRecoilState(userState)
+  const authContext = useAuth()
 
   useEffect(() => {
     const getUser = async () => {
@@ -60,14 +59,11 @@ const ChangePasswordPage: NextPage = () => {
         body,
         true
       )
-      setUser(res.response)
+      authContext.setUser(res.response)
       alert('Cập nhật thành công')
       if (res.response) {
         userResponse && setUserReponse({ ...userResponse, user: res.response })
       }
-
-      // setUser(res.response)
-      // authNavigate.toPrevRoute()
     } catch (error) {
       alert((error as Error)?.message)
     } finally {
@@ -92,7 +88,8 @@ const ChangePasswordPage: NextPage = () => {
   })
   return userResponse ? (
     <>
-      <NavBar />
+      <NavBar showMenuBtn={false} isExpand={false} setIsExpand={() => null} />
+
       <Container className="pt-64px  min-vh-100 position-relative">
         <Row className="border my-3">
           <Col xs={3} md={4} className="border-end menu text-center p-0">

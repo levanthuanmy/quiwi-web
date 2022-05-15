@@ -1,7 +1,7 @@
 import _ from 'lodash'
 import { NextPage } from 'next'
 import { useRouter } from 'next/router'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import useSWR from 'swr'
 import GameModeScreen from '../../components/GameModeScreen/GameModeScreen'
 import LobbyScreen from '../../components/LobbyScreen/LobbyScreen'
@@ -15,7 +15,7 @@ import {
   TQuiz,
   TStartQuizRequest,
   TStartQuizResponse,
-  TUser,
+  TUser
 } from '../../types/types'
 import { JsonParse } from '../../utils/helper'
 

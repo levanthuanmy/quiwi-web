@@ -1,12 +1,13 @@
 .container {
-  height: 48px;
   transition: background-color 150ms ease;
+  width: 900%;
 }
 
 .container:hover {
   background-color: #f2f2f2;
 }
 
-.active {
-  background-color: #f2f2f2;
+.item {
+  height: 48px;
+  width: 48px;
 }

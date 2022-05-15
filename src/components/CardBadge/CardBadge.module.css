@@ -1,0 +1,48 @@
+.cardStyle {
+    width: 220px;
+    margin: 3px;
+}
+.cardStyle:hover {
+   background-color: #caf3ee;
+   transform: scale(1.1);
+   z-index: 1;
+}
+
+.layoutImage {
+    padding-top: 30px;
+    padding-bottom: 30px;
+    display: flex;
+    justify-content: center;
+}
+
+.progress {
+    height: 5px;
+    margin-left: 5%;
+    margin-right: 5%;
+}
+
+.badgeTitle {
+    font-weight: bold;
+    height: 50px;
+    text-align: center;
+    padding-bottom: 10px;
+}
+
+.badgeDes {
+    text-align: center;
+    color: darkgrey;
+    padding-left: 7%;
+    padding-right: 7%;
+    height: 70px;
+}
+
+.badgeCount {
+    font-weight: bold;
+    text-align: center;
+    padding-top: 20px;
+    padding-bottom: 10px;
+}
+.fontDes {
+    font-size: 18;
+    
+}

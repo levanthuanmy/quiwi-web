@@ -107,7 +107,7 @@ const QuizCreatorPage: NextPage = () => {
 
   return (
     <>
-      <NavBar />
+      <NavBar showMenuBtn={false} isExpand={false} setIsExpand={() => null} />
       <Container fluid="lg" className="pt-64px min-vh-100">
         <Row className="flex-column-reverse flex-lg-row py-3">
           <Col xs="12" lg="8">

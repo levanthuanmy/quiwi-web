@@ -9,11 +9,10 @@ import '../styles/padding.css'
 import '../styles/sizing.css'
 import '../styles/border.css'
 import '../styles/typography.css'
-import {RecoilRoot} from 'recoil'
-import {SocketProvider} from '../hooks/useSocket/useSocket'
-import {AuthNavigationProvider} from '../hooks/useAuthNavigation/useAuthNavigation'
-import {useRouter} from 'next/router'
-import {useEffect, useState} from 'react'
+import { SocketProvider } from '../hooks/useSocket/useSocket'
+import { AuthProvider } from '../hooks/useAuth/useAuth'
+import { useRouter } from 'next/router'
+import { useEffect, useState } from 'react'
 import FullScreenLoader from '../components/FullScreenLoader/FullScreenLoader'
 import {DndProvider} from 'react-dnd'
 import {HTML5Backend} from 'react-dnd-html5-backend'
@@ -43,19 +42,17 @@ function MyApp({Component, pageProps}: AppProps) {
   }, [])
 
   return (
-    <RecoilRoot>
-      <SSRProvider>
-        <SocketProvider>
-          <DndProvider backend={HTML5Backend}>
-            <AuthNavigationProvider>
-              <MyHead/>
-              <Component {...pageProps} />
-              <FullScreenLoader isLoading={shouldLoad}/>
-            </AuthNavigationProvider>
-          </DndProvider>
-        </SocketProvider>
-      </SSRProvider>
-    </RecoilRoot>
+    <SSRProvider>
+      <SocketProvider>
+        <DndProvider backend={HTML5Backend}>
+          <AuthProvider>
+            <MyHead />
+            <Component {...pageProps} />
+            <FullScreenLoader isLoading={shouldLoad} />
+          </AuthProvider>
+        </DndProvider>
+      </SocketProvider>
+    </SSRProvider>
   )
 }
 

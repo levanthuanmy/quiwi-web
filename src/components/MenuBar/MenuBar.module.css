@@ -1,9 +1,46 @@
 .container {
-  transition: width 200ms ease;
+  transition: all 150ms ease-in-out;
+  z-index: 9;
+  overflow: hidden;
+  height: calc(100vh - 80px);
+}
+
+.itemContainer {
+  height: calc(100vh - 162px);
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .button {
   width: 48px;
   height: 48px;
   right: 0;
+}
+
+.expandWidth {
+  width: 100%;
+  height: calc(100vh - 80px);
+  opacity: 1;
+}
+
+.normalWidth {
+  width: 0px;
+  height: 0px;
+  opacity: 0;
+}
+
+.userInfo:hover {
+  background-color: #f2f2f2;
+}
+
+@media (min-width: 576px) {
+  .normalWidth {
+    width: 80px;
+    height: calc(100vh - 80px);
+    opacity: 1;
+  }
+  .expandWidth {
+    width: 300px;
+    height: calc(100vh - 80px);
+  }
 }
