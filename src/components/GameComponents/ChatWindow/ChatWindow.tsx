@@ -14,17 +14,19 @@ const ChatWindow: FC<{
   gameSession: TStartQuizResponse
 }> = ({ gameSession }) => {
   const [chatValue, setChatValue] = useState<string>('')
-  const [chatContent, setChatContent] = useState<MessageProps[]>([])
+  const [chatContent, setChatContent] = useState<MessageProps[]>(gameSession.chats)
   const { socket } = useSocket()
   const [lsPlayer, setLsPlayer] = useLocalStorage('game-session-player', '')
   const [player, setPLayer] = useState<TPlayer>()
   const authContext =  useAuth()
   const user = authContext.getUser()
+
   useEffect(() => {
     if (lsPlayer) {
       setPLayer(JsonParse(lsPlayer))
     }
   }, [lsPlayer])
+
   const sendMessage = (message: SendMessageProps) => {
     if (message.message?.length ?? 0 > 0) {
       setChatValue('')
@@ -58,9 +60,9 @@ const ChatWindow: FC<{
       setChatContent([...cache])
     })
 
-    socket?.on("error", (error: Error) =>{
-      showError(error)
-    })
+    // socket?.on("error", (error: Error) =>{
+    //   showError(error)
+    // })
   }
   const updateVoteForMessage = (voteChange: number, messageIndex: number) => {
     if (messageIndex < chatContent.length) {
