@@ -117,7 +117,7 @@ const LobbyScreen: FC<LobbyScreenProps> = ({
   }
 
   const copyInvitationCode = () => {
-    navigator.clipboard.writeText(`${window.location.host}/lobby/join?invitationCode=${invitationCode}`)
+    navigator.clipboard.writeText(`http://${window.location.host}/lobby/join?invitationCode=${invitationCode}`)
     setShowToast(true)
   }
 
