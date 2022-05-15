@@ -33,17 +33,18 @@ const Message: FC<MessageProps> = (props) => {
     _.get(props, 'user.avatar', _.get(props, 'player.user.avatar')) ||
     '/assets/default-user.png'
   const { socket } = useSocket()
-  const nickname = _.get(props, 'user.name', _.get(props, 'player.nickname'))
   const [upvote, setUpvote] = useState(0)
+
+  const nickname =
+    _.get(props, 'player.nickname') || _.get(props, 'user.name') || 'Ẩn danh'
 
   useEffect(() => {
     for (const socketId in props.votedByUsers) {
-      console.log('==== ~ handleVote ~ socketId', socketId)
       if (socketId === socket.id) {
         setUpvote(props.votedByUsers[socketId])
       }
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props])
   const handleVote = (vote: number) => {
     let newUpVote = vote
@@ -101,7 +102,7 @@ const Message: FC<MessageProps> = (props) => {
             upvote === 1
               ? 'bi-hand-thumbs-up-fill  text-primary'
               : 'bi-hand-thumbs-up'
-          } fs-4 ${styles.voteIcon}`}
+          } fs-4 ${styles.voteIcon} ${styles.upvote}`}
           onClick={() => handleVote(1)}
         />
         <span className={`fw-semiBold ${styles.scoreLabel}`}>{props.vote}</span>
