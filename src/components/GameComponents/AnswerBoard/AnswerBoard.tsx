@@ -1,34 +1,26 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import classNames from 'classnames'
-import { useRouter } from 'next/router'
-import React, { FC, useEffect, useState } from 'react'
-import { useGameSession } from '../../../hooks/useGameSession/useGameSession'
-import { useLocalStorage } from '../../../hooks/useLocalStorage/useLocalStorage'
-import { useSocket } from '../../../hooks/useSocket/useSocket'
-import {
-  TStartQuizResponse,
-  TUser
-} from '../../../types/types'
-import { JsonParse } from '../../../utils/helper'
-import MyModal from '../../MyModal/MyModal'
-import MultipleChoiceAnswerSection from '../AnswerQuestionComponent/SelectionQuestion/MultipleChoiceAnswerSection'
-import MoreButton from '../MoreButton/MoreButton'
+import React, {FC, useEffect, useState} from 'react'
 import styles from './AnswerBoard.module.css'
+import classNames from 'classnames'
+import MultipleChoiceAnswerSection from '../AnswerQuestionComponent/SelectionQuestion/MultipleChoiceAnswerSection'
+import {useLocalStorage} from '../../../hooks/useLocalStorage/useLocalStorage'
+import {TStartQuizResponse, TUser,} from '../../../types/types'
+import {JsonParse} from '../../../utils/helper'
+import {useSocket} from '../../../hooks/useSocket/useSocket'
+import MoreButton from '../MoreButton/MoreButton'
+import {useGameSession} from '../../../hooks/useGameSession/useGameSession'
+import {useRouter} from 'next/router'
+import MyModal from '../../MyModal/MyModal'
 
 type AnswerBoardProps = {
   className?: string
   questionId: number | 0
-  onClick?: React.MouseEventHandler<HTMLDivElement>
-  title?: string
 }
 const AnswerBoard: FC<AnswerBoardProps> = ({
-  className,
-  questionId,
-  onClick,
-  title,
-}) => {
+                                             className,
+                                             questionId,
+                                           }) => {
   const [lsGameSession] = useLocalStorage('game-session', '')
-  const { socket } = useSocket()
+  const {socket} = useSocket()
   const gameSession = useGameSession()
   const [lsUser] = useLocalStorage('user', '')
   const [isHost, setIsHost] = useState<boolean>(false)
@@ -54,10 +46,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
     setIsShowAnswer(false)
     setAnswerSet(new Set())
     setId(questionId)
-    
-    console.log('displayQuestionId - questionId', gameSession?.quiz?.questions[qid])
   }
-    
 
   useEffect(() => {
     socket?.on('new-submission', (data) => {
@@ -100,13 +89,13 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
       return
     }
 
-    const msg = { invitationCode: gameSession.invitationCode }
+    const msg = {invitationCode: gameSession.invitationCode}
     socket?.emit('next-question', msg)
     console.log(msg)
   }
 
   const viewRanking = () => {
-    const msg = { invitationCode: gameSession.invitationCode }
+    const msg = {invitationCode: gameSession.invitationCode}
     socket?.emit('view-ranking', msg)
     setIsShowNext(true)
   }
@@ -180,7 +169,9 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
 
       <MyModal
         show={isFinish}
-        onHide={() => {}}
+        onHide={() => {
+          // TODO
+        }}
         activeButtonTitle="Thoát game"
         activeButtonCallback={() => {
           extiRoom()
