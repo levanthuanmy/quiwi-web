@@ -19,7 +19,7 @@ const GameMenuBar: FC<GameMenuBarProps> = ({
   return (
     <div
       className={classNames(
-        'd-flex flex-column bg-white rounded-20px ',
+        'd-none d-md-flex flex-column bg-white ',
         styles.container,
         {
           minHeight: '976px',
@@ -69,7 +69,7 @@ const GameMenuBar: FC<GameMenuBarProps> = ({
                 (document.onmousemove = document.onmouseup = null)
             }}
           >
-            <i className="text-white bi bi-grip-horizontal"></i>
+            <i className="text-white bi bi-grip-horizontal bg-primary"></i>
           </div>
           <ChatWindow gameSession={gameSession} />
         </>

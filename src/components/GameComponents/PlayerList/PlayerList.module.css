@@ -12,10 +12,8 @@
   padding-left: 4px;
   padding-right: 4px;
   /* resize: vertical; */
-  overflow: auto;
   /* overflow-x: hidden; */
 }
-
 
 .scrollList {
   height: 100%;

@@ -1,5 +1,7 @@
 import classNames from 'classnames'
+import _ from 'lodash'
 import { FC, useEffect, useRef, useState } from 'react'
+import { useAuth } from '../../../hooks/useAuth/useAuth'
 import { useLocalStorage } from '../../../hooks/useLocalStorage/useLocalStorage'
 import { useSocket } from '../../../hooks/useSocket/useSocket'
 import { TPlayer, TStartQuizResponse, TUser } from '../../../types/types'
@@ -10,14 +12,14 @@ import { Message, MessageProps, SendMessageProps } from './Message/Message'
 
 const ChatWindow: FC<{
   gameSession: TStartQuizResponse
-  user?: TUser
-}> = ({ gameSession, user }) => {
+}> = ({ gameSession }) => {
   const [chatValue, setChatValue] = useState<string>('')
   const [chatContent, setChatContent] = useState<MessageProps[]>([])
   const { socket } = useSocket()
   const [lsPlayer, setLsPlayer] = useLocalStorage('game-session-player', '')
   const [player, setPLayer] = useState<TPlayer>()
-
+  const authContext =  useAuth()
+  const user = authContext.getUser()
   useEffect(() => {
     if (lsPlayer) {
       setPLayer(JsonParse(lsPlayer))
@@ -30,28 +32,46 @@ const ChatWindow: FC<{
     }
   }
 
+  
   const receivedMessage = (message: MessageProps) => {
     if (message) {
       setChatContent([...chatContent, message])
     }
   }
-  socket?.on('chat', (data) => {
-    receivedMessage(data as MessageProps)
-  })
 
+  const showError = (error: Error)=>{
+    alert(JSON.stringify(error))
+  }
+
+  const handleSocketListener = () => {
+    socket?.on('chat', (data) => {
+      receivedMessage(data as MessageProps)
+    })
+
+    socket?.on('vote', (data: MessageProps) => {
+      const cache: MessageProps[] = chatContent
+      for (const chat of cache) {
+        if (chat.id === data.id) {
+          Object.assign(chat, data)
+        }
+      }
+      setChatContent([...cache])
+    })
+
+    socket?.on("error", (error: Error) =>{
+      showError(error)
+    })
+  }
   const updateVoteForMessage = (voteChange: number, messageIndex: number) => {
     if (messageIndex < chatContent.length) {
-      const cache: MessageProps[] = chatContent
-      const updateItem = cache[messageIndex]
-
-      if (updateItem) {
-        Object.assign(cache[messageIndex], updateItem)
-
-        cache[messageIndex].vote = (updateItem.vote ?? 0) + voteChange
-      }
-      console.log(cache)
-      setChatContent([...cache])
+      socket.emit('vote', {
+        invitationCode: gameSession.invitationCode,
+        vote: voteChange,
+        chatId: chatContent[messageIndex].id,
+      })
     }
+
+    return true
   }
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
@@ -63,6 +83,7 @@ const ChatWindow: FC<{
     return scrollToBottom()
   }, [chatContent])
 
+  handleSocketListener()
   return (
     <div className={classNames(styles.chatWindow)}>
       <div className={styles.chatBox}>
@@ -73,8 +94,9 @@ const ChatWindow: FC<{
               {...item}
               isCurrentUser={
                 item.userId === user?.id ||
-                item.player?.userId === user?.id ||
-                item.playerNickName === player?.nickname
+                (user?.id && item.player?.userId === user?.id) ||
+                (_.get(item, 'playerNickName.length', 0) > 0 &&
+                  item.playerNickName === player?.nickname)
               }
               onVoteUpdated={(voteChange: number) => {
                 updateVoteForMessage(voteChange, index)
@@ -102,6 +124,7 @@ const ChatWindow: FC<{
                 message: chatValue,
                 invitationCode: gameSession.invitationCode,
               })
+              e.preventDefault()
             }
           }}
           // className={styles.chatInput}

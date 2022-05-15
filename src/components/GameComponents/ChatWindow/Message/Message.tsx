@@ -1,9 +1,10 @@
-import React, { FC } from 'react'
+import React, { FC, useEffect, useState } from 'react'
 import { Image, Row } from 'react-bootstrap'
 import styles from './Message.module.css'
 import classNames from 'classnames'
 import { TPlayer, TUser } from '../../../../types/types'
 import _ from 'lodash'
+import { useSocket } from '../../../../hooks/useSocket/useSocket'
 
 export type SendMessageProps = {
   message: string
@@ -21,6 +22,7 @@ export type MessageProps = {
   socketId: string
   user?: TUser
   userId?: number
+  votedByUsers: Record<string, number>
 
   onVoteUpdated?: (voteChange: number) => void
   isCurrentUser: boolean
@@ -30,9 +32,36 @@ const Message: FC<MessageProps> = (props) => {
   const avatar =
     _.get(props, 'user.avatar', _.get(props, 'player.user.avatar')) ||
     '/assets/default-user.png'
-
+  const { socket } = useSocket()
   const nickname = _.get(props, 'user.name', _.get(props, 'player.nickname'))
+  const [upvote, setUpvote] = useState(0)
 
+  useEffect(() => {
+    for (const socketId in props.votedByUsers) {
+      console.log('==== ~ handleVote ~ socketId', socketId)
+      if (socketId === socket.id) {
+        setUpvote(props.votedByUsers[socketId])
+      }
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props])
+  const handleVote = (vote: number) => {
+    let newUpVote = vote
+    if (upvote === vote) {
+      newUpVote = 0
+    } else {
+      newUpVote = vote
+    }
+    props.onVoteUpdated ? props.onVoteUpdated(newUpVote) : undefined
+
+    // console.log('==== ~ handleVote ~ props.votedByUsers', props.votedByUsers)
+    // for (const socketId in props.votedByUsers) {
+    //   console.log('==== ~ handleVote ~ socketId', socketId)
+    //   if (socketId === socket.id) {
+    //     setUpvote(newUpVote)
+    //   }
+    // }
+  }
   return (
     <div className="d-flex">
       <div className={`d-flex flex-grow-1 ${styles.messageContainer}`}>
@@ -68,17 +97,21 @@ const Message: FC<MessageProps> = (props) => {
 
       <div className={`d-flex flex-column ${styles.vote}`}>
         <i
-          className={`bi bi-hand-thumbs-up-fill text-primary fs-4 ${styles.voteIcon}`}
-          onClick={() =>
-            props.onVoteUpdated ? props.onVoteUpdated(1) : undefined
-          }
+          className={`bi ${
+            upvote === 1
+              ? 'bi-hand-thumbs-up-fill  text-primary'
+              : 'bi-hand-thumbs-up'
+          } fs-4 ${styles.voteIcon}`}
+          onClick={() => handleVote(1)}
         />
         <span className={`fw-semiBold ${styles.scoreLabel}`}>{props.vote}</span>
         <i
-          className={`bi bi-hand-thumbs-up-fill fs-4 ${styles.voteIcon} ${styles.rotate}`}
-          onClick={() =>
-            props.onVoteUpdated ? props.onVoteUpdated(-1) : undefined
-          }
+          className={`bi ${
+            upvote === -1
+              ? 'bi-hand-thumbs-up-fill  text-danger'
+              : 'bi-hand-thumbs-up'
+          } fs-4 ${styles.voteIcon} ${styles.rotate}`}
+          onClick={() => handleVote(-1)}
         />
       </div>
     </div>
