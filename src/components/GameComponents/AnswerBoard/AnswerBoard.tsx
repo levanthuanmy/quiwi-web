@@ -1,16 +1,15 @@
-import React, { FC, useEffect, useState } from 'react'
-import styles from './AnswerBoard.module.css'
 import classNames from 'classnames'
-import SingleChoiceAnswerSection from '../AnswerQuestionComponent/SelectionQuestion/SingleChoiceAnswerSection'
+import { useRouter } from 'next/router'
+import React, { FC, memo, useEffect, useState } from 'react'
+import { Image, Modal, Table } from 'react-bootstrap'
+import { useGameSession } from '../../../hooks/useGameSession/useGameSession'
 import { useLocalStorage } from '../../../hooks/useLocalStorage/useLocalStorage'
+import { useSocket } from '../../../hooks/useSocket/useSocket'
 import { TStartQuizResponse, TUser } from '../../../types/types'
 import { JsonParse } from '../../../utils/helper'
-import { useSocket } from '../../../hooks/useSocket/useSocket'
-import MoreButton from '../MoreButton/MoreButton'
-import { useGameSession } from '../../../hooks/useGameSession/useGameSession'
-import { useRouter } from 'next/router'
 import MyModal from '../../MyModal/MyModal'
-import { Image } from 'react-bootstrap'
+import SingleChoiceAnswerSection from '../AnswerQuestionComponent/SelectionQuestion/SingleChoiceAnswerSection'
+import styles from './AnswerBoard.module.css'
 
 type AnswerBoardProps = {
   className?: string
@@ -28,8 +27,10 @@ const AnswerBoard: FC<AnswerBoardProps> = ({ className, questionId }) => {
   const router = useRouter()
   const [roomStatus, setRoomStatus] = useState<string>('Đang trả lời câu hỏi')
   const [isShowNext, setIsShowNext] = useState<boolean>(false)
-
   const [isFinish, setIsFinish] = useState<boolean>(false)
+  const [showRanking, setShowRanking] = useState<boolean>(false)
+  const [rankingData, setRankingData] = useState<any[]>([])
+
   useEffect(() => {
     const gameData: TStartQuizResponse = JsonParse(
       lsGameSession
@@ -71,12 +72,14 @@ const AnswerBoard: FC<AnswerBoardProps> = ({ className, questionId }) => {
     //   console.log('timeout', data)
     // })
 
-    socket?.on('error', (data) => {
-      console.log('answerboard socket error', data)
+    socket?.on('ranking', (data) => {
+      setShowRanking(true)
+      setRankingData(data?.playersSortedByScore)
+      console.log('ranking', data)
     })
 
-    socket?.on('ranking', (data) => {
-      console.log('ranking', data)
+    socket?.on('error', (data) => {
+      console.log('answer board socket error', data)
     })
   }
 
@@ -117,7 +120,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({ className, questionId }) => {
     socket.emit('submit-answer', msg)
   }
 
-  const extiRoom = () => {
+  const exitRoom = () => {
     localStorage.removeItem('game-session')
     localStorage.removeItem('game-session-player')
     socket.close()
@@ -203,7 +206,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({ className, questionId }) => {
             iconClassName="bi bi-x-circle-fill"
             className={classNames('text-white fw-medium', styles.nextButton)}
             title="Thoát phòng"
-            onClick={extiRoom}
+            onClick={exitRoom}
           />
           <MoreButton
             iconClassName="bi bi-bar-chart"
@@ -221,21 +224,91 @@ const AnswerBoard: FC<AnswerBoardProps> = ({ className, questionId }) => {
         </div>
       )} */}
 
-      <MyModal
-        show={isFinish}
-        onHide={() => {
-          // TODO
-        }}
-        activeButtonTitle="Thoát game"
-        activeButtonCallback={() => {
-          extiRoom()
-          router.push('/')
-        }}
-      >
-        <div className="text-center h3">Thoát game</div>
-      </MyModal>
+      <GameSessionRanking
+        show={showRanking}
+        onHide={() => setShowRanking(false)}
+        rankingData={rankingData}
+      />
     </div>
   )
 }
 
-export default AnswerBoard
+export default memo(AnswerBoard)
+
+type GameSessionRankingProps = {
+  show: boolean
+  onHide: () => void
+  rankingData: any[]
+}
+const GameSessionRanking: FC<GameSessionRankingProps> = ({
+  show,
+  onHide,
+  rankingData,
+}) => {
+  return (
+    <MyModal
+      show={show}
+      onHide={onHide}
+      size="xl"
+      fullscreen
+      header={<Modal.Title>Bảng xếp hạng</Modal.Title>}
+    >
+      <div className="rounded-14px border overflow-hidden">
+        <Table borderless className="mb-0">
+          <tbody>
+            <tr className="border-bottom bg-primary bg-opacity-10 fw-medium">
+              <td className="p-3">#</td>
+              <td className="p-3">Tên người tham dự</td>
+              <td className="p-3">Điểm số</td>
+              <td className="p-3">Liên tiếp</td>
+            </tr>
+            {rankingData?.map((item, key) => (
+              <tr
+                key={key}
+                className={classNames({
+                  'border-top': key !== 0,
+                })}
+              >
+                <td className="p-3">
+                  <div
+                    className={classNames(
+                      'd-flex justify-content-center align-items-center fw-medium',
+                      {
+                        'rounded-circle text-white': key < 3,
+                        'bg-warning': key === 0,
+                        'bg-secondary bg-opacity-50': key === 1,
+                        'bg-bronze': key === 2,
+                      }
+                    )}
+                    style={{ width: 30, height: 30 }}
+                  >
+                    {key + 1}
+                  </div>
+                </td>
+                <td className="p-3">{item?.nickname}</td>
+                <td className="p-3">
+                  <div
+                    className={classNames(
+                      'py-1 px-2 fw-medium text-center rounded-10px overflow-hidden',
+                      {
+                        'text-white': key < 3,
+                        'bg-warning': key === 0,
+                        'bg-secondary bg-opacity-50': key === 1,
+                        'bg-bronze': key === 2,
+                        'bg-secondary bg-opacity-75': key > 2,
+                      }
+                    )}
+                    style={{ width: 90 }}
+                  >
+                    {Math.round(item?.score)}
+                  </div>
+                </td>
+                <td className="p-3">{item?.currentStreak}</td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      </div>
+    </MyModal>
+  )
+}
