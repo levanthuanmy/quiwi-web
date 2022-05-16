@@ -1,10 +1,10 @@
-import React, { FC, useEffect } from 'react'
-import { Col, Row } from 'react-bootstrap'
-import styles from './MultipleChoiceAnswerSection.module.css'
 import classNames from 'classnames'
+import { FC } from 'react'
+import { Col, Row } from 'react-bootstrap'
 import { TAnswer, TQuestion } from '../../../../types/types'
+import styles from './SingleChoiceAnswerSection.module.css'
 
-type MultipleChoiceAnswerSectionProps = {
+type SingpleChoiceAnswerSectionProps = {
   className?: string
   handleSubmitAnswer: (answerId: number) => void
   option?: TQuestion
@@ -21,7 +21,7 @@ const colorIncorrectArray: Array<string> = [
 ]
 
 const alphabet = ['A', 'B', 'C', 'D', 'E', 'G']
-const MultipleChoiceAnswerSection: FC<MultipleChoiceAnswerSectionProps> = ({
+const SingleChoiceAnswerSection: FC<SingpleChoiceAnswerSectionProps> = ({
   className,
   handleSubmitAnswer,
   option,
@@ -116,4 +116,4 @@ const MultipleChoiceAnswerSection: FC<MultipleChoiceAnswerSectionProps> = ({
   )
 }
 
-export default MultipleChoiceAnswerSection
+export default SingleChoiceAnswerSection

@@ -1,19 +1,20 @@
+/* eslint-disable @next/next/no-page-custom-font */
 /* eslint-disable react-hooks/exhaustive-deps */
 import _ from 'lodash'
-import {useRouter} from 'next/router'
-import React, {FC, useEffect, useState} from 'react'
+import Head from "next/head"
+import { useRouter } from 'next/router'
+import { FC, useEffect, useState } from 'react'
+import { Modal, Toast, ToastContainer } from "react-bootstrap"
+import QRCode from "react-qr-code"
 import Cookies from 'universal-cookie'
-import {useLocalStorage} from '../../hooks/useLocalStorage/useLocalStorage'
-import {useSocket} from '../../hooks/useSocket/useSocket'
-import {TPlayer, TStartGameRequest, TStartQuizResponse, TUser,} from '../../types/types'
-import {JsonParse} from '../../utils/helper'
+import useIsMobile from "../../hooks/useIsMobile/useIsMobile"
+import { useLocalStorage } from '../../hooks/useLocalStorage/useLocalStorage'
+import { useSocket } from '../../hooks/useSocket/useSocket'
+import { TPlayer, TStartGameRequest, TStartQuizResponse, TUser } from '../../types/types'
+import { JsonParse } from '../../utils/helper'
 import MyButton from '../MyButton/MyButton'
 import PlayerLobbyList from '../PlayerLobbyList/PlayerLobbyList'
-import Head from "next/head";
 import styles from "./LobbyScreen.module.css"
-import {Modal, Toast, ToastContainer} from "react-bootstrap";
-import QRCode from "react-qr-code";
-import useIsMobile from "../../hooks/useIsMobile/useIsMobile";
 
 type LobbyScreenProps = {
   invitationCode: string

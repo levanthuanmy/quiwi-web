@@ -1,26 +1,23 @@
-import React, {FC, useEffect, useState} from 'react'
+import React, { FC, useEffect, useState } from 'react'
 import styles from './AnswerBoard.module.css'
 import classNames from 'classnames'
-import MultipleChoiceAnswerSection from '../AnswerQuestionComponent/SelectionQuestion/MultipleChoiceAnswerSection'
-import {useLocalStorage} from '../../../hooks/useLocalStorage/useLocalStorage'
-import {TStartQuizResponse, TUser,} from '../../../types/types'
-import {JsonParse} from '../../../utils/helper'
-import {useSocket} from '../../../hooks/useSocket/useSocket'
+import SingleChoiceAnswerSection from '../AnswerQuestionComponent/SelectionQuestion/SingleChoiceAnswerSection'
+import { useLocalStorage } from '../../../hooks/useLocalStorage/useLocalStorage'
+import { TStartQuizResponse, TUser, TQuestionType } from '../../../types/types'
+import { JsonParse } from '../../../utils/helper'
+import { useSocket } from '../../../hooks/useSocket/useSocket'
 import MoreButton from '../MoreButton/MoreButton'
-import {useGameSession} from '../../../hooks/useGameSession/useGameSession'
-import {useRouter} from 'next/router'
+import { useGameSession } from '../../../hooks/useGameSession/useGameSession'
+import { useRouter } from 'next/router'
 import MyModal from '../../MyModal/MyModal'
 
 type AnswerBoardProps = {
   className?: string
   questionId: number | 0
 }
-const AnswerBoard: FC<AnswerBoardProps> = ({
-                                             className,
-                                             questionId,
-                                           }) => {
+const AnswerBoard: FC<AnswerBoardProps> = ({ className, questionId }) => {
   const [lsGameSession] = useLocalStorage('game-session', '')
-  const {socket} = useSocket()
+  const { socket } = useSocket()
   const gameSession = useGameSession()
   const [lsUser] = useLocalStorage('user', '')
   const [isHost, setIsHost] = useState<boolean>(false)
@@ -28,7 +25,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
   const [answerSet, setAnswerSet] = useState<Set<number>>(new Set())
   const [isShowAnswer, setIsShowAnswer] = useState<boolean>(false)
   const router = useRouter()
-  const [roomStatus, setRoomStatus] = useState<string>("Đang trả lời câu hỏi")
+  const [roomStatus, setRoomStatus] = useState<string>('Đang trả lời câu hỏi')
   const [isShowNext, setIsShowNext] = useState<boolean>(false)
 
   const [isFinish, setIsFinish] = useState<boolean>(false)
@@ -40,7 +37,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
     const user: TUser = JsonParse(lsUser)
     setIsHost(user.id === gameData.hostId)
     setId(0)
-  }, [])
+  }, [lsGameSession, lsUser])
 
   const displayQuestionId = (questionId: number) => {
     setIsShowAnswer(false)
@@ -48,14 +45,14 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
     setId(questionId)
   }
 
-  useEffect(() => {
+  const handleSocket = () => {
     socket?.on('new-submission', (data) => {
       console.log('new-submission', data)
     })
 
     socket?.on('next-question', (data) => {
       setIsShowNext(false)
-      setRoomStatus("Đang trả lời câu hỏi")
+      setRoomStatus('Đang trả lời câu hỏi')
       if (data.currentQuestionIndex) {
         displayQuestionId(data.currentQuestionIndex)
       }
@@ -63,13 +60,13 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
 
     socket?.on('view-result', (data) => {
       console.log('view', data)
-      setRoomStatus("Xem xếp hạng")
+      setRoomStatus('Xem xếp hạng')
       setIsShowAnswer(true)
     })
 
     socket?.on('timeout', (data) => {
       setIsShowAnswer(true)
-      setRoomStatus("Hết giờ")
+      setRoomStatus('Hết giờ')
       console.log('timeout', data)
     })
 
@@ -80,7 +77,9 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
     socket?.on('ranking', (data) => {
       console.log('ranking', data)
     })
-  }, [])
+  }
+
+  handleSocket()
 
   const goToNextQuestion = () => {
     console.log('goToNextQuestion - questionId', questionId)
@@ -89,13 +88,13 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
       return
     }
 
-    const msg = {invitationCode: gameSession.invitationCode}
+    const msg = { invitationCode: gameSession.invitationCode }
     socket?.emit('next-question', msg)
     console.log(msg)
   }
 
   const viewRanking = () => {
-    const msg = {invitationCode: gameSession.invitationCode}
+    const msg = { invitationCode: gameSession.invitationCode }
     socket?.emit('view-ranking', msg)
     setIsShowNext(true)
   }
@@ -124,6 +123,35 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
     router.push('/')
   }
 
+  const renderAnswersSection = () => {
+    const question = gameSession?.quiz?.questions[qid]
+    switch (question.type) {
+      case '10SG':
+        return (
+          <SingleChoiceAnswerSection
+            handleSubmitAnswer={handleSubmitAnswer}
+            className="flex-grow-1"
+            option={gameSession?.quiz?.questions[qid]}
+            selectedAnswers={answerSet}
+            showAnswer={isShowAnswer}
+            isHost={isHost}
+          />
+        )
+
+      default:
+        return (
+          <SingleChoiceAnswerSection
+            handleSubmitAnswer={handleSubmitAnswer}
+            className="flex-grow-1"
+            option={gameSession?.quiz?.questions[qid]}
+            selectedAnswers={answerSet}
+            showAnswer={isShowAnswer}
+            isHost={isHost}
+          />
+        )
+    }
+  }
+
   return (
     <div
       className={classNames(
@@ -135,14 +163,8 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
       <div className="fs-4 fw-semiBold pt-3">
         {gameSession?.quiz?.questions[qid]?.question}
       </div>
-      <MultipleChoiceAnswerSection
-        handleSubmitAnswer={handleSubmitAnswer}
-        className="flex-grow-1"
-        option={gameSession?.quiz?.questions[qid]}
-        selectedAnswers={answerSet}
-        showAnswer={isShowAnswer}
-        isHost={isHost}
-      ></MultipleChoiceAnswerSection>
+
+      {gameSession?.quiz?.questions[qid]?.question && renderAnswersSection()}
       {isHost && (
         <div className="d-flex gap-3 justify-content-between">
           <MoreButton

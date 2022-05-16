@@ -29,7 +29,7 @@ const HostPage: NextPage = () => {
   const [lsGameSession, setLsGameSession] = useLocalStorage('game-session', '')
   const [isShowGameModeScreen, setIsShowGameModeScreen] =
     useState<boolean>(false)
-  const [invitationCode, setInvitationCode] = useState<string>('')
+  const [invitationCode, setInvitationCode] = useState<string>()
   const [gameModeEnum, setGameModeEnum] = useState<TGameModeEnum>()
   const [isFetchingSocket, setIsFetchingSocket] = useState<boolean>(false)
   const { socket } = useSocket()
@@ -83,8 +83,6 @@ const HostPage: NextPage = () => {
   ])
 
   useEffect(() => {
-    console.log('useEffect - isShowGameModeScreen', isShowGameModeScreen)
-    console.log('useEffect - gameModeEnum', gameModeEnum)
     if (gameModeEnum && isShowGameModeScreen) {
       const user: TUser = JsonParse(lsUser)
       handleStartQuiz(Number(quizId), gameModeEnum, user.id)
@@ -93,7 +91,6 @@ const HostPage: NextPage = () => {
 
   useEffect(() => {
     if (gameSession) setIsShowGameModeScreen(false)
-    console.log('useEffect - gameSession', gameSession)
   }, [gameSession])
 
   const handleStartQuiz = async (
@@ -135,7 +132,7 @@ const HostPage: NextPage = () => {
   return (
     <>
       {isShowGameModeScreen && <GameModeScreen setGameMode={setGameModeEnum} />}
-      {gameSession && (
+      {gameSession && invitationCode && (
         <LobbyScreen
           gameSession={gameSession}
           invitationCode={invitationCode}
