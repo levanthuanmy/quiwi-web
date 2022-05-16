@@ -1,0 +1,17 @@
+.editBtn {
+  width: 36px;
+  height: 36px;
+  right: 12px;
+  top: 12px;
+}
+
+.startBtn {
+  width: 60px;
+  height: 60px;
+  z-index: 1;
+  opacity: 0.8;
+}
+
+.startBtn:hover {
+  opacity: 1;
+}

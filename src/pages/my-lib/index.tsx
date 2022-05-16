@@ -45,7 +45,7 @@ const MyLibPage: NextPage = () => {
                 Quiz của bạn
               </Col>
               {data?.response.items.map((quiz, key) => (
-                <Col xs="12" sm="6" lg="4" key={key} className="mb-3">
+                <Col xs="12" md="6" lg="4" key={key} className="mb-3">
                   <ItemQuiz quiz={quiz} />
                 </Col>
               ))}
