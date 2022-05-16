@@ -1,22 +1,29 @@
-import type { NextPage } from 'next'
-import { useRouter } from 'next/router'
-import React, { useState } from 'react'
-import { Col, Container, Row } from 'react-bootstrap'
+import type {NextPage} from 'next'
+import {useRouter} from 'next/router'
+import React, {useState} from 'react'
+import {Col, Container, Row} from 'react-bootstrap'
 import DashboardLayout from '../components/DashboardLayout/DashboardLayout'
 import MyButton from '../components/MyButton/MyButton'
 import MyInput from '../components/MyInput/MyInput'
-import { post } from '../libs/api'
-import { TApiResponse, TQuiz, TQuizBodyRequest } from '../types/types'
+import {get, post} from '../libs/api'
+import {TApiResponse, TQuiz, TQuizBodyRequest} from '../types/types'
 
 const Home: NextPage = () => {
   const [invitationCode, setInvitationCode] = useState<string>('')
+  const [invitationInputError, setInvitationInputError] = useState<string>("")
   const router = useRouter()
 
-  const onJoinRoom = () => {
+  const onJoinRoom = async () => {
     if (invitationCode.trim().length === 0) {
-      alert('Nhập mã đi bạn')
+      setInvitationInputError("Vui lòng nhập mã phòng")
       return
     }
+
+    const res: TApiResponse<any> = await get(
+      `/api/games/check-room/${invitationCode}`,
+      true,
+    )
+    // res.da
     router.push(`/lobby/join?invitationCode=${invitationCode}`)
   }
 
@@ -60,15 +67,18 @@ const Home: NextPage = () => {
                   <Row>
                     <Col xs="12" sm="6" className="pe-sm-2 pb-3 pb-sm-0">
                       <MyInput
+                        className={"pb-12px"}
+                        errorText={invitationInputError}
                         placeholder="Nhập mã tham gia"
                         onChange={(e) => {
+                          setInvitationInputError("")
                           setInvitationCode(e.target.value)
                         }}
                       />
                     </Col>
                     <Col xs="12" sm="4" xl="3" className="ps-sm-2">
                       <MyButton
-                        className="fw-medium text-white w-100"
+                        className={`fw-medium text-white w-100`}
                         onClick={onJoinRoom}
                       >
                         Tham gia ngay
