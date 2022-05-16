@@ -35,21 +35,11 @@ const ChatWindow: FC<{
     }
   }
 
-  const receivedMessage = (message: MessageProps) => {
-    if (message) {
-      setChatContent([...chatContent, message])
-    }
-  }
-
   const showError = (error: Error) => {
     alert(JSON.stringify(error))
   }
 
   const handleSocketListener = () => {
-    socket?.on('chat', (data) => {
-      receivedMessage(data as MessageProps)
-    })
-
     socket?.on('vote', (data: MessageProps) => {
       const cache: MessageProps[] = chatContent
       for (const chat of cache) {

@@ -38,7 +38,7 @@ const JoiningPage: NextPage = () => {
   const handleOnClick = async () => {
     try {
       if (!nickname) {
-        alert('Nhập nickname mày')
+        alert('Vui lòng nhập tên hiển thị')
         return
       }
 
@@ -72,7 +72,7 @@ const JoiningPage: NextPage = () => {
       // lưu lại nickname của mình để dùng
       const gameSession: TStartQuizResponse = data.gameLobby
       gameSession.nickName = nickname
-      
+
       setLsGameSession(JSON.stringify(gameSession))
       setLsPlayer(JSON.stringify(data.player))
       router.push(`/lobby?quizId=${data.gameLobby.quizId}`)
@@ -101,6 +101,12 @@ const JoiningPage: NextPage = () => {
         <MyInput
           onChange={(e) => {
             setNickName(e.target.value)
+          }}
+          onSubmit={handleOnClick}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              handleOnClick()
+            }
           }}
           maxLength={50}
           placeholder="Nhập tên hiển thị"
