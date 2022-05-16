@@ -43,7 +43,9 @@ const MenuBar: FC<MenuBarProps> = ({ isExpand, menuOptions }) => {
               'align-items-center flex-column justify-content-center': isExpand,
             }
           )}
-          onClick={() => authContext.navigate('/profile')}
+          onClick={() =>
+            authContext.isAuth ? authContext.navigate('/profile') : null
+          }
         >
           <Image
             src={'/assets/default-logo.png'}
