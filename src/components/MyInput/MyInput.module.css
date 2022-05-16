@@ -3,10 +3,20 @@
   box-shadow: 0 0 0 2px #009883;
 }
 
+.inputError {
+  box-shadow: 0 0 0 2px #dc3545;
+}
+
 .input:focus-within .icon {
   color: #009883;
 }
 
 .input .icon {
   color: #767676;
+}
+
+.error {
+  position: absolute;
+  padding-left: 2px;
+  padding-top: 1px;
 }
