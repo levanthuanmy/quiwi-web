@@ -29,6 +29,7 @@
     font-weight: bold;
     font-size: 16px;
     color: #767676;
+    padding-bottom: 10px;
 }
 
 .modalHeader {
@@ -70,9 +71,12 @@
 
 .playerList {
     overflow-y: scroll;
-    height: 30vh;
+    min-height: 10vh;
+    min-width: 50vw;
+    max-height: 30vh;
     max-width: 70vw;
     border-radius: 10px;
+    padding: 20px;
     background-color: white;
     align-items: center;
     justify-content: center;
@@ -90,7 +94,9 @@
 
     .playerList {
         max-width: 95vw;
+        min-width: 95vw;
         height: 50vh;
+        max-height: 50vh;
     }
 }
 

@@ -24,21 +24,29 @@ const PlayerLobbyList: FC<PlayerLobbyListProps> = (props: PlayerLobbyListProps) 
     return colors[id % colors.length]
   }
 
+  function hash(str: string) {
+//set variable hash as 0
+    let hash = 0;
+// if the length of the string is 0, return 0
+    if (str.length == 0) return hash;
+    for (let i = 0; i < str.length; i++) {
+      let ch = str.charCodeAt(i);
+      hash = ((hash << 5) - hash) + ch;
+      hash = hash & hash;
+    }
+    return Math.abs(hash);
+  }
+
   return (
     <>
-      {props.players.length === 0 ? (
-        <div className="bg-secondary text-white p-2 rounded-8px">
-          Đang đợi người tham gia...
-        </div>
-      ) : (
+      {
         props.players.map((player, idx) => {
           return <PlayerLobbyItem
             key={idx}
             avatar={player.user?.avatar}
             displayName={player.nickname}
-            bgColor={getColorForString(player.id)}/>
+            bgColor={getColorForString(hash(player.nickname))}/>
         })
-      )
       }
     </>
   )

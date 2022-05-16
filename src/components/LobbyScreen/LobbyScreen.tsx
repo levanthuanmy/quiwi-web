@@ -48,19 +48,21 @@ const LobbyScreen: FC<LobbyScreenProps> = ({
       const gameSession: TStartQuizResponse = JsonParse(lsGameSession)
 
       const lsPlayers: TPlayer[] = [...gameSession.players]
-      // setPlayerList(lsPlayers)
+      setPlayerList(lsPlayers)
+      // console.log("=>(LobbyScreen.tsx:52) lsPlayers", lsPlayers);
+
       // test data
 
       const names = ["Thiện Thiện Thiện", "Khoa", "Mỹ", "Thiện", "Mỹ Mỹ Mỹ", "Khoa Khoa Khoa"]
-      for (let i = 0; i < 50; i++) {
-        lsPlayers.push({
-          id: i,
-          gameLobbyId: 1,
-          nickname: names[i % names.length] + i.toString(),
-          score: 0,
-        },)
-      }
-      setPlayerList(lsPlayers)
+      // for (let i = 0; i < 20; i++) {
+      //   lsPlayers.push({
+      //     id: i,
+      //     gameLobbyId: 1,
+      //     nickname: names[i % names.length] + i.toString(),
+      //     score: 0,
+      //   },)
+      // }
+      // setPlayerList(lsPlayers)
 
       socket.on('new-player', (data) => {
         console.log('new-player', data)
