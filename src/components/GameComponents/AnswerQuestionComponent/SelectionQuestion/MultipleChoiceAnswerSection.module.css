@@ -21,7 +21,7 @@
 
 .selectionBox {
   border-radius: 20px;
-  border-width: 6px;
+  border-width: 2px;
   border-style: inset;
   padding: 20px;
   border-color: rgba(0, 0, 0, 0);
@@ -52,14 +52,12 @@
   text-align: center;
 }
 
-.selectionBox:hover {
-  /* box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.475) !important; */
+  /* .selectionBox:hover {
 
-  cursor: pointer;
-  border-width: 6px;
-  border-style: inset;
-  /* border-color: rgb(255, 255, 117); */
-}
+    cursor: pointer;
+    border-width: 2px;
+    border-style: inset;
+  } */
 
 .selectionTextHuge {
   font-size: 18px;
@@ -74,26 +72,29 @@
   /* box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.475) !important; */
 
   cursor: pointer;
-  border-width: 6px;
+  border-width: 2px;
   /* border-style: inset; */
   border-color: rgb(251, 255, 0);
 }
 
 .selectAndCorrect { 
   cursor: pointer;
-  border-width: 6px;
-  border-style:groove;
+  border-width: 2px;
+  /* border-style:groove; */
   border-color: rgb(38, 255, 0);
 }
 
 .selectAndIncorrect {
-  cursor: pointer;
-  border-width: 6px;
-  /* border-style: inset; */
-  border-color: rgb(255, 0, 0);
+
+  border: 2px dashed red;
 }
 
 /* 238377 */
 .correct {
   
+}
+
+.incorrectAnswer {
+  background-color: rgb(0, 0, 0, 0.3);
+
 }
