@@ -94,6 +94,7 @@
 
     .playerList {
         max-width: 95vw;
+        min-width: 95vw;
         height: 50vh;
         max-height: 50vh;
     }
