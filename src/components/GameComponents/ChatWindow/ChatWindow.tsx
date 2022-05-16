@@ -104,7 +104,7 @@ const ChatWindow: FC<{
           placeholder="Nhập để chat"
           iconClassName="bi bi-send-fill"
           onChange={(e) => setChatValue(e.target.value)}
-          onIconClick={() => {
+          handleIconClick={() => {
             sendMessage({
               message: chatValue,
               invitationCode: gameSession.invitationCode,
