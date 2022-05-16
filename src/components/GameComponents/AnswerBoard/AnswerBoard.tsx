@@ -3,13 +3,14 @@ import styles from './AnswerBoard.module.css'
 import classNames from 'classnames'
 import SingleChoiceAnswerSection from '../AnswerQuestionComponent/SelectionQuestion/SingleChoiceAnswerSection'
 import { useLocalStorage } from '../../../hooks/useLocalStorage/useLocalStorage'
-import { TStartQuizResponse, TUser, TQuestionType } from '../../../types/types'
+import { TStartQuizResponse, TUser } from '../../../types/types'
 import { JsonParse } from '../../../utils/helper'
 import { useSocket } from '../../../hooks/useSocket/useSocket'
 import MoreButton from '../MoreButton/MoreButton'
 import { useGameSession } from '../../../hooks/useGameSession/useGameSession'
 import { useRouter } from 'next/router'
 import MyModal from '../../MyModal/MyModal'
+import { Image } from 'react-bootstrap'
 
 type AnswerBoardProps = {
   className?: string
@@ -58,17 +59,17 @@ const AnswerBoard: FC<AnswerBoardProps> = ({ className, questionId }) => {
       }
     })
 
-    socket?.on('view-result', (data) => {
-      console.log('view', data)
-      setRoomStatus('Xem xếp hạng')
-      setIsShowAnswer(true)
-    })
+    // socket?.on('view-result', (data) => {
+    //   console.log('view', data)
+    //   setRoomStatus('Xem xếp hạng')
+    //   setIsShowAnswer(true)
+    // })
 
-    socket?.on('timeout', (data) => {
-      setIsShowAnswer(true)
-      setRoomStatus('Hết giờ')
-      console.log('timeout', data)
-    })
+    // socket?.on('timeout', (data) => {
+    //   setIsShowAnswer(true)
+    //   setRoomStatus('Hết giờ')
+    //   console.log('timeout', data)
+    // })
 
     socket?.on('error', (data) => {
       console.log('answerboard socket error', data)
@@ -154,18 +155,49 @@ const AnswerBoard: FC<AnswerBoardProps> = ({ className, questionId }) => {
 
   return (
     <div
-      className={classNames(
-        'd-flex flex-column bg-white ',
-        className,
-        styles.container
-      )}
+      className={classNames('d-flex flex-column', className, styles.container)}
     >
-      <div className="fs-4 fw-semiBold pt-3">
+      <div
+        className={classNames(
+          'fs-4 fw-semiBold p-3 px-4 shadow bg-white mb-4',
+          styles.questionTitle
+        )}
+      >
         {gameSession?.quiz?.questions[qid]?.question}
       </div>
 
+      <div className="text-center mb-3 d-flex justify-content-between align-items-center">
+        {/* Timeout */}
+        <div
+          className={classNames(
+            'bg-primary text-white p-3 rounded-circle fs-4 fw-medium',
+            styles.circleContainer
+          )}
+        >
+          30
+        </div>
+        <Image
+          src={
+            gameSession?.quiz.questions[qid]?.media ??
+            'https://i.ytimg.com/vi/ByBANt5sz80/maxresdefault.jpg'
+          }
+          alt="question-image"
+          fluid={true}
+          className={classNames(styles.questionImage)}
+        />
+        {/* Số người submit */}
+        <div
+          className={classNames(
+            'bg-primary text-white p-3 rounded-circle fs-4 fw-medium',
+            styles.circleContainer
+          )}
+        >
+          0
+        </div>
+      </div>
+
       {gameSession?.quiz?.questions[qid]?.question && renderAnswersSection()}
-      {isHost && (
+      {/* {isHost && (
         <div className="d-flex gap-3 justify-content-between">
           <MoreButton
             iconClassName="bi bi-x-circle-fill"
@@ -187,7 +219,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({ className, questionId }) => {
             onClick={goToNextQuestion}
           />
         </div>
-      )}
+      )} */}
 
       <MyModal
         show={isFinish}

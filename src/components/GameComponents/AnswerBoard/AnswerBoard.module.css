@@ -1,16 +1,27 @@
-.container { 
+.container {
   /* border-radius: 4px; */
-  padding: 4px;
+  position: relative;
 }
-
-.nextButton { 
+.circleContainer {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+}
+.nextButton {
   width: fit-content;
   align-self: flex-end;
 }
+.questionImage {
+  max-height: 320px;
+  min-width: 60%;
+  object-fit: contain;
+}
 
-@media (min-width: 1200px) { 
-  .container { 
+@media (min-width: 1200px) {
+  .container {
     border-radius: 20px;
-    padding: 20px;
+  }
+  .questionTitle {
+    border-radius: 20px;
   }
 }

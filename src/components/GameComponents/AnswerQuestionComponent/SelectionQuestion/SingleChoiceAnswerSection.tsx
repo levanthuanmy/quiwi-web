@@ -56,7 +56,7 @@ const SingleChoiceAnswerSection: FC<SingpleChoiceAnswerSectionProps> = ({
   }
 
   return (
-    <div className={classNames(className, 'rounded-20px bg-white pt-20px')}>
+    <div className={classNames(className, '')}>
       {/* 4 câu trả lời */}
       <Row className={`pt-20px ${styles.row}`}>
         {option?.questionAnswers?.map((item, index) => {
