@@ -204,8 +204,8 @@ const AnswerBoard: FC<AnswerBoardProps> = ({ className, questionId }) => {
         </div>
         <Image
           src={
-            gameSession?.quiz?.questions[qid]?.media ??
-            'https://i.ytimg.com/vi/ByBANt5sz80/maxresdefault.jpg'
+            gameSession?.quiz?.questions[qid]?.media ||
+            'assets/default-question-image.png'
           }
           alt="question-image"
           fluid={true}
