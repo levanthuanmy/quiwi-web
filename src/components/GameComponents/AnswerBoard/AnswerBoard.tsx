@@ -1,7 +1,7 @@
 import classNames from 'classnames'
 import { useRouter } from 'next/router'
-import React, { FC, memo, useEffect, useLayoutEffect, useState } from 'react'
-import { Image, Modal, Table } from 'react-bootstrap'
+import React, { FC, memo, useEffect, useState } from 'react'
+import { Image, Modal, Navbar } from 'react-bootstrap'
 import { useGameSession } from '../../../hooks/useGameSession/useGameSession'
 import { useLocalStorage } from '../../../hooks/useLocalStorage/useLocalStorage'
 import { useSocket } from '../../../hooks/useSocket/useSocket'
@@ -9,6 +9,7 @@ import { TStartQuizResponse, TUser } from '../../../types/types'
 import { JsonParse } from '../../../utils/helper'
 import MyModal from '../../MyModal/MyModal'
 import SingleChoiceAnswerSection from '../AnswerQuestionComponent/SelectionQuestion/SingleChoiceAnswerSection'
+import GameSessionRanking from '../GameSessionRanking/GameSessionRanking'
 import styles from './AnswerBoard.module.css'
 
 type AnswerBoardProps = {
@@ -267,86 +268,30 @@ const AnswerBoard: FC<AnswerBoardProps> = ({ className, questionId }) => {
         onHide={() => setShowRanking(false)}
         rankingData={rankingData}
       />
+
+      {/* này chắc là thêm state current tab rồi render component theo state điều kiện nha, check active tab theo state luôn  */}
+      <Navbar
+        fixed="bottom"
+        // cái bg với variant này m chỉnh màu khác cũng được
+        // https://react-bootstrap.github.io/components/navbar/#color-schemes
+        bg="dark"
+        variant="dark"
+        className="justify-content-around py-0"
+      >
+        {/* tab active thì có border xanh với chữ xanh */}
+        <Navbar.Text className="w-100 cursor-pointer p-0">
+          <div className="p-3 w-100 border-top border-5 border-primary text-center text-primary">
+            ???
+          </div>
+        </Navbar.Text>
+
+        {/* tab bình thường */}
+        <Navbar.Text className="w-100 cursor-pointer p-0 text-center">
+          <div className="p-3 w-100">???</div>
+        </Navbar.Text>
+      </Navbar>
     </div>
   )
 }
 
 export default memo(AnswerBoard)
-
-type GameSessionRankingProps = {
-  show: boolean
-  onHide: () => void
-  rankingData: any[]
-}
-const GameSessionRanking: FC<GameSessionRankingProps> = ({
-  show,
-  onHide,
-  rankingData,
-}) => {
-  return (
-    <MyModal
-      show={show}
-      onHide={onHide}
-      size="xl"
-      fullscreen
-      header={<Modal.Title>Bảng xếp hạng</Modal.Title>}
-    >
-      <div className="rounded-14px border overflow-hidden">
-        <Table borderless className="mb-0">
-          <tbody>
-            <tr className="border-bottom bg-primary bg-opacity-10 fw-medium">
-              <td className="p-3">#</td>
-              <td className="p-3">Tên người tham dự</td>
-              <td className="p-3">Điểm số</td>
-              <td className="p-3">Liên tiếp</td>
-            </tr>
-            {rankingData?.map((item, key) => (
-              <tr
-                key={key}
-                className={classNames({
-                  'border-top': key !== 0,
-                })}
-              >
-                <td className="p-3">
-                  <div
-                    className={classNames(
-                      'd-flex justify-content-center align-items-center fw-medium',
-                      {
-                        'rounded-circle text-white': key < 3,
-                        'bg-warning': key === 0,
-                        'bg-secondary bg-opacity-50': key === 1,
-                        'bg-bronze': key === 2,
-                      }
-                    )}
-                    style={{ width: 30, height: 30 }}
-                  >
-                    {key + 1}
-                  </div>
-                </td>
-                <td className="p-3">{item?.nickname}</td>
-                <td className="p-3">
-                  <div
-                    className={classNames(
-                      'py-1 px-2 fw-medium text-center rounded-10px overflow-hidden',
-                      {
-                        'text-white': key < 3,
-                        'bg-warning': key === 0,
-                        'bg-secondary bg-opacity-50': key === 1,
-                        'bg-bronze': key === 2,
-                        'bg-secondary bg-opacity-75': key > 2,
-                      }
-                    )}
-                    style={{ width: 90 }}
-                  >
-                    {Math.round(item?.score)}
-                  </div>
-                </td>
-                <td className="p-3">{item?.currentStreak}</td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
-      </div>
-    </MyModal>
-  )
-}
