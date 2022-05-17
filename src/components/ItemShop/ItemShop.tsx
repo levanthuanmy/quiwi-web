@@ -1,4 +1,4 @@
-import { Card, Button } from 'react-bootstrap'
+import { Card, Button, Form } from 'react-bootstrap'
 import React, { FC } from 'react'
 import styles from './ItemShop.module.css'
 import classNames from 'classnames'
@@ -9,29 +9,32 @@ type ItemShopProps = {
     avatar?: string,
     name?: string,
     price?: number,
-    isSold?: boolean
+    isSold?: boolean,
+    description?: string,
+    category?: string,
+    onClick?: () => void
 }
 
-const ItemShop: FC<ItemShopProps> = () => {
+const ItemShop: FC<ItemShopProps> = ({ name, avatar, price, description, category, onClick }) => {
     return (
         <Card className={styles.containerRlt} style={{ width: '15rem' }}>
-            <Card.Img variant="top" src="https://cdn.dribbble.com/users/383277/screenshots/14051354/media/4ded79488d5a6ee5a6026380a4ae4393.png?compress=1&resize=400x300" className={styles.imgsBorder} />
-            <div className={styles.containerAbs}>Mũ</div>
+            <Card.Img variant="top" src={avatar} className={styles.imgsBorder} />
+            <div className={styles.containerAbs}>{category}</div>
             <Card.Body>
-                <Card.Title className={styles.cardTitle}>Mũ phép thuật</Card.Title>
+                <Card.Title className={styles.cardTitle}>{name}</Card.Title>
                 <Card.Text className={styles.cardDescription}>
                     <div className={styles.description}>
-                        Tăng 120% sức mạnh phép thuật
+                        {description}
                     </div>
                 </Card.Text>
                 <Card.Text className={styles.cardPrice}>
-                    <div className={classNames('bi bi-coin')}>
-                    </div>
+                    <img alt="avatar" src="/assets/quiwi-coin.png" width="32" height="32"></img>
                     <div className={styles.price}>
-                        800,000
+                        {price}
                     </div>
                 </Card.Text>
-                <Button className={styles.btnBuy}>MUA</Button>
+                <Button className={styles.btnBuy} onClick={onClick}>MUA</Button>
+                <input className="quantity" id="id_form-0-quantity" min="0" name="form-0-quantity" value="1" type="number"></input>
             </Card.Body>
         </Card>
     )

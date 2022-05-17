@@ -4,12 +4,15 @@ import React, { useEffect, useState } from 'react'
 import { Col, Container, Pagination, Row } from 'react-bootstrap'
 import DashboardLayout from '../../components/DashboardLayout/DashboardLayout'
 import ItemShop from '../../components/ItemShop/ItemShop'
+import ItemShopV2 from '../../components/ItemShopV2/ItemShopV2'
+import MyModal from '../../components/MyModal/MyModal'
 import { get } from '../../libs/api'
 import {
   TApiResponse,
   TItem,
   TItemCategory,
-  TPaginationResponse
+  TPaginationResponse,
+  TUserProfile
 } from '../../types/types'
 
 // const socket = io(`${API_URL}/games`, { transports: ['websocket'] })
@@ -22,6 +25,8 @@ const ItemPage: NextPage = () => {
     useState<TPaginationResponse<TItemCategory>>()
   const [currentListPagination, setCurrentListPagination] = useState<number[]>()
   const [currentPagination, setCurrentPagination] = useState<number>(1)
+  const [userResponse, setUserReponse] = useState<TUserProfile>()
+  const [showModal, setShowModal] = useState<boolean>(false)
   //Logic phân trang chỉ áp dụng cho số lẻ
   const maxPaginationList = 5
   const pageSize = 8
@@ -184,7 +189,25 @@ const ItemPage: NextPage = () => {
         console.log(error)
       }
     }
+
+    const getUser = async () => {
+      try {
+        const res: TApiResponse<TUserProfile> = await get(
+          `/api/users/profile`,
+          true
+        )
+        if (res.response) {
+          setUserReponse(res.response)
+          console.log(res.response);
+        }
+      } catch (error) {
+        alert('Có lỗi nè')
+        console.log(error)
+      }
+    }
+
     getItemCategories()
+    getUser()
     // if (!itemsResponse){
     //   getItems()
     // }
@@ -216,6 +239,7 @@ const ItemPage: NextPage = () => {
                     toggleState === category.id ? 'tabs active-tabs' : 'tabs'
                   }
                   onClick={() => toggleTab(category.id)}
+                  style={{fontWeight:'bold'}}
                 >
                   {category.name}
                 </div>
@@ -226,19 +250,21 @@ const ItemPage: NextPage = () => {
                 style={{
                   display: 'flex',
                   justifyContent: 'flex-start',
-                  backgroundColor: '#006557',
+                  // backgroundColor: '#006557',
                   fontSize: '25px',
                   borderRadius: 10,
-                  padding: 2,
                   fontWeight: 'bold',
-                  color: '#D1B550',
+                  border: '3px solid #009883',
+                  alignItems: 'center'
                 }}
               >
                 <div
-                  className={classNames('bi bi-coin')}
-                  style={{ marginLeft: 10 }}
-                ></div>
-                <div style={{ paddingLeft: '10px' }}>800,000</div>
+                  style={{
+                  }}
+                >
+                  <img alt="avatar" src="/assets/quiwi-coin.png" width="32" height="32"></img>
+                </div>
+                <div style={{ paddingLeft: '10px' }}>{userResponse?.user.coin}</div>
               </div>
             </Col>
           </Row>
@@ -249,7 +275,14 @@ const ItemPage: NextPage = () => {
           >
             {itemsResponse?.items.map((item, idx) => (
               <Col key={item.id} className="p-3" xs={3}>
-                <ItemShop />
+                <ItemShopV2
+                name = {item.name}
+                avatar = {item.avatar}
+                category = {item.itemCategory.name}
+                description = {item.description}
+                price = {item.price}
+                type = {item.type}
+                onClick={() => setShowModal(true)} />
               </Col>
             ))}
           </Row>
@@ -287,6 +320,14 @@ const ItemPage: NextPage = () => {
               )}
             </Col>
           </Row>
+          <MyModal
+            show={showModal}
+            onHide={() => setShowModal(false)}
+            header={<div className="fs-24px fw-medium">Chỉnh sửa Quiz</div>}
+            fullscreen
+          >
+
+          </MyModal>
         </Container>
       </div>
     </DashboardLayout>
