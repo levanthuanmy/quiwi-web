@@ -18,9 +18,9 @@ const GamePage: NextPage = () => {
   return (
     <>
       <div className={`${styles.gameBackground}`}>
-        <div className={`${styles.gameView} d-flex `}>
+        <div className={`${styles.gameView} d-flex`}>
           <div
-            className={`d-flex flex-column flex-grow-3 gap-3 ${styles.gameCol} me-lg-3 `}
+            className={`d-flex flex-column flex-grow-3 gap-3 ${styles.gameCol} me-lg-3 m-0 `}
           >
             <AnswerBoard
               questionId={Number(questionId) ?? 0}

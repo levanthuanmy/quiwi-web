@@ -21,10 +21,7 @@
 
 .selectionBox {
   border-radius: 20px;
-  border-width: 2px;
-  border-style: inset;
   padding: 20px;
-  border-color: rgba(0, 0, 0, 0);
 }
 
 @media (max-width: 576px) {
@@ -38,7 +35,6 @@
 
   .selectionBox {
     border-radius: 12px;
-    padding: 4px;
   }
 
   .selectionItem {

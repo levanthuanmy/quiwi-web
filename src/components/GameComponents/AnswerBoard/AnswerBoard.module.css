@@ -3,9 +3,13 @@
   position: relative;
 }
 .circleContainer {
-  width: 72px;
-  height: 72px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 1rem;
 }
 .nextButton {
   width: fit-content;
@@ -13,7 +17,8 @@
 }
 .questionImage {
   max-height: 320px;
-  min-width: 60%;
+  min-width: 30%;
+  width: 60%;
   object-fit: contain;
 }
 
@@ -21,7 +26,23 @@
   .container {
     border-radius: 20px;
   }
+  .questionImage {
+    width: 100%;
+  }
+}
+
+@media (min-width: 992px) {
   .questionTitle {
     border-radius: 20px;
+  }
+
+}
+
+@media (min-width: 768px) {
+  .circleContainer {
+    font-size: 1.5rem;
+    width: 64px;
+    height: 64px;
+    margin: 0;
   }
 }

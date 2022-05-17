@@ -68,21 +68,21 @@ const GameMenuBar: FC<GameMenuBarProps> = ({
       className={classNames(
         'd-none d-md-flex flex-column bg-white ',
         styles.container,
+        isExpand ? `shadow-lg ${styles.expand}` : '',
         {
           minHeight: '976px',
-          right: 0,
+          right: 0, 
         }
       )}
-      style={{ width: isExpand ? 512 : 48 }}
     >
       <div
         className="position-relative cursor-pointer "
-        style={{ height: 48 }}
+        style={{ height: 40 }}
         onClick={() => setIsExpand((prev) => !prev)}
       >
         <i
           className={classNames(
-            'fs-18px position-absolute d-flex justify-content-center align-items-center ',
+            'position-absolute d-flex justify-content-center align-items-center ',
             styles.button,
             {
               'bi bi-chevron-double-right': isExpand,

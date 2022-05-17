@@ -1,6 +1,6 @@
 import classNames from 'classnames'
 import { useRouter } from 'next/router'
-import React, { FC, memo, useEffect, useState } from 'react'
+import React, { FC, memo, useEffect, useLayoutEffect, useState } from 'react'
 import { Image, Modal, Navbar } from 'react-bootstrap'
 import { useGameSession } from '../../../hooks/useGameSession/useGameSession'
 import { useLocalStorage } from '../../../hooks/useLocalStorage/useLocalStorage'
@@ -32,9 +32,9 @@ const AnswerBoard: FC<AnswerBoardProps> = ({ className, questionId }) => {
   const [showRanking, setShowRanking] = useState<boolean>(false)
   const [rankingData, setRankingData] = useState<any[]>([])
   const [timeout, _setTimeout] = useState<number>(-1)
+  const [numSubmission, setNumSubmission] = useState<number>(0)
 
   const [showTimeout, setShowTimeout] = useState<boolean>(false)
-  const [_interval, _setInterval] = useState<NodeJS.Timer | undefined>()
   useEffect(() => {
     const gameData: TStartQuizResponse = JsonParse(
       lsGameSession
@@ -52,9 +52,17 @@ const AnswerBoard: FC<AnswerBoardProps> = ({ className, questionId }) => {
     }
   }, [gameSession, qid])
 
-  useEffect(() => {
-    if (timeout <= 0) {
+  const handleTimeout = () => {
+    if (roomStatus === 'Đang trả lời câu hỏi') {
       setShowTimeout(true)
+      setRoomStatus('Hết giờ')
+      setIsShowAnswer(true)
+    }
+  }
+
+  useEffect(() => {
+    if (timeout == 0) {
+      handleTimeout()
       return
     }
     const interval = setInterval(() => {
@@ -63,6 +71,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({ className, questionId }) => {
       }
     }, 1000)
     return () => clearInterval(interval)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [timeout])
 
   const displayQuestionId = (questionId: number) => {
@@ -74,6 +83,10 @@ const AnswerBoard: FC<AnswerBoardProps> = ({ className, questionId }) => {
   const handleSocket = () => {
     socket?.on('new-submission', (data) => {
       console.log('new-submission', data)
+
+      // nhớ check mode
+
+      setNumSubmission(numSubmission + 1)
     })
 
     socket?.on('next-question', (data) => {
@@ -84,17 +97,18 @@ const AnswerBoard: FC<AnswerBoardProps> = ({ className, questionId }) => {
       }
     })
 
-    // socket?.on('view-result', (data) => {
-    //   console.log('view', data)
-    //   setRoomStatus('Xem xếp hạng')
-    //   setIsShowAnswer(true)
-    // })
+    socket?.on('view-result', (data) => {
+      console.log('view', data)
+      setRoomStatus('Xem xếp hạng')
+      setIsShowAnswer(true)
+    })
 
-    // socket?.on('timeout', (data) => {
-    //   setIsShowAnswer(true)
-    //   setRoomStatus('Hết giờ')
-    //   console.log('timeout', data)
-    // })
+    socket?.on('timeout', (data) => {
+      console.log('timeout', data)
+      if (timeout === 0) {
+        handleTimeout()
+      }
+    })
 
     socket?.on('ranking', (data) => {
       setShowRanking(true)
@@ -186,23 +200,26 @@ const AnswerBoard: FC<AnswerBoardProps> = ({ className, questionId }) => {
     >
       <div
         className={classNames(
-          'fs-4 fw-semiBold p-3 px-4 shadow bg-white mb-4',
+          'fs-4 shadow-sm fw-semiBold p-3 px-4 bg-white mb-4',
           styles.questionTitle
         )}
       >
         {gameSession?.quiz?.questions[qid]?.question}
       </div>
 
-      <div className="text-center mb-3 d-flex justify-content-between align-items-center">
+      <div className="text-center mb-3 d-flex justify-content-xl-between justify-content-center align-items-center">
         {/* Timeout */}
-        <div
-          className={classNames(
-            'bg-primary text-white p-3 rounded-circle fs-4 fw-medium',
-            styles.circleContainer
-          )}
-        >
-          {timeout}
+        <div>
+          <div
+            className={classNames(
+              'bg-primary text-white rounded-circle fw-medium',
+              styles.circleContainer
+            )}
+          >
+            {timeout}
+          </div>
         </div>
+
         <Image
           src={
             gameSession?.quiz?.questions[qid]?.media ||
@@ -210,16 +227,18 @@ const AnswerBoard: FC<AnswerBoardProps> = ({ className, questionId }) => {
           }
           alt="question-image"
           fluid={true}
-          className={classNames(styles.questionImage)}
+          className={classNames(styles.questionImage, 'mx-3')}
         />
         {/* Số người submit */}
-        <div
-          className={classNames(
-            'bg-primary text-white p-3 rounded-circle fs-4 fw-medium',
-            styles.circleContainer
-          )}
-        >
-          0
+        <div>
+          <div
+            className={classNames(
+              'bg-primary text-white fw-medium',
+              styles.circleContainer
+            )}
+          >
+            {numSubmission}
+          </div>
         </div>
       </div>
 
@@ -250,8 +269,8 @@ const AnswerBoard: FC<AnswerBoardProps> = ({ className, questionId }) => {
 
       {!isHost ? (
         <MyModal
-          show={true}
-          onHide={() => setShowRanking(false)}
+          show={showTimeout}
+          onHide={() => setShowTimeout(false)}
           size="sm"
           header={
             <Modal.Title className="text-danger">Hết thời gian</Modal.Title>
@@ -270,26 +289,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({ className, questionId }) => {
       />
 
       {/* này chắc là thêm state current tab rồi render component theo state điều kiện nha, check active tab theo state luôn  */}
-      <Navbar
-        fixed="bottom"
-        // cái bg với variant này m chỉnh màu khác cũng được
-        // https://react-bootstrap.github.io/components/navbar/#color-schemes
-        bg="dark"
-        variant="dark"
-        className="justify-content-around py-0"
-      >
-        {/* tab active thì có border xanh với chữ xanh */}
-        <Navbar.Text className="w-100 cursor-pointer p-0">
-          <div className="p-3 w-100 border-top border-5 border-primary text-center text-primary">
-            ???
-          </div>
-        </Navbar.Text>
-
-        {/* tab bình thường */}
-        <Navbar.Text className="w-100 cursor-pointer p-0 text-center">
-          <div className="p-3 w-100">???</div>
-        </Navbar.Text>
-      </Navbar>
+     
     </div>
   )
 }
