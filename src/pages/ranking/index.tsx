@@ -3,15 +3,11 @@ import { NextPage } from 'next'
 import React, { useEffect, useState } from 'react'
 import { Container, Dropdown } from 'react-bootstrap'
 import DashboardLayout from '../../components/DashboardLayout/DashboardLayout'
-import MenuBar from '../../components/MenuBar/MenuBar'
-import NavBar from '../../components/NavBar/NavBar'
 import RankingBoard from '../../components/Ranking/RankingBoard'
 import { RankingProps } from '../../components/Ranking/RankingRow'
 import { useLocalStorage } from '../../hooks/useLocalStorage/useLocalStorage'
 import { TUser } from '../../types/types'
-import { HOME_MENU_OPTIONS } from '../../utils/constants'
 import { JsonParse } from '../../utils/helper'
-import styles from './ranking.module.css'
 
 export enum RankingType {
   COIN = 'coin',
