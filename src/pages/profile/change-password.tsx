@@ -90,7 +90,7 @@ const ChangePasswordPage: NextPage = () => {
     <>
       <NavBar showMenuBtn={false} isExpand={false} setIsExpand={() => null} />
 
-      <Container className="pt-64px  min-vh-100 position-relative">
+      <Container className="pt-80px  min-vh-100 position-relative">
         <Row className="border my-3">
           <Col xs={3} md={4} className="border-end menu text-center p-0">
             <LeftProfileMenuBar />

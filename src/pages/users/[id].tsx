@@ -148,7 +148,7 @@ const GetUserPage: NextPage = () => {
     <>
       <NavBar showMenuBtn={false} isExpand={false} setIsExpand={() => null} />
 
-      <Container className="pt-64px min-vh-100 position-relative ">
+      <Container className="pt-80px min-vh-100 position-relative ">
         <Row className="my-5 justify-content-center align-items-center">
           <Col xs={5} md={3} className="text-center">
             <Image
