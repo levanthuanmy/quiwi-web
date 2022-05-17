@@ -1,7 +1,7 @@
 import classNames from 'classnames'
 import { useRouter } from 'next/router'
-import React, { FC, memo, useEffect, useLayoutEffect, useState } from 'react'
-import { Image, Modal, Navbar } from 'react-bootstrap'
+import { FC, memo, useEffect, useState } from 'react'
+import { Modal } from 'react-bootstrap'
 import { useGameSession } from '../../../hooks/useGameSession/useGameSession'
 import { useLocalStorage } from '../../../hooks/useLocalStorage/useLocalStorage'
 import { useSocket } from '../../../hooks/useSocket/useSocket'
@@ -10,6 +10,8 @@ import { JsonParse } from '../../../utils/helper'
 import MyModal from '../../MyModal/MyModal'
 import SingleChoiceAnswerSection from '../AnswerQuestionComponent/SelectionQuestion/SingleChoiceAnswerSection'
 import GameSessionRanking from '../GameSessionRanking/GameSessionRanking'
+import MoreButton from '../MoreButton/MoreButton'
+import { QuestionMedia } from '../QuestionMedia/QuestionMedia'
 import styles from './AnswerBoard.module.css'
 
 type AnswerBoardProps = {
@@ -71,7 +73,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({ className, questionId }) => {
       }
     }, 1000)
     return () => clearInterval(interval)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [timeout])
 
   const displayQuestionId = (questionId: number) => {
@@ -195,55 +197,47 @@ const AnswerBoard: FC<AnswerBoardProps> = ({ className, questionId }) => {
   }
 
   return (
-    <div
-      className={classNames('d-flex flex-column', className, styles.container)}
-    >
+    <div className="d-flex flex-column">
+      <div className="my-3 d-flex justify-content-between">
+        <MoreButton
+          iconClassName="bi bi-x-circle-fill"
+          className={classNames('text-white fw-medium', styles.nextButton)}
+          title="Thoát phòng"
+          onClick={exitRoom}
+        />
+        <MoreButton
+          isEnable={isShowAnswer}
+          iconClassName="bi bi-bar-chart"
+          className={classNames('text-white fw-medium', styles.nextButton)}
+          title={'Tiếp theo'}
+          onClick={viewRanking}
+        />
+      </div>
       <div
         className={classNames(
-          'fs-4 shadow-sm fw-semiBold p-3 px-4 bg-white mb-4',
-          styles.questionTitle
+          'd-flex flex-column',
+          className,
+          styles.container
         )}
       >
-        {gameSession?.quiz?.questions[qid]?.question}
-      </div>
-
-      <div className="text-center mb-3 d-flex justify-content-xl-between justify-content-center align-items-center">
-        {/* Timeout */}
-        <div>
-          <div
-            className={classNames(
-              'bg-primary text-white rounded-circle fw-medium',
-              styles.circleContainer
-            )}
-          >
-            {timeout}
-          </div>
+        <div
+          className={classNames(
+            'fs-4 shadow-sm fw-semiBold p-3 px-4 bg-white mb-4',
+            styles.questionTitle
+          )}
+        >
+          {gameSession?.quiz?.questions[qid]?.question}
         </div>
 
-        <Image
-          src={
-            gameSession?.quiz?.questions[qid]?.media ||
-            'assets/default-question-image.png'
-          }
-          alt="question-image"
-          fluid={true}
-          className={classNames(styles.questionImage, 'mx-3')}
+        <QuestionMedia
+          timeout={timeout}
+          media={gameSession?.quiz?.questions[qid]?.media}
+          numSubmission={numSubmission}
+          key={qid}
         />
-        {/* Số người submit */}
-        <div>
-          <div
-            className={classNames(
-              'bg-primary text-white fw-medium',
-              styles.circleContainer
-            )}
-          >
-            {numSubmission}
-          </div>
-        </div>
-      </div>
 
-      {gameSession?.quiz?.questions[qid]?.question && renderAnswersSection()}
-      {/* {isHost && (
+        {gameSession?.quiz?.questions[qid]?.question && renderAnswersSection()}
+        {/* {isHost && (
         <div className="d-flex gap-3 justify-content-between">
           <MoreButton
             iconClassName="bi bi-x-circle-fill"
@@ -267,29 +261,29 @@ const AnswerBoard: FC<AnswerBoardProps> = ({ className, questionId }) => {
         </div>
       )} */}
 
-      {!isHost ? (
-        <MyModal
-          show={showTimeout}
-          onHide={() => setShowTimeout(false)}
-          size="sm"
-          header={
-            <Modal.Title className="text-danger">Hết thời gian</Modal.Title>
-          }
-        >
-          <div className="px-1 text-center">
-            Ôi khum! Bạn đã hết thời gian làm bài
-          </div>
-        </MyModal>
-      ) : null}
+        {!isHost ? (
+          <MyModal
+            show={showTimeout}
+            onHide={() => setShowTimeout(false)}
+            size="sm"
+            header={
+              <Modal.Title className="text-danger">Hết thời gian</Modal.Title>
+            }
+          >
+            <div className="px-1 text-center">
+              Ôi khum! Bạn đã hết thời gian làm bài
+            </div>
+          </MyModal>
+        ) : null}
 
-      <GameSessionRanking
-        show={showRanking}
-        onHide={() => setShowRanking(false)}
-        rankingData={rankingData}
-      />
+        <GameSessionRanking
+          show={showRanking}
+          onHide={() => setShowRanking(false)}
+          rankingData={rankingData}
+        />
 
-      {/* này chắc là thêm state current tab rồi render component theo state điều kiện nha, check active tab theo state luôn  */}
-     
+        {/* này chắc là thêm state current tab rồi render component theo state điều kiện nha, check active tab theo state luôn  */}
+      </div>
     </div>
   )
 }

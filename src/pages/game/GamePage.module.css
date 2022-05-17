@@ -1,15 +1,12 @@
-.hiddenNav {
-}
-
-.emojiBar {
-}
-
 .gameBackground {
   min-height: 100vh;
   background: #f2f2f2;
-  padding-top: 64px;
+  padding-top: 16px;
 }
-
+.nextButton {
+  width: fit-content;
+  align-self: flex-end;
+}
 .answerBoard {
   position: relative;
   left: 0;
@@ -18,8 +15,6 @@
   height: 300px;
 }
 
-
-
 .gameView {
   position: relative;
   padding-top: 8px;
@@ -27,17 +22,8 @@
 }
 
 .gameCol {
-  /* height: 100%; */
   width: 100%;
 }
-
-/* .chatView {
-  max-height: 90vh;
-}
-
-.playerList {
-  max-height: 90vh;
-} */
 
 /* // Small devices (landscape phones, 576px and up) */
 @media (max-width: 576px) {

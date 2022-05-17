@@ -1,7 +1,3 @@
-.container {
-  /* border-radius: 4px; */
-  position: relative;
-}
 .circleContainer {
   width: 48px;
   height: 48px;
@@ -20,9 +16,6 @@
 }
 
 @media (min-width: 1200px) {
-  .container {
-    border-radius: 20px;
-  }
   .questionImage {
     width: 100%;
   }
@@ -32,7 +25,6 @@
   .questionTitle {
     border-radius: 20px;
   }
-
 }
 
 @media (min-width: 768px) {
