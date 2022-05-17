@@ -79,7 +79,7 @@
   transform: translateX(-50%);
   width: calc(100% + 2px);
   height: 5px;
-  background: rgb(88, 147, 241);
+  background: #009883;
 }
 
 .deactive-content {

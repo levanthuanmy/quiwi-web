@@ -17,6 +17,7 @@
 
 .imgsBorder {
     border-radius: 2rem;
+    height: 13rem;
 }
 
 .cardTitle {
@@ -65,5 +66,5 @@
 }
 
 .price{
-    padding-left: 1rem;
+    padding-left: 10px;
 }
