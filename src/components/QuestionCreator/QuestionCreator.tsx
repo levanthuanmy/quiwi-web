@@ -364,6 +364,7 @@ const QuestionCreator: FC<QuestionCreatorProps> = ({
                     answers={answers}
                     setAnswers={setAnswers}
                     onRemove={() => removeAnswerAtIndex(key)}
+                    type={type}
                   />
                 </Col>
               ))}

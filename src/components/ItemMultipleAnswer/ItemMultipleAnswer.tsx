@@ -18,16 +18,16 @@ type ItemMultipleAnswerProps = {
   setAnswers: React.Dispatch<React.SetStateAction<TAnswer[]>>
   index: number
   onRemove: () => void
+  type: 'single' | 'multiple' | 'fill'
 }
 const ItemMultipleAnswer: FC<ItemMultipleAnswerProps> = ({
   answers,
   setAnswers,
   index,
   onRemove,
+  type = 'single',
 }) => {
   const router = useRouter()
-  const type: QuestionType =
-    (router.query?.type?.toString() as QuestionType) || 'single'
   const [isCorrectAns, setIsCorrectAns] = useState(answers[index].isCorrect)
 
   useEffect(() => {
