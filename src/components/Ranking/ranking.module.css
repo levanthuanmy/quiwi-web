@@ -1,4 +1,14 @@
-
 .HighlightCurrentUser {
-    background-color: rgb(107, 235, 149);
+  background-color: rgb(107, 235, 149);
+}
+
+.zoom {
+  padding: 50px;
+  transition: transform 0.2s;
+  margin: 0 auto;
+  cursor: pointer;
+}
+
+.zoom:hover {
+  transform: scale(1.1);
 }
