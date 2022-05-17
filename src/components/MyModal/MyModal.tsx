@@ -42,29 +42,31 @@ const MyModal: FC<MyModalProps> = ({
       <Modal.Body className="py-4">
         {children ?? 'This is children of MyModal'}
       </Modal.Body>
-      <Row className="justify-content-center p-3">
-        {inActiveButtonTitle?.length && (
-          <Col xs="6">
-            <MyButton
-              className="text-white w-100"
-              variant="secondary"
-              onClick={inActiveButtonCallback}
-            >
-              {inActiveButtonTitle}
-            </MyButton>
-          </Col>
-        )}
-        {activeButtonTitle?.length && (
-          <Col xs="6">
-            <MyButton
-              className="text-white w-100"
-              onClick={activeButtonCallback}
-            >
-              {activeButtonTitle}
-            </MyButton>
-          </Col>
-        )}
-      </Row>
+      {inActiveButtonTitle || activeButtonTitle ? (
+        <Row className="justify-content-center p-3">
+          {inActiveButtonTitle?.length && (
+            <Col xs="6">
+              <MyButton
+                className="text-white w-100"
+                variant="secondary"
+                onClick={inActiveButtonCallback}
+              >
+                {inActiveButtonTitle}
+              </MyButton>
+            </Col>
+          )}
+          {activeButtonTitle?.length && (
+            <Col xs="6">
+              <MyButton
+                className="text-white w-100"
+                onClick={activeButtonCallback}
+              >
+                {activeButtonTitle}
+              </MyButton>
+            </Col>
+          )}
+        </Row>
+      ) : null}
     </Modal>
   )
 }
