@@ -1,23 +1,31 @@
+import classNames from 'classnames'
 import { Field, Form as FormikForm, Formik } from 'formik'
-import _ from 'lodash'
 import { useRouter } from 'next/router'
 import React, { FC, useEffect, useState } from 'react'
-import { Col, Dropdown, Form, Image, Modal, Row } from 'react-bootstrap'
+import {
+  Col,
+  Dropdown,
+  FloatingLabel,
+  Form,
+  Image,
+  Modal,
+  Row,
+} from 'react-bootstrap'
 import { post } from '../../libs/api'
 import { TEditQuestion } from '../../pages/quiz/creator/[id]'
 import {
   TAnswer,
-  TQuestion,
   TApiResponse,
+  TQuestion,
   TQuestionType,
   TQuiz,
 } from '../../types/types'
 import { MAPPED_QUESTION_TYPE, TIMEOUT_OPTIONS } from '../../utils/constants'
 import {
-  storageRef,
-  storage,
-  uploadFile,
   getUrl,
+  storage,
+  storageRef,
+  uploadFile,
 } from '../../utils/firebaseConfig'
 import { getCurrentTrueAnswer } from '../../utils/helper'
 import IconQuestion, {
@@ -50,6 +58,7 @@ const defaultQuestion: TQuestion = {
     { ...defaultAnswer, orderPosition: 2 },
   ],
   media: '',
+  score: 100,
 }
 
 type QuestionCreatorProps = {
@@ -74,11 +83,11 @@ const QuestionCreator: FC<QuestionCreatorProps> = ({
     { ...defaultAnswer, orderPosition: 1 },
     { ...defaultAnswer, orderPosition: 2 },
   ])
-  const [newQuestion, setNewQuestion] =
-    useState<TQuestion>(defaultQuestion)
+  const [newQuestion, setNewQuestion] = useState<TQuestion>(defaultQuestion)
   const type: QuestionType = isEditQuestion.isEdit
     ? MAPPED_QUESTION_TYPE[newQuestion?.type]
     : (router.query?.type?.toString() as QuestionType) || 'single'
+  const [isScoreError, setIsScoreError] = useState<boolean>(false)
 
   useEffect(() => {
     if (isEditQuestion.isEdit) {
@@ -126,6 +135,10 @@ const QuestionCreator: FC<QuestionCreatorProps> = ({
       if (!quiz) return
       if (getCurrentTrueAnswer(answers) < 1) {
         alert('Bạn cần có ít nhất 1 câu trả lời là đúng')
+        return
+      }
+      if (isScoreError) {
+        alert('Điểm của câu hỏi cần nằm trong khoảng từ 0 đến 100')
         return
       }
       const _newQuestion: TQuestion = {
@@ -193,6 +206,17 @@ const QuestionCreator: FC<QuestionCreatorProps> = ({
     }
   }
 
+  const handleScoreInputChange = (e: any) => {
+    const value = Number(e?.target?.value)
+    console.log('handleScoreInputChange - value', value)
+    const isValid = value >= 0 && value <= 100
+    setIsScoreError(!isValid)
+    setNewQuestion((prev) => ({
+      ...prev,
+      score: Number(e?.target?.value),
+    }))
+  }
+
   return (
     <Modal
       show={show}
@@ -207,7 +231,21 @@ const QuestionCreator: FC<QuestionCreatorProps> = ({
       <Modal.Body className="p-0">
         <div className="bg-secondary bg-opacity-10 p-3">
           <Row>
-            <Col xs="12" md="auto" className="mb-3 mb-md-0">
+            <Col
+              xs="12"
+              md="auto"
+              className="mb-3 mb-md-0 d-flex flex-column gap-2"
+            >
+              <QuestionConfigBtn
+                prefixIcon={<IconQuestion type={type} />}
+                title={
+                  <div className="fw-medium text-dark">
+                    {questionTypeStyles[type].title}
+                  </div>
+                }
+                suffixIcon=""
+              />
+
               <div className="position-relative">
                 <input
                   type="file"
@@ -226,16 +264,9 @@ const QuestionCreator: FC<QuestionCreatorProps> = ({
                   }
                   title="Thêm hình ảnh"
                   suffixIcon={<i className="bi bi-plus-lg fs-18px" />}
-                  className="mb-2"
                 />
               </div>
 
-              <QuestionConfigBtn
-                prefixIcon={<IconQuestion type={type} />}
-                title={questionTypeStyles[type].title}
-                suffixIcon=""
-                className="mb-2"
-              />
               <Dropdown id="timeoutDropdown">
                 <Dropdown.Toggle
                   id="dropdown-basic"
@@ -267,6 +298,24 @@ const QuestionCreator: FC<QuestionCreatorProps> = ({
                   ))}
                 </Dropdown.Menu>
               </Dropdown>
+
+              <FloatingLabel
+                controlId="floatingInput"
+                label="Nhập điểm số (0 - 100)"
+                className="fs-14px"
+              >
+                <Form.Control
+                  type="number"
+                  placeholder="Nhập điểm số (từ 0 đến 100)"
+                  className={classNames('rounded-10px border', {
+                    'border-danger border-2 shadow-none': isScoreError,
+                  })}
+                  min={0}
+                  max={100}
+                  value={newQuestion?.score}
+                  onChange={handleScoreInputChange}
+                />
+              </FloatingLabel>
             </Col>
             <Col className="ps-12px ps-md-0">
               <Row className="flex-column-reverse flex-md-row border m-0 rounded-10px overflow-hidden">

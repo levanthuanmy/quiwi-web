@@ -149,11 +149,16 @@ const ItemQuestion: FC<ItemQuestionProps> = ({
             </Row>
           </div>
         </Accordion.Body>
-        <div className="bg-secondary p-12px bg-opacity-10 d-flex">
+        <div className="bg-secondary p-12px bg-opacity-10 d-flex gap-2">
           <QuestionActionButton
             iconClassName="bi bi-clock"
             className="bg-white"
-            title={question.duration.toString()}
+            title={`${question.duration.toString()} giây`}
+          />
+          <QuestionActionButton
+            iconClassName="bi bi-bullseye"
+            className="bg-white"
+            title={`${question.score} điểm`}
           />
         </div>
       </Accordion.Item>
