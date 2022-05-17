@@ -1,6 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { NextPage } from 'next'
-import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { Button, Col, Container, Image, Row } from 'react-bootstrap'
@@ -14,7 +13,6 @@ import {
   TFollowUsers,
   TPaginationResponse,
   TUser,
-  TUserProfile,
 } from '../../types/types'
 
 type TUserProfileRespone = TUser & {
@@ -148,7 +146,8 @@ const GetUserPage: NextPage = () => {
 
   return user ? (
     <>
-      <NavBar />
+      <NavBar showMenuBtn={false} isExpand={false} setIsExpand={() => null} />
+
       <Container className="pt-64px min-vh-100 position-relative ">
         <Row className="my-5 justify-content-center align-items-center">
           <Col xs={5} md={3} className="text-center">

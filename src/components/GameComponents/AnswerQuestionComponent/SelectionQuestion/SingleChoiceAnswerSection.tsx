@@ -1,10 +1,10 @@
-import React, { FC, useEffect } from 'react'
-import { Col, Row } from 'react-bootstrap'
-import styles from './MultipleChoiceAnswerSection.module.css'
 import classNames from 'classnames'
+import { FC } from 'react'
+import { Col, Row } from 'react-bootstrap'
 import { TAnswer, TQuestion } from '../../../../types/types'
+import styles from './SingleChoiceAnswerSection.module.css'
 
-type MultipleChoiceAnswerSectionProps = {
+type SingpleChoiceAnswerSectionProps = {
   className?: string
   handleSubmitAnswer: (answerId: number) => void
   option?: TQuestion
@@ -12,37 +12,51 @@ type MultipleChoiceAnswerSectionProps = {
   showAnswer: boolean
   isHost: boolean
 }
-const colorArray: Array<string> = ['#009883', '#424171', '#B89A61', '#A9C77E']
-const incorectColorArray: Array<string> = ['#009883', '#424171', '#B89A61', '#A9C77E']
-const MultipleChoiceAnswerSection: FC<MultipleChoiceAnswerSectionProps> = ({
+const colorArray: Array<string> = ['#00A384', '#e86262', '#ef6415', '#0082BE']
+const colorIncorrectArray: Array<string> = [
+  '#00A3844D',
+  '#e862624D',
+  '#ef64154D',
+  '#0082BE4D',
+]
+
+const alphabet = ['A', 'B', 'C', 'D', 'E', 'G']
+const SingleChoiceAnswerSection: FC<SingpleChoiceAnswerSectionProps> = ({
   className,
   handleSubmitAnswer,
   option,
   selectedAnswers,
   showAnswer,
-  isHost
+  isHost,
 }) => {
   const cssSelectionClassForAnswer = (answer: TAnswer): string => {
     // css cho câu trả lời đã chọn
     if (selectedAnswers && answer.id && selectedAnswers.has(answer.id)) {
       if (!showAnswer) return styles.selectedBox
-      return answer.isCorrect ? styles.selectAndCorrect : styles.selectAndIncorrect
+      return answer.isCorrect
+        ? styles.selectAndCorrect
+        : styles.selectAndIncorrect
     }
     // css cho câu trả lời không chọn
     if (showAnswer && !answer.isCorrect) return styles.incorrect
     return ''
   }
 
-  // 2 case: 
-  const getBackgroundColorForAnswer = (answer: TAnswer, index: number): string => {        
+  // 2 case:
+  const getBackgroundColorForAnswer = (
+    answer: TAnswer,
+    index: number
+  ): string => {
     // chưa show đáp án
     if (!showAnswer) return colorArray[index]
     // chỉ tô màu câu đúng
-    return (showAnswer && answer.isCorrect) ? colorArray[index] : "#7f7f7f"
+    return showAnswer && answer.isCorrect
+      ? colorArray[index]
+      : colorIncorrectArray[index]
   }
 
   return (
-    <div className={classNames(className, 'rounded-20px bg-white pt-20px')}>
+    <div className={classNames(className, '')}>
       {/* 4 câu trả lời */}
       <Row className={`pt-20px ${styles.row}`}>
         {option?.questionAnswers?.map((item, index) => {
@@ -52,16 +66,22 @@ const MultipleChoiceAnswerSection: FC<MultipleChoiceAnswerSectionProps> = ({
               xs="12"
               className={classNames(styles.selectionItem)}
               key={index}
-              onClick={() => {if(!isHost && item.id) handleSubmitAnswer(item.id)}}
+              onClick={() => {
+                if (!isHost && item.id) handleSubmitAnswer(item.id)
+              }}
             >
-              <div           
+              <div
                 style={{
-                  background: getBackgroundColorForAnswer(item, index % colorArray.length),
+                  background: getBackgroundColorForAnswer(
+                    item,
+                    index % colorArray.length
+                  ),
                 }}
                 className={classNames(
-                  'd-flex align-items-center h-100 w-100',
+                  'd-flex align-items-center h-100 w-100 ',
                   styles.selectionBox,
-                  cssSelectionClassForAnswer(item)                  
+                  cssSelectionClassForAnswer(item)
+                  // getBackgroundColorForAnswer(item, index % colorArray.length)
                 )}
               >
                 <div
@@ -70,7 +90,7 @@ const MultipleChoiceAnswerSection: FC<MultipleChoiceAnswerSectionProps> = ({
                     styles.alphaBetContainer
                   )}
                 >
-                  <div className={styles.alphaBetText}>A</div>
+                  <div className={styles.alphaBetText}>{alphabet[index]}</div>
                 </div>
                 <div
                   className={`text-white flex-grow-1 fw-semiBold ${
@@ -81,6 +101,12 @@ const MultipleChoiceAnswerSection: FC<MultipleChoiceAnswerSectionProps> = ({
                 >
                   {item.answer}
                 </div>
+
+                {showAnswer && item.isCorrect ? (
+                  <div>
+                    <i className="text-white fw-bold bi bi-check-lg fs-1"></i>
+                  </div>
+                ) : null}
               </div>
             </Col>
           )
@@ -90,4 +116,4 @@ const MultipleChoiceAnswerSection: FC<MultipleChoiceAnswerSectionProps> = ({
   )
 }
 
-export default MultipleChoiceAnswerSection
+export default SingleChoiceAnswerSection

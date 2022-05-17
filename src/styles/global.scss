@@ -1,6 +1,21 @@
+$primary: #009883;
+$secondary: #6c757d;
+$success: #28a745;
+$info: #17a2b8;
+$warning: #ffc107;
+$danger: #dc3545;
+$light: #f8f9fa;
+$dark: #343a40;
+
 $theme-colors: (
-  'primary': #009883,
-  'secondary': #6c757d,
+  'primary': $primary,
+  'secondary': $secondary,
+  'success': $success,
+  'info': $info,
+  'warning': $warning,
+  'danger': $danger,
+  'light': $light,
+  'dark': $dark,
 );
 
 /* import bootstrap to set changes */
@@ -44,6 +59,14 @@ a {
 
 .bg-blue {
   background-color: #15e2ef;
+}
+
+.bg-false-answer {
+  background-color: #7f7f7f;
+}
+
+.bg-bronze {
+  background-color: #ad7871;
 }
 
 .dots-bars {

@@ -12,6 +12,7 @@ type MyModalProps = {
   activeButtonCallback?: () => void
   inActiveButtonCallback?: () => void
   fullscreen?: boolean
+  size?: 'sm' | 'lg' | 'xl'
 }
 const MyModal: FC<MyModalProps> = ({
   show,
@@ -23,6 +24,7 @@ const MyModal: FC<MyModalProps> = ({
   activeButtonCallback,
   inActiveButtonCallback,
   fullscreen = false,
+  size = 'lg',
 }) => {
   return (
     <Modal
@@ -31,7 +33,8 @@ const MyModal: FC<MyModalProps> = ({
       aria-labelledby="contained-modal-title-vcenter"
       centered
       contentClassName="rounded-20px overflow-hidden"
-      fullscreen={fullscreen ? 'sm-down' : undefined}
+      fullscreen={fullscreen ? 'lg-down' : undefined}
+      size={size}
     >
       <Modal.Header closeButton className="border-0">
         {header}
@@ -39,29 +42,31 @@ const MyModal: FC<MyModalProps> = ({
       <Modal.Body className="py-4">
         {children ?? 'This is children of MyModal'}
       </Modal.Body>
-      <Row className="justify-content-center p-3">
-        {inActiveButtonTitle?.length && (
-          <Col xs="6">
-            <MyButton
-              className="text-white w-100"
-              variant="secondary"
-              onClick={inActiveButtonCallback}
-            >
-              {inActiveButtonTitle}
-            </MyButton>
-          </Col>
-        )}
-        {activeButtonTitle?.length && (
-          <Col xs="6">
-            <MyButton
-              className="text-white w-100"
-              onClick={activeButtonCallback}
-            >
-              {activeButtonTitle}
-            </MyButton>
-          </Col>
-        )}
-      </Row>
+      {inActiveButtonTitle || activeButtonTitle ? (
+        <Row className="justify-content-center p-3">
+          {inActiveButtonTitle?.length && (
+            <Col xs="6">
+              <MyButton
+                className="text-white w-100"
+                variant="secondary"
+                onClick={inActiveButtonCallback}
+              >
+                {inActiveButtonTitle}
+              </MyButton>
+            </Col>
+          )}
+          {activeButtonTitle?.length && (
+            <Col xs="6">
+              <MyButton
+                className="text-white w-100"
+                onClick={activeButtonCallback}
+              >
+                {activeButtonTitle}
+              </MyButton>
+            </Col>
+          )}
+        </Row>
+      ) : null}
     </Modal>
   )
 }

@@ -6,7 +6,7 @@ import ItemMenuBar from '../ItemMenuBar/ItemMenuBar'
 const LeftProfileMenuBar: FC<{}> = () => {
   const router = useRouter()
   return (
-    <>
+    <div className="overflow-hidden">
       {PROFILE_MENU_OPTIONS.map((option, idx) => {
         return (
           <ItemMenuBar
@@ -18,7 +18,7 @@ const LeftProfileMenuBar: FC<{}> = () => {
           />
         )
       })}
-    </>
+    </div>
   )
 }
 

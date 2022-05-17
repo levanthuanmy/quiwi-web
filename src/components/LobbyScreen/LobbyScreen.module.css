@@ -1,0 +1,104 @@
+.code {
+    font-family: 'Boogaloo', cursive;
+    color: #009883;
+    font-size: 70px;
+    line-height: 70px;
+
+}
+
+.copyIcon {
+    color: #009883;
+    font-size: 40px;
+    line-height: 70px;
+    font-weight: bold;
+}
+
+.copyIcon:hover {
+    cursor: pointer;
+}
+
+.gameOfHost {
+    display: flex;
+    font-size: 16px;
+    padding: 16px;
+    font-weight: bold;
+    color: #767676;
+}
+
+.playerCount {
+    font-weight: bold;
+    font-size: 16px;
+    color: #767676;
+    padding-bottom: 10px;
+}
+
+.modalHeader {
+    border-bottom: 0px;
+}
+
+.modalTitle {
+    text-align: center;
+    color: #004C41;
+}
+
+.qrModal {
+    width: 200px;
+    height: 200px;
+    align-self: center;
+    align-items: center;
+}
+
+.qrContainer {
+    /*background-color: red;*/
+}
+
+.joinLink {
+    cursor: pointer;
+    color: #009883;
+    font-weight: bolder;
+}
+
+.invitationCodeContainer {
+    display: flex;
+    gap: 10px;
+}
+
+.playerListcontainer {
+    /*overflow-x: hidden;*/
+
+
+}
+
+.playerList {
+    overflow-y: scroll;
+    min-height: 10vh;
+    min-width: 50vw;
+    max-height: 30vh;
+    max-width: 70vw;
+    border-radius: 10px;
+    padding: 20px;
+    background-color: white;
+    align-items: center;
+    justify-content: center;
+}
+
+
+/* // Small devices (landscape phones, 576px and up) */
+@media (max-width: 576px) {
+
+    .qrModal {
+        /*để show đều popup*/
+        margin-top: 20px;
+        margin-bottom: 60px;
+    }
+
+    .playerList {
+        max-width: 95vw;
+        min-width: 95vw;
+        height: 50vh;
+        max-height: 50vh;
+    }
+}
+
+/*primary color*/
+/*#009883*/

@@ -7,7 +7,7 @@ const MyButton: FC<MyButtonProps> = (props) => {
   return (
     <Button
       {...props}
-      className={classNames('rounded-10px h-50px', props.className)}
+      className={classNames('rounded-10px h-50px shadow-sm', props.className)}
     >
       {props.children}
     </Button>

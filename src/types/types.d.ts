@@ -30,7 +30,7 @@ export type TPlayer = {
   id: number
   // gameLobby:
   // gameLobby: object
-  gameLobbyId: number
+  gameLobbyId?: number
   nickname: string
   user?: TUser
   userId?: number
@@ -65,6 +65,7 @@ export type TStartQuizRequest = {
   token?: string
 }
 
+
 export type TStartQuizResponse = {
   nickName: string
   gameMode: {
@@ -78,6 +79,7 @@ export type TStartQuizResponse = {
   quiz: TQuiz
   quizId: number
   status: TGameStatus
+  chats: MessageProps[]
 }
 
 export type TFollowUsers = {

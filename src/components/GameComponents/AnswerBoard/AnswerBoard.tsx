@@ -1,33 +1,22 @@
-import React, { FC, useEffect, useState } from 'react'
-import { Button, Col, Row } from 'react-bootstrap'
-import styles from './AnswerBoard.module.css'
 import classNames from 'classnames'
-import MultipleChoiceAnswerSection from '../AnswerQuestionComponent/SelectionQuestion/MultipleChoiceAnswerSection'
-import { useLocalStorage } from '../../../hooks/useLocalStorage/useLocalStorage'
-import {
-  TQuestion,
-  TStartQuizResponse,
-  TUser,
-} from '../../../types/types'
-import { JsonParse } from '../../../utils/helper'
-import { useSocket } from '../../../hooks/useSocket/useSocket'
-import MoreButton from '../MoreButton/MoreButton'
-import { useGameSession } from '../../../hooks/useGameSession/useGameSession'
 import { useRouter } from 'next/router'
+import React, { FC, memo, useEffect, useState } from 'react'
+import { Image, Modal, Navbar } from 'react-bootstrap'
+import { useGameSession } from '../../../hooks/useGameSession/useGameSession'
+import { useLocalStorage } from '../../../hooks/useLocalStorage/useLocalStorage'
+import { useSocket } from '../../../hooks/useSocket/useSocket'
+import { TStartQuizResponse, TUser } from '../../../types/types'
+import { JsonParse } from '../../../utils/helper'
 import MyModal from '../../MyModal/MyModal'
+import SingleChoiceAnswerSection from '../AnswerQuestionComponent/SelectionQuestion/SingleChoiceAnswerSection'
+import GameSessionRanking from '../GameSessionRanking/GameSessionRanking'
+import styles from './AnswerBoard.module.css'
 
 type AnswerBoardProps = {
   className?: string
   questionId: number | 0
-  onClick?: React.MouseEventHandler<HTMLDivElement>
-  title?: string
 }
-const AnswerBoard: FC<AnswerBoardProps> = ({
-  className,
-  questionId,
-  onClick,
-  title,
-}) => {
+const AnswerBoard: FC<AnswerBoardProps> = ({ className, questionId }) => {
   const [lsGameSession] = useLocalStorage('game-session', '')
   const { socket } = useSocket()
   const gameSession = useGameSession()
@@ -37,10 +26,15 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
   const [answerSet, setAnswerSet] = useState<Set<number>>(new Set())
   const [isShowAnswer, setIsShowAnswer] = useState<boolean>(false)
   const router = useRouter()
-  const [roomStatus, setRoomStatus] = useState<string>("Đang trả lời câu hỏi")
+  const [roomStatus, setRoomStatus] = useState<string>('Đang trả lời câu hỏi')
   const [isShowNext, setIsShowNext] = useState<boolean>(false)
-
   const [isFinish, setIsFinish] = useState<boolean>(false)
+  const [showRanking, setShowRanking] = useState<boolean>(false)
+  const [rankingData, setRankingData] = useState<any[]>([])
+  const [timeout, _setTimeout] = useState<number>(-1)
+
+  const [showTimeout, setShowTimeout] = useState<boolean>(false)
+  const [_interval, _setInterval] = useState<NodeJS.Timer | undefined>()
   useEffect(() => {
     const gameData: TStartQuizResponse = JsonParse(
       lsGameSession
@@ -49,50 +43,71 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
     const user: TUser = JsonParse(lsUser)
     setIsHost(user.id === gameData.hostId)
     setId(0)
-  }, [])
+  }, [lsGameSession, lsUser])
+
+  useEffect(() => {
+    const question = gameSession?.quiz?.questions[qid]
+    if (question.duration > 0) {
+      _setTimeout(question.duration)
+    }
+  }, [gameSession, qid])
+
+  useEffect(() => {
+    if (timeout <= 0) {
+      setShowTimeout(true)
+      return
+    }
+    const interval = setInterval(() => {
+      if (timeout > 0) {
+        _setTimeout(timeout - 1)
+      }
+    }, 1000)
+    return () => clearInterval(interval)
+  }, [timeout])
 
   const displayQuestionId = (questionId: number) => {
     setIsShowAnswer(false)
     setAnswerSet(new Set())
     setId(questionId)
-    
-    console.log('displayQuestionId - questionId', gameSession?.quiz?.questions[qid])
   }
-    
 
-  useEffect(() => {
+  const handleSocket = () => {
     socket?.on('new-submission', (data) => {
       console.log('new-submission', data)
     })
 
     socket?.on('next-question', (data) => {
       setIsShowNext(false)
-      setRoomStatus("Đang trả lời câu hỏi")
+      setRoomStatus('Đang trả lời câu hỏi')
       if (data.currentQuestionIndex) {
         displayQuestionId(data.currentQuestionIndex)
       }
     })
 
-    socket?.on('view-result', (data) => {
-      console.log('view', data)
-      setRoomStatus("Xem xếp hạng")
-      setIsShowAnswer(true)
-    })
+    // socket?.on('view-result', (data) => {
+    //   console.log('view', data)
+    //   setRoomStatus('Xem xếp hạng')
+    //   setIsShowAnswer(true)
+    // })
 
-    socket?.on('timeout', (data) => {
-      setIsShowAnswer(true)
-      setRoomStatus("Hết giờ")
-      console.log('timeout', data)
+    // socket?.on('timeout', (data) => {
+    //   setIsShowAnswer(true)
+    //   setRoomStatus('Hết giờ')
+    //   console.log('timeout', data)
+    // })
+
+    socket?.on('ranking', (data) => {
+      setShowRanking(true)
+      setRankingData(data?.playersSortedByScore)
+      console.log('ranking', data)
     })
 
     socket?.on('error', (data) => {
-      console.log('answerboard socket error', data)
+      console.log('answer board socket error', data)
     })
+  }
 
-    socket?.on('ranking', (data) => {
-      console.log('ranking', data)
-    })
-  }, [])
+  handleSocket()
 
   const goToNextQuestion = () => {
     console.log('goToNextQuestion - questionId', questionId)
@@ -129,39 +144,93 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
     socket.emit('submit-answer', msg)
   }
 
-  const extiRoom = () => {
+  const exitRoom = () => {
     localStorage.removeItem('game-session')
     localStorage.removeItem('game-session-player')
     socket.close()
     router.push('/')
   }
 
+  const renderAnswersSection = () => {
+    const question = gameSession?.quiz?.questions[qid]
+    switch (question.type) {
+      case '10SG':
+        return (
+          <SingleChoiceAnswerSection
+            handleSubmitAnswer={handleSubmitAnswer}
+            className="flex-grow-1"
+            option={gameSession?.quiz?.questions[qid]}
+            selectedAnswers={answerSet}
+            showAnswer={isShowAnswer}
+            isHost={isHost}
+          />
+        )
+
+      default:
+        return (
+          <SingleChoiceAnswerSection
+            handleSubmitAnswer={handleSubmitAnswer}
+            className="flex-grow-1"
+            option={gameSession?.quiz?.questions[qid]}
+            selectedAnswers={answerSet}
+            showAnswer={isShowAnswer}
+            isHost={isHost}
+          />
+        )
+    }
+  }
+
   return (
     <div
-      className={classNames(
-        'd-flex flex-column bg-white ',
-        className,
-        styles.container
-      )}
+      className={classNames('d-flex flex-column', className, styles.container)}
     >
-      <div className="fs-4 fw-semiBold pt-3">
+      <div
+        className={classNames(
+          'fs-4 fw-semiBold p-3 px-4 shadow bg-white mb-4',
+          styles.questionTitle
+        )}
+      >
         {gameSession?.quiz?.questions[qid]?.question}
       </div>
-      <MultipleChoiceAnswerSection
-        handleSubmitAnswer={handleSubmitAnswer}
-        className="flex-grow-1"
-        option={gameSession?.quiz?.questions[qid]}
-        selectedAnswers={answerSet}
-        showAnswer={isShowAnswer}
-        isHost={isHost}
-      ></MultipleChoiceAnswerSection>
-      {isHost && (
+
+      <div className="text-center mb-3 d-flex justify-content-between align-items-center">
+        {/* Timeout */}
+        <div
+          className={classNames(
+            'bg-primary text-white p-3 rounded-circle fs-4 fw-medium',
+            styles.circleContainer
+          )}
+        >
+          {timeout}
+        </div>
+        <Image
+          src={
+            gameSession?.quiz?.questions[qid]?.media ||
+            'assets/default-question-image.png'
+          }
+          alt="question-image"
+          fluid={true}
+          className={classNames(styles.questionImage)}
+        />
+        {/* Số người submit */}
+        <div
+          className={classNames(
+            'bg-primary text-white p-3 rounded-circle fs-4 fw-medium',
+            styles.circleContainer
+          )}
+        >
+          0
+        </div>
+      </div>
+
+      {gameSession?.quiz?.questions[qid]?.question && renderAnswersSection()}
+      {/* {isHost && (
         <div className="d-flex gap-3 justify-content-between">
           <MoreButton
             iconClassName="bi bi-x-circle-fill"
             className={classNames('text-white fw-medium', styles.nextButton)}
             title="Thoát phòng"
-            onClick={extiRoom}
+            onClick={exitRoom}
           />
           <MoreButton
             iconClassName="bi bi-bar-chart"
@@ -177,21 +246,52 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
             onClick={goToNextQuestion}
           />
         </div>
-      )}
+      )} */}
 
-      <MyModal
-        show={isFinish}
-        onHide={() => {}}
-        activeButtonTitle="Thoát game"
-        activeButtonCallback={() => {
-          extiRoom()
-          router.push('/')
-        }}
+      {!isHost ? (
+        <MyModal
+          show={true}
+          onHide={() => setShowRanking(false)}
+          size="sm"
+          header={
+            <Modal.Title className="text-danger">Hết thời gian</Modal.Title>
+          }
+        >
+          <div className="px-1 text-center">
+            Ôi khum! Bạn đã hết thời gian làm bài
+          </div>
+        </MyModal>
+      ) : null}
+
+      <GameSessionRanking
+        show={showRanking}
+        onHide={() => setShowRanking(false)}
+        rankingData={rankingData}
+      />
+
+      {/* này chắc là thêm state current tab rồi render component theo state điều kiện nha, check active tab theo state luôn  */}
+      <Navbar
+        fixed="bottom"
+        // cái bg với variant này m chỉnh màu khác cũng được
+        // https://react-bootstrap.github.io/components/navbar/#color-schemes
+        bg="dark"
+        variant="dark"
+        className="justify-content-around py-0"
       >
-        <div className="text-center h3">Thoát game</div>
-      </MyModal>
+        {/* tab active thì có border xanh với chữ xanh */}
+        <Navbar.Text className="w-100 cursor-pointer p-0">
+          <div className="p-3 w-100 border-top border-5 border-primary text-center text-primary">
+            ???
+          </div>
+        </Navbar.Text>
+
+        {/* tab bình thường */}
+        <Navbar.Text className="w-100 cursor-pointer p-0 text-center">
+          <div className="p-3 w-100">???</div>
+        </Navbar.Text>
+      </Navbar>
     </div>
   )
 }
 
-export default AnswerBoard
+export default memo(AnswerBoard)

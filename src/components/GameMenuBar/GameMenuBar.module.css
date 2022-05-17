@@ -1,0 +1,24 @@
+.container {
+  transition: width 200ms ease;
+  right: 0;
+  height: 100%;
+}
+
+.button {
+  width: 48px;
+  height: 48px;
+  left: 0;
+}
+
+.slider {
+  cursor: s-resize;
+  user-select: none; /* disable selection */
+  text-align: center;
+  z-index: 9999;
+}
+
+@media (min-width: 1200px) { 
+  .container { 
+    border-radius: 20px;
+  }
+}

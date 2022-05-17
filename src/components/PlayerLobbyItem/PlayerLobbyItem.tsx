@@ -1,29 +1,43 @@
-import { FC } from 'react'
-import { Image } from 'react-bootstrap'
-import { TPlayer } from '../../types/types'
+import {FC} from 'react'
+import {Col, Image} from 'react-bootstrap'
 import styles from './PlayerLobbyItem.module.css'
+import useIsMobile from "../../hooks/useIsMobile/useIsMobile";
 
-const PlayerLobbyItem: FC<{ player: TPlayer; color: string }> = ({
-  player,
-  color,
-}) => {
+type PlayerLobbyItemProps = {
+  displayName: string,
+  avatar?: string,
+  bgColor: string
+  isHost?: boolean
+}
+
+const PlayerLobbyItem: FC<PlayerLobbyItemProps> = (props: PlayerLobbyItemProps) => {
+  const isMobile = useIsMobile()
   return (
     <>
-      <div
-        className={`d-flex align-items-center max-with-120px m-1 py-1 px-2 rounded-20px ${color} ${styles.tooltip}`}
+      <Col
+        className={`d-flex align-items-center m-1 rounded-20px col-auto ${styles.tooltip} ${props.isHost ? styles.isHost : ""}`}
+        style={{backgroundColor: props.bgColor}}
       >
-        {player.user?.avatar ? (
+        {props.avatar ? (
           <Image
-            src={player.user.avatar}
-            width={30}
-            height={30}
+            src={props.avatar}
+            width={isMobile ? 24 : 30}
+            height={isMobile ? 24  : 30}
             alt="avatar"
             className="rounded-circle"
           />
-        ) : null}
-        <span className="px-1 text-white text-truncate">{player.nickname}</span>
-        <span className={`${styles.tooltiptext}`}>{player.nickname}</span>
-      </div>
+        ) : (
+          <Image
+            src="/assets/default-logo.png"
+            width={isMobile ? 24 : 30}
+            height={isMobile ? 24  : 30}
+            alt="/assets/default-logo.png"
+            className="rounded-circle"
+          />
+        )}
+        <span className="px-1 text-white">{props.displayName}</span>
+        <span className={`${styles.tooltiptext}`}>{props.displayName}</span>
+      </Col>
     </>
   )
 }
