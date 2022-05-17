@@ -1,6 +1,6 @@
-import { Formik, Field, Form } from 'formik'
+import { Field, Form, Formik } from 'formik'
 import { useRouter } from 'next/router'
-import React, { FC, useState } from 'react'
+import React, { FC, useEffect, useState } from 'react'
 import { Col, FormCheck, Image, Placeholder, Row } from 'react-bootstrap'
 import { post } from '../../libs/api'
 import { TApiResponse, TQuiz } from '../../types/types'
@@ -30,6 +30,12 @@ const CardQuizInfo: FC<CardQuizInfoProps> = ({
   const [showModal, setShowModal] = useState<boolean>(false)
   const router = useRouter()
   const quizId = Number(router.query.id)
+
+  useEffect(() => {
+    if (quiz) {
+      setBannerUrl(quiz.banner)
+    }
+  }, [quiz])
 
   const handleUploadImage = async (evt: any) => {
     try {
@@ -82,7 +88,7 @@ const CardQuizInfo: FC<CardQuizInfoProps> = ({
             />
           </div>
 
-          <div className="fs-14px text-secondary">
+          <div className="text-secondary">
             <div>
               <i className="bi bi-eye me-2 fs-16px" />
               <TextSkeletonLoading
@@ -90,10 +96,13 @@ const CardQuizInfo: FC<CardQuizInfoProps> = ({
                 isValidating={isValidating}
               />
             </div>
-            {/* <div>
+            <div>
               <i className="bi bi-journals me-2 fs-16px" />
-              Toán học, Tư duy
-            </div> */}
+              <TextSkeletonLoading
+                content={`${quiz?.questions?.length} câu hỏi`}
+                isValidating={isValidating}
+              />
+            </div>
           </div>
         </Col>
         <Col xs="auto">
@@ -129,13 +138,13 @@ const CardQuizInfo: FC<CardQuizInfoProps> = ({
               )
 
               setQuiz(res.response)
+              setShowModal(false)
             } catch (error) {
               console.log('onSaveQuestion - error', error)
             } finally {
               actions.setSubmitting(false)
             }
           }}
-          // validationSchema={ProfileSchema}
         >
           {({ handleSubmit, isSubmitting }) => (
             <Form

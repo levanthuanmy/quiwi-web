@@ -1,7 +1,7 @@
 import _ from 'lodash'
 import { NextPage } from 'next'
 import { useRouter } from 'next/router'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Col, Container, Row } from 'react-bootstrap'
 import AddingQuestionButtons from '../../../../components/AddingQuestionButtons/AddingQuestionButtons'
 import CardQuizInfo from '../../../../components/CardQuizInfo/CardQuizInfo'
@@ -10,6 +10,7 @@ import MyButton from '../../../../components/MyButton/MyButton'
 import MyModal from '../../../../components/MyModal/MyModal'
 import NavBar from '../../../../components/NavBar/NavBar'
 import QuestionCreator from '../../../../components/QuestionCreator/QuestionCreator'
+import { useAuth } from '../../../../hooks/useAuth/useAuth'
 import { get, post } from '../../../../libs/api'
 import { TApiResponse, TQuestion, TQuiz } from '../../../../types/types'
 import { indexingQuestionsOrderPosition } from '../../../../utils/helper'
@@ -38,6 +39,8 @@ const QuizCreatorPage: NextPage = () => {
     isEdit: false,
     questionId: null,
   })
+  const addQuestionRef = useRef<any>(null)
+  const authContext = useAuth()
 
   useEffect(() => {
     const questionType = router.query?.type?.toString()
@@ -108,7 +111,8 @@ const QuizCreatorPage: NextPage = () => {
   return (
     <>
       <NavBar showMenuBtn={false} isExpand={false} setIsExpand={() => null} />
-      <Container fluid="lg" className="pt-64px min-vh-100">
+      <Container fluid="lg" className="pt-80px min-vh-100">
+        <div className="pt-5 pb-4 fs-22px fw-medium">Tạo Bộ Câu Hỏi Mới</div>
         <Row className="flex-column-reverse flex-lg-row py-3">
           <Col xs="12" lg="8">
             {quiz?.questions?.map((question, key) => (
@@ -120,7 +124,9 @@ const QuizCreatorPage: NextPage = () => {
               />
             ))}
 
-            <AddingQuestionButtons quizId={quizId} />
+            <div ref={addQuestionRef}>
+              <AddingQuestionButtons quizId={quizId} />
+            </div>
           </Col>
           <Col xs="12" lg="4" className="mb-3 mb-lg-0 ps-12px ps-lg-0">
             <CardQuizInfo
@@ -130,10 +136,32 @@ const QuizCreatorPage: NextPage = () => {
             />
             <div className="mt-3">
               <MyButton
-                className="text-white w-100"
+                className="text-white w-100 d-flex align-items-center justify-content-between"
                 onClick={() => router.push(`/quiz/creator/${quizId}/sort`)}
+                variant="secondary"
               >
                 Thay đổi thứ tự câu hỏi
+                <div className="bi bi-arrow-down-up" />
+              </MyButton>
+            </div>
+            <div className="mt-3">
+              <MyButton
+                className="text-white w-100 d-flex align-items-center justify-content-between"
+                onClick={() => addQuestionRef.current?.scrollIntoView()}
+              >
+                Thêm câu hỏi mới
+                <div className="bi bi-plus-lg" />
+              </MyButton>
+            </div>
+            <div className="mt-3">
+              <MyButton
+                className="text-white w-100 d-flex align-items-center justify-content-between"
+                onClick={() => {
+                  authContext.navigate(`/host?quizId=${quizId}`)
+                }}
+              >
+                Bắt đầu ngay
+                <div className="bi bi-play-fill" />
               </MyButton>
             </div>
           </Col>
@@ -146,10 +174,7 @@ const QuizCreatorPage: NextPage = () => {
           setIsShowQuestionCreator(false)
           setIsEditQuestion({ isEdit: false, questionId: null })
           router.replace(`/quiz/creator/${quizId}`)
-          const a = document.createElement('a')
-          a.href = '#addingQuestion'
-          a.click()
-          a.remove()
+          addQuestionRef.current?.scrollIntoView()
         }}
         quiz={quiz}
         setQuiz={setQuiz}
