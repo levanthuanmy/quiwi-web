@@ -51,7 +51,7 @@ const QuizCreatorPage: NextPage = () => {
       try {
         setIsValidating(true)
         const res = await get<TApiResponse<TQuiz>>(
-          `/api/quizzes/quiz/${quizId}`,
+          `/api/quizzes/my-quizzes/${quizId}`,
           true
         )
 

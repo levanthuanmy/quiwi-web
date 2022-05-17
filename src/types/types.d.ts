@@ -65,7 +65,6 @@ export type TStartQuizRequest = {
   token?: string
 }
 
-
 export type TStartQuizResponse = {
   nickName: string
   gameMode: {
@@ -173,6 +172,7 @@ export type TQuestion = {
   orderPosition: number
   questionAnswers: TAnswer[]
   media: string
+  score: number
 }
 
 export type TAnswer = {
