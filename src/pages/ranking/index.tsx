@@ -2,6 +2,7 @@ import _ from 'lodash'
 import { NextPage } from 'next'
 import React, { useEffect, useState } from 'react'
 import { Container, Dropdown } from 'react-bootstrap'
+import DashboardLayout from '../../components/DashboardLayout/DashboardLayout'
 import MenuBar from '../../components/MenuBar/MenuBar'
 import NavBar from '../../components/NavBar/NavBar'
 import RankingBoard from '../../components/Ranking/RankingBoard'
@@ -34,10 +35,16 @@ const rankingDropdown: RankingDropdown[] = [
 ]
 const url = process.env.NEXT_PUBLIC_API_URL
 
+const searchByUsername = (username: string, data?: RankingProps[]) => {
+  return data?.filter((d) =>
+    d.username.toLowerCase().includes(username.toLowerCase())
+  )
+}
+
 const RankingPage: NextPage = () => {
-  const [isExpand, setIsExpand] = useState<boolean>(false)
   const [rankingDropdownPos, setRankingDropdownPos] = useState<number>(0)
   const [data, setData] = useState<RankingProps[]>()
+  const [searchVal, setSearchVal] = useState<string>('')
   useEffect(() => {
     const getData = async () => {
       try {
@@ -57,29 +64,36 @@ const RankingPage: NextPage = () => {
   const user = JsonParse(lsUser) as TUser
   // console.log('hihihi', data)
 
+  const handleChangeSearch = () => {
+    const searchValue = (document.getElementById('searchBox') as HTMLInputElement).value.trim()
+    setSearchVal(searchValue)
+  }
+
+  const getListUser = () => {
+    if (searchVal === '') return data
+    return searchByUsername(searchVal, data)
+  }
+  const listUser = getListUser()
+
   return (
     <>
-      <NavBar />
-      <div className="d-flex pt-64px min-vh-100">
-        <MenuBar
-          isExpand={isExpand}
-          setIsExpand={setIsExpand}
-          menuOptions={HOME_MENU_OPTIONS}
-          isFullHeight={true}
-        />
-        <div className="ps-5 w-100 transition-all-150ms bg-secondary bg-opacity-10">
+      <DashboardLayout>
+        <div className="w-100 bg-secondary bg-transparent">
           <Container fluid="lg" className="p-3">
             <div>
-              <div className={styles.RowDisplay}>
+              <div className="d-flex justify-content-between p-4">
                 <div className="d-flex align-items-center gap-3">
                   <div>Xếp hạng theo:</div>
-                  <Dropdown 
-                    className='text-white'
+                  <Dropdown
+                    className={'text-white'}
                     onSelect={(eventKey: any) => {
                       setRankingDropdownPos(eventKey)
                     }}
                   >
-                    <Dropdown.Toggle  id="dropdown-basic">
+                    <Dropdown.Toggle
+                      id="dropdown-basic"
+                      className={'text-white'}
+                    >
                       {rankingDropdown[rankingDropdownPos].showType}
                     </Dropdown.Toggle>
 
@@ -92,18 +106,31 @@ const RankingPage: NextPage = () => {
                     </Dropdown.Menu>
                   </Dropdown>
                 </div>
-                {/* <div className={styles.RowDisplay}>
+                <div className="d-flex align-items-center gap-3">
                   <div>Tìm kiếm:</div>
-                  <div>Search</div>
-                </div> */}
+                  <div>
+                    <input
+                      placeholder="Nhập tên người dùng để tìm kiếm"
+                      style={{ width: 400 }}
+                      type="text"
+                      name="description"
+                      id="searchBox"
+                      onChange={() => handleChangeSearch()}
+                    />
+                  </div>
+                </div>
               </div>
               <div>
-                <RankingBoard rankingList={data} />
+                {listUser?.length === 0 ? (
+                  <text>Không có user nào để hiển thị</text>
+                ) : (
+                  <RankingBoard rankingList={listUser} />
+                )}
               </div>
             </div>
           </Container>
         </div>
-      </div>
+      </DashboardLayout>
     </>
   )
 }

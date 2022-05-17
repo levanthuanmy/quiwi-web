@@ -1,6 +1,7 @@
 import classNames from 'classnames'
 import React, { FC } from 'react'
 import { Image } from 'react-bootstrap'
+import styles from './ranking.module.css'
 
 export type RankingProps = {
   rank: number
@@ -19,9 +20,9 @@ const RankingRow: FC<RankingProps> = ({
     <tr
       className={classNames({
         'text-white bg-primary': isHighlight,
-      },'p-5')}
+      }, styles.zoom)} onClick= {()=>{console.log('click')}}
     >
-      <td>{rank}</td>
+      <td className={classNames('p-2', styles.MarginLeft)}>{rank}</td>
       <td>
         <Image
           src={'/assets/default-logo.png'}
