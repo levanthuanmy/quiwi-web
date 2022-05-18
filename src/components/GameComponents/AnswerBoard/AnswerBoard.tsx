@@ -166,6 +166,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, questionId}) => {
   const exitRoom = () => {
     // dùng clear game session là đủ
     clearGameSession()
+    router.push("/")
   }
 
   const renderAnswersSection = () => {
@@ -211,8 +212,15 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, questionId}) => {
           isEnable={isShowAnswer}
           iconClassName="bi bi-bar-chart"
           className={classNames('text-white fw-medium', styles.nextButton)}
-          title={'Tiếp theo'}
+          title={'Xem xếp hạng'}
           onClick={viewRanking}
+        />
+        <MoreButton
+          isEnable={isShowNext}
+          iconClassName="bi bi-arrow-right-circle-fill"
+          className={classNames('text-white fw-medium', styles.nextButton)}
+          title="Câu tiếp theo"
+          onClick={goToNextQuestion}
         />
       </div>
       <div

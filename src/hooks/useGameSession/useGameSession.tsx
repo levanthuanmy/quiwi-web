@@ -2,19 +2,19 @@ import React, {useEffect, useState} from 'react'
 import {TStartQuizResponse} from '../../types/types'
 import {JsonParse} from '../../utils/helper'
 import {useLocalStorage} from '../useLocalStorage/useLocalStorage'
-import {globalSocket, useSocket} from "../useSocket/useSocket";
+import {globalSocket} from "../useSocket/useSocket";
 
 export const useGameSession = (): [(TStartQuizResponse | null), ((gameSS: TStartQuizResponse) => void), (() => void)] => {
   const [lsGameSession, setLsGameSession] = useLocalStorage('game-session', '')
   const [gameSession, setGameSession] = useState<TStartQuizResponse | null>(null)
-  const skProps = useSocket()
 
   useEffect(() => {
       if (lsGameSession && lsGameSession.length > 0) {
-        console.log("🎯️ GameSession => Cập nhật");
-        setGameSession(JsonParse(
+        const gs:TStartQuizResponse = JsonParse(
           lsGameSession
-        ) as TStartQuizResponse)
+        ) as TStartQuizResponse
+        setGameSession(gs)
+        console.log("🎯️ GameSession => Cập nhật", gs);
       } else {
         console.log("🎯️ ️GameSession => null");
         setGameSession(null)
@@ -26,8 +26,8 @@ export const useGameSession = (): [(TStartQuizResponse | null), ((gameSS: TStart
     console.log("🎯️ ️️GameSession => Lưu");
     setLsGameSession(JSON.stringify(gameSS))
     if (globalSocket.disconnected) {
-      console.log("🎯️ ️️GameSession ::  Socket => Kết nối");
       globalSocket.connect()
+      console.log("🎯️ ️️GameSession ::  Socket => Kết nối", globalSocket);
     }
   }
 
@@ -41,7 +41,7 @@ export const useGameSession = (): [(TStartQuizResponse | null), ((gameSS: TStart
 
       if (globalSocket.connected) {
         globalSocket.disconnect()
-        console.log("🎯️ ️️GameSession :: Socket => Ngắt kết nối");
+        console.log("🎯️ ️️GameSession :: Socket => Ngắt kết nối", globalSocket);
       }
     } catch (error) {
       console.log("🎯️ ️️GameSession => Clear game lỗi", error);

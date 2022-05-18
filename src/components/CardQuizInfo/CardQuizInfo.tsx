@@ -58,7 +58,7 @@ const CardQuizInfo: FC<CardQuizInfoProps> = ({
         className="border rounded-10px overflow-hidden"
         style={{ height: 120 }}
       >
-        {quiz?.banner?.length ? (
+        {(quiz?.banner && quiz?.banner.length) ? (
           <Image
             src={quiz?.banner}
             alt=""
@@ -158,7 +158,7 @@ const CardQuizInfo: FC<CardQuizInfoProps> = ({
                 className="border rounded-10px position-relative overflow-hidden"
                 style={{ height: 120 }}
               >
-                {bannerUrl.length ? (
+                {(bannerUrl && bannerUrl.length) ? (
                   <Image
                     src={bannerUrl}
                     alt=""
