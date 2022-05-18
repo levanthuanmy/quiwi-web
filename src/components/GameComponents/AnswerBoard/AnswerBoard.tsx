@@ -5,7 +5,7 @@ import { Modal } from 'react-bootstrap'
 import { useGameSession } from '../../../hooks/useGameSession/useGameSession'
 import { useLocalStorage } from '../../../hooks/useLocalStorage/useLocalStorage'
 import { useSocket } from '../../../hooks/useSocket/useSocket'
-import { TUser } from '../../../types/types'
+import { TStartQuizResponse, TUser } from '../../../types/types'
 import { JsonParse } from '../../../utils/helper'
 import MyModal from '../../MyModal/MyModal'
 import SingleChoiceAnswerSection from '../AnswerQuestionComponent/SelectionQuestion/SingleChoiceAnswerSection'
@@ -24,6 +24,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({ className, questionId }) => {
   const [lsUser] = useLocalStorage('user', '')
   const [isHost, setIsHost] = useState<boolean>(false)
   const [qid, setId] = useState<number>(0)
+  console.log('qid', qid)
   const [answerSet, setAnswerSet] = useState<Set<number>>(new Set())
   const [isShowAnswer, setIsShowAnswer] = useState<boolean>(false)
   const router = useRouter()
@@ -42,7 +43,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({ className, questionId }) => {
     if (!gameSession) return
     const user: TUser = JsonParse(lsUser)
     setIsHost(user.id === gameSession.hostId)
-    setId(0)
+    // setId(0)
   }, [gameSession])
 
   useEffect(() => {
@@ -86,7 +87,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({ className, questionId }) => {
     if (!socket) return
 
     socket.on('new-submission', (data) => {
-      console.log('new-submission', data)
+      // console.log('new-submission', data)
 
       // nhớ check mode
 
@@ -96,6 +97,10 @@ const AnswerBoard: FC<AnswerBoardProps> = ({ className, questionId }) => {
     socket.on('next-question', (data) => {
       setIsShowNext(false)
       setShowRanking(false)
+      saveGameSession({
+        ...JsonParse(localStorage.getItem('game-session')),
+        players: [...rankingData],
+      } as TStartQuizResponse)
       setRoomStatus('Đang trả lời câu hỏi')
       if (data.currentQuestionIndex) {
         displayQuestionId(data.currentQuestionIndex)
@@ -129,7 +134,6 @@ const AnswerBoard: FC<AnswerBoardProps> = ({ className, questionId }) => {
   handleSocket() // TODO: KHOA XEM LẠI CHỖ NÀY NHA
 
   const goToNextQuestion = () => {
-    console.log('goToNextQuestion - questionId', questionId)
     if (!gameSession?.quiz?.questions) return
     if (qid == gameSession?.quiz?.questions.length - 1) {
       setIsFinish(true)
@@ -291,7 +295,13 @@ const AnswerBoard: FC<AnswerBoardProps> = ({ className, questionId }) => {
 
         <GameSessionRanking
           show={showRanking}
-          onHide={() => setShowRanking(false)}
+          onHide={() => {
+            setShowRanking(false)
+            saveGameSession({
+              ...gameSession,
+              players: [...rankingData],
+            } as TStartQuizResponse)
+          }}
           rankingData={rankingData}
         />
 
