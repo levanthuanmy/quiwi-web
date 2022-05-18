@@ -7,6 +7,7 @@ const MyHead: FC = () => {
       <link rel="icon" href="/assets/logo.png" />
       <link type="image/x-icon" rel="shortcut icon" href="/assets/logo.png" />
       <link rel="apple-touch-icon" href="/assets/logo.png"></link>
+      <title>Quiwi Game</title>
     </Head>
   )
 }
