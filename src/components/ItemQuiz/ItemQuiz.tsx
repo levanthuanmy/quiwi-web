@@ -74,9 +74,7 @@ const ItemQuiz: FC<ItemQuizProps> = ({ quiz, exploreMode = false }) => {
             styles.startBtn
           )}
           onClick={() => {
-            localStorage.removeItem('game-session')
-            localStorage.removeItem('game-session-player')
-            authNavigate.navigate(`/host?quizId=${quiz.id}`)
+            authNavigate.navigate(`/host/lobby?quizId=${quiz.id}`)
           }}
         ></MyButton>
       </div>

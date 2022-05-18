@@ -95,7 +95,7 @@ const RankingPage: NextPage = () => {
 
                     <Dropdown.Menu>
                       {rankingDropdown.map((d, index) => (
-                        <Dropdown.Item href="#/action-1" eventKey={index}>
+                        <Dropdown.Item key={index} href="#/action-1" eventKey={index}>
                           {d.showType}
                         </Dropdown.Item>
                       ))}

@@ -70,7 +70,7 @@ export const AuthProvider = ({ children }: { children?: ReactNode }) => {
     cookies.remove('access-token')
     cookies.remove('refresh-token')
     setLsUser('')
-    socket.disconnect()
+    socket?.disconnect()
     setUserState(undefined)
     await router.push('/')
   }

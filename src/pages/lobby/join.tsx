@@ -16,6 +16,7 @@ import {
   TStartQuizResponse,
 } from '../../types/types'
 import { JsonParse } from '../../utils/helper'
+import {useGameSession} from "../../hooks/useGameSession/useGameSession";
 
 type TJoinQuizRequest = {
   userId?: number
@@ -28,7 +29,7 @@ const JoiningPage: NextPage = () => {
 
   const invitationCode = router.query?.invitationCode?.toString() || ''
   // eslint-disable-next-line no-unused-vars
-  const [lsGameSession, setLsGameSession] = useLocalStorage('game-session', '')
+  const [gameSession, saveGameSession, clearGameSession] = useGameSession()
   // eslint-disable-next-line no-unused-vars
   const [lsPlayer, setLsPlayer] = useLocalStorage('game-session-player', '')
   const [nickname, setNickName] = useState<string>('')
@@ -41,6 +42,7 @@ const JoiningPage: NextPage = () => {
         alert('Vui lòng nhập tên hiển thị')
         return
       }
+      if (!socket) return
 
       const cookies = new Cookies()
       const accessToken: string = cookies.get('access-token')
@@ -73,7 +75,7 @@ const JoiningPage: NextPage = () => {
       const gameSession: TStartQuizResponse = data.gameLobby
       gameSession.nickName = nickname
 
-      setLsGameSession(JSON.stringify(gameSession))
+      saveGameSession(gameSession)
       setLsPlayer(JSON.stringify(data.player))
       router.push(`/lobby?quizId=${data.gameLobby.quizId}`)
     } catch (error) {

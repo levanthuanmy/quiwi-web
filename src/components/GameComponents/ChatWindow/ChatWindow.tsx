@@ -56,7 +56,7 @@ const ChatWindow: FC<{
   }
   const updateVoteForMessage = (voteChange: number, messageIndex: number) => {
     if (messageIndex < chatContent.length) {
-      socket.emit('vote', {
+      socket?.emit('vote', {
         invitationCode: gameSession.invitationCode,
         vote: voteChange,
         chatId: chatContent[messageIndex].id,

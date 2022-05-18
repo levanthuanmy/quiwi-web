@@ -9,20 +9,21 @@ import '../styles/padding.css'
 import '../styles/sizing.css'
 import '../styles/border.css'
 import '../styles/typography.css'
-import { SocketProvider } from '../hooks/useSocket/useSocket'
-import { AuthProvider } from '../hooks/useAuth/useAuth'
-import { useRouter } from 'next/router'
-import { useEffect, useState } from 'react'
+import {SocketProvider} from '../hooks/useSocket/useSocket'
+import {AuthProvider} from '../hooks/useAuth/useAuth'
+import {useRouter} from 'next/router'
+import {useEffect, useState} from 'react'
 import FullScreenLoader from '../components/FullScreenLoader/FullScreenLoader'
 import {DndProvider} from 'react-dnd'
 import {HTML5Backend} from 'react-dnd-html5-backend'
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import {useGameSession} from "../hooks/useGameSession/useGameSession";
 
 function MyApp({Component, pageProps}: AppProps) {
   const router = useRouter()
   const [shouldLoad, setShouldLoad] = useState<boolean>(false)
-
+  const [gameSession, saveGameSession, clearGameSession] = useGameSession()
   useEffect(() => {
     const handleRouteChangeStart = () => {
       setShouldLoad(true)
@@ -32,23 +33,37 @@ function MyApp({Component, pageProps}: AppProps) {
       setShouldLoad(false)
     }
 
+    const handleRouteChangeError = () => {
+
+    }
+
     router.events.on('routeChangeStart', handleRouteChangeStart)
     router.events.on('routeChangeComplete', handleRouteChangeComplete)
-
+    router.events.on('routeChangeError', handleRouteChangeError)
     return () => {
       router.events.off('routeChangeStart', handleRouteChangeStart)
       router.events.off('routeChangeComplete', handleRouteChangeComplete)
+      router.events.off('routeChangeError', handleRouteChangeError)
     }
   }, [])
+
+  const gamePageSet = new Set(["/game", "/host/lobby"])
+
+  useEffect(() => {
+    if (!gamePageSet.has(router.pathname)) {
+      console.log("🏡 =>", router.pathname);
+      clearGameSession()
+    }
+  }, [router]);
 
   return (
     <SSRProvider>
       <SocketProvider>
         <DndProvider backend={HTML5Backend}>
           <AuthProvider>
-            <MyHead />
+            <MyHead/>
             <Component {...pageProps} />
-            <FullScreenLoader isLoading={shouldLoad} />
+            <FullScreenLoader isLoading={shouldLoad}/>
           </AuthProvider>
         </DndProvider>
       </SocketProvider>

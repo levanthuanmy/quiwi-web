@@ -1,27 +1,26 @@
 import classNames from 'classnames'
-import { useRouter } from 'next/router'
-import { FC, memo, useEffect, useState } from 'react'
-import { Modal } from 'react-bootstrap'
-import { useGameSession } from '../../../hooks/useGameSession/useGameSession'
-import { useLocalStorage } from '../../../hooks/useLocalStorage/useLocalStorage'
-import { useSocket } from '../../../hooks/useSocket/useSocket'
-import { TStartQuizResponse, TUser } from '../../../types/types'
-import { JsonParse } from '../../../utils/helper'
+import {useRouter} from 'next/router'
+import React, {FC, memo, useEffect, useState} from 'react'
+import {Modal} from 'react-bootstrap'
+import {useGameSession} from '../../../hooks/useGameSession/useGameSession'
+import {useLocalStorage} from '../../../hooks/useLocalStorage/useLocalStorage'
+import {useSocket} from '../../../hooks/useSocket/useSocket'
+import {TUser} from '../../../types/types'
+import {JsonParse} from '../../../utils/helper'
 import MyModal from '../../MyModal/MyModal'
 import SingleChoiceAnswerSection from '../AnswerQuestionComponent/SelectionQuestion/SingleChoiceAnswerSection'
 import GameSessionRanking from '../GameSessionRanking/GameSessionRanking'
 import MoreButton from '../MoreButton/MoreButton'
-import { QuestionMedia } from '../QuestionMedia/QuestionMedia'
+import {QuestionMedia} from '../QuestionMedia/QuestionMedia'
 import styles from './AnswerBoard.module.css'
 
 type AnswerBoardProps = {
   className?: string
   questionId: number | 0
 }
-const AnswerBoard: FC<AnswerBoardProps> = ({ className, questionId }) => {
-  const [lsGameSession] = useLocalStorage('game-session', '')
-  const { socket } = useSocket()
-  const gameSession = useGameSession()
+const AnswerBoard: FC<AnswerBoardProps> = ({className, questionId}) => {
+  const {socket} = useSocket()
+  const [gameSession, saveGameSession, clearGameSession] = useGameSession()
   const [lsUser] = useLocalStorage('user', '')
   const [isHost, setIsHost] = useState<boolean>(false)
   const [qid, setId] = useState<number>(0)
@@ -37,20 +36,21 @@ const AnswerBoard: FC<AnswerBoardProps> = ({ className, questionId }) => {
   const [numSubmission, setNumSubmission] = useState<number>(0)
 
   const [showTimeout, setShowTimeout] = useState<boolean>(false)
-  useEffect(() => {
-    const gameData: TStartQuizResponse = JsonParse(
-      lsGameSession
-    ) as TStartQuizResponse
+  const [_interval, _setInterval] = useState<NodeJS.Timer | undefined>()
 
+  useEffect(() => {
+    if (!gameSession) return
     const user: TUser = JsonParse(lsUser)
-    setIsHost(user.id === gameData.hostId)
+    setIsHost(user.id === gameSession.hostId)
     setId(0)
-  }, [lsGameSession, lsUser])
+  }, [gameSession])
 
   useEffect(() => {
     const question = gameSession?.quiz?.questions[qid]
-    if (question.duration > 0) {
-      _setTimeout(question.duration)
+    if (question) {
+      if (question.duration > 0) {
+        _setTimeout(question.duration)
+      }
     }
   }, [gameSession, qid])
 
@@ -127,23 +127,26 @@ const AnswerBoard: FC<AnswerBoardProps> = ({ className, questionId }) => {
 
   const goToNextQuestion = () => {
     console.log('goToNextQuestion - questionId', questionId)
+    if (!gameSession?.quiz?.questions) return;
     if (qid == gameSession?.quiz?.questions.length - 1) {
       setIsFinish(true)
       return
     }
 
-    const msg = { invitationCode: gameSession.invitationCode }
+    const msg = {invitationCode: gameSession.invitationCode}
     socket?.emit('next-question', msg)
     console.log(msg)
   }
 
   const viewRanking = () => {
-    const msg = { invitationCode: gameSession.invitationCode }
+    if (!gameSession) return
+    const msg = {invitationCode: gameSession.invitationCode}
     socket?.emit('view-ranking', msg)
     setIsShowNext(true)
   }
 
   const handleSubmitAnswer = (answerId: number) => {
+    if (!gameSession) return
     if (isShowAnswer) return
     // Chọn và bỏ chọn câu hỏi
     const answers: Set<number> = answerSet
@@ -157,18 +160,17 @@ const AnswerBoard: FC<AnswerBoardProps> = ({ className, questionId }) => {
       nickname: gameSession.nickName,
     }
 
-    socket.emit('submit-answer', msg)
+    socket?.emit('submit-answer', msg)
   }
 
   const exitRoom = () => {
-    localStorage.removeItem('game-session')
-    localStorage.removeItem('game-session-player')
-    socket.close()
-    router.push('/')
+    // dùng clear game session là đủ
+    clearGameSession()
   }
 
   const renderAnswersSection = () => {
     const question = gameSession?.quiz?.questions[qid]
+    if (!question) return;
     switch (question.type) {
       case '10SG':
         return (
@@ -231,7 +233,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({ className, questionId }) => {
 
         <QuestionMedia
           timeout={timeout}
-          media={gameSession?.quiz?.questions[qid]?.media}
+          media={gameSession?.quiz?.questions[qid]?.media ?? null}
           numSubmission={numSubmission}
           key={qid}
         />

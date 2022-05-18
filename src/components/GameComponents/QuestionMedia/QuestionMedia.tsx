@@ -5,7 +5,7 @@ import styles from './QuestionMedia.module.css'
 
 const QuestionMedia: FC<{
   timeout: number
-  media: string
+  media: string | null
   numSubmission: number
 }> = ({ timeout, media, numSubmission }) => {
   return (

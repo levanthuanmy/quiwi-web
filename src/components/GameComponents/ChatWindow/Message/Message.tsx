@@ -40,7 +40,7 @@ const Message: FC<MessageProps> = (props) => {
 
   useEffect(() => {
     for (const socketId in props.votedByUsers) {
-      if (socketId === socket.id) {
+      if (socketId === socket?.id) {
         setUpvote(props.votedByUsers[socketId])
       }
     }
