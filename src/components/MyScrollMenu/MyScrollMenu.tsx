@@ -1,72 +1,106 @@
+import classNames from 'classnames'
+import _ from 'lodash'
 import { FC, useEffect, useRef, useState } from 'react'
 import { Button, Row } from 'react-bootstrap'
 import styles from './MyScrollMenu.module.css'
 
 const MyScrollMenu: FC<{}> = (props) => {
-  const [scrollX, setscrollX] = useState(0) // For detecting start scroll postion
-  const [scrolEnd, setscrolEnd] = useState(false) // For detecting end of scrolling
-  const scrl = useRef<HTMLDivElement>()
+  const [scrollX, setScrollX] = useState<number>(0) // For detecting start scroll postion
+  const [scrollEnd, setScrollEnd] = useState<boolean>(false) // For detecting end of scrolling
+  const [scrollStart, setScrollStart] = useState<boolean>(true) // For detecting end of scrolling
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const scrollRefWidth = Number(_.get(scrollRef, 'current.offsetWidth'))
 
   const slide = (shift: number) => {
-    if (!scrl.current) return
-    scrl.current.scrollLeft += shift
-    setscrollX(scrollX + shift) // Updates the latest scrolled postion
+    if (!scrollRef.current) return
+    scrollRef.current.scrollLeft += shift
+    setScrollX(scrollX + shift) // Updates the latest scrolled postion
 
     //For checking if the scroll has ended
     if (
-      Math.floor(scrl.current.scrollWidth - scrl.current.scrollLeft) <=
-      scrl.current.offsetWidth
+      Math.floor(
+        scrollRef.current.scrollWidth - scrollRef.current.scrollLeft
+      ) <= scrollRefWidth
     ) {
-      setscrolEnd(true)
+      setScrollEnd(true)
     } else {
-      setscrolEnd(false)
+      setScrollEnd(false)
     }
+
+    scrollCheck()
   }
 
   const scrollCheck = () => {
-    if (!scrl.current) return
-    setscrollX(scrl.current.scrollLeft)
-    if (
-      Math.floor(scrl.current.scrollWidth - scrl.current.scrollLeft) <=
-      scrl.current.offsetWidth
-    ) {
-      setscrolEnd(true)
-    } else {
-      setscrolEnd(false)
-    }
+    if (!scrollRef.current) return
+    setScrollX(scrollRef.current.scrollLeft)
+
+    setScrollEnd(
+      Math.floor(
+        scrollRef.current.scrollWidth - scrollRef.current.scrollLeft
+      ) <=
+        scrollRefWidth + 10
+    )
+
+    setScrollStart(scrollX <= 10)
   }
 
   useEffect(() => {
-    //Check width of the scollings
     if (
-      scrl.current &&
-      scrl?.current?.scrollWidth === scrl?.current?.offsetWidth
+      scrollRef.current &&
+      scrollRef?.current?.scrollWidth === scrollRef?.current?.offsetWidth
     ) {
-      setscrolEnd(true)
+      setScrollEnd(true)
     } else {
-      setscrolEnd(false)
+      setScrollEnd(false)
     }
     return () => {}
-  }, [scrl?.current?.scrollWidth, scrl?.current?.offsetWidth])
+  }, [scrollRef?.current?.scrollWidth, scrollRef?.current?.offsetWidth])
 
   return (
-    <div className="d-flex justify-content-between align-items-center">
-      <Button className={`${styles.slideButton}`} onClick={() => slide(-200)}>
-        <i className="bi bi-arrow-left fs-4"></i>
-      </Button>
+    <div className="position-relative">
+      <div
+        className={classNames(
+          'position-absolute h-100 top-0 d-flex align-items-center'
+        )}
+        style={{ zIndex: 1, left: -30 }}
+      >
+        <Button
+          variant="light"
+          className={classNames('rounded-circle shadow-lg', {
+            'opacity-75': scrollStart,
+          })}
+          onClick={() => slide(-(scrollRefWidth - 100))}
+        >
+          <i className="bi bi-chevron-left fs-4" />
+        </Button>
+      </div>
+
       <Row
         style={{
           scrollBehavior: 'smooth',
         }}
-        ref={scrl}
+        ref={scrollRef}
         onScroll={scrollCheck}
         className="overflow-auto flex-nowrap custom-scrollbar custom-scrollbar-horizontal"
       >
         {props.children}
       </Row>
-      <Button className={`${styles.slideButton}`} onClick={() => slide(200)}>
-        <i className="bi bi-arrow-right fs-4"></i>
-      </Button>
+      <div
+        className={classNames(
+          'position-absolute h-100 top-0 d-flex align-items-center'
+        )}
+        style={{ zIndex: 1, right: -30 }}
+      >
+        <Button
+          variant="light"
+          className={classNames('rounded-circle shadow-lg', {
+            'opacity-75': scrollEnd,
+          })}
+          onClick={() => slide(scrollRefWidth - 100)}
+        >
+          <i className="bi bi-chevron-right fs-4" />
+        </Button>
+      </div>
     </div>
   )
 }
