@@ -41,6 +41,37 @@ a {
   text-decoration: none;
 }
 
+.hide-scroll-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.hide-scroll-bar {
+  -ms-overflow-style: none;
+}
+
+/* Track */
+
+.custom-scrollbar-horizontal::-webkit-scrollbar {
+  height: 4px; 
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  /* box-shadow: inset 0 0 5px grey;  */
+  box-shadow: inset 0 0 5px rgba(255, 255, 255, 0);
+  border-radius: 8px;
+}
+
+/* Handle */
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #00988469;
+  border-radius: 8px;
+}
+
+/* Handle on hover */
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #00655878;
+}
+
 * {
   box-sizing: border-box;
 }

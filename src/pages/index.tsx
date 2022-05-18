@@ -1,29 +1,72 @@
-import type {NextPage} from 'next'
-import {useRouter} from 'next/router'
-import React, {useState} from 'react'
-import {Col, Container, Row} from 'react-bootstrap'
+import type { NextPage } from 'next'
+import { useRouter } from 'next/router'
+import React, { useEffect, useRef, useState } from 'react'
+import { Button, Col, Container, Row } from 'react-bootstrap'
 import DashboardLayout from '../components/DashboardLayout/DashboardLayout'
+import ItemQuiz from '../components/ItemQuiz/ItemQuiz'
 import MyButton from '../components/MyButton/MyButton'
 import MyInput from '../components/MyInput/MyInput'
-import {get, post} from '../libs/api'
-import {TApiResponse, TQuiz, TQuizBodyRequest} from '../types/types'
+import { MyScrollMenu } from '../components/MyScrollMenu/MyScrollMenu'
+import { useAuth } from '../hooks/useAuth/useAuth'
+import { get, post } from '../libs/api'
+import {
+  TApiResponse,
+  TPaginationResponse,
+  TQuiz,
+  TQuizBodyRequest,
+} from '../types/types'
+import styles from './HomePage.module.css'
 
 const Home: NextPage = () => {
   const [invitationCode, setInvitationCode] = useState<string>('')
-  const [invitationInputError, setInvitationInputError] = useState<string>("")
+  const [invitationInputError, setInvitationInputError] = useState<string>('')
+  const authContext = useAuth()
+  const user = authContext.getUser()
   const router = useRouter()
+  const [popularQuizzes, setPopularQuizzes] = useState<TQuiz[]>([])
+
+  const getPopularQuizzes = async () => {
+    try {
+      const params = {
+        filter: {
+          order: {
+            numUpvotes: 'DESC',
+            numPlayed: 'DESC',
+          },
+          where: {
+            isPublic: true,
+            isLocked: false,
+          },
+        },
+        pageIndex: 1,
+        pageSize: 5,
+      }
+      const res: TApiResponse<TPaginationResponse<TQuiz>> = await get(
+        `api/quizzes`,
+        false,
+        params
+      )
+
+      setPopularQuizzes(res.response.items)
+    } catch (error) {
+      alert((error as Error).message)
+    }
+  }
+
+  useEffect(() => {
+    getPopularQuizzes()
+  }, [])
 
   const onJoinRoom = async () => {
     if (invitationCode.trim().length === 0) {
-      setInvitationInputError("Vui lòng nhập mã phòng")
+      setInvitationInputError('Vui lòng nhập mã phòng')
       return
     }
 
     const res: TApiResponse<any> = await get(
       `/api/games/check-room/${invitationCode}`,
-      true,
+      true
     )
-    // res.da
     router.push(`/lobby/join?invitationCode=${invitationCode}`)
   }
 
@@ -52,6 +95,52 @@ const Home: NextPage = () => {
     }
   }
 
+  const [scrollX, setscrollX] = useState(0) // For detecting start scroll postion
+  const [scrolEnd, setscrolEnd] = useState(false) // For detecting end of scrolling
+  const scrl = useRef<HTMLDivElement>()
+
+  const slide = (shift: number) => {
+    if (!scrl.current) return
+    scrl.current.scrollLeft += shift
+    setscrollX(scrollX + shift) // Updates the latest scrolled postion
+
+    //For checking if the scroll has ended
+    if (
+      Math.floor(scrl.current.scrollWidth - scrl.current.scrollLeft) <=
+      scrl.current.offsetWidth
+    ) {
+      setscrolEnd(true)
+    } else {
+      setscrolEnd(false)
+    }
+  }
+
+  const scrollCheck = () => {
+    if (!scrl.current) return
+    setscrollX(scrl.current.scrollLeft)
+    if (
+      Math.floor(scrl.current.scrollWidth - scrl.current.scrollLeft) <=
+      scrl.current.offsetWidth
+    ) {
+      setscrolEnd(true)
+    } else {
+      setscrolEnd(false)
+    }
+  }
+
+  useEffect(() => {
+    //Check width of the scollings
+    if (
+      scrl.current &&
+      scrl?.current?.scrollWidth === scrl?.current?.offsetWidth
+    ) {
+      setscrolEnd(true)
+    } else {
+      setscrolEnd(false)
+    }
+    return () => {}
+  }, [scrl?.current?.scrollWidth, scrl?.current?.offsetWidth])
+
   return (
     <DashboardLayout>
       <div className="w-100 bg-secondary bg-opacity-10">
@@ -67,11 +156,11 @@ const Home: NextPage = () => {
                   <Row>
                     <Col xs="12" sm="6" className="pe-sm-2 pb-3 pb-sm-0">
                       <MyInput
-                        className={"pb-12px"}
+                        className={'pb-12px'}
                         errorText={invitationInputError}
                         placeholder="Nhập mã tham gia"
                         onChange={(e) => {
-                          setInvitationInputError("")
+                          setInvitationInputError('')
                           setInvitationCode(e.target.value)
                         }}
                       />
@@ -107,6 +196,17 @@ const Home: NextPage = () => {
 
         <Container fluid="lg" className="p-3">
           <div className="pt-4">
+            <div className="fs-22px fw-medium pb-3">Phổ biến</div>
+            <MyScrollMenu>
+              {popularQuizzes?.map((quiz, key) => (
+                <Col xs="12" md="6" lg="4" key={key} className="mb-3">
+                  <ItemQuiz quiz={quiz} />
+                </Col>
+              ))}
+            </MyScrollMenu>
+          </div>
+
+          <div className="pt-4">
             <div className="fs-22px fw-medium pb-3">Đã tham gia gần đây</div>
             <Row className="overflow-auto flex-nowrap">
               <Col xs="auto">
@@ -138,36 +238,6 @@ const Home: NextPage = () => {
 
           <div className="pt-4">
             <div className="fs-22px fw-medium pb-3">Đã tạo gần đây</div>
-            <Row className="overflow-auto flex-nowrap">
-              <Col xs="auto">
-                <div
-                  style={{ width: 278, height: 240 }}
-                  className="border rounded-10px bg-white"
-                ></div>
-              </Col>
-              <Col xs="auto">
-                <div
-                  style={{ width: 278, height: 240 }}
-                  className="border rounded-10px bg-white"
-                ></div>
-              </Col>
-              <Col xs="auto">
-                <div
-                  style={{ width: 278, height: 240 }}
-                  className="border rounded-10px bg-white"
-                ></div>
-              </Col>
-              <Col xs="auto">
-                <div
-                  style={{ width: 278, height: 240 }}
-                  className="border rounded-10px bg-white"
-                ></div>
-              </Col>
-            </Row>
-          </div>
-
-          <div className="pt-4">
-            <div className="fs-22px fw-medium pb-3">Phổ biến</div>
             <Row className="overflow-auto flex-nowrap">
               <Col xs="auto">
                 <div
