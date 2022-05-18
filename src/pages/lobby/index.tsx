@@ -11,7 +11,7 @@ const LobbyPage: NextPage = () => {
   const router = useRouter()
   const {quizId} = router.query
   const [invitationCode] = useState('')
-  const [gameSession, saveGameSession] = useGameSession()
+  const {gameSession, saveGameSession, clearGameSession} = useGameSession()
 
   const {
     data: quizResponse,

@@ -23,7 +23,7 @@ import {useGameSession} from "../hooks/useGameSession/useGameSession";
 function MyApp({Component, pageProps}: AppProps) {
   const router = useRouter()
   const [shouldLoad, setShouldLoad] = useState<boolean>(false)
-  const [gameSession, saveGameSession, clearGameSession] = useGameSession()
+  const {gameSession, saveGameSession, clearGameSession} = useGameSession()
   useEffect(() => {
     const handleRouteChangeStart = () => {
       setShouldLoad(true)

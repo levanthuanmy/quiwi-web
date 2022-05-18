@@ -20,7 +20,7 @@ type AnswerBoardProps = {
 }
 const AnswerBoard: FC<AnswerBoardProps> = ({className, questionId}) => {
   const {socket} = useSocket()
-  const [gameSession, saveGameSession, clearGameSession] = useGameSession()
+  const {gameSession, saveGameSession, clearGameSession} = useGameSession()
   const [lsUser] = useLocalStorage('user', '')
   const [isHost, setIsHost] = useState<boolean>(false)
   const [qid, setId] = useState<number>(0)
@@ -100,7 +100,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, questionId}) => {
     })
 
     socket?.on('view-result', (data) => {
-      console.log('view', data)
+      console.log('view-result', data)
       setRoomStatus('Xem xếp hạng')
       setIsShowAnswer(true)
     })
@@ -115,7 +115,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, questionId}) => {
     socket?.on('ranking', (data) => {
       setShowRanking(true)
       setRankingData(data?.playersSortedByScore)
-      console.log('ranking', data)
+      console.log('view-ranking', data)
     })
 
     socket?.on('error', (data) => {

@@ -9,7 +9,7 @@ import styles from './GamePage.module.css'
 const GamePage: NextPage = () => {
   const router = useRouter()
   const {questionId} = router.query
-  const [gameSession, saveGameSession, clearGameSession] = useGameSession()
+  const {gameSession, saveGameSession, clearGameSession} = useGameSession()
   const [isExpand, setIsExpand] = useState<boolean>(false)
 
   useEffect(() => {

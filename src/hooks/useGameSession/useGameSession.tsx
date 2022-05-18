@@ -4,7 +4,7 @@ import {JsonParse} from '../../utils/helper'
 import {useLocalStorage} from '../useLocalStorage/useLocalStorage'
 import {globalSocket} from "../useSocket/useSocket";
 
-export const useGameSession = (): [(TStartQuizResponse | null), ((gameSS: TStartQuizResponse) => void), (() => void)] => {
+export const useGameSession = (): { clearGameSession: () => void; gameSession: TStartQuizResponse | null; saveGameSession: (gameSS: TStartQuizResponse) => void } => {
   const [lsGameSession, setLsGameSession] = useLocalStorage('game-session', '')
   const [gameSession, setGameSession] = useState<TStartQuizResponse | null>(null)
 
@@ -48,6 +48,6 @@ export const useGameSession = (): [(TStartQuizResponse | null), ((gameSS: TStart
     }
   }
 
-
-  return [gameSession, saveGameSession, clearGameSession]
+  return {gameSession, saveGameSession, clearGameSession}
 }
+

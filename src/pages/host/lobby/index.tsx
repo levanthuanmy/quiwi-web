@@ -23,7 +23,7 @@ const HostPage: NextPage = () => {
   const router = useRouter()
   const {quizId} = router.query
   const [lsUser] = useLocalStorage('user', '')
-  const [gameSession, saveGameSession] = useGameSession()
+  const {gameSession, saveGameSession, clearGameSession} = useGameSession()
   const [isShowGameModeScreen, setIsShowGameModeScreen] =
     useState<boolean>(true)
   const [invitationCode, setInvitationCode] = useState<string>()

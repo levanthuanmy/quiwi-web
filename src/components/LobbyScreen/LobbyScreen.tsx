@@ -34,7 +34,7 @@ const LobbyScreen: FC<LobbyScreenProps> = ({
   const [showToast, setShowToast] = useState<boolean>(false)
   const [showQR, setShowQR] = useState<boolean>(false)
   const isMobile = useIsMobile()
-  const [gameSession, saveGameSession, clearGameSession] = useGameSession()
+  const {gameSession, saveGameSession, clearGameSession} = useGameSession()
 
   useEffect(() => {
     // if (socket && socket.disconnected) socket?.connect()
