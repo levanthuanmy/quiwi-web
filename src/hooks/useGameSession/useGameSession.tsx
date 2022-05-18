@@ -33,17 +33,15 @@ export const useGameSession = (): [(TStartQuizResponse | null), ((gameSS: TStart
 
   const clearGameSession = () => {
     try {
-      if (lsGameSession) {
-        console.log("🎯️ ️️GameSession :: Clear");
-        setLsGameSession("")
-        setGameSession(null)
-        localStorage.removeItem('game-session')
-        localStorage.removeItem('game-session-player')
+      console.log("🎯️ ️️GameSession :: Clear");
+      setLsGameSession("")
+      setGameSession(null)
+      localStorage.removeItem('game-session')
+      localStorage.removeItem('game-session-player')
 
-        if (globalSocket.connected) {
-          globalSocket.disconnect()
-          console.log("🎯️ ️️GameSession :: Socket => Ngắt kết nối");
-        }
+      if (globalSocket.connected) {
+        globalSocket.disconnect()
+        console.log("🎯️ ️️GameSession :: Socket => Ngắt kết nối");
       }
     } catch (error) {
       console.log("🎯️ ️️GameSession => Clear game lỗi", error);
