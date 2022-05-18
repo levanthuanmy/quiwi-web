@@ -79,11 +79,20 @@ export type TStartQuizResponse = {
   quizId: number
   status: TGameStatus
   chats: MessageProps[]
-  gameRoundStatistics: {
-    playersWithAnswer: TPlayer[]
-    playersWithoutAnswer: TPlayer[]
-  }[]
+  // gameRoundStatistics: TGameRoundStatistic[]
 }
+
+// export type TGameRoundStatistic = {
+//   playersWithAnswer: TPlayer[]
+//   playersWithoutAnswer: TPlayer[]
+//   playersSortedByScore: {
+//     currentStreak: number
+//     gameRounds: TGameRound[]
+//     maxStreak: number
+//     nickname: string
+//     score: number
+//   }[]
+// }
 
 export type TFollowUsers = {
   id?: number
