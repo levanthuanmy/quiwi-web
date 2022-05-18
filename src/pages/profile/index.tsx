@@ -125,69 +125,58 @@ const ProfilePage: NextPage = () => {
   return userResponse ? (
     <>
       <NavBar showMenuBtn={false} isExpand={false} setIsExpand={() => null} />
-      <Container className="pt-80px min-vh-100 position-relative ">
-        {/* <Image
-          src="/assets/default-banner.svg"
-          className="position-absolute w-100"
-          alt="banner"
-          style={{
-            zIndex: -1,
-            objectFit: 'cover',
-            minWidth: 576,
-            minHeight: 200,
-          }}
-        /> */}
-        <Row className="my-5 justify-content-center">
-          <Col xs={5} md={3} className="text-center">
+      <Container className="pt-80px min-vh-100">
+        <div className="d-flex flex-column align-items-center py-3 gap-3">
+          <div>
             <Image
               fluid={true}
               alt="avatar"
               src="/assets/default-logo.png"
-              width={160}
-              height={160}
+              width={220}
+              height={220}
               className="rounded-circle border border-2 border-white"
             />
-          </Col>
+          </div>
 
-          <Col xs={7} className="">
-            <div className="d-flex align-items-center">
-              <div className="me-5">
-                <div className="fs-24px fw-medium text-secondary">
-                  {userResponse.user.username}
-                </div>
-                <div> {userResponse.user.name}</div>
-              </div>
-              <div>
-                <Link href="/profile/edit" passHref={true}>
-                  <Button className="text-white">Chỉnh sửa</Button>
-                </Link>
+          <div className="d-flex flex-column align-items-center">
+            <div className="fs-24px fw-medium">{userResponse.user.name}</div>
+            <div className="text-secondary">@{userResponse.user.username}</div>
+          </div>
+
+          <div className="d-flex gap-3 fs-14px w-100 fw-medium">
+            <div className="w-100">
+              <div className="text-secondary">Danh Hiệu</div>
+              <div className="fs-32px line-height-normal">
+                {userResponse?.badges.length}
               </div>
             </div>
-
-            <Row>
-              <div className="py-2 d-flex align-items-center">
-                <Image
-                  alt="avatar"
-                  src="/assets/quiwi-coin.png"
-                  width={32}
-                  height={32}
-                  className="me-3"
-                />
-                <span className="fs-32px text-primary fw-medium">
-                  {userResponse.user.coin}
-                </span>
+            <div className="w-100">
+              <div className="fw-medium text-secondary">Người Theo Dõi</div>
+              <div className="fs-32px line-height-normal">
+                {followerUsers?.items.length}
               </div>
-              <Row className="">
-                {renderData(userResponse?.badges.length, 'danh hiệu')}
-                <FollowerUser followerUsers={followerUsers} />
-                <FollowingUser
-                  followingUsers={followingUsers}
-                  unfollowUser={unfollow}
-                />
-              </Row>
+            </div>
+            <div className="w-100">
+              <div className="fw-medium text-secondary">Đang Theo Dõi</div>
+              <div className="fs-32px line-height-normal">
+                {followingUsers?.items.length}
+              </div>
+            </div>
+          </div>
+          {/* <Row>
+            <Row className="">
+              {renderData(userResponse?.badges.length, 'danh hiệu')}
+              <FollowerUser followerUsers={followerUsers} />
+              <FollowingUser
+                followingUsers={followingUsers}
+                unfollowUser={unfollow}
+              />
             </Row>
-          </Col>
-        </Row>
+          </Row> */}
+          <Link href="/profile/edit" passHref={true}>
+            <Button className="text-white">Chỉnh sửa</Button>
+          </Link>
+        </div>
       </Container>
     </>
   ) : null

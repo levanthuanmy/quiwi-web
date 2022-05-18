@@ -1,26 +1,26 @@
 import classNames from 'classnames'
-import {useRouter} from 'next/router'
-import React, {FC, memo, useEffect, useState} from 'react'
-import {Modal} from 'react-bootstrap'
-import {useGameSession} from '../../../hooks/useGameSession/useGameSession'
-import {useLocalStorage} from '../../../hooks/useLocalStorage/useLocalStorage'
-import {useSocket} from '../../../hooks/useSocket/useSocket'
-import {TUser} from '../../../types/types'
-import {JsonParse} from '../../../utils/helper'
+import { useRouter } from 'next/router'
+import React, { FC, memo, useEffect, useState } from 'react'
+import { Modal } from 'react-bootstrap'
+import { useGameSession } from '../../../hooks/useGameSession/useGameSession'
+import { useLocalStorage } from '../../../hooks/useLocalStorage/useLocalStorage'
+import { useSocket } from '../../../hooks/useSocket/useSocket'
+import { TUser } from '../../../types/types'
+import { JsonParse } from '../../../utils/helper'
 import MyModal from '../../MyModal/MyModal'
 import SingleChoiceAnswerSection from '../AnswerQuestionComponent/SelectionQuestion/SingleChoiceAnswerSection'
 import GameSessionRanking from '../GameSessionRanking/GameSessionRanking'
 import MoreButton from '../MoreButton/MoreButton'
-import {QuestionMedia} from '../QuestionMedia/QuestionMedia'
+import { QuestionMedia } from '../QuestionMedia/QuestionMedia'
 import styles from './AnswerBoard.module.css'
 
 type AnswerBoardProps = {
   className?: string
   questionId: number | 0
 }
-const AnswerBoard: FC<AnswerBoardProps> = ({className, questionId}) => {
-  const {socket} = useSocket()
-  const {gameSession, saveGameSession, clearGameSession} = useGameSession()
+const AnswerBoard: FC<AnswerBoardProps> = ({ className, questionId }) => {
+  const { socket } = useSocket()
+  const { gameSession, saveGameSession, clearGameSession } = useGameSession()
   const [lsUser] = useLocalStorage('user', '')
   const [isHost, setIsHost] = useState<boolean>(false)
   const [qid, setId] = useState<number>(0)
@@ -83,7 +83,9 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, questionId}) => {
   }
 
   const handleSocket = () => {
-    socket?.on('new-submission', (data) => {
+    if (!socket) return
+
+    socket.on('new-submission', (data) => {
       console.log('new-submission', data)
 
       // nhớ check mode
@@ -91,56 +93,57 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, questionId}) => {
       setNumSubmission(numSubmission + 1)
     })
 
-    socket?.on('next-question', (data) => {
+    socket.on('next-question', (data) => {
       setIsShowNext(false)
+      setShowRanking(false)
       setRoomStatus('Đang trả lời câu hỏi')
       if (data.currentQuestionIndex) {
         displayQuestionId(data.currentQuestionIndex)
       }
     })
 
-    socket?.on('view-result', (data) => {
-      console.log('view-result', data)
+    socket.on('view-result', (data) => {
+      console.log('view', data)
       setRoomStatus('Xem xếp hạng')
       setIsShowAnswer(true)
     })
 
-    socket?.on('timeout', (data) => {
+    socket.on('timeout', (data) => {
       console.log('timeout', data)
       if (timeout === 0) {
         handleTimeout()
       }
     })
 
-    socket?.on('ranking', (data) => {
+    socket.on('ranking', (data) => {
       setShowRanking(true)
       setRankingData(data?.playersSortedByScore)
       console.log('view-ranking', data)
     })
 
-    socket?.on('error', (data) => {
+    socket.on('error', (data) => {
       console.log('answer board socket error', data)
     })
   }
 
-  handleSocket()
+  handleSocket() // TODO: KHOA XEM LẠI CHỖ NÀY NHA
 
   const goToNextQuestion = () => {
     console.log('goToNextQuestion - questionId', questionId)
-    if (!gameSession?.quiz?.questions) return;
+    if (!gameSession?.quiz?.questions) return
     if (qid == gameSession?.quiz?.questions.length - 1) {
       setIsFinish(true)
       return
     }
 
-    const msg = {invitationCode: gameSession.invitationCode}
+    const msg = { invitationCode: gameSession.invitationCode }
     socket?.emit('next-question', msg)
     console.log(msg)
   }
 
   const viewRanking = () => {
     if (!gameSession) return
-    const msg = {invitationCode: gameSession.invitationCode}
+    const msg = { invitationCode: gameSession.invitationCode }
     socket?.emit('view-ranking', msg)
     setIsShowNext(true)
   }
@@ -166,12 +169,12 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, questionId}) => {
   const exitRoom = () => {
     // dùng clear game session là đủ
     clearGameSession()
-    router.push("/")
+    router.push('/')
   }
 
   const renderAnswersSection = () => {
     const question = gameSession?.quiz?.questions[qid]
-    if (!question) return;
+    if (!question) return
     switch (question.type) {
       case '10SG':
         return (

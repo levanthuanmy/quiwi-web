@@ -40,7 +40,7 @@ const ExplorePage: NextPage = () => {
               </Col>
               {data?.response?.items?.map((quiz, key) => (
                 <Col xs="12" sm="6" lg="4" key={key} className="mb-3">
-                  <ItemQuiz quiz={quiz} />
+                  <ItemQuiz quiz={quiz} exploreMode />
                 </Col>
               ))}
             </Row>

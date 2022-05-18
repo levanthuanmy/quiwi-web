@@ -79,6 +79,10 @@ export type TStartQuizResponse = {
   quizId: number
   status: TGameStatus
   chats: MessageProps[]
+  gameRoundStatistics: {
+    playersWithAnswer: TPlayer[]
+    playersWithoutAnswer: TPlayer[]
+  }[]
 }
 
 export type TFollowUsers = {

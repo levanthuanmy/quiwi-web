@@ -55,18 +55,20 @@ const ItemQuiz: FC<ItemQuizProps> = ({ quiz, exploreMode = false }) => {
           </div>
         </div>
 
-        <Button
-          variant="light"
-          className={classNames(
-            'rounded-circle shadow-sm position-absolute d-flex justify-content-center align-items-center cursor-pointer',
-            styles.editBtn
-          )}
-          onClick={() => {
-            authNavigate.navigate(`/quiz/creator/${quiz.id}`)
-          }}
-        >
-          <div className="bi bi-pen fs-16px"></div>
-        </Button>
+        {!exploreMode && (
+          <Button
+            variant="light"
+            className={classNames(
+              'rounded-circle shadow-sm position-absolute d-flex justify-content-center align-items-center cursor-pointer',
+              styles.editBtn
+            )}
+            onClick={() => {
+              authNavigate.navigate(`/quiz/creator/${quiz.id}`)
+            }}
+          >
+            <div className="bi bi-pen fs-16px"></div>
+          </Button>
+        )}
 
         <MyButton
           className={classNames(
