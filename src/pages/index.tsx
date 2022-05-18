@@ -1,7 +1,8 @@
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
-import React, { useEffect, useRef, useState } from 'react'
-import { Button, Col, Container, Row } from 'react-bootstrap'
+import React, { useState } from 'react'
+import { Col, Container, Row } from 'react-bootstrap'
+import useSWR from 'swr'
 import DashboardLayout from '../components/DashboardLayout/DashboardLayout'
 import ItemQuiz from '../components/ItemQuiz/ItemQuiz'
 import MyButton from '../components/MyButton/MyButton'
@@ -15,7 +16,6 @@ import {
   TQuiz,
   TQuizBodyRequest,
 } from '../types/types'
-import styles from './HomePage.module.css'
 
 const Home: NextPage = () => {
   const [invitationCode, setInvitationCode] = useState<string>('')
@@ -23,39 +23,23 @@ const Home: NextPage = () => {
   const authContext = useAuth()
   const user = authContext.getUser()
   const router = useRouter()
-  const [popularQuizzes, setPopularQuizzes] = useState<TQuiz[]>([])
-
-  const getPopularQuizzes = async () => {
-    try {
-      const params = {
-        filter: {
-          order: {
-            numUpvotes: 'DESC',
-            numPlayed: 'DESC',
-          },
-          where: {
-            isPublic: true,
-            isLocked: false,
-          },
-        },
-        pageIndex: 1,
-        pageSize: 5,
-      }
-      const res: TApiResponse<TPaginationResponse<TQuiz>> = await get(
-        `api/quizzes`,
-        false,
-        params
-      )
-
-      setPopularQuizzes(res.response.items)
-    } catch (error) {
-      alert((error as Error).message)
-    }
+  const params = {
+    filter: {
+      order: {
+        numUpvotes: 'DESC',
+        numPlayed: 'DESC',
+      },
+      where: {
+        isPublic: true,
+        isLocked: false,
+      },
+    },
+    pageIndex: 1,
+    pageSize: 5,
   }
-
-  useEffect(() => {
-    getPopularQuizzes()
-  }, [])
+  const { data: popularQuizzesResponse } = useSWR<
+    TApiResponse<TPaginationResponse<TQuiz>>
+  >([`api/quizzes`, false, params], get, { revalidateOnFocus: false })
 
   const onJoinRoom = async () => {
     if (invitationCode.trim().length === 0) {
@@ -94,52 +78,6 @@ const Home: NextPage = () => {
       console.log('handleToQuizCreator - error', error)
     }
   }
-
-  const [scrollX, setscrollX] = useState(0) // For detecting start scroll postion
-  const [scrolEnd, setscrolEnd] = useState(false) // For detecting end of scrolling
-  const scrl = useRef<HTMLDivElement>()
-
-  const slide = (shift: number) => {
-    if (!scrl.current) return
-    scrl.current.scrollLeft += shift
-    setscrollX(scrollX + shift) // Updates the latest scrolled postion
-
-    //For checking if the scroll has ended
-    if (
-      Math.floor(scrl.current.scrollWidth - scrl.current.scrollLeft) <=
-      scrl.current.offsetWidth
-    ) {
-      setscrolEnd(true)
-    } else {
-      setscrolEnd(false)
-    }
-  }
-
-  const scrollCheck = () => {
-    if (!scrl.current) return
-    setscrollX(scrl.current.scrollLeft)
-    if (
-      Math.floor(scrl.current.scrollWidth - scrl.current.scrollLeft) <=
-      scrl.current.offsetWidth
-    ) {
-      setscrolEnd(true)
-    } else {
-      setscrolEnd(false)
-    }
-  }
-
-  useEffect(() => {
-    //Check width of the scollings
-    if (
-      scrl.current &&
-      scrl?.current?.scrollWidth === scrl?.current?.offsetWidth
-    ) {
-      setscrolEnd(true)
-    } else {
-      setscrolEnd(false)
-    }
-    return () => {}
-  }, [scrl?.current?.scrollWidth, scrl?.current?.offsetWidth])
 
   return (
     <DashboardLayout>
@@ -198,7 +136,7 @@ const Home: NextPage = () => {
           <div className="pt-4">
             <div className="fs-22px fw-medium pb-3">Phổ biến</div>
             <MyScrollMenu>
-              {popularQuizzes?.map((quiz, key) => (
+              {popularQuizzesResponse?.response.items?.map((quiz, key) => (
                 <Col xs="12" md="6" lg="4" key={key} className="mb-3">
                   <ItemQuiz quiz={quiz} />
                 </Col>
