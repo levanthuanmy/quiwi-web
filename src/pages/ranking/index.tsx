@@ -55,7 +55,7 @@ const RankingPage: NextPage = () => {
     getData()
   }, [rankingDropdownPos])
 
-  // console.log(`data: ${JSON.stringify(data)}`)
+  console.log(`data: ${JSON.stringify(data)}`)
   const [lsUser] = useLocalStorage('user', '')
   const user = JsonParse(lsUser) as TUser
   // console.log('hihihi', data)
