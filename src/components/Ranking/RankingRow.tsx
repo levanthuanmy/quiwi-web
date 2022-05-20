@@ -1,9 +1,11 @@
 import classNames from 'classnames'
+import { useRouter } from 'next/router'
 import React, { FC } from 'react'
 import { Image } from 'react-bootstrap'
 import styles from './ranking.module.css'
 
 export type RankingProps = {
+  id: number
   rank: number
   username: string
   quantity: string
@@ -11,16 +13,18 @@ export type RankingProps = {
 }
 
 const RankingRow: FC<RankingProps> = ({
+  id,
   rank,
   username,
   quantity,
   isHighlight,
 }) => {
+  const router = useRouter()
   return (
     <tr
       className={classNames({
         'text-white bg-primary': isHighlight,
-      }, styles.zoom)} onClick= {()=>{console.log('click')}}
+      }, styles.zoom)} onClick= {async ()=>await router.push(`/users/${id}`)}
     >
       <td className={classNames('p-2', styles.MarginLeft)}>{rank}</td>
       <td>

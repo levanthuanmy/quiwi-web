@@ -15,7 +15,7 @@ const RankingBoard: FC<RankingList> = ({ rankingList }) => {
       username={d.username}
       quantity={d.quantity}
       isHighlight={d.isHighlight}
-    />
+      id={d.id}    />
   ))
 
   return (
