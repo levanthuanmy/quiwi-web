@@ -82,7 +82,7 @@ const ItemQuiz: FC<ItemQuizProps> = ({ quiz, exploreMode = false }) => {
       </div>
       <div className="p-12px">
         <div className="fw-medium fs-18px">{quiz.title}</div>
-        <div className="fs-14px text-secondary">{quiz.description}</div>
+        <div className="fs-14px text-secondary text-truncate" title={quiz.description}>{quiz.description}</div>
       </div>
     </div>
   )

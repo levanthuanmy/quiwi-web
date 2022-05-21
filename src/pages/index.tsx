@@ -162,7 +162,7 @@ const Home: NextPage = () => {
               <MySlider>
                 {popularQuizzesResponse?.response.items?.map((quiz, key) => (
                   <div key={key} className="px-md-2">
-                    <ItemQuiz quiz={quiz} />
+                    <ItemQuiz quiz={quiz} exploreMode={true}/>
                   </div>
                 ))}
               </MySlider>
@@ -178,7 +178,7 @@ const Home: NextPage = () => {
                 {recentlyCreatedQuizzesResponse?.response.items?.map(
                   (quiz, key) => (
                     <div key={key} className="px-md-2">
-                      <ItemQuiz quiz={quiz} />
+                      <ItemQuiz quiz={quiz}  exploreMode={true}/>
                     </div>
                   )
                 )}
