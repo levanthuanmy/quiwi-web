@@ -1,13 +1,14 @@
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { Col, Container, Row } from 'react-bootstrap'
 import useSWR from 'swr'
 import DashboardLayout from '../components/DashboardLayout/DashboardLayout'
 import ItemQuiz from '../components/ItemQuiz/ItemQuiz'
+import Loading from '../components/Loading/Loading'
 import MyButton from '../components/MyButton/MyButton'
 import MyInput from '../components/MyInput/MyInput'
-import { MyScrollMenu } from '../components/MyScrollMenu/MyScrollMenu'
+import { MySlider } from '../components/MySlider/MySlider'
 import { useAuth } from '../hooks/useAuth/useAuth'
 import { get, post } from '../libs/api'
 import {
@@ -23,7 +24,7 @@ const Home: NextPage = () => {
   const authContext = useAuth()
   const user = authContext.getUser()
   const router = useRouter()
-  const params = {
+  const popularParams = {
     filter: {
       order: {
         numUpvotes: 'DESC',
@@ -35,11 +36,33 @@ const Home: NextPage = () => {
       },
     },
     pageIndex: 1,
-    pageSize: 5,
+    pageSize: 6,
+  }
+
+  const recentlyCreatedParams = {
+    filter: {
+      order: {
+        numUpvotes: 'DESC',
+        numPlayed: 'DESC',
+        createdAt: 'ASC',
+      },
+      where: {
+        isPublic: true,
+        isLocked: false,
+      },
+    },
+    pageIndex: 1,
+    pageSize: 6,
   }
   const { data: popularQuizzesResponse } = useSWR<
     TApiResponse<TPaginationResponse<TQuiz>>
-  >([`api/quizzes`, false, params], get, { revalidateOnFocus: false })
+  >([`api/quizzes`, false, popularParams], get, { revalidateOnFocus: false })
+
+  const { data: recentlyCreatedQuizzesResponse } = useSWR<
+    TApiResponse<TPaginationResponse<TQuiz>>
+  >([`api/quizzes`, false, recentlyCreatedParams], get, {
+    revalidateOnFocus: false,
+  })
 
   const onJoinRoom = async () => {
     if (invitationCode.trim().length === 0) {
@@ -135,74 +158,67 @@ const Home: NextPage = () => {
         <Container fluid="lg" className="p-3">
           <div className="pt-4">
             <div className="fs-22px fw-medium pb-3">Phổ biến</div>
-            <MyScrollMenu>
-              {popularQuizzesResponse?.response.items?.map((quiz, key) => (
-                <Col xs="12" md="6" lg="4" key={key} className="mb-3">
-                  <ItemQuiz quiz={quiz} />
-                </Col>
-              ))}
-            </MyScrollMenu>
-          </div>
-
-          <div className="pt-4">
-            <div className="fs-22px fw-medium pb-3">Đã tham gia gần đây</div>
-            <Row className="overflow-auto flex-nowrap">
-              <Col xs="auto">
-                <div
-                  style={{ width: 278, height: 240 }}
-                  className="border rounded-10px bg-white"
-                ></div>
-              </Col>
-              <Col xs="auto">
-                <div
-                  style={{ width: 278, height: 240 }}
-                  className="border rounded-10px bg-white"
-                ></div>
-              </Col>
-              <Col xs="auto">
-                <div
-                  style={{ width: 278, height: 240 }}
-                  className="border rounded-10px bg-white"
-                ></div>
-              </Col>
-              <Col xs="auto">
-                <div
-                  style={{ width: 278, height: 240 }}
-                  className="border rounded-10px bg-white"
-                ></div>
-              </Col>
-            </Row>
+            {popularQuizzesResponse?.response.items ? (
+              <MySlider>
+                {popularQuizzesResponse?.response.items?.map((quiz, key) => (
+                  <div key={key} className="px-md-2">
+                    <ItemQuiz quiz={quiz} />
+                  </div>
+                ))}
+              </MySlider>
+            ) : (
+              <Loading />
+            )}
           </div>
 
           <div className="pt-4">
             <div className="fs-22px fw-medium pb-3">Đã tạo gần đây</div>
-            <Row className="overflow-auto flex-nowrap">
-              <Col xs="auto">
-                <div
-                  style={{ width: 278, height: 240 }}
-                  className="border rounded-10px bg-white"
-                ></div>
-              </Col>
-              <Col xs="auto">
-                <div
-                  style={{ width: 278, height: 240 }}
-                  className="border rounded-10px bg-white"
-                ></div>
-              </Col>
-              <Col xs="auto">
-                <div
-                  style={{ width: 278, height: 240 }}
-                  className="border rounded-10px bg-white"
-                ></div>
-              </Col>
-              <Col xs="auto">
-                <div
-                  style={{ width: 278, height: 240 }}
-                  className="border rounded-10px bg-white"
-                ></div>
-              </Col>
-            </Row>
+            {recentlyCreatedQuizzesResponse?.response.items ? (
+              <MySlider>
+                {recentlyCreatedQuizzesResponse?.response.items?.map(
+                  (quiz, key) => (
+                    <div key={key} className="px-md-2">
+                      <ItemQuiz quiz={quiz} />
+                    </div>
+                  )
+                )}
+              </MySlider>
+            ) : (
+              <Loading />
+            )}
           </div>
+
+          {user ? (
+            <div className="pt-4">
+              <div className="fs-22px fw-medium pb-3">Đã tham gia gần đây</div>
+              <Row className="overflow-auto flex-nowrap">
+                <Col xs="auto">
+                  <div
+                    style={{ width: 278, height: 240 }}
+                    className="border rounded-10px bg-white"
+                  ></div>
+                </Col>
+                <Col xs="auto">
+                  <div
+                    style={{ width: 278, height: 240 }}
+                    className="border rounded-10px bg-white"
+                  ></div>
+                </Col>
+                <Col xs="auto">
+                  <div
+                    style={{ width: 278, height: 240 }}
+                    className="border rounded-10px bg-white"
+                  ></div>
+                </Col>
+                <Col xs="auto">
+                  <div
+                    style={{ width: 278, height: 240 }}
+                    className="border rounded-10px bg-white"
+                  ></div>
+                </Col>
+              </Row>
+            </div>
+          ) : null}
         </Container>
       </div>
     </DashboardLayout>
