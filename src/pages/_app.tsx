@@ -1,3 +1,5 @@
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 import 'bootstrap-icons/font/bootstrap-icons.css'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import type {AppProps} from 'next/app'
@@ -9,6 +11,7 @@ import '../styles/padding.css'
 import '../styles/sizing.css'
 import '../styles/border.css'
 import '../styles/typography.css'
+import '../styles/custom-arrow-react-slick.css'
 import {SocketProvider} from '../hooks/useSocket/useSocket'
 import {AuthProvider} from '../hooks/useAuth/useAuth'
 import {useRouter} from 'next/router'
@@ -16,8 +19,6 @@ import {useEffect, useState} from 'react'
 import FullScreenLoader from '../components/FullScreenLoader/FullScreenLoader'
 import {DndProvider} from 'react-dnd'
 import {HTML5Backend} from 'react-dnd-html5-backend'
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
 import {useGameSession} from "../hooks/useGameSession/useGameSession";
 
 function MyApp({Component, pageProps}: AppProps) {

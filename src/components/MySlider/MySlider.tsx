@@ -1,15 +1,13 @@
 import classNames from 'classnames'
-import { CSSProperties, FC, ReactNode } from 'react'
-import { Button } from 'react-bootstrap'
+import { FC, ReactNode } from 'react'
 import Slider from 'react-slick'
-import styles from './MySlider.module.css'
 
 function SampleNextArrow(props: any) {
   const { className, style, onClick } = props
   return (
     <div
-      className={classNames(className, 'text-primary ')}
-      style={{ ...style, display: 'block' }}
+      className={classNames(className, 'text-primary d-block')}
+      style={{ ...style }}
       onClick={onClick}
     ></div>
   )

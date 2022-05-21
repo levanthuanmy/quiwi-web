@@ -21,11 +21,12 @@ $theme-colors: (
 /* import bootstrap to set changes */
 @import '~bootstrap/scss/bootstrap';
 
-@import './border.css';
-@import './common.css';
-@import './padding.css';
-@import './sizing.css';
-@import './typography.css';
+// @import './border.css';
+// @import './common.css';
+// @import './padding.css';
+// @import './sizing.css';
+// @import './typography.css';
+// @import './custom-arrow-react-slick.css';
 
 html,
 body {
@@ -52,7 +53,7 @@ a {
 /* Track */
 
 .custom-scrollbar-horizontal::-webkit-scrollbar {
-  height: 0px; 
+  height: 0px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
