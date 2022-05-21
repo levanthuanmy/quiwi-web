@@ -6,7 +6,7 @@ import CardBadge from '../../components/CardBadge/CardBadge'
 import DashboardLayout from '../../components/DashboardLayout/DashboardLayout'
 import ModalBadge from '../../components/ModalBadge/ModalBadge'
 import QuestItem from '../../components/QuestItem/QuestItem'
-import ListItem from '../../components/ListItem/ListItem'
+import ListItemByCategory from '../../components/ListItem/ListItemByCategory'
 import { get } from '../../libs/api'
 import {
     TApiResponse,
@@ -58,7 +58,7 @@ const UserItemPage: NextPage = () => {
                 >
                     <Col>
                         {itemCategoriesResponse?.items.map((category, idx) => (
-                            <ListItem name={category.name} id={category.id}></ListItem>
+                            <ListItemByCategory name={category.name} id={category.id}></ListItemByCategory>
                         ))}
                     </Col>
                 </Row>

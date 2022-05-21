@@ -2,7 +2,7 @@ import { FC, useState, useEffect } from 'react'
 import React, { Component } from 'react'
 import { Button, Collapse, Row, Col } from 'react-bootstrap'
 import classNames from 'classnames'
-import styles from './ListItem.module.css'
+import styles from './ListItemByCategory.module.css'
 import CardBadge from '../CardBadge/CardBadge'
 import { MyTooltip } from '../MyToolTip/MyTooltip'
 import Item from '../Item/Item'
@@ -25,7 +25,7 @@ type IListItem = {
 }
 
 
-const ListItem: FC<IListItem> = (props) => {
+const ListItemByCategory: FC<IListItem> = (props) => {
     const [isCollapse, setIsCollapse] = useState(false)
     const authContext = useAuth()
     const setCollapse = () => {
@@ -103,4 +103,4 @@ const ListItem: FC<IListItem> = (props) => {
     )
 }
 
-export default ListItem
+export default ListItemByCategory
