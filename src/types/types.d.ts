@@ -134,6 +134,7 @@ export type TItem = {
   type: string
   description: string
   price: number
+  itemCategoryId: number
   itemCategory: TItemCategory
   createdAt: Date
   updatedAt: Date
@@ -195,4 +196,11 @@ export type TAnswer = {
   orderPosition: number
   media: string
   type: '10TEXT' | '20SELECTION'
+}
+
+export type TUserItems = {
+  id?: number
+  itemId: number
+  quantity:number
+  item: TItem
 }

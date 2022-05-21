@@ -1,0 +1,82 @@
+.tooltip {
+    position: relative;
+  }
+  
+  .tooltipContent {
+    position: absolute;
+    background-color: #000;
+    text-align: left;
+    color: #fff;
+    transform: translateX(-50%);
+    border-radius: 4px;
+    padding: 6px 10px;
+  }
+  
+  .tooltipContent:before {
+    content: "";
+    position: absolute;
+  }
+  
+  /* POSITION TOP */
+  .tooltipContent.top {
+    bottom: 100%;
+    left: 50%;
+    margin-bottom: 10px;
+  }
+  .tooltipContent.top:before {
+    top: 100%;
+    left: 50%;
+    margin-left: -4px;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 8px solid #000;
+  }
+
+  .tooltipContent.right {
+    left: 100%;
+    top: 50%;
+    transform: translate(0, -50%);
+    margin-left: 10px;
+    z-index: 9999;
+  }
+  .tooltipContent.right:before {
+    right: 100%;
+    top: 50%;
+    margin-top: -8px;
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent;
+    border-right: 8px solid #000;
+    z-index: 9999;
+  }
+  
+  /* POSITION BOTTOM */
+  .tooltipContent.bottom {
+    top: 100%;
+    left: 50%;
+    margin-bottom: 0;
+    margin-top: 10px;
+  }
+  .tooltipContent.bottom:before {
+    bottom: 100%;
+    left: 50%;
+    margin-left: -4px;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 8px solid #000;
+  }
+  
+  /* POSITION LEFT */
+  .tooltipContent.left {
+    right: 100%;
+    top: 50%;
+    transform: translate(0, -50%);
+    margin-right: 10px;
+  }
+  .tooltipContent.left:before {
+    left: 100%;
+    top: 50%;
+    margin-top: -8px;
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent;
+    border-left: 8px solid #000;
+  }

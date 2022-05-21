@@ -6,8 +6,11 @@ import useSWR from 'swr'
 import Cookies from 'universal-cookie'
 import FollowerUser from '../../components/FollowerUser/FollowerUser'
 import FollowingUser from '../../components/FollowingUser/FollowingUser'
+import classNames from 'classnames'
 import NavBar from '../../components/NavBar/NavBar'
+import BadgesPage from '../badges'
 import { get, post } from '../../libs/api'
+import UserItemPage from '../user-items'
 import {
   TApiResponse,
   TFollowUsers,
@@ -21,6 +24,7 @@ const ProfilePage: NextPage = () => {
   const [userResponse, setUserReponse] = useState<TUserProfile>()
   const cookies = new Cookies()
   const [shouldFetch, setShouldFetch] = useState<boolean>(false)
+  const [toggleState, setToggleState] = useState<number>(1)
 
   const [followingUsers, setFollowingUsers] =
     useState<TPaginationResponse<TFollowUsers>>()
@@ -123,7 +127,7 @@ const ProfilePage: NextPage = () => {
   }
 
   return userResponse ? (
-    <>
+    <div>
       <NavBar showMenuBtn={false} isExpand={false} setIsExpand={() => null} />
       <Container className="pt-80px min-vh-100">
         <div className="d-flex flex-column align-items-center py-3 gap-3">
@@ -177,8 +181,48 @@ const ProfilePage: NextPage = () => {
             <Button className="text-white">Chỉnh sửa</Button>
           </Link>
         </div>
+        <div>
+        <Row
+          className="justify-content-md-center"
+          style={{ paddingBottom: '30px' }}
+        >
+          <Col >
+            <nav className="nav flex-column flex-sm-row ">
+              <a
+                className={classNames(
+                  'flex-sm-fill text-sm-center nav-link navbar-quest',
+                  {
+                    'active-tab-with-green': toggleState === 1,
+                    'tab-with-green': toggleState !== 1,
+                  }
+                )}
+                onClick={() => setToggleState(1)}
+              >
+                Danh hiệu
+              </a>
+              <a
+                className={classNames(
+                  'flex-sm-fill text-sm-center nav-link navbar-quest',
+                  {
+                    'active-tab-with-green': toggleState === 2,
+                    'tab-with-green': toggleState !== 2,
+                  }
+                )}
+                onClick={() => setToggleState(2)}
+              >
+                Vật phẩm
+              </a>
+            </nav>
+          </Col>
+        </Row>
+        {toggleState === 1 ? 
+          <BadgesPage></BadgesPage> : <UserItemPage></UserItemPage>
+        }
+        </div>
+
+         
       </Container>
-    </>
+    </div>
   ) : null
 }
 
