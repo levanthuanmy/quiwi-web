@@ -1,0 +1,48 @@
+.cardStyle {
+    width: 250px;
+    background-color: transparent;
+}
+
+.layoutImage {
+    justify-content: left;
+}
+
+.price {
+    justify-content: right;
+}
+.itemDes {
+    padding-top: 10px;
+    width: 250px;
+    padding-bottom: 10px;
+}
+
+.itemType {
+    padding-top: 10px;
+}
+
+.itemTitle {
+    padding-top: 10px;
+
+}
+
+.priceValue {
+    justify-content: right;
+}
+
+.image {
+    padding-top: 15px;
+}
+
+.imageType {
+    border-color: blueviolet;
+    border-style: solid;
+    border-width: 3px;
+    border-radius: 2px;
+}
+
+.imageTypeNormal {
+    border-color: white;
+    border-style: solid;
+    border-width: 2px;
+    border-radius: 2px;
+}

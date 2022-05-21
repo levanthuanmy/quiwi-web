@@ -1,0 +1,20 @@
+.layoutImage {
+    padding-top: 10px;
+    padding-right: 10px;
+    display: flex;
+    justify-content: center;
+}
+
+.imageType {
+    border-color: blueviolet;
+    border-style: solid;
+    border-width: 2px;
+    border-radius: 2px;
+}
+
+.imageTypeNormal {
+    border-color: white;
+    border-style: solid;
+    border-width: 2px;
+    border-radius: 2px;
+}
