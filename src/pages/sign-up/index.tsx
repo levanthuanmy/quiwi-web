@@ -1,9 +1,11 @@
 import { Field, Form, Formik, FormikHelpers } from 'formik'
 import { NextPage } from 'next'
 import { useRouter } from 'next/router'
-import React from 'react'
+import React, { useState } from 'react'
+import { Modal } from 'react-bootstrap'
 import MyButton from '../../components/MyButton/MyButton'
 import MyInput from '../../components/MyInput/MyInput'
+import MyModal from '../../components/MyModal/MyModal'
 import SingleFloatingCardLayout from '../../components/SingleFloatingCardLayout/SingleFloatingCardLayout'
 import { useAuth } from '../../hooks/useAuth/useAuth'
 import { post } from '../../libs/api'
@@ -12,12 +14,14 @@ import { TApiResponse, TUser } from '../../types/types'
 type SignUpForm = {
   username: string
   password: string
+  name: string
 }
 
 const SignUpPage: NextPage = () => {
   const router = useRouter()
-  const initialValues: SignUpForm = { username: '', password: '' }
+  const initialValues: SignUpForm = { username: '', password: '', name: '' }
   const authNavigate = useAuth()
+  const [error, setError] = useState('')
 
   const onSignUp = async (
     body: SignUpForm,
@@ -29,6 +33,7 @@ const SignUpPage: NextPage = () => {
       await authNavigate.toPrevRoute()
     } catch (error) {
       console.log('onSignUp - error', error)
+      setError((error as Error).message)
     } finally {
       actions.setSubmitting(false)
     }
@@ -59,6 +64,14 @@ const SignUpPage: NextPage = () => {
               type="text"
               name="username"
               placeholder="Tên tài khoản"
+              as={MyInput}
+              iconClassName="bi bi-person"
+              className="mb-3"
+            />
+            <Field
+              type="text"
+              name="name"
+              placeholder="Họ và tên"
               as={MyInput}
               iconClassName="bi bi-person"
               className="mb-3"
@@ -98,6 +111,19 @@ const SignUpPage: NextPage = () => {
           </span>
         </div>
       </div>
+
+      <MyModal
+        show={error.length > 0}
+        onHide={() => setError('')}
+        size="sm"
+        header={
+          <Modal.Title className="text-danger">Đã có lỗi xảy ra</Modal.Title>
+        }
+        inActiveButtonCallback={() => setError('')}
+        inActiveButtonTitle="Huỷ"
+      >
+        <div className="text-center">{error}</div>
+      </MyModal>
     </SingleFloatingCardLayout>
   )
 }

@@ -1,9 +1,11 @@
 import { Field, Form, Formik, FormikHelpers } from 'formik'
 import { NextPage } from 'next'
 import { useRouter } from 'next/router'
-import React from 'react'
+import React, { useState } from 'react'
+import { Modal } from 'react-bootstrap'
 import MyButton from '../../components/MyButton/MyButton'
 import MyInput from '../../components/MyInput/MyInput'
+import MyModal from '../../components/MyModal/MyModal'
 import SingleFloatingCardLayout from '../../components/SingleFloatingCardLayout/SingleFloatingCardLayout'
 import { useAuth } from '../../hooks/useAuth/useAuth'
 import { post } from '../../libs/api'
@@ -17,6 +19,7 @@ const SignInPage: NextPage = () => {
   const router = useRouter()
   const initialValues: SignInForm = { username: '', password: '' }
   const authContext = useAuth()
+  const [error, setError] = useState('')
 
   const onSignIn = async (
     body: SignInForm,
@@ -28,6 +31,7 @@ const SignInPage: NextPage = () => {
       await authContext.toPrevRoute()
     } catch (error) {
       console.log('onSignUp - error', error)
+      setError((error as Error).message)
     } finally {
       actions.setSubmitting(false)
     }
@@ -92,6 +96,19 @@ const SignInPage: NextPage = () => {
           </span>
         </div>
       </div>
+
+      <MyModal
+        show={error.length > 0}
+        onHide={() => setError('')}
+        size="sm"
+        header={
+          <Modal.Title className="text-danger">Đã có lỗi xảy ra</Modal.Title>
+        }
+        inActiveButtonCallback={() => setError('')}
+        inActiveButtonTitle="Huỷ"
+      >
+        <div className="text-center">{error}</div>
+      </MyModal>
     </SingleFloatingCardLayout>
   )
 }
