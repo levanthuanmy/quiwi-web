@@ -1,16 +1,8 @@
-.headerType {
-    background-color:#009883;
-    height: 50px;
-    font-size: 18px;
-    align-items: center;
-    color: white;
-}
-
 .content {
-    height: auto;
-    background-color: rgb(233, 229, 224);
+  height: auto;
+  background-color: rgb(233, 229, 224);
 }
 
 .listItem {
-    padding-top: 10px;
+  padding-top: 10px;
 }

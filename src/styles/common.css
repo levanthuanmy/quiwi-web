@@ -117,11 +117,6 @@
   content: none;
 }
 
-.badges-list {
-  display: flex;
-  flex-wrap: wrap;
-}
-
 .z-neg {
   z-index: -1;
 }

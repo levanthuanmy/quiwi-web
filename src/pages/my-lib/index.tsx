@@ -25,18 +25,6 @@ const MyLibPage: NextPage = () => {
   return (
     <DashboardLayout>
       <div className="w-100 bg-secondary bg-opacity-10">
-        {/* <MyModal
-            show={true}
-            onHide={() => null}
-            header={<div className="h3">day la header</div>}
-            // activeButtonTitle="hello"
-            inActiveButtonTitle="goodbye"
-            // activeButtonCallback={() => {}}
-            // inActiveButtonCallback={() => {}}
-          >
-            day la content ben trong
-          </MyModal> */}
-
         <Container fluid="lg" className="p-3">
           {isValidating ? (
             'fetching...'

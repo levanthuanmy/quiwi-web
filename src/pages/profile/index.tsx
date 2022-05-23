@@ -4,13 +4,8 @@ import { useEffect, useState } from 'react'
 import { Button, Col, Container, Image, Row } from 'react-bootstrap'
 import useSWR from 'swr'
 import Cookies from 'universal-cookie'
-import FollowerUser from '../../components/FollowerUser/FollowerUser'
-import FollowingUser from '../../components/FollowingUser/FollowingUser'
-import classNames from 'classnames'
 import NavBar from '../../components/NavBar/NavBar'
-import BadgesPage from '../badges'
 import { get, post } from '../../libs/api'
-import UserItemPage from '../user-items'
 import {
   TApiResponse,
   TFollowUsers,
@@ -18,17 +13,16 @@ import {
   TUser,
   TUserProfile,
 } from '../../types/types'
+import BadgesPage from '../badges'
+import UserItemPage from '../user-items'
 
 const ProfilePage: NextPage = () => {
   const [user, setUser] = useState<TUser>()
-  const [userResponse, setUserReponse] = useState<TUserProfile>()
+  const [userResponse, setUserResponse] = useState<TUserProfile>()
   const cookies = new Cookies()
   const [shouldFetch, setShouldFetch] = useState<boolean>(false)
-  const [toggleState, setToggleState] = useState<number>(1)
-
   const [followingUsers, setFollowingUsers] =
     useState<TPaginationResponse<TFollowUsers>>()
-
   const [followerUsers, setFollowerUsers] =
     useState<TPaginationResponse<TFollowUsers>>()
 
@@ -48,7 +42,7 @@ const ProfilePage: NextPage = () => {
   useEffect(() => {
     if (data) {
       setUser(data.response.user)
-      setUserReponse(data.response)
+      setUserResponse(data.response)
     }
   }, [data, isValidating])
 
@@ -56,21 +50,6 @@ const ProfilePage: NextPage = () => {
     getFollowingUsers()
     getFollowersUsers()
   }, [user])
-
-  const renderData = (data: number, label: string, showModal?: Function) => {
-    return (
-      <Col
-        className={`py-1 rounded-20px ${showModal ? 'cursor-pointer' : null}`}
-        onClick={() => {
-          showModal && showModal()
-        }}
-      >
-        <div>
-          <span className="fw-medium">{data} </span> {label}
-        </div>
-      </Col>
-    )
-  }
 
   const getFollowersUsers = async () => {
     try {
@@ -127,100 +106,127 @@ const ProfilePage: NextPage = () => {
   }
 
   return userResponse ? (
-    <div>
+    <div className="bg-light">
       <NavBar showMenuBtn={false} isExpand={false} setIsExpand={() => null} />
-      <Container className="pt-80px min-vh-100">
-        <div className="d-flex flex-column align-items-center py-3 gap-3">
-          <div>
-            <Image
-              fluid={true}
-              alt="avatar"
-              src="/assets/default-logo.png"
-              width={220}
-              height={220}
-              className="rounded-circle border border-2 border-white"
-            />
-          </div>
+      <Container className="pt-80px min-vh-100 pb-3" fluid="lg">
+        <div className="d-flex flex-column flex-md-row mt-3 gap-4 p-12px shadow-sm rounded-20px bg-white position-relative">
+          <Image
+            fluid={true}
+            alt="avatar"
+            src="/assets/default-logo.png"
+            width={160}
+            height={160}
+            className="rounded-14px"
+          />
 
-          <div className="d-flex flex-column align-items-center">
-            <div className="fs-24px fw-medium">{userResponse.user.name}</div>
-            <div className="text-secondary">@{userResponse.user.username}</div>
-          </div>
+          <div className="w-100 d-flex flex-column">
+            <div className="h-100">
+              <div className="fs-32px fw-medium">{userResponse.user.name}</div>
+              <div className="text-secondary">
+                @{userResponse.user.username}
+              </div>
+            </div>
 
-          <div className="d-flex gap-3 fs-14px w-100 fw-medium">
-            <div className="w-100">
-              <div className="text-secondary">Danh Hiệu</div>
-              <div className="fs-32px line-height-normal">
-                {userResponse?.badges.length}
-              </div>
-            </div>
-            <div className="w-100">
-              <div className="fw-medium text-secondary">Người Theo Dõi</div>
-              <div className="fs-32px line-height-normal">
-                {followerUsers?.items.length}
-              </div>
-            </div>
-            <div className="w-100">
-              <div className="fw-medium text-secondary">Đang Theo Dõi</div>
-              <div className="fs-32px line-height-normal">
-                {followingUsers?.items.length}
-              </div>
-            </div>
-          </div>
-          {/* <Row>
-            <Row className="">
-              {renderData(userResponse?.badges.length, 'danh hiệu')}
-              <FollowerUser followerUsers={followerUsers} />
-              <FollowingUser
-                followingUsers={followingUsers}
-                unfollowUser={unfollow}
-              />
+            <Row className="mx-0 mt-3">
+              <Col className="p-0 d-flex gap-2 align-items-center">
+                <div
+                  className="shadow-sm d-flex justify-content-center align-items-center rounded-14px"
+                  style={{ width: 45, height: 45 }}
+                >
+                  <i className="bi bi-trophy-fill" />
+                </div>
+                <div>
+                  <div className="fs-24px line-height-normal fw-medium">
+                    {userResponse?.badges.length}
+                  </div>
+                  <div className="text-secondary fs-14px d-none d-md-block">
+                    Danh Hiệu
+                  </div>
+                </div>
+              </Col>
+
+              <Col className="p-0 d-flex gap-2 align-items-center">
+                <div
+                  className="shadow-sm d-flex justify-content-center align-items-center rounded-14px"
+                  style={{ width: 45, height: 45 }}
+                >
+                  <i className="bi bi-people-fill fs-18px" />
+                </div>
+                <div>
+                  <div className="fs-24px line-height-normal fw-medium">
+                    {followerUsers?.items.length}
+                  </div>
+                  <div className="text-secondary fs-14px d-none d-md-block">
+                    Lượt Theo Dõi
+                  </div>
+                </div>
+              </Col>
+
+              <Col className="p-0 d-flex gap-2 align-items-center">
+                <div
+                  className="shadow-sm d-flex justify-content-center align-items-center rounded-14px"
+                  style={{ width: 45, height: 45 }}
+                >
+                  <i className="bi bi-person-heart fs-18px" />
+                </div>
+                <div>
+                  <div className="fs-24px line-height-normal fw-medium">
+                    {followingUsers?.items.length}
+                  </div>
+                  <div className="text-secondary fs-14px d-none d-md-block">
+                    Đang Theo Dõi
+                  </div>
+                </div>
+              </Col>
             </Row>
-          </Row> */}
+          </div>
           <Link href="/profile/edit" passHref={true}>
-            <Button className="text-white">Chỉnh sửa</Button>
+            <Button
+              variant="light"
+              className="bi bi-pencil-fill rounded-10px position-absolute fs-14px py-1 px-2 text-secondary border"
+              style={{ right: 12 }}
+            />
           </Link>
         </div>
-        <div>
-        <Row
-          className="justify-content-md-center"
-          style={{ paddingBottom: '30px' }}
-        >
-          <Col >
-            <nav className="nav flex-column flex-sm-row ">
-              <a
-                className={classNames(
-                  'flex-sm-fill text-sm-center nav-link navbar-quest',
-                  {
-                    'active-tab-with-green': toggleState === 1,
-                    'tab-with-green': toggleState !== 1,
-                  }
-                )}
-                onClick={() => setToggleState(1)}
-              >
-                Danh hiệu
-              </a>
-              <a
-                className={classNames(
-                  'flex-sm-fill text-sm-center nav-link navbar-quest',
-                  {
-                    'active-tab-with-green': toggleState === 2,
-                    'tab-with-green': toggleState !== 2,
-                  }
-                )}
-                onClick={() => setToggleState(2)}
-              >
-                Vật phẩm
-              </a>
-            </nav>
+
+        <Row className="m-0 mt-3">
+          <Col xs="12" lg="6" className="ps-0 pe-0 pe-lg-2 pb-12px">
+            <div className="bg-white p-12px rounded-20px shadow-sm d-flex flex-column gap-3 overflow-hidden h-100 justify-content-between">
+              <div className="fs-24px fw-medium d-flex gap-3 align-items-center">
+                Thành Tựu
+                <div
+                  style={{ width: 30, height: 30 }}
+                  className="fs-16px bg-secondary bg-opacity-25 rounded-10px d-flex justify-content-center align-items-center"
+                >
+                  3
+                </div>
+              </div>
+              <BadgesPage />
+
+              <div className="text-center border-top pt-12px pb-1 text-secondary opacity-75">
+                Xem Tất Cả
+              </div>
+            </div>
+          </Col>
+          <Col xs="12" lg="6" className="pe-0 ps-0 ps-lg-2 pb-12px">
+            <div className="bg-white p-12px rounded-20px shadow-sm d-flex flex-column gap-3 overflow-hidden h-100 justify-content-between">
+              <div className="fs-24px fw-medium d-flex gap-3 align-items-center">
+                Vật Phẩm
+                <div
+                  style={{ width: 30, height: 30 }}
+                  className="fs-16px bg-secondary bg-opacity-25 rounded-10px d-flex justify-content-center align-items-center"
+                >
+                  3
+                </div>
+              </div>
+              <UserItemPage />
+
+              <div className="text-center border-top pt-12px pb-1 text-secondary opacity-75">
+                Xem Tất Cả
+              </div>
+            </div>
           </Col>
         </Row>
-        {toggleState === 1 ? 
-          <BadgesPage></BadgesPage> : <UserItemPage></UserItemPage>
-        }
-        </div>
-
-         
       </Container>
     </div>
   ) : null
