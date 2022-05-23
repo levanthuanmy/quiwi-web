@@ -22,9 +22,19 @@ const RankingRow: FC<RankingProps> = ({
   const router = useRouter()
   return (
     <tr
-      className={classNames({
-        'text-white bg-primary': isHighlight,
-      }, styles.zoom)} onClick= {async ()=>await router.push(`/users/${id}`)}
+      className={classNames(
+        {
+          'text-white bg-primary': isHighlight,
+        },
+        styles.zoom
+      )}
+      onClick={() => {
+        if (isHighlight) {
+          router.push(`/profile`)
+        } else {
+          router.push(`/users/${id}`)
+        }
+      }}
     >
       <td className={classNames('p-2', styles.MarginLeft)}>{rank}</td>
       <td>

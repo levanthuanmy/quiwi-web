@@ -7,23 +7,25 @@ import Cookies from 'universal-cookie'
 import FollowerUser from '../../components/FollowerUser/FollowerUser'
 import FollowingUser from '../../components/FollowingUser/FollowingUser'
 import NavBar from '../../components/NavBar/NavBar'
+import { useAuth } from '../../hooks/useAuth/useAuth'
 import { get, post } from '../../libs/api'
 import {
   TApiResponse,
   TFollowUsers,
   TPaginationResponse,
   TUser,
+  TUserProfile,
 } from '../../types/types'
 
-type TUserProfileRespone = TUser & {
-  isFollowing: boolean
-}
-
 const GetUserPage: NextPage = () => {
-  const [user, setUser] = useState<TUserProfileRespone>()
-  const cookies = new Cookies()
+  const [user, setUser] = useState<TUser>()
+  const [userProfile, setUserProfile] = useState<TUserProfile>()
   const router = useRouter()
   const { id } = router.query
+  const auth = useAuth()
+
+  const currentUser = auth.getUser()
+
   const [followingUsers, setFollowingUsers] =
     useState<TPaginationResponse<TFollowUsers>>()
 
@@ -32,12 +34,13 @@ const GetUserPage: NextPage = () => {
 
   const getUser = async () => {
     try {
-      const res: TApiResponse<TUserProfileRespone> = await get(
+      const res: TApiResponse<TUserProfile> = await get(
         `/api/users/user/${id}`,
         true
       )
       if (res.response) {
-        setUser(res.response)
+        setUserProfile(res.response)
+        setUser(res.response.user)
       }
     } catch (error) {
       alert('Có lỗi nè')
@@ -46,12 +49,20 @@ const GetUserPage: NextPage = () => {
   }
 
   useEffect(() => {
-    id && getUser()
-  }, [id])
+    if (id) {
+      if (currentUser && Number(id) === currentUser.id) {
+        router.push('/profile')
+      } else {
+        getUser()
+      }
+    }
+  }, [id, currentUser])
 
   useEffect(() => {
-    getFollowingUsers()
-    getFollowersUsers()
+    if (user) {
+      getFollowingUsers()
+      getFollowersUsers()
+    }
   }, [user])
 
   const renderData = (data: number, label: string, showModal?: Function) => {
@@ -130,7 +141,6 @@ const GetUserPage: NextPage = () => {
       }
       const res: TApiResponse<{ result: string }> = await post(
         `/api/users/follow`,
-
         params,
         {},
         true
@@ -144,7 +154,7 @@ const GetUserPage: NextPage = () => {
     }
   }
 
-  return user ? (
+  return userProfile && user ? (
     <>
       <NavBar showMenuBtn={false} isExpand={false} setIsExpand={() => null} />
 
@@ -172,17 +182,19 @@ const GetUserPage: NextPage = () => {
               <div>
                 <Button
                   className={
-                    user.isFollowing ? 'bg-white border-dark ' : 'text-white'
+                    userProfile.isFollowing
+                      ? 'bg-white border-dark '
+                      : 'text-white'
                   }
                   onClick={followOrUnfollowUser}
                 >
-                  {user.isFollowing ? 'Bỏ theo dõi' : 'Theo dõi'}
+                  {userProfile.isFollowing ? 'Bỏ theo dõi' : 'Theo dõi'}
                 </Button>
               </div>
             </div>
 
             <Row className="d-flex pt-2">
-              {renderData(0, 'danh hiệu')}
+              {renderData(userProfile.badges.length, 'danh hiệu')}
               <FollowerUser followerUsers={followerUsers} />
               <FollowingUser
                 followingUsers={followingUsers}

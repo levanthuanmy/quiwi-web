@@ -1,5 +1,6 @@
 import _ from 'lodash'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 import { FC, useEffect, useState } from 'react'
 import { Col, Image } from 'react-bootstrap'
 import { TFollowUsers, TPaginationResponse } from '../../types/types'
@@ -9,10 +10,7 @@ const FollowerUser: FC<{
   followerUsers: TPaginationResponse<TFollowUsers> | undefined
 }> = ({ followerUsers: followingUsers }) => {
   const [showModal, setShowModal] = useState<boolean>(false)
-
-  useEffect(() => {
-    console.log('show ', showModal)
-  }, [showModal])
+  const router = useRouter()
 
   const renderList = () => {
     if (followingUsers?.items.length === 0) {
@@ -24,14 +22,17 @@ const FollowerUser: FC<{
           key={idx}
           className="d-flex align-items-center justify-content-between py-1"
         >
-          <Link key={idx} href={`users/${user.user?.id}`} passHref={true}>
+          <div
+            key={idx}
+            onClick={() => {
+              setShowModal(false)
+              router.push(`/users/${user.user?.id}`)
+            }}
+          >
             <div className="d-flex align-items-center cursor-pointer">
               <div className="pe-2">
                 <Image
-                  src={
-                    user.user?.avatar ??
-                    'https://s3-alpha-sig.figma.com/img/6930/d03e/8e80566f92d08cfcbc8d47879b183d48?Expires=1650844800&Signature=MiCqrZeF7D4aLNzKUdw1cQgKxVa~y41C9V5p0Ju98-j4vOZ~n9Y7LKrnRcOXscxY6LFnIyLTs8qeg7zQoN50CQklhwgqKAtM6Tkdc1EjT~XhKjtcQR9~fRO8rbXeVQPD8EzWfJdR8cZsBDN7u7HMY7h2ncrMYFzKr33-oXdrQs8XGlV96zE7hKFE1lhzcmD4fx9piYdXLgB1Tl6f~IngSWakwNC2EuV5fibnD3q0nvE7cpNz0wsOuyegbg4JQgqmWmh4bilbWiHfScNB53oRWN9JtIivSEJb0IGedgdRGy8FbewCQtXRdvsdGAl4AG3oLAaRB5G9B3Q0szzW5-Mxfg__&Key-Pair-Id=APKAINTVSUGEWH5XD5UA'
-                  }
+                  src={user.user?.avatar || '/assets/default-user.png'}
                   fluid={true}
                   width={30}
                   height={30}
@@ -48,7 +49,7 @@ const FollowerUser: FC<{
                 </div>
               </div>
             </div>
-          </Link>
+          </div>
           {/* <div>
             <Button
               variant="outline-secondary"
