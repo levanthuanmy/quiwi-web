@@ -157,7 +157,7 @@ const QuizCreatorPage: NextPage = () => {
               <MyButton
                 className="text-white w-100 d-flex align-items-center justify-content-between"
                 onClick={() => {
-                  authContext.navigate(`/host?quizId=${quizId}`)
+                  authContext.navigate(`/host/lobby?quizId=${quizId}`)
                 }}
               >
                 Bắt đầu ngay

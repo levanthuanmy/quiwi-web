@@ -1,123 +1,139 @@
 import classNames from 'classnames'
-import { useRouter } from 'next/router'
-import React, { FC, memo, useEffect, useState } from 'react'
-import { Modal } from 'react-bootstrap'
-import { useGameSession } from '../../../hooks/useGameSession/useGameSession'
-import { useLocalStorage } from '../../../hooks/useLocalStorage/useLocalStorage'
-import { useSocket } from '../../../hooks/useSocket/useSocket'
-import { TStartQuizResponse, TUser } from '../../../types/types'
-import { JsonParse } from '../../../utils/helper'
+import {useRouter} from 'next/router'
+import React, {FC, memo, useEffect, useState} from 'react'
+import {Modal} from 'react-bootstrap'
+import {useGameSession} from '../../../hooks/useGameSession/useGameSession'
+import {useLocalStorage} from '../../../hooks/useLocalStorage/useLocalStorage'
+import {useSocket} from '../../../hooks/useSocket/useSocket'
+import {TQuestion, TStartQuizResponse, TUser} from '../../../types/types'
+import {JsonParse} from '../../../utils/helper'
 import MyModal from '../../MyModal/MyModal'
 import SingleChoiceAnswerSection from '../AnswerQuestionComponent/SelectionQuestion/SingleChoiceAnswerSection'
 import GameSessionRanking from '../GameSessionRanking/GameSessionRanking'
 import MoreButton from '../MoreButton/MoreButton'
-import { QuestionMedia } from '../QuestionMedia/QuestionMedia'
+import {QuestionMedia} from '../QuestionMedia/QuestionMedia'
 import styles from './AnswerBoard.module.css'
+import MultipleChoiceAnswerSection from "../AnswerQuestionComponent/SelectionQuestion/MultipleChoiceAnswerSection";
 
 type AnswerBoardProps = {
   className?: string
   questionId: number | 0
 }
-const AnswerBoard: FC<AnswerBoardProps> = ({ className, questionId }) => {
-  const { socket } = useSocket()
-  const { gameSession, saveGameSession, clearGameSession } = useGameSession()
+
+const AnswerBoard: FC<AnswerBoardProps> = ({className, questionId}) => {
+  const {socket} = useSocket()
+  const {gameSession, saveGameSession, clearGameSession} = useGameSession()
   const [lsUser] = useLocalStorage('user', '')
   const [isHost, setIsHost] = useState<boolean>(false)
-  const [qid, setId] = useState<number>(0)
-  console.log('qid', qid)
-  const [answerSet, setAnswerSet] = useState<Set<number>>(new Set())
-  const [isShowAnswer, setIsShowAnswer] = useState<boolean>(false)
+  const [currentQID, setCurrentQID] = useState<number>(-1)
+
   const router = useRouter()
-  const [roomStatus, setRoomStatus] = useState<string>('Đang trả lời câu hỏi')
+
+  const [currentQuestion, setCurrentQuestion] = useState<TQuestion | null>(null)
+
   const [isShowNext, setIsShowNext] = useState<boolean>(false)
-  const [isFinish, setIsFinish] = useState<boolean>(false)
   const [showRanking, setShowRanking] = useState<boolean>(false)
   const [rankingData, setRankingData] = useState<any[]>([])
-  const [timeout, _setTimeout] = useState<number>(-1)
-  const [numSubmission, setNumSubmission] = useState<number>(0)
 
-  const [showTimeout, setShowTimeout] = useState<boolean>(false)
-  const [_interval, _setInterval] = useState<NodeJS.Timer | undefined>()
+  const [endTime, setEndTime] = useState<number>(0)
+  const [countDown, setCountDown] = useState<number>(-1)
+  const [itIsTimeToSubmitYourAwesomeAnswer, setItIsTimeToSubmitYourAwesomeAnswer] = useState<boolean>(false)
+  const [isSubmitted, setIsSubmitted] = useState<boolean>(false)
+
+  const [numSubmission, setNumSubmission] = useState<number>(0)
 
   useEffect(() => {
     if (!gameSession) return
     const user: TUser = JsonParse(lsUser)
     setIsHost(user.id === gameSession.hostId)
-    // setId(0)
+    if (currentQID < 0) {
+      setCurrentQID(0)
+    }
   }, [gameSession])
 
+  //  mỗi lần nhảy câu mới thì gọi
   useEffect(() => {
-    const question = gameSession?.quiz?.questions[qid]
+    const question = gameSession?.quiz?.questions[currentQID]
     if (question) {
+      setCurrentQuestion(question)
       if (question.duration > 0) {
-        _setTimeout(question.duration)
+        let endDate = new Date();
+        endDate.setSeconds(endDate.getSeconds() + question.duration);
+        let endTime = Math.round(endDate.getTime());
+        setEndTime(endTime)
       }
     }
-  }, [gameSession, qid])
+  }, [currentQID])
 
+  // hết giờ thì handle như nào?
   const handleTimeout = () => {
-    if (roomStatus === 'Đang trả lời câu hỏi') {
-      setShowTimeout(true)
-      setRoomStatus('Hết giờ')
-      setIsShowAnswer(true)
+    if (!isSubmitted) {
+      setItIsTimeToSubmitYourAwesomeAnswer(true)
     }
   }
 
+  // nhảy mỗi lần countdown
   useEffect(() => {
-    if (timeout == 0) {
-      handleTimeout()
-      return
-    }
+    if (!currentQuestion) return
+    setCountDown(currentQuestion.duration)
     const interval = setInterval(() => {
-      if (timeout > 0) {
-        _setTimeout(timeout - 1)
+      let curr = Math.round((new Date()).getTime());
+      let _countDown = Math.ceil((endTime - curr) / 1000);
+      setCountDown(_countDown)
+
+      if ((_countDown <= 0)) {
+        handleTimeout()
+        clearInterval(interval)
       }
     }, 1000)
-    return () => clearInterval(interval)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [timeout])
+  }, [endTime])
+
+  useEffect(() => {
+
+  }, [isSubmitted])
 
   const displayQuestionId = (questionId: number) => {
-    setIsShowAnswer(false)
-    setAnswerSet(new Set())
-    setId(questionId)
+    resetGameState()
+    setCurrentQID(questionId)
+  }
+
+  const resetGameState = () => {
+    setIsSubmitted(false)
+    setItIsTimeToSubmitYourAwesomeAnswer(false)
   }
 
   const handleSocket = () => {
     if (!socket) return
 
     socket.on('new-submission', (data) => {
-      // console.log('new-submission', data)
-
+      console.log('new-submission', data)
       // nhớ check mode
-
       setNumSubmission(numSubmission + 1)
     })
 
     socket.on('next-question', (data) => {
       setIsShowNext(false)
       setShowRanking(false)
+
       saveGameSession({
         ...JsonParse(localStorage.getItem('game-session')),
         players: [...rankingData],
       } as TStartQuizResponse)
-      setRoomStatus('Đang trả lời câu hỏi')
-      if (data.currentQuestionIndex) {
+      // setRoomStatus('Đang trả lời câu hỏi')
+      console.log('next-question', data)
+      if (currentQID != data.currentQuestionIndex) {
         displayQuestionId(data.currentQuestionIndex)
       }
     })
 
     socket.on('view-result', (data) => {
       console.log('view', data)
-      setRoomStatus('Xem xếp hạng')
-      setIsShowAnswer(true)
+      // setRoomStatus('Xem xếp hạng')
     })
 
     socket.on('timeout', (data) => {
       console.log('timeout', data)
-      if (timeout === 0) {
-        handleTimeout()
-      }
+      handleTimeout()
     })
 
     socket.on('ranking', (data) => {
@@ -131,35 +147,30 @@ const AnswerBoard: FC<AnswerBoardProps> = ({ className, questionId }) => {
     })
   }
 
-  handleSocket() // TODO: KHOA XEM LẠI CHỖ NÀY NHA
+  handleSocket()
+
 
   const goToNextQuestion = () => {
     if (!gameSession?.quiz?.questions) return
-    if (qid == gameSession?.quiz?.questions.length - 1) {
-      setIsFinish(true)
+    if (currentQID >= gameSession?.quiz?.questions.length - 1) {
       return
     }
 
-    const msg = { invitationCode: gameSession.invitationCode }
+    const msg = {invitationCode: gameSession.invitationCode}
     socket?.emit('next-question', msg)
     console.log(msg)
   }
 
   const viewRanking = () => {
     if (!gameSession) return
-    const msg = { invitationCode: gameSession.invitationCode }
+    const msg = {invitationCode: gameSession.invitationCode}
     socket?.emit('view-ranking', msg)
     setIsShowNext(true)
   }
 
-  const handleSubmitAnswer = (answerId: number) => {
+  const handleSubmitAnswer = (answerSet: Set<number>) => {
     if (!gameSession) return
-    if (isShowAnswer) return
-    // Chọn và bỏ chọn câu hỏi
-    const answers: Set<number> = answerSet
-    answers.has(answerId) ? answers.delete(answerId) : answers.add(answerId)
-    console.log('handleSubmitAnswer - answers', answers)
-    setAnswerSet(new Set(answers))
+    if (isSubmitted) return
 
     const msg = {
       invitationCode: gameSession.invitationCode,
@@ -167,6 +178,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({ className, questionId }) => {
       nickname: gameSession.nickName,
     }
 
+    setIsSubmitted(true)
     socket?.emit('submit-answer', msg)
   }
 
@@ -177,59 +189,62 @@ const AnswerBoard: FC<AnswerBoardProps> = ({ className, questionId }) => {
   }
 
   const renderAnswersSection = () => {
-    const question = gameSession?.quiz?.questions[qid]
-    if (!question) return
-    switch (question.type) {
+    if (!currentQuestion) return
+    switch (currentQuestion.type) {
       case '10SG':
         return (
           <SingleChoiceAnswerSection
-            handleSubmitAnswer={handleSubmitAnswer}
+            socketSubmit={handleSubmitAnswer}
             className="flex-grow-1"
-            option={gameSession?.quiz?.questions[qid]}
-            selectedAnswers={answerSet}
-            showAnswer={isShowAnswer}
+            option={currentQuestion}
+            showAnswer={countDown <= 0}
             isHost={isHost}
+            isSubmitted={isSubmitted}
           />
         )
-
-      default:
+      case '20MUL':
         return (
-          <SingleChoiceAnswerSection
-            handleSubmitAnswer={handleSubmitAnswer}
+          <MultipleChoiceAnswerSection
+            socketSubmit={handleSubmitAnswer}
             className="flex-grow-1"
-            option={gameSession?.quiz?.questions[qid]}
-            selectedAnswers={answerSet}
-            showAnswer={isShowAnswer}
+            option={currentQuestion}
+            showAnswer={countDown <= 0}
             isHost={isHost}
+            isTimeOut={itIsTimeToSubmitYourAwesomeAnswer}
+            isSubmitted={isSubmitted}
           />
         )
     }
   }
 
+  const renderHostControlSystem = () => {
+    return <div className="my-3 d-flex justify-content-between">
+      <MoreButton
+        iconClassName="bi bi-x-circle-fill"
+        className={classNames('text-white fw-medium', styles.nextButton)}
+        title="Thoát phòng"
+        onClick={exitRoom}
+      />
+      <MoreButton
+        isEnable={countDown <= 0}
+        iconClassName="bi bi-bar-chart"
+        className={classNames('text-white fw-medium', styles.nextButton)}
+        title={'Xem xếp hạng'}
+        onClick={viewRanking}
+      />
+      <MoreButton
+        isEnable={isShowNext}
+        iconClassName="bi bi-arrow-right-circle-fill"
+        className={classNames('text-white fw-medium', styles.nextButton)}
+        title="Câu tiếp theo"
+        onClick={goToNextQuestion}
+      />
+    </div>
+  }
+
   return (
     <div className="d-flex flex-column">
-      <div className="my-3 d-flex justify-content-between">
-        <MoreButton
-          iconClassName="bi bi-x-circle-fill"
-          className={classNames('text-white fw-medium', styles.nextButton)}
-          title="Thoát phòng"
-          onClick={exitRoom}
-        />
-        <MoreButton
-          isEnable={isShowAnswer}
-          iconClassName="bi bi-bar-chart"
-          className={classNames('text-white fw-medium', styles.nextButton)}
-          title={'Xem xếp hạng'}
-          onClick={viewRanking}
-        />
-        <MoreButton
-          isEnable={isShowNext}
-          iconClassName="bi bi-arrow-right-circle-fill"
-          className={classNames('text-white fw-medium', styles.nextButton)}
-          title="Câu tiếp theo"
-          onClick={goToNextQuestion}
-        />
-      </div>
+      {isHost && renderHostControlSystem()}
       <div
         className={classNames(
           'd-flex flex-column',
@@ -243,55 +258,17 @@ const AnswerBoard: FC<AnswerBoardProps> = ({ className, questionId }) => {
             styles.questionTitle
           )}
         >
-          {gameSession?.quiz?.questions[qid]?.question}
+          {currentQuestion?.question}
         </div>
 
         <QuestionMedia
-          timeout={timeout}
-          media={gameSession?.quiz?.questions[qid]?.media ?? null}
+          timeout={countDown}
+          media={currentQuestion?.media ?? null}
           numSubmission={numSubmission}
-          key={qid}
+          key={currentQID}
         />
 
-        {gameSession?.quiz?.questions[qid]?.question && renderAnswersSection()}
-        {/* {isHost && (
-        <div className="d-flex gap-3 justify-content-between">
-          <MoreButton
-            iconClassName="bi bi-x-circle-fill"
-            className={classNames('text-white fw-medium', styles.nextButton)}
-            title="Thoát phòng"
-            onClick={exitRoom}
-          />
-          <MoreButton
-            iconClassName="bi bi-bar-chart"
-            className={classNames('text-white fw-medium', styles.nextButton)}
-            title={roomStatus}
-            onClick={viewRanking}
-          />
-          <MoreButton
-            isEnable={isShowNext}
-            iconClassName="bi bi-arrow-right-circle-fill"
-            className={classNames('text-white fw-medium', styles.nextButton)}
-            title="Câu tiếp theo"
-            onClick={goToNextQuestion}
-          />
-        </div>
-      )} */}
-
-        {!isHost ? (
-          <MyModal
-            show={showTimeout}
-            onHide={() => setShowTimeout(false)}
-            size="sm"
-            header={
-              <Modal.Title className="text-danger">Hết thời gian</Modal.Title>
-            }
-          >
-            <div className="px-1 text-center">
-              Ôi khum! Bạn đã hết thời gian làm bài
-            </div>
-          </MyModal>
-        ) : null}
+        {currentQuestion?.question && renderAnswersSection()}
 
         <GameSessionRanking
           show={showRanking}

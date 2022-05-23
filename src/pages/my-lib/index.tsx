@@ -11,6 +11,7 @@ const MyLibPage: NextPage = () => {
   const params = {
     filter: {
       relations: ['questions', 'questions.questionAnswers'],
+      order: {createdAt: 'DESC'}
     },
     pageIndex: 1,
     pageSize: 100,

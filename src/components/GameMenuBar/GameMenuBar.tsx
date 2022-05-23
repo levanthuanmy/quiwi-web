@@ -66,7 +66,7 @@ const GameMenuBar: FC<GameMenuBarProps> = ({
   return (
     <div
       className={classNames(
-        'd-none d-md-flex flex-column bg-white ',
+        'd-none d-lg-flex flex-column bg-white ',
         styles.container,
         isExpand ? `shadow-lg ${styles.expand}` : '',
         {

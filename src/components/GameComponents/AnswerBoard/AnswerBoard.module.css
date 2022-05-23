@@ -2,7 +2,7 @@
   /* border-radius: 4px; */
   position: relative;
 }
-.circleContainer {
+.timeoutContainer {
   width: 48px;
   height: 48px;
   border-radius: 50%;
@@ -36,7 +36,7 @@
 }
 
 @media (min-width: 768px) {
-  .circleContainer {
+  .timeoutContainer {
     font-size: 1.5rem;
     width: 64px;
     height: 64px;

@@ -10,8 +10,6 @@
   border-radius: 50%;
   width: 46px;
   height: 46px;
-  background-color: #e6f6f4;
-  color: #ff6060;
   align-items: center;
   display: flex;
   justify-content: center;
@@ -70,7 +68,6 @@
 }
 
 .selectAndCorrect {
-  cursor: pointer;
   border-width: 2px;
   /* border-style:groove; */
   border-color: rgb(38, 255, 0);
