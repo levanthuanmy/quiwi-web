@@ -1,6 +1,15 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from 'firebase/app'
-import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage'
+import {
+  getStorage,
+  ref,
+  uploadBytes,
+  getDownloadURL,
+  StorageReference,
+  UploadResult,
+  uploadString,
+} from 'firebase/storage'
+import { resizeBase64Img } from './helper'
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -20,7 +29,18 @@ const firebaseConfig = {
 export const app = initializeApp(firebaseConfig)
 export const storage = getStorage(app)
 export const storageRef = ref
-export const uploadFile = uploadBytes
+export const uploadFile = async (ref: StorageReference, data: File) => {
+  try {
+    const reader = new FileReader()
+    reader.readAsDataURL(data)
+    reader.onload = async () => {
+      let newImagesSrc = await resizeBase64Img(String(reader.result), 876, 876)
+      await uploadString(ref, newImagesSrc, 'data_url')
+    }
+  } catch (error) {
+    console.log('uploadFile - error', error)
+  }
+}
 export const getUrl = getDownloadURL
 
 // export const analytics = getAnalytics(app)

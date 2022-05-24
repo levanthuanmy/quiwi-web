@@ -21,9 +21,7 @@ export const getCurrentTrueAnswer = (answers: TAnswer[]): number => {
   return numTrueAnswer
 }
 
-export const indexingQuestionsOrderPosition = (
-  questions: TQuestion[]
-) => {
+export const indexingQuestionsOrderPosition = (questions: TQuestion[]) => {
   const len = questions.length
   let _q = [...questions]
   for (let i = 0; i < len; i++) {
@@ -32,3 +30,39 @@ export const indexingQuestionsOrderPosition = (
 
   return _q
 }
+
+export const resizeBase64Img = (
+  base64: string,
+  width: number,
+  height: number
+) =>
+  new Promise<string>((resolve, reject) => {
+    try {
+      let canvas = document.createElement('canvas')
+      canvas.width = width
+      canvas.height = height
+      let context = canvas.getContext('2d')
+
+      let img = document.createElement('img')
+      img.src = base64
+      img.onload = () => {
+        const imgWidth = img.width
+        const imgHeight = img.height
+        if (imgWidth <= width && imgHeight <= height) {
+          resolve(base64)
+        } else {
+          const scaleX = width / img.width
+          const scaleY = height / img.height
+          const scale = Math.min(scaleX, scaleY)
+          canvas.width = img.width * scale
+          canvas.height = img.height * scale
+          context?.scale(scale, scale)
+          context?.drawImage(img, 0, 0)
+          resolve(canvas?.toDataURL('image/jpeg', '0.8'))
+        }
+      }
+    } catch (error) {
+      console.log('resizeBase64Img - error', error)
+      reject(error)
+    }
+  })
