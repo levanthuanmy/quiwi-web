@@ -1,5 +1,6 @@
 import classNames from 'classnames'
 import { Field, Form as FormikForm, Formik } from 'formik'
+import _ from 'lodash'
 import { useRouter } from 'next/router'
 import React, { FC, useEffect, useState } from 'react'
 import {
@@ -91,16 +92,18 @@ const QuestionCreator: FC<QuestionCreatorProps> = ({
 
   useEffect(() => {
     if (isEditQuestion.isEdit) {
+      const _ans = quiz?.questions.find(
+        (question) => question.id === isEditQuestion.questionId
+      )?.questionAnswers as TAnswer[]
+
       setNewQuestion(
         quiz?.questions.find(
           (question) => question.id === isEditQuestion.questionId
         ) as TQuestion
       )
-      setAnswers(
-        quiz?.questions.find(
-          (question) => question.id === isEditQuestion.questionId
-        )?.questionAnswers as TAnswer[]
-      )
+      setAnswers(_ans)
+
+      setFillAnswers(_ans?.map((an) => an.answer))
     } else {
       setNewQuestion(defaultQuestion)
     }
@@ -133,7 +136,7 @@ const QuestionCreator: FC<QuestionCreatorProps> = ({
   const onSaveQuestion = async () => {
     try {
       if (!quiz) return
-      if (getCurrentTrueAnswer(answers) < 1) {
+      if (type !== 'fill' && getCurrentTrueAnswer(answers) < 1) {
         alert('Bạn cần có ít nhất 1 câu trả lời là đúng')
         return
       }
@@ -141,17 +144,30 @@ const QuestionCreator: FC<QuestionCreatorProps> = ({
         alert('Điểm của câu hỏi cần nằm trong khoảng từ 0 đến 100')
         return
       }
-      const _newQuestion: TQuestion = {
+
+      let _newQuestion: TQuestion = {
         ...newQuestion,
         questionAnswers: answers,
         type: isEditQuestion.isEdit
           ? newQuestion.type
           : (Object.keys(MAPPED_QUESTION_TYPE).find(
-              (key) => MAPPED_QUESTION_TYPE[key] === type
+              (key) => _.get(MAPPED_QUESTION_TYPE, key) === type
             ) as TQuestionType),
         orderPosition: isEditQuestion.isEdit
           ? newQuestion.orderPosition
           : quiz.questions.length,
+      }
+
+      if (type === 'fill') {
+        const _fillAnswer: TAnswer[] = fillAnswers.map((value, index) => ({
+          answer: value,
+          isCorrect: true,
+          orderPosition: index,
+          media: '',
+          type: '10TEXT',
+        }))
+
+        _newQuestion['questionAnswers'] = [..._fillAnswer]
       }
 
       let body = {}
@@ -397,18 +413,22 @@ const QuestionCreator: FC<QuestionCreatorProps> = ({
                   <Form.Select
                     className="rounded-10px shadow-none"
                     style={{ height: 50 }}
+                    defaultValue={_.get(newQuestion, 'matcher', '10EXC')}
+                    onChange={(e) => {
+                      setNewQuestion((prev) => ({
+                        ...prev,
+                        matcher: e.target.value,
+                      }))
+                    }}
                   >
-                    <option>Chính xác</option>
-                    <option>Chứa đựng</option>
-                    <option>Số lượng chính xác</option>
-                    <option>Đúng phần đầu</option>
-                    <option>Đúng phần cuối</option>
+                    <option value="10EXC">Chính xác</option>
+                    <option value="20CNT">Chứa đựng</option>
                   </Form.Select>
                 </Col>
 
                 <Col>
                   {fillAnswers.map((answer, key) => (
-                    <div key={key} className="d-flex mb-3 fw-medium">
+                    <div key={key} className="d-flex mb-3 fw-medium w-100">
                       <div className="p-12px border rounded-8px w-100 bg-primary bg-opacity-25">
                         {answer}
                       </div>
@@ -432,16 +452,17 @@ const QuestionCreator: FC<QuestionCreatorProps> = ({
                         setFillAnswers([...fillAnswers, values.newAnswer])
                       }
                       actions.setSubmitting(false)
+                      actions.resetForm()
                     }}
                   >
                     {({ isSubmitting }) => (
-                      <FormikForm className="d-flex">
+                      <FormikForm className="d-flex w-100">
                         <Field
                           type="text"
                           name="newAnswer"
                           placeholder="Nhập đáp án mới"
                           as={MyInput}
-                          className="mb-3"
+                          className="mb-3 w-100"
                         />
 
                         <MyButton

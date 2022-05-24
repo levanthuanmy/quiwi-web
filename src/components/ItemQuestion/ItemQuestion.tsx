@@ -1,9 +1,13 @@
 import classNames from 'classnames'
+import _ from 'lodash'
 import React, { FC, memo, useRef, useState } from 'react'
 import { Accordion, Col, Image, Row, useAccordionButton } from 'react-bootstrap'
 import { useDrag, useDrop } from 'react-dnd'
 import { TQuestion } from '../../types/types'
-import { MAPPED_QUESTION_TYPE } from '../../utils/constants'
+import {
+  MAPPED_QUESTION_MATCHER,
+  MAPPED_QUESTION_TYPE,
+} from '../../utils/constants'
 import IconQuestion from '../IconQuestion/IconQuestion'
 import QuestionActionButton from '../QuestionActionButton/QuestionActionButton'
 
@@ -73,7 +77,7 @@ const ItemQuestion: FC<ItemQuestionProps> = ({
     },
   })
 
-  const [_, drag] = useDrag({
+  const [dragVal, drag] = useDrag({
     type: 'card',
     item: () => {
       return { index }
@@ -105,7 +109,7 @@ const ItemQuestion: FC<ItemQuestionProps> = ({
         <Accordion.Body>
           <div className="fw-medium mb-3">
             <div className="fs-14px text-secondary">Câu hỏi</div>
-            <div>{question.question}</div>
+            <pre>{question.question}</pre>
             {question.media?.length ? (
               <Image
                 src={question.media}
@@ -120,7 +124,12 @@ const ItemQuestion: FC<ItemQuestionProps> = ({
           </div>
 
           <div className="fw-medium">
-            <div className="fs-14px text-secondary">Câu trả lời</div>
+            <div className="fs-14px text-secondary">
+              Câu trả lời{' '}
+              <span className="text-uppercase">
+                {MAPPED_QUESTION_MATCHER[_.get(question, 'matcher')]}
+              </span>
+            </div>
             <Row>
               {question.questionAnswers.map((answer, key) => (
                 <Col key={key} xs="6" className="d-flex align-items-center">
