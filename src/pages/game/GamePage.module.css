@@ -1,24 +1,28 @@
 .gameBackground {
-  min-height: 100vh;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  min-height: 500px;
   background: #f2f2f2;
-  padding-top: 16px;
+  /*padding-top: 16px;*/
 }
 .nextButton {
   width: fit-content;
   align-self: flex-end;
 }
+
 .answerBoard {
-  position: relative;
-  left: 0;
-  right: 0;
-  top: 0;
-  height: 300px;
+  height: 100%;
+  width: 100%;
+  /*position: absolute;*/
 }
 
 .gameView {
-  position: relative;
+  /*position: relative;*/
   padding-top: 8px;
-  height: 80vh;
+  height: 100%;
 }
 
 .gameCol {
@@ -30,6 +34,12 @@
   .hiddenNav {
     display: none;
     visibility: hidden;
+  }
+
+  .answerBoard {
+    height: 100%;
+    width: 100%;
+
   }
 
   .emojiBar {
@@ -53,16 +63,29 @@
   }
 }
 
+@media (min-width: 576px) {
+  .answerBoard {
+    width: 80%;
+  }
+}
+
 /* // Medium devices (tablets, 768px and up) */
 @media (min-width: 768px) {
+
 }
 
 /* // Large devices (desktops, 992px and up) */
 @media (min-width: 992px) {
+  /*.answerBoard {*/
+  /*  width: 956px;*/
+  /*}*/
 }
 
 /* // Extra large devices (large desktops, 1200px and up) */
 @media (min-width: 1200px) {
+  .answerBoard {
+    width: 956px;
+  }
   /* màn bự mới có 2 cái padding 2 bên cho đều */
   .gameBackground {
     padding-left: 64px;

@@ -29,7 +29,8 @@
 }
 
 .questionImage {
-  max-height: 320px;
+  height: 35vh;
+  min-height: 250px;
   min-width: 30%;
   /*width: 0%;*/
   object-fit: contain;

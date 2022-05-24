@@ -74,7 +74,11 @@ const Home: NextPage = () => {
       `/api/games/check-room/${invitationCode}`,
       true
     )
-    router.push(`/lobby/join?invitationCode=${invitationCode}`)
+    if (res.response) {
+      await router.push(`/lobby/join?invitationCode=${invitationCode}`)
+    } else {
+      setInvitationInputError('Phòng không tồn tại')
+    }
   }
 
   const handleToQuizCreator = async () => {

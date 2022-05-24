@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react'
 
-export default function useIsMobile() {
-  const [isMobile, setIsMobile] = useState<boolean>(false)
+export default function useScreenSize() {
+  const [screenSize, setScreenSize] = useState<number>(0)
   useEffect(() => {
     const checkIsMobileScreen = () => {
-      setIsMobile(innerWidth <= 576)
+      setScreenSize(innerWidth)
     }
 
     checkIsMobileScreen()
@@ -16,5 +16,5 @@ export default function useIsMobile() {
     }
   }, [])
 
-  return isMobile
+  return screenSize
 }

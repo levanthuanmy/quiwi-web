@@ -2,6 +2,7 @@
   /* border-radius: 4px; */
   position: relative;
 }
+
 .timeoutContainer {
   width: 48px;
   height: 48px;
@@ -17,6 +18,14 @@
   min-width: 30%;
   width: 60%;
   object-fit: contain;
+}
+
+.answerLayout {
+  flex-grow: 1;
+  position: relative;
+  max-height: 500px;
+  /*// thiennc5*/
+  /*background-color: #15e2ef;*/
 }
 
 @media (min-width: 1200px) {

@@ -45,12 +45,10 @@ const MultipleChoiceAnswerSection: FC<MultipleChoiceAnswerSectionProps> = ({
     <div className={classNames(className, '')}>
       <OptionAnswerSection
         handleSubmitAnswer={selectAnswer}
-        className="flex-grow-1"
         option={option}
         selectedAnswers={answerSet}
         showAnswer={showAnswer}
         isHost={isHost}>
-
       </OptionAnswerSection>
     </div>
   )

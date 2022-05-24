@@ -9,7 +9,7 @@ const QuestionMedia: FC<{
   numSubmission: number
 }> = ({timeout, media, numSubmission}) => {
   return (
-    <div className="text-center mb-3 d-flex justify-content-xl-between justify-content-center align-items-center">
+    <div className="text-center mb-2 d-flex justify-content-xl-between justify-content-center align-items-center px-12px">
       {/* Timeout */}
       <div
         className={classNames(

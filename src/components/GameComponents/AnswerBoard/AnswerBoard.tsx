@@ -195,7 +195,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, questionId}) => {
         return (
           <SingleChoiceAnswerSection
             socketSubmit={handleSubmitAnswer}
-            className="flex-grow-1"
+            className={styles.answerLayout}
             option={currentQuestion}
             showAnswer={countDown <= 0}
             isHost={isHost}
@@ -206,7 +206,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, questionId}) => {
         return (
           <MultipleChoiceAnswerSection
             socketSubmit={handleSubmitAnswer}
-            className="flex-grow-1"
+            className={styles.answerLayout}
             option={currentQuestion}
             showAnswer={countDown <= 0}
             isHost={isHost}
@@ -218,7 +218,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, questionId}) => {
   }
 
   const renderHostControlSystem = () => {
-    return <div className="my-3 d-flex justify-content-between">
+    return <div className="my-3 d-flex justify-content-between position-fixed fixed-bottom">
       <MoreButton
         iconClassName="bi bi-x-circle-fill"
         className={classNames('text-white fw-medium', styles.nextButton)}
@@ -243,18 +243,18 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, questionId}) => {
   }
 
   return (
-    <div className="d-flex flex-column">
+    <>
       {isHost && renderHostControlSystem()}
       <div
         className={classNames(
-          'd-flex flex-column',
+          'd-flex flex-column h-100',
           className,
           styles.container
         )}
       >
         <div
           className={classNames(
-            'fs-4 shadow-sm fw-semiBold p-3 px-4 bg-white mb-4',
+            'fs-4 shadow-sm fw-semiBold p-2 px-3 bg-white mb-2',
             styles.questionTitle
           )}
         >
@@ -284,7 +284,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, questionId}) => {
 
         {/* này chắc là thêm state current tab rồi render component theo state điều kiện nha, check active tab theo state luôn  */}
       </div>
-    </div>
+    </>
   )
 }
 

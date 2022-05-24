@@ -21,9 +21,10 @@ const GamePage: NextPage = () => {
   return (
     <>
       <div className={`${styles.gameBackground}`}>
-        <div className={`${styles.gameView} d-flex `}>
+        <div className={`${styles.gameView} d-flex justify-content-center position-relative`}>
           <div
-            className={`d-flex flex-column flex-grow-3 gap-3 ${styles.gameCol} me-lg-3 m-0 `}
+            // className={`d-flex flex-column flex-grow-3 gap-3 ${styles.gameCol} me-lg-3 m-0 `}
+            className={`${styles.answerBoard}`}
           >
             <AnswerBoard
               questionId={Number(questionId) ?? 0}
@@ -32,6 +33,7 @@ const GamePage: NextPage = () => {
             {/* <EmojiBar className={styles.emojiBar} />
             <EmojiBar className={styles.emojiBar} /> */}
           </div>
+
           {gameSession && (
             <GameMenuBar
               isExpand={isExpand}

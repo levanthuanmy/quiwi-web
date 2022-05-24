@@ -1,9 +1,12 @@
 import classNames from 'classnames'
-import React, {FC} from 'react'
-import {Col, Image, Row} from 'react-bootstrap'
+import React, {FC, useState} from 'react'
+import {Col, Image, Modal, Row} from 'react-bootstrap'
 import {animated, useSpring, useTransition} from 'react-spring'
 import {TAnswer, TQuestion} from '../../../../types/types'
 import styles from './SingleChoiceAnswerSection.module.css'
+import useIsMobile from "../../../../hooks/useIsMobile/useIsMobile";
+import useScreenSize from "../../../../hooks/useScreenSize/useScreenSize";
+import QRCode from "react-qr-code";
 
 type OptionAnswerSectionProps = {
   className?: string
@@ -13,8 +16,8 @@ type OptionAnswerSectionProps = {
   showAnswer: boolean
   isHost: boolean
 }
-const colorArray: Array<string> = ['#00A384', '#e86262', '#ef6415', '#0082BE']
-const incorectColor = "#cccccc"
+const colorArray: Array<string> = ['#00a991', '#e2352a', '#f67702', '#0082BE', "#facc50", "#773172"]
+const incorrectColor = "#cccccc"
 
 const normalAlphaValue: string = "E6" // D9
 const correctAlphaValue: string = "FF"
@@ -29,7 +32,10 @@ const OptionAnswerSection: FC<OptionAnswerSectionProps> = ({
                                                              showAnswer,
                                                              isHost,
                                                            }) => {
+  const isMobile = useIsMobile()
+  const screenSize = useScreenSize()
 
+  const [showImage, setShowImage] = useState<string>("")
   // 2 case:
   const getBackgroundColorForAnswer = (
     answer: TAnswer,
@@ -37,7 +43,7 @@ const OptionAnswerSection: FC<OptionAnswerSectionProps> = ({
   ): string => {
     // làm mờ đi câu sai
     if (showAnswer && !answer.isCorrect) {
-      return incorectColor//hexColor += (answer.isCorrect ? correctAlphaValue : incorrectAlphaValue)
+      return incorrectColor//hexColor += (answer.isCorrect ? correctAlphaValue : incorrectAlphaValue)
     } else {
       return colorArray[index]
     }
@@ -68,79 +74,105 @@ const OptionAnswerSection: FC<OptionAnswerSectionProps> = ({
     return isHost ? getIconForHost(answer) : getIconForPlayer(answer)
   }
 
+  const getColHeight = (): string => {
+
+    if (option?.questionAnswers) {
+      if (screenSize >= 768) {
+        if (option?.questionAnswers.length > 4)
+          return "34%"
+        return "50%"
+      }
+      // if (!isMobile)
+        return `${Math.floor(100/option?.questionAnswers.length)}%`
+
+      // return "16%"
+    }
+
+    return "100%"
+  }
+
   return (
-    <div className={classNames(className, '')}>
-      {/* 4 câu trả lời */}
-      <Row className={`pt-20px ${styles.row} px-0 mx-0`}>
-        {option?.questionAnswers?.map((item, index) => {
-          return (
-            <Col
-              md="6"
-              xs="12"
-              className={classNames(styles.selectionItem)}
-              key={index}
-              onClick={() => {
-                if (!isHost && item.id && !showAnswer) handleSubmitAnswer(item.id)
+    /* 4 câu trả lời */
+    <Row className={`${styles.row} px-0 mx-0 py-6 pb-3`}>
+      {option?.questionAnswers?.map((item, index) => {
+        return (
+          <Col
+            // lg={option?.questionAnswers.length > 4 ? "4" : "6"}
+            lg="6"
+            xs="12"
+            md="6"
+            className={classNames(styles.selectionItem)}
+            style={{
+              height: getColHeight()
+            }}
+            key={index}
+            onClick={() => {
+              if (!isHost && item.id && !showAnswer) handleSubmitAnswer(item.id)
+            }}
+          >
+
+            <div
+              style={{
+                background: getBackgroundColorForAnswer(
+                  item,
+                  index % colorArray.length
+                ),
+                transition: "all .5s ease",
+                WebkitTransition: "all .5s ease",
+                MozTransition: "all .5s ease"
               }}
+              className={classNames(
+                'd-flex align-items-center h-100 w-100 gap-3',
+                styles.selectionBox,
+              )}
             >
               <div
-                style={{
-                  background: getBackgroundColorForAnswer(
-                    item,
-                    index % colorArray.length
-                  ),
-                  transition: "all .5s ease",
-                  WebkitTransition: "all .5s ease",
-                  MozTransition: "all .5s ease"
-                }}
                 className={classNames(
-                  'd-flex align-items-center h-100 w-100 ',
-                  styles.selectionBox,
+                  'fw-bold fs-4',
+                  styles.alphaBetContainer
                 )}
+                style={{
+                  backgroundColor: "white",
+                  color: getBackgroundColorForAnswer(item, index),
+                }}
               >
-                <div
-                  className={classNames(
-                    'fw-bold fs-4',
-                    styles.alphaBetContainer
-                  )}
-                  style={{
-                    backgroundColor: "white",
-                    color: getBackgroundColorForAnswer(item, index),
-                  }}
-                >
-                  <div className={styles.alphaBetText}>{alphabet[index]}</div>
+                <div className={styles.alphaBetText}>{alphabet[index]}</div>
+              </div>
+              <div
+                className={`text-white d-flex gap-3 align-items-center justify-content-center flex-grow-1 h-100 fw-semiBold ${
+                  item.answer.length < 100
+                    ? styles.selectionTextHuge
+                    : styles.selectionTextSmall
+                }`}
+              >
+                <div className={"flex-grow-1"}>
+                  {item.answer}
                 </div>
-                <div
-                  className={`text-white flex-grow-1 fw-semiBold ${
-                    item.answer.length < 100
-                      ? styles.selectionTextHuge
-                      : styles.selectionTextSmall
-                  }`}
-                >
-                  <div>
-                    {item.answer}
-                  </div>
-                  {item.media?.length ? (
+                {item.media?.length > 0 && (
+                  <div
+                    className="h-100 flex-grow-1 d-flex justify-content-center align-items-center overflow-hidden"
+                  >
                     <Image
                       src={item.media}
+                      fluid={true}
                       width="100%"
-                      height="180"
+                      height="auto"
                       className="object-fit-cover"
+                      // rounded={true}
                       alt=""
                     />
-                  ) : (
-                    <></>
-                  )}
-                </div>
-                <div>
-                  <i className={`text-white fw-bold bi ${getCheckIconForGameState(item)} fs-1`}></i>
-                </div>
+                  </div>
+                )}
               </div>
-            </Col>
-          )
-        })}
-      </Row>
-    </div>
+              <div>
+                <i className={`text-white fw-bold bi ${getCheckIconForGameState(item)} fs-1`}></i>
+              </div>
+            </div>
+
+          </Col>
+        )
+      })}
+    </Row>
   )
 }
 
