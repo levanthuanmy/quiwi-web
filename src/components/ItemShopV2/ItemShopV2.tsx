@@ -24,7 +24,7 @@ const ItemShopV2: FC<ItemShopProps> = ({
   type,
 }) => {
   return (
-    <Card className={styles.card} >
+    <Card className={styles.card}>
       <Card.Header className={styles.card__thumb}>
         <Image alt="item-avatar" src={avatar} />
       </Card.Header>

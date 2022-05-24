@@ -40,7 +40,7 @@ const ExplorePage: NextPage = () => {
     <DashboardLayout>
       <div className="w-100 bg-secondary bg-opacity-10 min-vh-100">
         <Container fluid="lg" className="p-3">
-          <SearchBar/>
+          <SearchBar pageUrl='explore' inputClassName='border-0'/>
 
           <div className="fs-32px fw-medium mb-3">
             {q?.length ? q : 'Hãy tìm kiếm gì đó...'}

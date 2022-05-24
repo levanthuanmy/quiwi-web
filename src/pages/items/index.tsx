@@ -1,11 +1,13 @@
 import _ from 'lodash'
 import { NextPage } from 'next'
+import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { Col, Container, Pagination, Row, Image } from 'react-bootstrap'
 import DashboardLayout from '../../components/DashboardLayout/DashboardLayout'
 import ItemShopV2 from '../../components/ItemShopV2/ItemShopV2'
 import MyModal from '../../components/MyModal/MyModal'
 import MyTabBar from '../../components/MyTabBar/MyTabBar'
+import SearchBar from '../../components/SearchBar/SearchBar'
 import { get } from '../../libs/api'
 import {
   TApiResponse,
@@ -30,6 +32,8 @@ const ItemPage: NextPage = () => {
   //Logic phân trang chỉ áp dụng cho số lẻ
   const maxPaginationList = 5
   const pageSize = 8
+  const router = useRouter()
+  const { q } = router.query
 
   const getFirst = (totalPages: number) => {
     setCurrentPagination(1)
@@ -38,7 +42,6 @@ const ItemPage: NextPage = () => {
       arr.push(i)
       if (i === maxPaginationList) break
     }
-    console.log(arr)
     return arr
   }
 
@@ -120,22 +123,13 @@ const ItemPage: NextPage = () => {
     return arr
   }
 
-  //Mỗi lần chuyển trang sẽ gọi API lấy list item theo id category của tham số index
-  const toggleTab = (index: number) => {
-    //Set giá trị mặc định của tab
-    setToggleState(index)
-    //Set lại list items và set nút pagination active về 1
-    getItems(index, 1)
-  }
-
   useEffect(() => {
     itemCategoriesResponse &&
-      getItems(_.get(itemCategoriesResponse, `items.${toggleState}.id`, 0), 1)
+      getItems(getCategoryIdByToggleState(toggleState), 1)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [toggleState, itemCategoriesResponse])
+  }, [toggleState, itemCategoriesResponse, q])
 
   const getItems = async (idCategory: number, pageIndex: number) => {
-    console.log(itemsResponse?.totalPages)
     if (
       itemsResponse &&
       itemsResponse.totalPages > 0 &&
@@ -151,6 +145,7 @@ const ItemPage: NextPage = () => {
         },
         relations: ['itemCategory'],
       },
+      q,
       pageIndex: pageIndex,
       pageSize: pageSize,
     }
@@ -231,8 +226,16 @@ const ItemPage: NextPage = () => {
     <DashboardLayout>
       <div className="w-100 ">
         <Container fluid="lg">
-          <Row className="py-3 justify-content-between">
-            <Col className="fs-22px fw-medium mb-3">Cửa hàng</Col>
+          <Row className="my-3 justify-content-between">
+            <Col xs={2} className="fs-22px fw-medium">
+              Cửa hàng
+            </Col>
+            <Col>
+              <SearchBar
+                pageUrl="items"
+                inputClassName="border border-primary"
+              />
+            </Col>
             <Col xs={4} md={3} lg={2}>
               <div className="d-flex rounded-20px align-items-center p-2 fw-medium fs-18px border border-primary bg-primary bg-opacity-10">
                 <Image
