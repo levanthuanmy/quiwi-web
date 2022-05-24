@@ -8,6 +8,7 @@ import DashboardLayout from '../../components/DashboardLayout/DashboardLayout'
 import ItemQuiz from '../../components/ItemQuiz/ItemQuiz'
 import MyButton from '../../components/MyButton/MyButton'
 import MyInput from '../../components/MyInput/MyInput'
+import SearchBar from '../../components/SearchBar/SearchBar'
 import { get } from '../../libs/api'
 import { TApiResponse, TPaginationResponse, TQuiz } from '../../types/types'
 
@@ -39,29 +40,7 @@ const ExplorePage: NextPage = () => {
     <DashboardLayout>
       <div className="w-100 bg-secondary bg-opacity-10 min-vh-100">
         <Container fluid="lg" className="p-3">
-          <Form
-            className="d-flex w-100 gap-3"
-            onChange={(e: any) => {
-              !e?.target?.value?.length && router.replace(`/explore`)
-            }}
-            onSubmit={(e) => {
-              e.preventDefault()
-              router.replace('/explore?q=' + _.get(e, 'target[0].value'))
-            }}
-          >
-            <div className="w-100 mb-3">
-              <MyInput
-                name="q"
-                className="border-0"
-                placeholder="Tìm kiếm..."
-                onClick={(e: any) => e?.target?.select()}
-              />
-            </div>
-            <MyButton
-              type="submit"
-              className="bi bi-search px-3 text-white"
-            ></MyButton>
-          </Form>
+          <SearchBar/>
 
           <div className="fs-32px fw-medium mb-3">
             {q?.length ? q : 'Hãy tìm kiếm gì đó...'}
