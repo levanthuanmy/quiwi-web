@@ -48,7 +48,8 @@ const MultipleChoiceAnswerSection: FC<MultipleChoiceAnswerSectionProps> = ({
         option={option}
         selectedAnswers={answerSet}
         showAnswer={showAnswer}
-        isHost={isHost}>
+        isHost={isHost}
+        baseIcon="square">
       </OptionAnswerSection>
     </div>
   )
