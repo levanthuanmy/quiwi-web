@@ -13,6 +13,7 @@ type MyModalProps = {
   inActiveButtonCallback?: () => void
   fullscreen?: boolean
   size?: 'sm' | 'lg' | 'xl'
+  footer?: ReactNode
 }
 const MyModal: FC<MyModalProps> = ({
   show,
@@ -25,6 +26,7 @@ const MyModal: FC<MyModalProps> = ({
   inActiveButtonCallback,
   fullscreen = false,
   size = 'lg',
+  footer,
 }) => {
   return (
     <Modal
@@ -67,6 +69,8 @@ const MyModal: FC<MyModalProps> = ({
           )}
         </Row>
       ) : null}
+
+      {footer}
     </Modal>
   )
 }
