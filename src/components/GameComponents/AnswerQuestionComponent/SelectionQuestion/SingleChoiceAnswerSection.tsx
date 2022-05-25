@@ -48,7 +48,8 @@ const SingleChoiceAnswerSection: FC<SingpleChoiceAnswerSectionProps> = ({
         option={option}
         selectedAnswers={answerSet}
         showAnswer={showAnswer}
-        isHost={isHost}>
+        isHost={isHost}
+        baseIcon="circle">
       </OptionAnswerSection>
     </div>
   )

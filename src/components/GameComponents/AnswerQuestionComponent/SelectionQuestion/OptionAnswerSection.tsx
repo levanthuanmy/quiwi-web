@@ -15,6 +15,7 @@ type OptionAnswerSectionProps = {
   selectedAnswers?: Set<number>
   showAnswer: boolean
   isHost: boolean
+  baseIcon: string
 }
 const colorArray: Array<string> = ['#00a991', '#e2352a', '#f67702', '#0082BE', "#facc50", "#773172"]
 const incorrectColor = "#cccccc"
@@ -31,6 +32,7 @@ const OptionAnswerSection: FC<OptionAnswerSectionProps> = ({
                                                              selectedAnswers,
                                                              showAnswer,
                                                              isHost,
+                                                             baseIcon
                                                            }) => {
   const isMobile = useIsMobile()
   const screenSize = useScreenSize()
@@ -56,17 +58,17 @@ const OptionAnswerSection: FC<OptionAnswerSectionProps> = ({
   const getIconForPlayer = (answer: TAnswer): string => {
     if (!showAnswer) {
       if (answer.id && selectedAnswers && selectedAnswers?.has(answer.id))
-        return "bi-check-circle"
+        return `bi-check-${baseIcon}`
       else
-        return "bi-circle"
+        return `bi-${baseIcon}`
     } else {
       if (selectedAnswers && answer.id && selectedAnswers?.has(answer.id))
         if (answer.isCorrect)
-          return "bi-check-circle-fill"
+          return `bi-check-${baseIcon}-fill`
         else
-          return "bi-x-circle-fill"
+          return `bi-x-${baseIcon}-fill`
       else
-        return "bi-circle"
+        return `bi-${baseIcon}`
     }
   }
 

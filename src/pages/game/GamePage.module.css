@@ -7,6 +7,17 @@
   min-height: 500px;
   background: #f2f2f2;
   /*padding-top: 16px;*/
+
+  /*!*position: fixed;*!*/
+  /*top: 0;*/
+  /*!*bottom: 40px;*!*/
+  /*left: 0;*/
+  /*right: 0;*/
+  /*!*width: 100vw;*!*/
+  /*height: 170vh;*/
+  /*min-height: 500px;*/
+  /*background: #f2f2f2;*/
+  /*!*padding-bottom: 80px;*!*/
 }
 .nextButton {
   width: fit-content;
@@ -50,6 +61,10 @@
     height: 100vh;
     padding-top: 0px;
     overflow: hidden;
+
+    /*!*height: 100vh;*!*/
+    /*padding-top: 0px;*/
+    /*overflow: scroll;*/
   }
   .gameView {
     padding-top: 0px;
