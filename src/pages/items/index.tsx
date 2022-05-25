@@ -28,7 +28,6 @@ const ItemPage: NextPage = () => {
   const [currentListPagination, setCurrentListPagination] = useState<number[]>()
   const [currentPagination, setCurrentPagination] = useState<number>(1)
   const [userResponse, setUserReponse] = useState<TUserProfile>()
-  const [showModal, setShowModal] = useState<boolean>(false)
   //Logic phân trang chỉ áp dụng cho số lẻ
   const maxPaginationList = 5
   const pageSize = 8
@@ -267,13 +266,13 @@ const ItemPage: NextPage = () => {
             {itemsResponse?.items.map((item, idx) => (
               <Col key={idx} className="p-3" xs={6} xl={3}>
                 <ItemShopV2
+                  id={item.id}
                   name={item.name}
                   avatar={item.avatar}
                   category={item.itemCategory.name}
                   description={item.description}
                   price={item.price}
                   type={item.type}
-                  onClick={() => setShowModal(true)}
                 />
               </Col>
             ))}
@@ -335,12 +334,6 @@ const ItemPage: NextPage = () => {
               )}
             </Col>
           </Row>
-          {/* <MyModal
-            show={showModal}
-            onHide={() => setShowModal(false)}
-            header={<div className="fs-24px fw-medium">Chỉnh sửa Quiz</div>}
-            fullscreen
-          ></MyModal> */}
         </Container>
       </div>
     </DashboardLayout>
