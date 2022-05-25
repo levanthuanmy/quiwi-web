@@ -25,13 +25,9 @@ const ListItemByCategory: FC<IListItem> = (props) => {
       try {
         if (authContext !== undefined) {
           let userId = authContext.getUser()?.id || null
-          const params = {
-            userId: userId,
-          }
+
           const res: TApiResponse<TUserItems[]> = await get(
-            `/api/items/user-items`,
-            true,
-            params
+            `/api/users/user/${userId}/items`
           )
 
           if (res.response) {
