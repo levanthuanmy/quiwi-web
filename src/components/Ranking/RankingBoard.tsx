@@ -1,35 +1,75 @@
-import React, { FC } from 'react'
-import { Table } from 'react-bootstrap'
-import RankingRow, { RankingProps } from './RankingRow'
+import classNames from 'classnames'
+import { useRouter } from 'next/router'
+import React, { FC, memo } from 'react'
+import { Image, Table } from 'react-bootstrap'
+import { TRankingItem } from '../../pages/ranking'
 
-type RankingList = {
-  rankingList?: RankingProps[]
-}
-
-const RankingBoard: FC<RankingList> = ({ rankingList }) => {
-  // console.log('ashgcshabcascsbcsahcb', JSON.stringify(rankingList))
-  const list = rankingList?.map((d) => (
-    <RankingRow
-      key={d.rank}
-      rank={d.rank}
-      username={d.username}
-      quantity={d.quantity}
-      isHighlight={d.isHighlight}
-      id={d.id}    />
-  ))
+const RankingBoard: FC<{ rankingList: TRankingItem[] }> = ({ rankingList }) => {
+  const router = useRouter()
 
   return (
-    <Table hover >
-      <thead>
-        <tr>
-          <th>Thứ hạng</th>
-          <th>Tên</th>
-          <th>Số lượng đạt được</th>
+    <Table borderless>
+      <tbody>
+        <tr className="fw-medium">
+          <td className="text-center">#</td>
+          <td>Tên</td>
+          <td>Số lượng đạt được</td>
         </tr>
-      </thead>
-      <tbody>{list}</tbody>
+        {rankingList?.map((item) => (
+          <tr
+            key={item.id}
+            className={classNames('cursor-pointer')}
+            onClick={() => {
+              router.push(item?.isHighlight ? `/profile` : `/users/${item?.id}`)
+            }}
+          >
+            <td className="pb-1 px-0">
+              <div
+                className={classNames(
+                  'text-center py-3 fw-medium rounded-start-14px',
+                  {
+                    'text-white bg-primary': item?.isHighlight,
+                    'bg-light': !item?.isHighlight,
+                  }
+                )}
+              >
+                {item?.rank}
+              </div>
+            </td>
+            <td className="pb-1 px-0">
+              <div
+                className={classNames('py-3 ps-2 text-nowrap', {
+                  'text-white bg-primary': item?.isHighlight,
+                  'bg-light': !item?.isHighlight,
+                })}
+              >
+                <Image
+                  src={'/assets/default-logo.png'}
+                  width={20}
+                  height={20}
+                  alt="avatar"
+                  className="rounded-circle"
+                />
+                <span className={classNames('ps-2 pe-1 fw-medium')}>
+                  {item?.username}
+                </span>
+              </div>
+            </td>
+            <td className="pb-1 px-0">
+              <div
+                className={classNames('py-3 ps-2 rounded-end-14px', {
+                  'text-white bg-primary': item?.isHighlight,
+                  'bg-light': !item?.isHighlight,
+                })}
+              >
+                {item?.quantity.toLocaleString()}
+              </div>
+            </td>
+          </tr>
+        ))}
+      </tbody>
     </Table>
   )
 }
 
-export default RankingBoard
+export default memo(RankingBoard)
