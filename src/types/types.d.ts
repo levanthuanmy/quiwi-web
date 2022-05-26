@@ -144,6 +144,7 @@ export type TItem = {
   itemCategory: TItemCategory
   createdAt: Date
   updatedAt: Date
+  isOwn?: boolean
 }
 
 export type TJoinQuizResponse = {

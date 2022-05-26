@@ -173,6 +173,22 @@ const ItemPage: NextPage = () => {
     }
   }
 
+  const getUser = async () => {
+    try {
+      const res: TApiResponse<TUserProfile> = await get(
+        `/api/users/profile`,
+        true
+      )
+      if (res.response) {
+        setUserReponse(res.response)
+        console.log(res.response)
+      }
+    } catch (error) {
+      alert('Có lỗi nè')
+      console.log(error)
+    }
+  }
+
   useEffect(() => {
     const getItemCategories = async () => {
       try {
@@ -193,22 +209,6 @@ const ItemPage: NextPage = () => {
       }
     }
 
-    const getUser = async () => {
-      try {
-        const res: TApiResponse<TUserProfile> = await get(
-          `/api/users/profile`,
-          true
-        )
-        if (res.response) {
-          setUserReponse(res.response)
-          console.log(res.response)
-        }
-      } catch (error) {
-        alert('Có lỗi nè')
-        console.log(error)
-      }
-    }
-
     getItemCategories()
     getUser()
     // if (!itemsResponse){
@@ -216,6 +216,10 @@ const ItemPage: NextPage = () => {
     // }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  const userBuyItem = () => {
+    getUser()
+  }
 
   const getCategoryIdByToggleState = (toggleState: number) => {
     return _.get(itemCategoriesResponse, `items.${toggleState}.id`, 0)
@@ -265,15 +269,7 @@ const ItemPage: NextPage = () => {
           <Row className="">
             {itemsResponse?.items.map((item, idx) => (
               <Col key={idx} className="p-3" xs={6} xl={3}>
-                <ItemShopV2
-                  id={item.id}
-                  name={item.name}
-                  avatar={item.avatar}
-                  category={item.itemCategory.name}
-                  description={item.description}
-                  price={item.price}
-                  type={item.type}
-                />
+                <ItemShopV2 item={item} userBuyItem={userBuyItem} />
               </Col>
             ))}
           </Row>
