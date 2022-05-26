@@ -19,7 +19,10 @@ const ItemShopV2: FC<ItemShopProps> = ({ item, userBuyItem }) => {
   const buyItem = async () => {
     setShowConfirmationModal(false)
     try {
-      await get(`/api/items/buy/${item.id}`, true)
+      const params = {
+        quantity,
+      }
+      await get(`/api/items/buy/${item.id}`, true, params)
       userBuyItem()
     } catch (error) {
       setError((error as Error).message)
