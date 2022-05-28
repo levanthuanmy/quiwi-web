@@ -21,7 +21,6 @@ const MySlider: FC<{ children: ReactNode }> = ({ children }) => {
     slidesToShow: 4,
     slidesToScroll: 2,
     initialSlide: 0,
-    // centerPadding: '100px',
     arrows: true,
     nextArrow: <SampleNextArrow />,
     prevArrow: <SampleNextArrow />,

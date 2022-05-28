@@ -38,6 +38,7 @@ const CardQuizInfo: FC<CardQuizInfoProps> = ({
   }, [quiz])
 
   const handleUploadImage = async (evt: any) => {
+    console.log('handleUploadImage - evt', evt)
     try {
       const data: File = evt.target.files[0]
 
@@ -58,7 +59,7 @@ const CardQuizInfo: FC<CardQuizInfoProps> = ({
         className="border rounded-10px overflow-hidden"
         style={{ height: 120 }}
       >
-        {(quiz?.banner && quiz?.banner.length) ? (
+        {quiz?.banner && quiz?.banner.length ? (
           <Image
             src={quiz?.banner}
             alt=""
@@ -158,7 +159,7 @@ const CardQuizInfo: FC<CardQuizInfoProps> = ({
                 className="border rounded-10px position-relative overflow-hidden"
                 style={{ height: 120 }}
               >
-                {(bannerUrl && bannerUrl.length) ? (
+                {bannerUrl && bannerUrl.length ? (
                   <Image
                     src={bannerUrl}
                     alt=""
@@ -175,7 +176,6 @@ const CardQuizInfo: FC<CardQuizInfoProps> = ({
                 <input
                   type="file"
                   onChange={handleUploadImage}
-                  onDropCapture={handleUploadImage}
                   className="position-absolute top-0 w-100 h-100 opacity-0 cursor-pointer"
                   accept="image/png, image/jpeg, image/jpg"
                   style={{ left: 0 }}

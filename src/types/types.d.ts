@@ -41,7 +41,7 @@ export type TQuiz = {
   id: number
   title: string
   description: string
-  user?: User
+  user?: TUser
   userId: number
   isPublic: boolean
   isLocked: boolean

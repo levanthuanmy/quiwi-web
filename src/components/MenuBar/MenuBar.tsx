@@ -89,7 +89,7 @@ const MenuBar: FC<MenuBarProps> = ({ isExpand, menuOptions }) => {
       </div>
 
       {authContext.isAuth && (
-        <div className="position-static bottom-0 p-3 w-100">
+        <div className="position-static bottom-0 p-3 w-100" title="Đăng Xuất">
           <MyButton
             variant="danger"
             className="w-100"

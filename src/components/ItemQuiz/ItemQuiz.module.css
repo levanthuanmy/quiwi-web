@@ -15,3 +15,7 @@
 .startBtn:hover {
   opacity: 1;
 }
+
+.infoContainer:hover p {
+  color: #009883;
+}

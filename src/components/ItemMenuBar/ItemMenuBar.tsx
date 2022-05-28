@@ -26,6 +26,7 @@ const ItemMenuBar: FC<ItemMenuBarProps> = ({
         }
       )}
       onClick={() => authNavigate.navigate(url)}
+      title={title}
     >
       <div
         className={classNames(
