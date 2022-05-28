@@ -13,7 +13,7 @@ type MyInputProps = React.DetailedHTMLProps<
 const MyInput: FC<MyInputProps> = (props: MyInputProps) => {
   const { iconClassName, handleIconClick, errorText, ...inputProps } = props
   return (
-    <div className={classNames('position-relative')}>
+    <div className={classNames('position-relative w-100')}>
       <div
         className={classNames(
           props.className,
