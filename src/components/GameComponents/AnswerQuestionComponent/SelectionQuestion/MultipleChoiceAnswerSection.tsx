@@ -1,8 +1,6 @@
 import classNames from 'classnames'
 import {FC, useEffect, useState} from 'react'
-import { Col, Row } from 'react-bootstrap'
-import { TAnswer, TQuestion } from '../../../../types/types'
-import styles from './SingleChoiceAnswerSection.module.css'
+import {TQuestion} from '../../../../types/types'
 import OptionAnswerSection from "./OptionAnswerSection";
 
 type MultipleChoiceAnswerSectionProps = {
@@ -24,21 +22,21 @@ const MultipleChoiceAnswerSection: FC<MultipleChoiceAnswerSectionProps> = ({
                                                                              isHost,
                                                                              isTimeOut,
                                                                              isSubmitted,
-}) => {
+                                                                           }) => {
   const [answerSet, setAnswerSet] = useState<Set<number>>(new Set())
 
   const selectAnswer = (answerId: number) => {
     if (showAnswer) return
     // Chọn và bỏ chọn câu hỏi
     const answers: Set<number> = answerSet
-    answers.has(answerId)  ? answers.delete(answerId) : answers.add(answerId)
+    answers.has(answerId) ? answers.delete(answerId) : answers.add(answerId)
     setAnswerSet(new Set(answers))
   }
 
   useEffect(() => {
-  if (isTimeOut && !isSubmitted) {
+    if (isTimeOut && !isSubmitted) {
       socketSubmit(answerSet)
-  }
+    }
   }, [isTimeOut]);
 
   return (

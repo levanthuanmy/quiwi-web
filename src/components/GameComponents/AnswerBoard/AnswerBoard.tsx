@@ -1,19 +1,16 @@
 import classNames from 'classnames'
 import {useRouter} from 'next/router'
 import React, {FC, memo, useEffect, useState} from 'react'
-import {Modal} from 'react-bootstrap'
 import {useGameSession} from '../../../hooks/useGameSession/useGameSession'
 import {useLocalStorage} from '../../../hooks/useLocalStorage/useLocalStorage'
 import {useSocket} from '../../../hooks/useSocket/useSocket'
 import {TQuestion, TStartQuizResponse, TUser} from '../../../types/types'
 import {JsonParse} from '../../../utils/helper'
-import MyModal from '../../MyModal/MyModal'
-import SingleChoiceAnswerSection from '../AnswerQuestionComponent/SelectionQuestion/SingleChoiceAnswerSection'
 import GameSessionRanking from '../GameSessionRanking/GameSessionRanking'
 import MoreButton from '../MoreButton/MoreButton'
 import {QuestionMedia} from '../QuestionMedia/QuestionMedia'
 import styles from './AnswerBoard.module.css'
-import MultipleChoiceAnswerSection from "../AnswerQuestionComponent/SelectionQuestion/MultipleChoiceAnswerSection";
+import {AnswerSectionFactory} from "../AnswerQuestionComponent/AnswerSectionFactory/AnswerSectionFactory";
 
 type AnswerBoardProps = {
   className?: string
@@ -36,11 +33,18 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, questionId}) => {
   const [rankingData, setRankingData] = useState<any[]>([])
 
   const [endTime, setEndTime] = useState<number>(0)
-  const [countDown, setCountDown] = useState<number>(-1)
+  const [countDown, setCountDown] = useState<number>(-101)
   const [itIsTimeToSubmitYourAwesomeAnswer, setItIsTimeToSubmitYourAwesomeAnswer] = useState<boolean>(false)
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false)
 
   const [numSubmission, setNumSubmission] = useState<number>(0)
+
+  let answerSectionFactory: AnswerSectionFactory
+
+
+  useEffect(() => {
+    handleSocket()
+  }, [])
 
   useEffect(() => {
     if (!gameSession) return
@@ -54,13 +58,14 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, questionId}) => {
   //  mỗi lần nhảy câu mới thì gọi
   useEffect(() => {
     const question = gameSession?.quiz?.questions[currentQID]
+    console.log("=>(AnswerBoard.tsx:61) gameSession?.quiz?.questions", gameSession?.quiz?.questions);
     if (question) {
-      setCurrentQuestion(question)
       if (question.duration > 0) {
         let endDate = new Date();
         endDate.setSeconds(endDate.getSeconds() + question.duration);
         let endTime = Math.round(endDate.getTime());
         setEndTime(endTime)
+        setCurrentQuestion(question)
       }
     }
   }, [currentQID])
@@ -106,7 +111,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, questionId}) => {
     if (!socket) return
 
     socket.on('new-submission', (data) => {
-      console.log('new-submission', data)
+      // console.log('new-submission', data)
       // nhớ check mode
       setNumSubmission(numSubmission + 1)
     })
@@ -127,7 +132,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, questionId}) => {
     })
 
     socket.on('view-result', (data) => {
-      console.log('view', data)
+      // console.log('view', data)
       // setRoomStatus('Xem xếp hạng')
     })
 
@@ -139,16 +144,13 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, questionId}) => {
     socket.on('ranking', (data) => {
       setShowRanking(true)
       setRankingData(data?.playersSortedByScore)
-      console.log('view-ranking', data)
+      // console.log('view-ranking', data)
     })
 
     socket.on('error', (data) => {
       console.log('answer board socket error', data)
     })
   }
-
-  handleSocket()
-
 
   const goToNextQuestion = () => {
     if (!gameSession?.quiz?.questions) return
@@ -168,10 +170,11 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, questionId}) => {
     setIsShowNext(true)
   }
 
-  const handleSubmitAnswer = (answerSet: Set<number>) => {
+  const handleSubmitAnswer = (answerSet: Set<any>) => {
     if (!gameSession) return
     if (isSubmitted) return
-
+    if (isHost) return
+    console.log("=>(AnswerBoard.tsx:183) answerSet", Array.from(answerSet));
     const msg = {
       invitationCode: gameSession.invitationCode,
       answerIds: Array.from(answerSet),
@@ -190,31 +193,10 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, questionId}) => {
 
   const renderAnswersSection = () => {
     if (!currentQuestion) return
-    switch (currentQuestion.type) {
-      case '10SG':
-        return (
-          <SingleChoiceAnswerSection
-            socketSubmit={handleSubmitAnswer}
-            className={styles.answerLayout}
-            option={currentQuestion}
-            showAnswer={countDown <= 0}
-            isHost={isHost}
-            isSubmitted={isSubmitted}
-          />
-        )
-      case '20MUL':
-        return (
-          <MultipleChoiceAnswerSection
-            socketSubmit={handleSubmitAnswer}
-            className={styles.answerLayout}
-            option={currentQuestion}
-            showAnswer={countDown <= 0}
-            isHost={isHost}
-            isTimeOut={itIsTimeToSubmitYourAwesomeAnswer}
-            isSubmitted={isSubmitted}
-          />
-        )
-    }
+    if (!answerSectionFactory) answerSectionFactory = new AnswerSectionFactory(isHost, styles.answerLayout, isSubmitted)
+
+    console.log("=>(AnswerBoard.tsx:198) currentQuestio 11 n", currentQuestion.questionAnswers);
+    return answerSectionFactory.initAnswerSectionForType(currentQuestion.type, countDown, currentQuestion, handleSubmitAnswer)
   }
 
   const renderHostControlSystem = () => {
@@ -245,45 +227,44 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, questionId}) => {
   return (
     <>
       {isHost && renderHostControlSystem()}
-      <div
-        className={classNames(
-          'd-flex flex-column h-100',
-          className,
-          styles.container
-        )}
-      >
         <div
+          className={classNames(
+            'd-flex flex-column h-100',
+            className,
+            styles.container
+          )}
+        >
+        <pre
           className={classNames(
             'fs-4 shadow-sm fw-semiBold p-2 px-3 bg-white mb-2',
             styles.questionTitle
-          )}
-        >
+          )}>
           {currentQuestion?.question}
+        </pre>
+
+          <QuestionMedia
+            timeout={countDown}
+            media={currentQuestion?.media ?? null}
+            numSubmission={numSubmission}
+            key={currentQID}
+          />
+
+          {currentQuestion?.question && renderAnswersSection()}
+
+          <GameSessionRanking
+            show={showRanking}
+            onHide={() => {
+              setShowRanking(false)
+              saveGameSession({
+                ...gameSession,
+                players: [...rankingData],
+              } as TStartQuizResponse)
+            }}
+            rankingData={rankingData}
+          />
+
+          {/* này chắc là thêm state current tab rồi render component theo state điều kiện nha, check active tab theo state luôn  */}
         </div>
-
-        <QuestionMedia
-          timeout={countDown}
-          media={currentQuestion?.media ?? null}
-          numSubmission={numSubmission}
-          key={currentQID}
-        />
-
-        {currentQuestion?.question && renderAnswersSection()}
-
-        <GameSessionRanking
-          show={showRanking}
-          onHide={() => {
-            setShowRanking(false)
-            saveGameSession({
-              ...gameSession,
-              players: [...rankingData],
-            } as TStartQuizResponse)
-          }}
-          rankingData={rankingData}
-        />
-
-        {/* này chắc là thêm state current tab rồi render component theo state điều kiện nha, check active tab theo state luôn  */}
-      </div>
     </>
   )
 }
