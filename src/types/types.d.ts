@@ -82,6 +82,17 @@ export type TStartQuizResponse = {
   // gameRoundStatistics: TGameRoundStatistic[]
 }
 
+export type QuestionGameResponse = {
+  currentQuestionIndex: number
+  question: TQuestion
+}
+
+export type TStartCommunityQuizResponse = {
+  room: TStartQuizResponse
+  questionGameResponse: QuestionGameResponse
+  // gameRoundStatistics: TGameRoundStatistic[]
+}
+
 // export type TGameRoundStatistic = {
 //   playersWithAnswer: TPlayer[]
 //   playersWithoutAnswer: TPlayer[]

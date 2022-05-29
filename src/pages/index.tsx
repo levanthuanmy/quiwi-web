@@ -179,7 +179,7 @@ const Home: NextPage = () => {
                 {recentlyCreatedQuizzesResponse?.response.items?.map(
                   (quiz, key) => (
                     <div key={key} className="px-md-2 h-100">
-                      <ItemQuiz quiz={quiz} />
+                      <ItemQuiz quiz={quiz} exploreMode={true} />
                     </div>
                   )
                 )}
