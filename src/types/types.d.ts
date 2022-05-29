@@ -194,7 +194,10 @@ export type TQuestion = {
   questionAnswers: TAnswer[]
   media: string
   score: number
+  matcher?: TMatcherQuestion
 }
+
+export type TMatcherQuestion = '10EXC' | '20CNT'
 
 export type TAnswer = {
   id?: number

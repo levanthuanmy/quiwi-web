@@ -127,7 +127,7 @@ const ItemQuestion: FC<ItemQuestionProps> = ({
             <div className="fs-14px text-secondary">
               Câu trả lời{' '}
               <span className="text-uppercase">
-                {MAPPED_QUESTION_MATCHER[_.get(question, 'matcher')]}
+                {_.get(MAPPED_QUESTION_MATCHER, `${question?.matcher}`)}
               </span>
             </div>
             <Row>

@@ -17,6 +17,7 @@ import { TEditQuestion } from '../../pages/quiz/creator/[id]'
 import {
   TAnswer,
   TApiResponse,
+  TMatcherQuestion,
   TQuestion,
   TQuestionType,
   TQuiz,
@@ -417,7 +418,7 @@ const QuestionCreator: FC<QuestionCreatorProps> = ({
                     onChange={(e) => {
                       setNewQuestion((prev) => ({
                         ...prev,
-                        matcher: e.target.value,
+                        matcher: e.target.value as TMatcherQuestion,
                       }))
                     }}
                   >
