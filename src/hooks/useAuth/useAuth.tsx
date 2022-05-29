@@ -42,7 +42,7 @@ export const AuthProvider = ({ children }: { children?: ReactNode }) => {
           cookies.get('access-token')?.length
       )
     )
-  }, [cookies, userState])
+  }, [userState])
 
   useEffect(() => {
     const _lsUser = JsonParse(lsUser) as TUser
@@ -51,7 +51,7 @@ export const AuthProvider = ({ children }: { children?: ReactNode }) => {
       cookies.set('access-token', _lsUser.token.accessToken)
       cookies.set('refresh-token', _lsUser.token.refreshToken)
     }
-  }, [lsUser])
+  }, [lsUser, cookies.get('access-token')])
 
   const navigate = async (navigateTo: string) => {
     if (!isAuth) {
