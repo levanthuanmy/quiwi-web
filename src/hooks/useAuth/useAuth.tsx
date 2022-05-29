@@ -42,12 +42,14 @@ export const AuthProvider = ({ children }: { children?: ReactNode }) => {
           cookies.get('access-token')?.length
       )
     )
-  }, [userState])
+  }, [cookies, userState])
 
   useEffect(() => {
     const _lsUser = JsonParse(lsUser) as TUser
     if (_lsUser?.username?.length) {
       setUserState(_lsUser)
+      cookies.set('access-token', _lsUser.token.accessToken)
+      cookies.set('refresh-token', _lsUser.token.refreshToken)
     }
   }, [lsUser])
 
@@ -88,7 +90,7 @@ export const AuthProvider = ({ children }: { children?: ReactNode }) => {
       setUserState(data)
       cookies.set('access-token', data.token.accessToken)
       cookies.set('refresh-token', data.token.refreshToken)
-      setLsUser(JSON.stringify({ ...data, token: undefined }))
+      setLsUser(JSON.stringify(data))
     } catch (error) {
       console.log('setUser - error', error)
     }
