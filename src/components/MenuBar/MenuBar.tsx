@@ -14,8 +14,15 @@ type MenuBarProps = {
     url: string
     iconClassName: string
   }[]
+  onToQuizCreator?: () => Promise<void>
+  onShowJoinQuiz?: () => void
 }
-const MenuBar: FC<MenuBarProps> = ({ isExpand, menuOptions }) => {
+const MenuBar: FC<MenuBarProps> = ({
+  isExpand,
+  menuOptions,
+  onToQuizCreator,
+  onShowJoinQuiz,
+}) => {
   const router = useRouter()
   const authContext = useAuth()
   const user = authContext.getUser()
@@ -77,6 +84,34 @@ const MenuBar: FC<MenuBarProps> = ({ isExpand, menuOptions }) => {
             )}
           </div>
         </div>
+
+        <div
+          className={classNames(
+            {
+              'd-flex': isExpand,
+              'd-none': !isExpand,
+            },
+            'gap-3 w-100 p-3'
+          )}
+        >
+          {onToQuizCreator && (
+            <MyButton
+              className="text-white w-100 d-block d-sm-none"
+              onClick={onToQuizCreator}
+            >
+              Tạo quiz
+            </MyButton>
+          )}
+          {onShowJoinQuiz && (
+            <MyButton
+              className="text-white w-100 d-block d-sm-none"
+              onClick={onShowJoinQuiz}
+            >
+              Tham gia ngay
+            </MyButton>
+          )}
+        </div>
+
         <div>
           {menuOptions.map((item, key) => (
             <ItemMenuBar
