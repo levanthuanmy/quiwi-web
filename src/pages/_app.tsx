@@ -47,7 +47,7 @@ function MyApp({ Component, pageProps }: AppProps) {
     }
   }, [])
 
-  const gamePageSet = new Set(['/game', '/host/lobby', '/lobby'])
+  const gamePageSet = new Set(["/game", "/game/play", "/game/practice", "/host/lobby", "/lobby", "quiz/[id]/play"])
 
   useEffect(() => {
     if (!gamePageSet.has(router.pathname)) {

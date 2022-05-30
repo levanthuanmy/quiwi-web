@@ -89,7 +89,7 @@ const LobbyScreen: FC<LobbyScreenProps> = ({invitationCode, isHost}) => {
       socket?.off('game-started')
       socket?.on('game-started', (data) => {
         console.log('game started', data)
-        router.push(`/game`)
+        router.push(`/game/play`)
       })
 
       socket?.off('error')

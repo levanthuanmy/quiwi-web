@@ -18,9 +18,9 @@ type AnswerBoardProps = {
 }
 
 const AnswerBoard: FC<AnswerBoardProps> = ({className, questionId}) => {
-  const {gameSession, saveGameSession, clearGameSession, gameSocket} = useGameSession()
+  const {gameSession, saveGameSession, clearGameSession, gameSocket, gameSkOn} = useGameSession()
   const socket = gameSocket()
-  
+
   const [lsUser] = useLocalStorage('user', '')
   const [isHost, setIsHost] = useState<boolean>(false)
   const [currentQID, setCurrentQID] = useState<number>(-1)
@@ -35,9 +35,8 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, questionId}) => {
 
   const [endTime, setEndTime] = useState<number>(0)
   const [countDown, setCountDown] = useState<number>(-101)
-  const [itIsTimeToSubmitYourAwesomeAnswer, setItIsTimeToSubmitYourAwesomeAnswer] = useState<boolean>(false)
-  const [isSubmitted, setIsSubmitted] = useState<boolean>(false)
 
+  const [isSubmitted, setIsSubmitted] = useState<boolean>(false)
   const [numSubmission, setNumSubmission] = useState<number>(0)
 
   let answerSectionFactory: AnswerSectionFactory
@@ -73,9 +72,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, questionId}) => {
 
   // hết giờ thì handle như nào?
   const handleTimeout = () => {
-    if (!isSubmitted) {
-      setItIsTimeToSubmitYourAwesomeAnswer(true)
-    }
+
   }
 
   // nhảy mỗi lần countdown
@@ -105,20 +102,17 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, questionId}) => {
 
   const resetGameState = () => {
     setIsSubmitted(false)
-    setItIsTimeToSubmitYourAwesomeAnswer(false)
   }
 
   const handleSocket = () => {
     if (!socket) return
-    socket.off('new-submission')
-    socket.on('new-submission', (data) => {
+    gameSkOn('new-submission', (data) => {
       console.log('new-submission', data)
       // nhớ check mode
       setNumSubmission(numSubmission + 1)
     })
 
-    socket.off('next-question')
-    socket.on('next-question', (data) => {
+    gameSkOn('next-question', (data) => {
       setIsShowNext(false)
       setShowRanking(false)
 
@@ -133,27 +127,23 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, questionId}) => {
       }
     })
 
-    socket.off('view-result')
-    socket.on('view-result', (data) => {
+    gameSkOn('view-result', (data) => {
       console.log('view', data)
       // setRoomStatus('Xem xếp hạng')
     })
 
-    socket.off('timeout')
-    socket.on('timeout', (data) => {
+    gameSkOn('timeout', (data) => {
       console.log('timeout', data)
       handleTimeout()
     })
 
-    socket.off('ranking')
-    socket.on('ranking', (data) => {
+    gameSkOn('ranking', (data) => {
       setShowRanking(true)
       setRankingData(data?.playersSortedByScore)
       console.log('view-ranking', data)
     })
 
-    socket.off('error')
-    socket.on('error', (data) => {
+    gameSkOn('error', (data) => {
       console.log('answer board socket error', data)
     })
   }

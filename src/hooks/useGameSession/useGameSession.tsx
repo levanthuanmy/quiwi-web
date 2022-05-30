@@ -6,7 +6,7 @@ import {useLocalStorage} from '../useLocalStorage/useLocalStorage'
 
 import {SocketManager} from '../useSocket/socketManager'
 
-export const useGameSession = (): { connectGameSocket: () => void; clearGameSession: () => void; gameSocket: () => (Socket | null); disconnectGameSocket: () => void; gameSession: TStartQuizResponse | null; saveGameSession: (gameSS: TStartQuizResponse) => void } => {
+export const useGameSession = (): { gameSkOn: (ev: string, listener: (...args: any[]) => void) => void; connectGameSocket: () => void; clearGameSession: () => void; gameSocket: () => (Socket | null); disconnectGameSocket: () => void; gameSession: TStartQuizResponse | null; saveGameSession: (gameSS: TStartQuizResponse) => void } => {
   const sk = SocketManager()
 
 
@@ -43,7 +43,8 @@ export const useGameSession = (): { connectGameSocket: () => void; clearGameSess
 
   // alias cho sk.socketOf("GAMES") thôi
   const gameSocket = (): (Socket | null) => {
-    sk.connect("GAMES")
+    // test xem có cần thiết connect lại trong này ko
+    // sk.connect("GAMES")
     return sk.socketOf("GAMES")
   }
 
@@ -59,6 +60,11 @@ export const useGameSession = (): { connectGameSocket: () => void; clearGameSess
     }
   }
 
+  const gameSkOn = (ev: string, listener: (...args: any[]) => void) => {
+    gameSocket()?.off(ev)
+    gameSocket()?.on(ev, listener)
+  }
+
   const clearGameSession = () => {
     try {
       if (deleteCount <= 0)
@@ -72,5 +78,15 @@ export const useGameSession = (): { connectGameSocket: () => void; clearGameSess
     }
   }
 
-  return ({gameSession, saveGameSession, clearGameSession, connectGameSocket, disconnectGameSocket, gameSocket})
+  return (
+    {
+      gameSession,
+      saveGameSession,
+      clearGameSession,
+      connectGameSocket,
+      disconnectGameSocket,
+      gameSocket,
+      gameSkOn
+    }
+  )
 }
