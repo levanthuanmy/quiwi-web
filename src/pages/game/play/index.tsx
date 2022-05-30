@@ -1,9 +1,9 @@
 import {NextPage} from 'next'
 import {useRouter} from 'next/router'
 import {useEffect, useState} from 'react'
-import AnswerBoard from '../../components/GameComponents/AnswerBoard/AnswerBoard'
-import GameMenuBar from '../../components/GameMenuBar/GameMenuBar'
-import {useGameSession} from '../../hooks/useGameSession/useGameSession'
+import AnswerBoard from '../../../components/GameComponents/AnswerBoard/AnswerBoard'
+import GameMenuBar from '../../../components/GameMenuBar/GameMenuBar'
+import {useGameSession} from '../../../hooks/useGameSession/useGameSession'
 import styles from './GamePage.module.css'
 
 const GamePage: NextPage = () => {
