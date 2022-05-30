@@ -36,6 +36,6 @@ const disconnectAll = () => {
   disconnect("NOTIFICATION")
 }
 
-export const useSocket = () => ({
+export const SocketManager = () => ({
   connect, disconnect, socketOf, isConnected, disconnectAll
 })

@@ -4,7 +4,7 @@ import Cookies from 'universal-cookie'
 import {TUser} from '../../types/types'
 import {JsonParse} from '../../utils/helper'
 import {useLocalStorage} from '../useLocalStorage/useLocalStorage'
-import {useSocket} from '../useSocket/useSocket'
+import {SocketManager} from '../useSocket/socketManager'
 
 type UseAuthValue = {
   isAuth: boolean
@@ -31,7 +31,7 @@ const AuthContext = React.createContext<UseAuthValue>({
 })
 
 export const AuthProvider = ({children}: { children?: ReactNode }) => {
-  const socketManager = useSocket()
+  const socketManager = SocketManager()
   const router = useRouter()
   const [prevRoute, setPrevRoute] = useLocalStorage('prev-route', '/')
   const [lsUser, setLsUser] = useLocalStorage('user', '')

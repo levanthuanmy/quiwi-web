@@ -1,6 +1,6 @@
 import classNames from 'classnames'
 import React, {FC, useState} from 'react'
-import {useSocket} from '../../hooks/useSocket/useSocket'
+import {SocketManager} from '../../hooks/useSocket/socketManager'
 import {TStartQuizResponse, TUser} from '../../types/types'
 import ChatWindow from '../GameComponents/ChatWindow/ChatWindow'
 import {MessageProps} from '../GameComponents/ChatWindow/Message/Message'
@@ -19,7 +19,7 @@ const GameMenuBar: FC<GameMenuBarProps> = ({
                                              gameSession,
                                            }) => {
   const [chatContent, setChatContent] = useState<MessageProps[]>([])
-  const socket = useSocket().socketOf("GAMES")
+  const socket = SocketManager().socketOf("GAMES")
 
   const receivedMessage = (message: MessageProps) => {
     if (message) {
