@@ -4,10 +4,10 @@ import {TStartQuizResponse} from '../../types/types'
 import {JsonParse} from '../../utils/helper'
 import {useLocalStorage} from '../useLocalStorage/useLocalStorage'
 
-import {useSocket} from '../useSocket/useSocket'
+import {SocketManager} from '../useSocket/socketManager'
 
 export const useGameSession = (): { connectGameSocket: () => void; clearGameSession: () => void; gameSocket: () => (Socket | null); disconnectGameSocket: () => void; gameSession: TStartQuizResponse | null; saveGameSession: (gameSS: TStartQuizResponse) => void } => {
-  const sk = useSocket()
+  const sk = SocketManager()
 
 
   const [lsGameSession, setLsGameSession] = useLocalStorage('game-session', '')

@@ -1,7 +1,7 @@
 import _ from 'lodash'
 import {FC, useEffect, useState} from 'react'
 import {Image} from 'react-bootstrap'
-import {useSocket} from '../../../../hooks/useSocket/useSocket'
+import {SocketManager} from '../../../../hooks/useSocket/socketManager'
 import {TPlayer, TUser} from '../../../../types/types'
 import {MyTooltip} from '../../../MyToolTip/MyTooltip'
 import styles from './Message.module.css'
@@ -32,7 +32,7 @@ const Message: FC<MessageProps> = (props) => {
   const avatar =
     _.get(props, 'user.avatar', _.get(props, 'player.user.avatar')) ||
     '/assets/default-user.png'
-  const socket = useSocket().socketOf("GAMES")
+  const socket = SocketManager().socketOf("GAMES")
   const [upvote, setUpvote] = useState(0)
 
   const nickname =

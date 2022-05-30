@@ -6,7 +6,7 @@ import Cookies from 'universal-cookie'
 import MyButton from '../../components/MyButton/MyButton'
 import MyInput from '../../components/MyInput/MyInput'
 import {useLocalStorage} from '../../hooks/useLocalStorage/useLocalStorage'
-import {useSocket} from '../../hooks/useSocket/useSocket'
+import {SocketManager} from '../../hooks/useSocket/socketManager'
 import {post} from '../../libs/api'
 import {TApiResponse, TGamePlayBodyRequest, TJoinQuizResponse, TStartQuizResponse,} from '../../types/types'
 import {JsonParse} from '../../utils/helper'
@@ -29,7 +29,7 @@ const JoiningPage: NextPage = () => {
   const [lsPlayer, setLsPlayer] = useLocalStorage('game-session-player', '')
   const [nickname, setNickName] = useState<string>('')
   const [lsUser] = useLocalStorage('user', '')
-  const skManager = useSocket()
+  const skManager = SocketManager()
   const socket = (): (Socket | null) => {
     return skManager.socketOf("GAMES")
   }

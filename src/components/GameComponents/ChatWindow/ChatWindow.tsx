@@ -3,7 +3,7 @@ import _ from 'lodash'
 import {FC, useEffect, useRef, useState} from 'react'
 import {useAuth} from '../../../hooks/useAuth/useAuth'
 import {useLocalStorage} from '../../../hooks/useLocalStorage/useLocalStorage'
-import {useSocket} from '../../../hooks/useSocket/useSocket'
+import {SocketManager} from '../../../hooks/useSocket/socketManager'
 import {TPlayer, TStartQuizResponse, TUser} from '../../../types/types'
 import {JsonParse} from '../../../utils/helper'
 import MyInput from '../../MyInput/MyInput'
@@ -16,7 +16,7 @@ const ChatWindow: FC<{
   setChatContent: Function
 }> = ({gameSession, chatContent, setChatContent}) => {
   const [chatValue, setChatValue] = useState<string>('')
-  const socket = useSocket().socketOf("GAMES")
+  const socket = SocketManager().socketOf("GAMES")
   const [lsPlayer, setLsPlayer] = useLocalStorage('game-session-player', '')
   const [player, setPLayer] = useState<TPlayer>()
   const authContext = useAuth()
