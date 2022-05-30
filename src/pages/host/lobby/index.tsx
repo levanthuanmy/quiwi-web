@@ -5,7 +5,6 @@ import useSWR from 'swr'
 import GameModeScreen from '../../../components/GameModeScreen/GameModeScreen'
 import LobbyScreen from '../../../components/LobbyScreen/LobbyScreen'
 import {useLocalStorage} from '../../../hooks/useLocalStorage/useLocalStorage'
-import {useSocket} from '../../../hooks/useSocket/useSocket'
 import {get, post} from '../../../libs/api'
 import {
   TApiResponse,
@@ -23,13 +22,11 @@ const HostPage: NextPage = () => {
   const router = useRouter()
   const {quizId} = router.query
   const [lsUser] = useLocalStorage('user', '')
-  const {gameSession, saveGameSession, clearGameSession} = useGameSession()
+  const {gameSession, saveGameSession, connectGameSocket, gameSocket} = useGameSession()
   const [isShowGameModeScreen, setIsShowGameModeScreen] =
     useState<boolean>(true)
   const [invitationCode, setInvitationCode] = useState<string>()
   const [gameModeEnum, setGameModeEnum] = useState<TGameModeEnum>()
-  const [isFetchingSocket, setIsFetchingSocket] = useState<boolean>(false)
-  const {socket} = useSocket()
 
   const {
     data: quizResponse,
@@ -40,8 +37,9 @@ const HostPage: NextPage = () => {
     get
   )
   useEffect(() => {
-    if (socket && socket.disconnected) socket.connect()
-  },[])
+    // mới vô màn lobby thì connect trước để có socket id gửi lên
+    connectGameSocket()
+  }, [])
 
   useEffect(() => {
     const quiz = quizResponse?.response
@@ -85,9 +83,8 @@ const HostPage: NextPage = () => {
     mode: TGameModeEnum,
     userId: number
   ) => {
-    setIsFetchingSocket(true)
     try {
-      if (!socket) return
+      if (!gameSocket()) return
       const msg: TStartQuizRequest = {
         quizId,
         userId,
@@ -95,11 +92,10 @@ const HostPage: NextPage = () => {
       }
 
       const body: TGamePlayBodyRequest<TStartQuizRequest> = {
-        socketId: socket.id,
+        socketId: gameSocket()!.id,
         data: msg,
       }
-      console.log("=>(index.tsx:113) socket.id", socket?.id);
-      console.log("=>(index.tsx:113) socket.id",);
+      console.log("=>Màn lobby socket.id", gameSocket()?.id);
       const response: TApiResponse<TStartQuizResponse> = await post(
         'api/games/start-quiz',
         {},
@@ -112,8 +108,6 @@ const HostPage: NextPage = () => {
       }
     } catch (error) {
       console.log('handleStartQuiz - error', error)
-    } finally {
-      setIsFetchingSocket(false)
     }
   }
 

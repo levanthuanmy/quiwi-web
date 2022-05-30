@@ -22,8 +22,8 @@ const Home: NextPage = () => {
   const [invitationCode, setInvitationCode] = useState<string>('')
   const [invitationInputError, setInvitationInputError] = useState<string>('')
   const authContext = useAuth()
-  const user = authContext.getUser()
   const router = useRouter()
+  const user = authContext.getUser()
   const popularParams = {
     filter: {
       relations: ['questions', 'questions.questionAnswers', 'user'],
@@ -51,15 +51,22 @@ const Home: NextPage = () => {
     pageIndex: 1,
     pageSize: 6,
   }
+
   const { data: popularQuizzesResponse } = useSWR<
     TApiResponse<TPaginationResponse<TQuiz>>
   >([`api/quizzes`, false, popularParams], get, { revalidateOnFocus: false })
 
   const { data: recentlyCreatedQuizzesResponse } = useSWR<
     TApiResponse<TPaginationResponse<TQuiz>>
-  >(['/api/quizzes/my-quizzes', true, recentlyCreatedParams], get, {
-    revalidateOnFocus: false,
-  })
+  >(
+    authContext.isAuth
+      ? ['/api/quizzes/my-quizzes', true, recentlyCreatedParams]
+      : null,
+    get,
+    {
+      revalidateOnFocus: false,
+    }
+  )
 
   const onJoinRoom = async () => {
     if (invitationCode.trim().length === 0) {
@@ -69,7 +76,7 @@ const Home: NextPage = () => {
 
     const res: TApiResponse<any> = await get(
       `/api/games/check-room/${invitationCode}`,
-      true
+      false
     )
     if (res.response) {
       await router.push(`/lobby/join?invitationCode=${invitationCode}`)
@@ -105,7 +112,7 @@ const Home: NextPage = () => {
 
   return (
     <DashboardLayout>
-      <div className="w-100 bg-secondary bg-opacity-10">
+      <div className="w-100 bg-secondary bg-opacity-10 min-vh-100">
         <div className="bg-white">
           <Container fluid="lg" className="p-3">
             <Row>
@@ -157,9 +164,9 @@ const Home: NextPage = () => {
         </div>
 
         <Container fluid="lg" className="p-3">
-          <div className="pt-4">
-            <div className="fs-22px fw-medium pb-3">Phổ biến</div>
-            {popularQuizzesResponse?.response.items ? (
+          {popularQuizzesResponse?.response.items.length ? (
+            <div className="pt-4">
+              <div className="fs-22px fw-medium pb-3">Phổ biến</div>
               <MySlider>
                 {popularQuizzesResponse?.response.items?.map((quiz, key) => (
                   <div key={key} className="px-md-2">
@@ -167,10 +174,10 @@ const Home: NextPage = () => {
                   </div>
                 ))}
               </MySlider>
-            ) : (
-              <Loading />
-            )}
-          </div>
+            </div>
+          ) : (
+            <Loading />
+          )}
 
           <div className="pt-4">
             <div className="fs-22px fw-medium pb-3">Đã tạo gần đây</div>
@@ -219,7 +226,62 @@ const Home: NextPage = () => {
                 </Col>
               </Row>
             </div>
-          ) : null}
+          ) : (
+            <></>
+          )}
+
+          {authContext.isAuth && (
+            <>
+              <div className="pt-4">
+                <div className="fs-22px fw-medium pb-3">Đã tạo gần đây</div>
+                {recentlyCreatedQuizzesResponse?.response.items ? (
+                  <MySlider>
+                    {recentlyCreatedQuizzesResponse?.response.items?.map(
+                      (quiz, key) => (
+                        <div key={key} className="px-md-2 h-100">
+                          <ItemQuiz quiz={quiz} />
+                        </div>
+                      )
+                    )}
+                  </MySlider>
+                ) : (
+                  <Loading />
+                )}
+              </div>
+
+              <div className="pt-4">
+                <div className="fs-22px fw-medium pb-3">
+                  Đã tham gia gần đây
+                </div>
+                <Row className="overflow-auto flex-nowrap">
+                  <Col xs="auto">
+                    <div
+                      style={{ width: 278, height: 240 }}
+                      className="border rounded-10px bg-white"
+                    ></div>
+                  </Col>
+                  <Col xs="auto">
+                    <div
+                      style={{ width: 278, height: 240 }}
+                      className="border rounded-10px bg-white"
+                    ></div>
+                  </Col>
+                  <Col xs="auto">
+                    <div
+                      style={{ width: 278, height: 240 }}
+                      className="border rounded-10px bg-white"
+                    ></div>
+                  </Col>
+                  <Col xs="auto">
+                    <div
+                      style={{ width: 278, height: 240 }}
+                      className="border rounded-10px bg-white"
+                    ></div>
+                  </Col>
+                </Row>
+              </div>
+            </>
+          )}
         </Container>
       </div>
     </DashboardLayout>

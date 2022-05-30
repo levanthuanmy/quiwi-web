@@ -18,23 +18,13 @@ const PlayerLobbyItem: FC<PlayerLobbyItemProps> = (props: PlayerLobbyItemProps) 
         className={`d-flex align-items-center m-1 rounded-20px col-auto ${styles.tooltip} ${props.isHost ? styles.isHost : ""}`}
         style={{backgroundColor: props.bgColor}}
       >
-        {props.avatar ? (
-          <Image
-            src={props.avatar}
-            width={isMobile ? 24 : 30}
-            height={isMobile ? 24  : 30}
-            alt="avatar"
-            className="rounded-circle"
-          />
-        ) : (
-          <Image
-            src="/assets/default-logo.png"
-            width={isMobile ? 24 : 30}
-            height={isMobile ? 24  : 30}
-            alt="/assets/default-logo.png"
-            className="rounded-circle"
-          />
-        )}
+        <Image
+          src={props.avatar ? props.avatar : "/assets/default-logo.png"}
+          width={isMobile ? 24 : 30}
+          height={isMobile ? 24 : 30}
+          alt="/assets/default-logo.png"
+          className="rounded-circle"
+        />
         <span className="px-1 text-white">{props.displayName}</span>
         <span className={`${styles.tooltiptext}`}>{props.displayName}</span>
       </Col>

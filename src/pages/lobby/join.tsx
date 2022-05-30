@@ -1,22 +1,17 @@
-import { NextPage } from 'next'
-import { useRouter } from 'next/router'
-import { useState } from 'react'
-import { Form, Image } from 'react-bootstrap'
+import {NextPage} from 'next'
+import {useRouter} from 'next/router'
+import {useState} from 'react'
+import {Form, Image} from 'react-bootstrap'
 import Cookies from 'universal-cookie'
-import { number } from 'yup'
 import MyButton from '../../components/MyButton/MyButton'
 import MyInput from '../../components/MyInput/MyInput'
-import { useLocalStorage } from '../../hooks/useLocalStorage/useLocalStorage'
-import { useSocket } from '../../hooks/useSocket/useSocket'
-import { post } from '../../libs/api'
-import {
-  TApiResponse,
-  TGamePlayBodyRequest,
-  TJoinQuizResponse,
-  TStartQuizResponse,
-} from '../../types/types'
-import { JsonParse } from '../../utils/helper'
+import {useLocalStorage} from '../../hooks/useLocalStorage/useLocalStorage'
+import {useSocket} from '../../hooks/useSocket/useSocket'
+import {post} from '../../libs/api'
+import {TApiResponse, TGamePlayBodyRequest, TJoinQuizResponse, TStartQuizResponse,} from '../../types/types'
+import {JsonParse} from '../../utils/helper'
 import {useGameSession} from "../../hooks/useGameSession/useGameSession";
+import {Socket} from "socket.io-client";
 
 type TJoinQuizRequest = {
   userId?: number
@@ -34,7 +29,10 @@ const JoiningPage: NextPage = () => {
   const [lsPlayer, setLsPlayer] = useLocalStorage('game-session-player', '')
   const [nickname, setNickName] = useState<string>('')
   const [lsUser] = useLocalStorage('user', '')
-  const { socket } = useSocket()
+  const skManager = useSocket()
+  const socket = (): (Socket | null) => {
+    return skManager.socketOf("GAMES")
+  }
 
   const handleOnClick = async () => {
     try {
@@ -42,7 +40,10 @@ const JoiningPage: NextPage = () => {
         alert('Vui lòng nhập tên hiển thị')
         return
       }
-      if (!socket) return
+      if (!socket()) {
+        alert("Chưa tạo kết nối socket")
+        return
+      }
 
       const cookies = new Cookies()
       const accessToken: string = cookies.get('access-token')
@@ -53,7 +54,7 @@ const JoiningPage: NextPage = () => {
       }
 
       const body: TGamePlayBodyRequest<TJoinQuizRequest> = {
-        socketId: socket.id,
+        socketId: socket()!.id,
         data: joinRoomRequest,
       }
 
@@ -85,7 +86,8 @@ const JoiningPage: NextPage = () => {
   }
 
   return (
-    <div className="bg-secondary fw-medium bg-opacity-25 min-vh-100 d-flex flex-column justify-content-center align-items-center">
+    <div
+      className="bg-secondary fw-medium bg-opacity-25 min-vh-100 d-flex flex-column justify-content-center align-items-center">
       <div className="bg-white px-3 py-5 rounded-20px shadow-sm">
         <div className="mb-5 text-center">
           <Image

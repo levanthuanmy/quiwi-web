@@ -2,20 +2,28 @@ import { get } from 'lodash'
 import { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
+import { Modal } from 'react-bootstrap'
 import useSWR from 'swr'
 import GameModeScreen from '../../../../components/GameModeScreen/GameModeScreen'
+import MyModal from '../../../../components/MyModal/MyModal'
 import { useCommunitySocket } from '../../../../hooks/useCommunitySocket/useCommunitySocket'
 import { useGameSession } from '../../../../hooks/useGameSession/useGameSession'
 import { useLocalStorage } from '../../../../hooks/useLocalStorage/useLocalStorage'
 import { post } from '../../../../libs/api'
 import {
-    TApiResponse, TGameModeEnum, TGamePlayBodyRequest, TQuiz, TStartQuizRequest, TStartQuizResponse, TUser
+  TApiResponse,
+  TGameModeEnum,
+  TGamePlayBodyRequest,
+  TQuiz,
+  TStartQuizRequest,
+  TStartQuizResponse,
+  TUser,
 } from '../../../../types/types'
 import { JsonParse } from '../../../../utils/helper'
 
 const PlayCommunityQuizScreen: NextPage = () => {
   const router = useRouter()
-  const { quizId } = router.query
+  const { id } = router.query
   const [lsUser] = useLocalStorage('user', '')
   const { gameSession, saveGameSession, clearGameSession } = useGameSession()
   const [isShowGameModeScreen, setIsShowGameModeScreen] =
@@ -24,46 +32,23 @@ const PlayCommunityQuizScreen: NextPage = () => {
   const [gameModeEnum, setGameModeEnum] = useState<TGameModeEnum>()
   const [isFetchingSocket, setIsFetchingSocket] = useState<boolean>(false)
   const { socket } = useCommunitySocket()
+  const [error, setError] = useState('')
 
   const {
     data: quizResponse,
     isValidating: isFetchingQuiz,
     error: fetchingQuizError,
-  } = useSWR<TApiResponse<TQuiz>>(
-    quizId ? [`/api/quizzes/quiz/${quizId}`] : null,
-    get
-  )
+  } = useSWR<TApiResponse<TQuiz>>(id ? [`/api/quizzes/quiz/${id}`] : null, get)
   useEffect(() => {
     if (socket && socket.disconnected) socket.connect()
   }, [socket])
 
   useEffect(() => {
-    const quiz = quizResponse?.response
-    if (quizId && !isFetchingQuiz && (!quiz || fetchingQuizError)) {
-      alert('Không tìm thấy quiz')
-      // router.back()
-    } else {
-      const user: TUser = JsonParse(lsUser)
-      const isHost = user.id === quiz?.userId
-      if (isHost) {
-        if (gameSession) {
-          // nếu có game session, hiển thị màn lobby có nút bắt đầu quiz
-          setInvitationCode(gameSession.invitationCode)
-          setGameModeEnum(gameSession.mode)
-        } else {
-          // hiện thị chọn game mode rồi tạo game session lưu xuống ls
-          setIsShowGameModeScreen(true)
-        }
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [gameSession])
-
-  useEffect(() => {
     if (gameModeEnum && isShowGameModeScreen) {
       const user: TUser = JsonParse(lsUser)
-      handleStartQuiz(Number(quizId), gameModeEnum, user.id)
+      handleStartQuiz(Number(id), gameModeEnum, user.id)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gameModeEnum, isShowGameModeScreen])
 
   useEffect(() => {
@@ -81,7 +66,7 @@ const PlayCommunityQuizScreen: NextPage = () => {
     try {
       if (!socket) return
       const msg: TStartQuizRequest = {
-        quizId,
+        quizId: quizId,
         userId,
         mode,
       }
@@ -90,24 +75,44 @@ const PlayCommunityQuizScreen: NextPage = () => {
         socketId: socket.id,
         data: msg,
       }
-      console.log('=>(index.tsx:113) socket.id', socket?.id)
       const response: TApiResponse<TStartQuizResponse> = await post(
         'api/games/start-community-quiz',
         {},
         body,
         true
       )
-      console.log('==== ~ response', response)
 
       if (response.response) {
         saveGameSession(response.response)
       }
     } catch (error) {
+      setError((error as Error).message)
       console.log('handleStartQuiz - error', error)
     } finally {
       setIsFetchingSocket(false)
     }
   }
+  // Bắt đầu game
+  useEffect(() => {
+    const quiz = quizResponse?.response
+    if (!id && !isFetchingQuiz && (!quiz || fetchingQuizError)) {
+      // setError('Không tìm thấy quiz')
+    } else {
+      const user: TUser = JsonParse(lsUser)
+      const isHost = user.id === quiz?.userId
+      if (isHost) {
+        if (gameSession) {
+          // nếu có game session, hiển thị màn lobby có nút bắt đầu quiz
+          setInvitationCode(gameSession.invitationCode)
+          setGameModeEnum(gameSession.mode)
+        } else {
+          // hiện thị chọn game mode rồi tạo game session lưu xuống ls
+          setIsShowGameModeScreen(true)
+        }
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gameSession])
 
   return (
     <>
@@ -120,6 +125,18 @@ const PlayCommunityQuizScreen: NextPage = () => {
         // />
         <div>oklah</div>
       )}
+      <MyModal
+        show={error.length > 0}
+        onHide={() => setError('')}
+        size="sm"
+        header={
+          <Modal.Title className="text-danger">Đã có lỗi xảy ra</Modal.Title>
+        }
+        inActiveButtonCallback={() => setError('')}
+        inActiveButtonTitle="Huỷ"
+      >
+        <div className="text-center">{error}</div>
+      </MyModal>
     </>
   )
 }

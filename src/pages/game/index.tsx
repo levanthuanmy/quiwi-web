@@ -1,20 +1,21 @@
-import { NextPage } from 'next'
-import { useRouter } from 'next/router'
-import { useEffect, useState } from 'react'
+import {NextPage} from 'next'
+import {useRouter} from 'next/router'
+import {useEffect, useState} from 'react'
 import AnswerBoard from '../../components/GameComponents/AnswerBoard/AnswerBoard'
 import GameMenuBar from '../../components/GameMenuBar/GameMenuBar'
-import { useGameSession } from '../../hooks/useGameSession/useGameSession'
+import {useGameSession} from '../../hooks/useGameSession/useGameSession'
 import styles from './GamePage.module.css'
 
 const GamePage: NextPage = () => {
   const router = useRouter()
-  const { questionId } = router.query
-  const { gameSession, saveGameSession, clearGameSession } = useGameSession()
+  const {questionId} = router.query
+  const {gameSession, connectGameSocket} = useGameSession()
   const [isExpand, setIsExpand] = useState<boolean>(false)
 
   useEffect(() => {
     if (!gameSession) {
-      console.log('Game / index :: gameSession null => ', gameSession)
+      // connectGameSocket()
+      // console.log('Game / index :: gameSession null => ', gameSession)
     }
   }, [gameSession])
 

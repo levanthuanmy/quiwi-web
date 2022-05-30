@@ -1,10 +1,10 @@
-import { useRouter } from 'next/router'
-import React, { ReactNode, useEffect, useState } from 'react'
+import {useRouter} from 'next/router'
+import React, {ReactNode, useEffect, useState} from 'react'
 import Cookies from 'universal-cookie'
-import { TUser } from '../../types/types'
-import { JsonParse } from '../../utils/helper'
-import { useLocalStorage } from '../useLocalStorage/useLocalStorage'
-import { useSocket } from '../useSocket/useSocket'
+import {TUser} from '../../types/types'
+import {JsonParse} from '../../utils/helper'
+import {useLocalStorage} from '../useLocalStorage/useLocalStorage'
+import {useSocket} from '../useSocket/useSocket'
 
 type UseAuthValue = {
   isAuth: boolean
@@ -17,16 +17,21 @@ type UseAuthValue = {
 }
 const AuthContext = React.createContext<UseAuthValue>({
   isAuth: false,
-  toPrevRoute: async () => {},
-  navigate: async () => {},
-  signOut: async () => {},
-  signIn: async () => {},
+  toPrevRoute: async () => {
+  },
+  navigate: async () => {
+  },
+  signOut: async () => {
+  },
+  signIn: async () => {
+  },
   getUser: () => undefined,
-  setUser: () => {},
+  setUser: () => {
+  },
 })
 
-export const AuthProvider = ({ children }: { children?: ReactNode }) => {
-  const { socket } = useSocket()
+export const AuthProvider = ({children}: { children?: ReactNode }) => {
+  const socketManager = useSocket()
   const router = useRouter()
   const [prevRoute, setPrevRoute] = useLocalStorage('prev-route', '/')
   const [lsUser, setLsUser] = useLocalStorage('user', '')
@@ -39,7 +44,7 @@ export const AuthProvider = ({ children }: { children?: ReactNode }) => {
     setIsAuth(
       Boolean(
         userState?.token?.accessToken?.length ||
-          cookies.get('access-token')?.length
+        cookies.get('access-token')?.length
       )
     )
   }, [userState])
@@ -48,8 +53,10 @@ export const AuthProvider = ({ children }: { children?: ReactNode }) => {
     const _lsUser = JsonParse(lsUser) as TUser
     if (_lsUser?.username?.length) {
       setUserState(_lsUser)
+      cookies.set('access-token', _lsUser.token.accessToken)
+      cookies.set('refresh-token', _lsUser.token.refreshToken)
     }
-  }, [lsUser])
+  }, [lsUser, cookies.get('access-token')])
 
   const navigate = async (navigateTo: string) => {
     if (!isAuth) {
@@ -70,7 +77,7 @@ export const AuthProvider = ({ children }: { children?: ReactNode }) => {
     cookies.remove('access-token')
     cookies.remove('refresh-token')
     setLsUser('')
-    socket?.disconnect()
+    socketManager.disconnectAll()
     setUserState(undefined)
     await router.push('/')
   }
@@ -88,7 +95,7 @@ export const AuthProvider = ({ children }: { children?: ReactNode }) => {
       setUserState(data)
       cookies.set('access-token', data.token.accessToken)
       cookies.set('refresh-token', data.token.refreshToken)
-      setLsUser(JSON.stringify({ ...data, token: undefined }))
+      setLsUser(JSON.stringify(data))
     } catch (error) {
       console.log('setUser - error', error)
     }

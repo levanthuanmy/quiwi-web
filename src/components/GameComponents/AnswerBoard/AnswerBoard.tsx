@@ -18,8 +18,9 @@ type AnswerBoardProps = {
 }
 
 const AnswerBoard: FC<AnswerBoardProps> = ({className, questionId}) => {
-  const {socket} = useSocket()
-  const {gameSession, saveGameSession, clearGameSession} = useGameSession()
+  const {gameSession, saveGameSession, clearGameSession, gameSocket} = useGameSession()
+  const socket = gameSocket()
+  
   const [lsUser] = useLocalStorage('user', '')
   const [isHost, setIsHost] = useState<boolean>(false)
   const [currentQID, setCurrentQID] = useState<number>(-1)
@@ -109,13 +110,14 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, questionId}) => {
 
   const handleSocket = () => {
     if (!socket) return
-
+    socket.off('new-submission')
     socket.on('new-submission', (data) => {
-      // console.log('new-submission', data)
+      console.log('new-submission', data)
       // nhớ check mode
       setNumSubmission(numSubmission + 1)
     })
 
+    socket.off('next-question')
     socket.on('next-question', (data) => {
       setIsShowNext(false)
       setShowRanking(false)
@@ -131,22 +133,26 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, questionId}) => {
       }
     })
 
+    socket.off('view-result')
     socket.on('view-result', (data) => {
-      // console.log('view', data)
+      console.log('view', data)
       // setRoomStatus('Xem xếp hạng')
     })
 
+    socket.off('timeout')
     socket.on('timeout', (data) => {
       console.log('timeout', data)
       handleTimeout()
     })
 
+    socket.off('ranking')
     socket.on('ranking', (data) => {
       setShowRanking(true)
       setRankingData(data?.playersSortedByScore)
-      // console.log('view-ranking', data)
+      console.log('view-ranking', data)
     })
 
+    socket.off('error')
     socket.on('error', (data) => {
       console.log('answer board socket error', data)
     })
@@ -194,8 +200,6 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, questionId}) => {
   const renderAnswersSection = () => {
     if (!currentQuestion) return
     if (!answerSectionFactory) answerSectionFactory = new AnswerSectionFactory(isHost, styles.answerLayout, isSubmitted)
-
-    console.log("=>(AnswerBoard.tsx:198) currentQuestio 11 n", currentQuestion.questionAnswers);
     return answerSectionFactory.initAnswerSectionForType(currentQuestion.type, countDown, currentQuestion, handleSubmitAnswer)
   }
 
@@ -227,13 +231,13 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, questionId}) => {
   return (
     <>
       {isHost && renderHostControlSystem()}
-        <div
-          className={classNames(
-            'd-flex flex-column h-100',
-            className,
-            styles.container
-          )}
-        >
+      <div
+        className={classNames(
+          'd-flex flex-column h-100',
+          className,
+          styles.container
+        )}
+      >
         <pre
           className={classNames(
             'fs-4 shadow-sm fw-semiBold p-2 px-3 bg-white mb-2',
@@ -242,29 +246,29 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, questionId}) => {
           {currentQuestion?.question}
         </pre>
 
-          <QuestionMedia
-            timeout={countDown}
-            media={currentQuestion?.media ?? null}
-            numSubmission={numSubmission}
-            key={currentQID}
-          />
+        <QuestionMedia
+          timeout={countDown}
+          media={currentQuestion?.media ?? null}
+          numSubmission={numSubmission}
+          key={currentQID}
+        />
 
-          {currentQuestion?.question && renderAnswersSection()}
+        {currentQuestion?.question && renderAnswersSection()}
 
-          <GameSessionRanking
-            show={showRanking}
-            onHide={() => {
-              setShowRanking(false)
-              saveGameSession({
-                ...gameSession,
-                players: [...rankingData],
-              } as TStartQuizResponse)
-            }}
-            rankingData={rankingData}
-          />
+        <GameSessionRanking
+          show={showRanking}
+          onHide={() => {
+            setShowRanking(false)
+            saveGameSession({
+              ...gameSession,
+              players: [...rankingData],
+            } as TStartQuizResponse)
+          }}
+          rankingData={rankingData}
+        />
 
-          {/* này chắc là thêm state current tab rồi render component theo state điều kiện nha, check active tab theo state luôn  */}
-        </div>
+        {/* này chắc là thêm state current tab rồi render component theo state điều kiện nha, check active tab theo state luôn  */}
+      </div>
     </>
   )
 }
