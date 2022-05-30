@@ -28,7 +28,6 @@ const GamePage: NextPage = () => {
             className={`${styles.answerBoard}`}
           >
             <AnswerBoard
-              questionId={Number(questionId) ?? 0}
               className="flex-grow-1"
             />
             {/* <EmojiBar className={styles.emojiBar} />

@@ -1,12 +1,12 @@
 import {useEffect, useState} from 'react'
 import {Socket} from "socket.io-client";
-import {TStartQuizResponse} from '../../types/types'
+import {TQuestion, TStartQuizResponse} from '../../types/types'
 import {JsonParse} from '../../utils/helper'
 import {useLocalStorage} from '../useLocalStorage/useLocalStorage'
 
 import {SocketManager} from '../useSocket/socketManager'
 
-export const useGameSession = (): { gameSkOn: (ev: string, listener: (...args: any[]) => void) => void; connectGameSocket: () => void; clearGameSession: () => void; gameSocket: () => (Socket | null); disconnectGameSocket: () => void; gameSession: TStartQuizResponse | null; saveGameSession: (gameSS: TStartQuizResponse) => void } => {
+export const useGameSession = (): { gameSkOnce: (ev: string, listener: (...args: any[]) => void) => void; getQuestionWithID: (qid: number) => (TQuestion | null); gameSkOn: (ev: string, listener: (...args: any[]) => void) => void; connectGameSocket: () => void; clearGameSession: () => void; gameSocket: () => (Socket | null); disconnectGameSocket: () => void; gameSession: TStartQuizResponse | null; saveGameSession: (gameSS: TStartQuizResponse) => void } => {
   const sk = SocketManager()
 
 
@@ -65,6 +65,10 @@ export const useGameSession = (): { gameSkOn: (ev: string, listener: (...args: a
     gameSocket()?.on(ev, listener)
   }
 
+  const gameSkOnce = (ev: string, listener: (...args: any[]) => void) => {
+    gameSocket()?.once(ev, listener)
+  }
+
   const clearGameSession = () => {
     try {
       if (deleteCount <= 0)
@@ -78,6 +82,10 @@ export const useGameSession = (): { gameSkOn: (ev: string, listener: (...args: a
     }
   }
 
+  const getQuestionWithID = (qid: number): (TQuestion | null) => {
+    return gameSession?.quiz?.questions[qid] || null
+  }
+
   return (
     {
       gameSession,
@@ -86,7 +94,9 @@ export const useGameSession = (): { gameSkOn: (ev: string, listener: (...args: a
       connectGameSocket,
       disconnectGameSocket,
       gameSocket,
-      gameSkOn
+      gameSkOn,
+      gameSkOnce,
+      getQuestionWithID
     }
   )
 }

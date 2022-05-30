@@ -1,6 +1,6 @@
 import classNames from 'classnames'
 import {useRouter} from 'next/router'
-import React, {FC, memo, useEffect, useState} from 'react'
+import React, {FC, memo, useEffect, useRef, useState} from 'react'
 import {useGameSession} from '../../../hooks/useGameSession/useGameSession'
 import {useLocalStorage} from '../../../hooks/useLocalStorage/useLocalStorage'
 import {SocketManager} from '../../../hooks/useSocket/socketManager'
@@ -14,12 +14,10 @@ import {AnswerSectionFactory} from "../AnswerQuestionComponent/AnswerSectionFact
 
 type AnswerBoardProps = {
   className?: string
-  questionId: number | 0
 }
 
-const AnswerBoard: FC<AnswerBoardProps> = ({className, questionId}) => {
-  const {gameSession, saveGameSession, clearGameSession, gameSocket, gameSkOn} = useGameSession()
-  const socket = gameSocket()
+const AnswerBoard: FC<AnswerBoardProps> = ({className}) => {
+  const {gameSession, saveGameSession, clearGameSession, gameSocket, gameSkOn, getQuestionWithID} = useGameSession()
 
   const [lsUser] = useLocalStorage('user', '')
   const [isHost, setIsHost] = useState<boolean>(false)
@@ -51,53 +49,45 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, questionId}) => {
     const user: TUser = JsonParse(lsUser)
     setIsHost(user.id === gameSession.hostId)
     if (currentQID < 0) {
-      setCurrentQID(0)
+      const firstQuestion = getQuestionWithID(0)
+      if (firstQuestion) {
+        setCurrentQID(0)
+        displayQuestion(firstQuestion)
+      }
     }
   }, [gameSession])
 
-  //  mỗi lần nhảy câu mới thì gọi
-  useEffect(() => {
-    const question = gameSession?.quiz?.questions[currentQID]
-    console.log("=>(AnswerBoard.tsx:61) gameSession?.quiz?.questions", gameSession?.quiz?.questions);
-    if (question) {
-      if (question.duration > 0) {
-        let endDate = new Date();
-        endDate.setSeconds(endDate.getSeconds() + question.duration);
-        let endTime = Math.round(endDate.getTime());
-        setEndTime(endTime)
-        setCurrentQuestion(question)
-      }
-    }
-  }, [currentQID])
-
-  // hết giờ thì handle như nào?
-  const handleTimeout = () => {
-
-  }
+  const intervalRef = useRef<NodeJS.Timer | null>(null)
 
   // nhảy mỗi lần countdown
   useEffect(() => {
     if (!currentQuestion) return
     setCountDown(currentQuestion.duration)
-    const interval = setInterval(() => {
+    intervalRef.current = setInterval(() => {
       let curr = Math.round((new Date()).getTime());
       let _countDown = Math.ceil((endTime - curr) / 1000);
       setCountDown(_countDown)
 
-      if ((_countDown <= 0)) {
-        handleTimeout()
-        clearInterval(interval)
+      if (_countDown <= 0) {
+        if (intervalRef.current)
+          clearInterval(intervalRef.current)
       }
     }, 1000)
   }, [endTime])
 
-  useEffect(() => {
-
-  }, [isSubmitted])
-
-  const displayQuestionId = (questionId: number) => {
+  const displayQuestion = (question: TQuestion) => {
     resetGameState()
-    setCurrentQID(questionId)
+    if (question) {
+      if (question.duration > 0) {
+        // chạy cái này sớm nhất có thể thui
+        setCurrentQuestion(question)
+        // rồi mới tính toán để timeout
+        let endDate = new Date();
+        endDate.setSeconds(endDate.getSeconds() + question.duration);
+        let endTime = Math.round(endDate.getTime());
+        setEndTime(endTime)
+      }
+    }
   }
 
   const resetGameState = () => {
@@ -105,7 +95,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, questionId}) => {
   }
 
   const handleSocket = () => {
-    if (!socket) return
+    if (!gameSocket()) return
     gameSkOn('new-submission', (data) => {
       console.log('new-submission', data)
       // nhớ check mode
@@ -120,27 +110,33 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, questionId}) => {
         ...JsonParse(localStorage.getItem('game-session')),
         players: [...rankingData],
       } as TStartQuizResponse)
-      // setRoomStatus('Đang trả lời câu hỏi')
-      console.log('next-question', data)
-      if (currentQID != data.currentQuestionIndex) {
-        displayQuestionId(data.currentQuestionIndex)
+
+      const currentQuestionId = data.currentQuestionIndex as number
+      const newQuestion = data.question as TQuestion
+
+      if (currentQID != currentQuestionId) {
+        setCurrentQID(currentQuestionId)
+        displayQuestion(newQuestion)
       }
     })
 
     gameSkOn('view-result', (data) => {
-      console.log('view', data)
-      // setRoomStatus('Xem xếp hạng')
+      console.log('view-result', data)
+      //nếu mà chưa countdown xong thì set count down
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current)
+        intervalRef.current = null
+        setCountDown(0)
+      }
     })
 
     gameSkOn('timeout', (data) => {
       console.log('timeout', data)
-      handleTimeout()
     })
 
     gameSkOn('ranking', (data) => {
       setShowRanking(true)
       setRankingData(data?.playersSortedByScore)
-      console.log('view-ranking', data)
     })
 
     gameSkOn('error', (data) => {
@@ -149,20 +145,16 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, questionId}) => {
   }
 
   const goToNextQuestion = () => {
-    if (!gameSession?.quiz?.questions) return
-    if (currentQID >= gameSession?.quiz?.questions.length - 1) {
-      return
-    }
-
+    if (!gameSession) return
     const msg = {invitationCode: gameSession.invitationCode}
-    socket?.emit('next-question', msg)
+    gameSocket()?.emit('next-question', msg)
     console.log(msg)
   }
 
   const viewRanking = () => {
     if (!gameSession) return
     const msg = {invitationCode: gameSession.invitationCode}
-    socket?.emit('view-ranking', msg)
+    gameSocket()?.emit('view-ranking', msg)
     setIsShowNext(true)
   }
 
@@ -178,7 +170,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, questionId}) => {
     }
 
     setIsSubmitted(true)
-    socket?.emit('submit-answer', msg)
+    gameSocket()?.emit('submit-answer', msg)
   }
 
   const exitRoom = () => {
@@ -237,7 +229,8 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, questionId}) => {
         </pre>
 
         <QuestionMedia
-          timeout={countDown}
+          //timeout sẽ âm để tránh 1 số lỗi, đừng sửa chỗ này
+          timeout={countDown > 0 ? countDown : 0}
           media={currentQuestion?.media ?? null}
           numSubmission={numSubmission}
           key={currentQID}
