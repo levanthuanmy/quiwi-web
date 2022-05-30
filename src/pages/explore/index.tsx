@@ -21,8 +21,11 @@ const ExplorePage: NextPage = () => {
       false,
       {
         filter: {
-          relations: ['questions', 'questions.questionAnswers', 'user'],
+          relations: ['questions', 'user'],
           where: { isPublic: true, isLocked: false },
+          order: {
+            createdAt: 'DESC',
+          },
         },
         q,
       },

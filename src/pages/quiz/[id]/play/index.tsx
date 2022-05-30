@@ -4,6 +4,7 @@ import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { Modal } from 'react-bootstrap'
 import useSWR from 'swr'
+import CommunityGamePlay from '../../../../components/CommunityGameComponents/CommunityGamePlay/CommunityGamePlay'
 import GameModeScreen from '../../../../components/GameModeScreen/GameModeScreen'
 import MyModal from '../../../../components/MyModal/MyModal'
 import { useCommunitySocket } from '../../../../hooks/useCommunitySocket/useCommunitySocket'
@@ -17,7 +18,7 @@ import {
   TQuiz,
   TStartQuizRequest,
   TStartQuizResponse,
-  TUser,
+  TUser
 } from '../../../../types/types'
 import { JsonParse } from '../../../../utils/helper'
 
@@ -38,7 +39,8 @@ const PlayCommunityQuizScreen: NextPage = () => {
     data: quizResponse,
     isValidating: isFetchingQuiz,
     error: fetchingQuizError,
-  } = useSWR<TApiResponse<TQuiz>>(id ? [`/api/quizzes/quiz/${id}`] : null, get)
+  } = useSWR<TApiResponse<TQuiz>>(id ? `/api/quizzes/quiz/${id}` : null, get)
+
   useEffect(() => {
     if (socket && socket.disconnected) socket.connect()
   }, [socket])
@@ -95,22 +97,19 @@ const PlayCommunityQuizScreen: NextPage = () => {
   // Bắt đầu game
   useEffect(() => {
     const quiz = quizResponse?.response
-    if (!id && !isFetchingQuiz && (!quiz || fetchingQuizError)) {
-      // setError('Không tìm thấy quiz')
-    } else {
-      const user: TUser = JsonParse(lsUser)
-      const isHost = user.id === quiz?.userId
-      if (isHost) {
-        if (gameSession) {
-          // nếu có game session, hiển thị màn lobby có nút bắt đầu quiz
-          setInvitationCode(gameSession.invitationCode)
-          setGameModeEnum(gameSession.mode)
-        } else {
-          // hiện thị chọn game mode rồi tạo game session lưu xuống ls
-          setIsShowGameModeScreen(true)
-        }
-      }
+
+    if (fetchingQuizError) {
+      setError(fetchingQuizError)
     }
+    if (gameSession) {
+      // nếu có game session, hiển thị màn lobby có nút bắt đầu quiz
+      setInvitationCode(gameSession.invitationCode)
+      setGameModeEnum(gameSession.mode)
+    } else {
+      // hiện thị chọn game mode rồi tạo game session lưu xuống ls
+      setIsShowGameModeScreen(true)
+    }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gameSession])
 
@@ -123,7 +122,7 @@ const PlayCommunityQuizScreen: NextPage = () => {
         //   isHost
         //   // players={gameSession.players}
         // />
-        <div>oklah</div>
+        <CommunityGamePlay />
       )}
       <MyModal
         show={error.length > 0}

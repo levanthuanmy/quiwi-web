@@ -1,16 +1,16 @@
 import { NextPage } from 'next'
 import { useRouter } from 'next/router'
-import { useEffect, useState } from 'react'
-import AnswerBoard from '../../components/GameComponents/AnswerBoard/AnswerBoard'
-import GameMenuBar from '../../components/GameMenuBar/GameMenuBar'
-import { useGameSession } from '../../hooks/useGameSession/useGameSession'
-import styles from './GamePage.module.css'
+import { useEffect } from 'react'
+import { useGameSession } from '../../../hooks/useGameSession/useGameSession'
+import AnswerBoard from '../AnswerBoard/AnswerBoard'
 
-const GamePage: NextPage = () => {
+import styles from './CommunityGamePlay.module.css'
+
+const CommunityGamePlay: NextPage = () => {
   const router = useRouter()
   const { questionId } = router.query
-  const { gameSession, connectGameSocket } = useGameSession()
-  const [isExpand, setIsExpand] = useState<boolean>(false)
+  const { gameSession, saveGameSession, clearGameSession, gameSocket } =
+    useGameSession()
 
   useEffect(() => {
     if (!gameSession) {
@@ -36,18 +36,10 @@ const GamePage: NextPage = () => {
             {/* <EmojiBar className={styles.emojiBar} />
             <EmojiBar className={styles.emojiBar} /> */}
           </div>
-
-          {gameSession && (
-            <GameMenuBar
-              isExpand={isExpand}
-              setIsExpand={setIsExpand}
-              gameSession={gameSession}
-            />
-          )}
         </div>
       </div>
     </>
   )
 }
 
-export default GamePage
+export default CommunityGamePlay
