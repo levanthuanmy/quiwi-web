@@ -12,7 +12,6 @@ import '../styles/sizing.css'
 import '../styles/border.css'
 import '../styles/typography.css'
 import '../styles/custom-arrow-react-slick.css'
-import {SocketProvider} from '../hooks/useSocket/useSocket'
 import {AuthProvider} from '../hooks/useAuth/useAuth'
 import {useRouter} from 'next/router'
 import {useEffect, useState} from 'react'
@@ -24,7 +23,7 @@ import {useGameSession} from "../hooks/useGameSession/useGameSession";
 function MyApp({Component, pageProps}: AppProps) {
   const router = useRouter()
   const [shouldLoad, setShouldLoad] = useState<boolean>(false)
-  const {gameSession, saveGameSession, clearGameSession} = useGameSession()
+  const {disconnectGameSocket, clearGameSession} = useGameSession()
   useEffect(() => {
     const handleRouteChangeStart = () => {
       setShouldLoad(true)
@@ -54,20 +53,19 @@ function MyApp({Component, pageProps}: AppProps) {
     if (!gamePageSet.has(router.pathname)) {
       console.log("🏡 =>", router.pathname);
       clearGameSession()
+      disconnectGameSocket()
     }
   }, [router]);
 
   return (
     <SSRProvider>
-      <SocketProvider>
-        <DndProvider backend={HTML5Backend}>
-          <AuthProvider>
-            <MyHead/>
-            <Component {...pageProps} />
-            <FullScreenLoader isLoading={shouldLoad}/>
-          </AuthProvider>
-        </DndProvider>
-      </SocketProvider>
+      <DndProvider backend={HTML5Backend}>
+        <AuthProvider>
+          <MyHead/>
+          <Component {...pageProps} />
+          <FullScreenLoader isLoading={shouldLoad}/>
+        </AuthProvider>
+      </DndProvider>
     </SSRProvider>
   )
 }

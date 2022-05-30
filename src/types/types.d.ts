@@ -183,11 +183,13 @@ export type TQuizBodyRequest = {
 }
 
 export type TQuestionType = '10SG' | '20MUL' | '30TEXT'
+export type TMatcher = '10EXC' | '20CNT'
 
 export type TQuestion = {
   id?: number
   question: string
   type: TQuestionType
+  matcher?: TMatcher
   difficulty: number
   duration: number
   orderPosition: number

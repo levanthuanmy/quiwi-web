@@ -1,9 +1,9 @@
 import _ from 'lodash'
-import { FC, useEffect, useState } from 'react'
-import { Image } from 'react-bootstrap'
-import { useSocket } from '../../../../hooks/useSocket/useSocket'
-import { TPlayer, TUser } from '../../../../types/types'
-import { MyTooltip } from '../../../MyToolTip/MyTooltip'
+import {FC, useEffect, useState} from 'react'
+import {Image} from 'react-bootstrap'
+import {useSocket} from '../../../../hooks/useSocket/useSocket'
+import {TPlayer, TUser} from '../../../../types/types'
+import {MyTooltip} from '../../../MyToolTip/MyTooltip'
 import styles from './Message.module.css'
 
 export type SendMessageProps = {
@@ -32,7 +32,7 @@ const Message: FC<MessageProps> = (props) => {
   const avatar =
     _.get(props, 'user.avatar', _.get(props, 'player.user.avatar')) ||
     '/assets/default-user.png'
-  const { socket } = useSocket()
+  const socket = useSocket().socketOf("GAMES")
   const [upvote, setUpvote] = useState(0)
 
   const nickname =
@@ -56,7 +56,7 @@ const Message: FC<MessageProps> = (props) => {
     }
     props.onVoteUpdated ? props.onVoteUpdated(newUpVote) : undefined
   }
-  const vote = props.vote 
+  const vote = props.vote
   const voteColor = vote === 0 ? 'text-secondary' : vote === 1 ? 'text-primary' : 'text-danger'
   return (
     <div className="d-flex">
@@ -132,4 +132,4 @@ const Message: FC<MessageProps> = (props) => {
   )
 }
 
-export { Message }
+export {Message}

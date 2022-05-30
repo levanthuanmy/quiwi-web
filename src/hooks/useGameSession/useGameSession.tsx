@@ -1,59 +1,76 @@
-import { useEffect, useState } from 'react'
-import { TStartQuizResponse } from '../../types/types'
-import { JsonParse } from '../../utils/helper'
-import { useLocalStorage } from '../useLocalStorage/useLocalStorage'
-import { globalSocket } from '../useSocket/useSocket'
+import {useEffect, useState} from 'react'
+import {Socket} from "socket.io-client";
+import {TStartQuizResponse} from '../../types/types'
+import {JsonParse} from '../../utils/helper'
+import {useLocalStorage} from '../useLocalStorage/useLocalStorage'
 
-export const useGameSession = (): {
-  clearGameSession: () => void
-  gameSession: TStartQuizResponse | null
-  saveGameSession: (gameSS: TStartQuizResponse) => void
-} => {
+import {useSocket} from '../useSocket/useSocket'
+
+export const useGameSession = (): { connectGameSocket: () => void; clearGameSession: () => void; gameSocket: () => (Socket | null); disconnectGameSocket: () => void; gameSession: TStartQuizResponse | null; saveGameSession: (gameSS: TStartQuizResponse) => void } => {
+  const sk = useSocket()
+
+
   const [lsGameSession, setLsGameSession] = useLocalStorage('game-session', '')
   const [gameSession, setGameSession] = useState<TStartQuizResponse | null>(
     null
   )
 
+  // cần debug thì in số này ra
+  let deleteCount = 0
+
   useEffect(() => {
     if (lsGameSession && lsGameSession.length > 0) {
+      deleteCount = 0
       const gs: TStartQuizResponse = JsonParse(
         lsGameSession
       ) as TStartQuizResponse
       setGameSession(gs)
-      console.log('🎯️ GameSession => Cập nhật', gs)
+      console.log('🎯️ GameSession => 💸')
     } else {
-      console.log('🎯️ ️GameSession => null')
+      if (deleteCount <= 0) {
+        console.log('🎯️ ️GameSession => 🚮')
+      }
+      deleteCount += 1
       setGameSession(null)
     }
   }, [lsGameSession])
 
   const saveGameSession = (gameSS: TStartQuizResponse) => {
-    console.log('🎯️ ️️GameSession => Lưu')
+    console.log('🎯️ ️️GameSession => saveGameSession')
     setLsGameSession(JSON.stringify(gameSS))
     setGameSession(gameSS)
-    
-    if (globalSocket.disconnected) {
-      globalSocket.connect()
-      console.log('🎯️ ️️GameSession ::  Socket => Kết nối', globalSocket)
+  }
+
+  // alias cho sk.socketOf("GAMES") thôi
+  const gameSocket = (): (Socket | null) => {
+    sk.connect("GAMES")
+    return sk.socketOf("GAMES")
+  }
+
+  const connectGameSocket = () => {
+    if (!gameSocket() || gameSocket()?.disconnected) {
+      sk.connect("GAMES")
+    }
+  }
+
+  const disconnectGameSocket = () => {
+    if (gameSocket()?.connected) {
+      sk.disconnect("GAMES")
     }
   }
 
   const clearGameSession = () => {
     try {
-      console.log('🎯️ ️️GameSession :: Clear')
+      if (deleteCount <= 0)
+        console.log('🎯️ ️️GameSession :: Clear')
       setLsGameSession('')
       setGameSession(null)
       localStorage.removeItem('game-session')
       localStorage.removeItem('game-session-player')
-
-      if (globalSocket.connected) {
-        globalSocket.disconnect()
-        console.log('🎯️ ️️GameSession :: Socket => Ngắt kết nối', globalSocket)
-      }
     } catch (error) {
       console.log('🎯️ ️️GameSession => Clear game lỗi', error)
     }
   }
 
-  return { gameSession, saveGameSession, clearGameSession }
+  return ({gameSession, saveGameSession, clearGameSession, connectGameSocket, disconnectGameSocket, gameSocket})
 }
