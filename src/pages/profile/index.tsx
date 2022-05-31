@@ -5,6 +5,7 @@ import { Button, Col, Container, Image, Row } from 'react-bootstrap'
 import useSWR from 'swr'
 import Cookies from 'universal-cookie'
 import NavBar from '../../components/NavBar/NavBar'
+import SummaryInfo from '../../components/Profile/SummaryInfo/SummaryInfo'
 import { get, post } from '../../libs/api'
 import {
   TApiResponse,
@@ -127,58 +128,11 @@ const ProfilePage: NextPage = () => {
               </div>
             </div>
 
-            <Row className="mx-0 mt-3">
-              <Col className="p-0 d-flex gap-2 align-items-center">
-                <div
-                  className="shadow-sm d-flex justify-content-center align-items-center rounded-14px"
-                  style={{ width: 45, height: 45 }}
-                >
-                  <i className="bi bi-trophy-fill" />
-                </div>
-                <div>
-                  <div className="fs-24px line-height-normal fw-medium">
-                    {userResponse?.badges.length}
-                  </div>
-                  <div className="text-secondary fs-14px d-none d-md-block">
-                    Danh Hiệu
-                  </div>
-                </div>
-              </Col>
-
-              <Col className="p-0 d-flex gap-2 align-items-center">
-                <div
-                  className="shadow-sm d-flex justify-content-center align-items-center rounded-14px"
-                  style={{ width: 45, height: 45 }}
-                >
-                  <i className="bi bi-people-fill fs-18px" />
-                </div>
-                <div>
-                  <div className="fs-24px line-height-normal fw-medium">
-                    {followerUsers?.items.length}
-                  </div>
-                  <div className="text-secondary fs-14px d-none d-md-block">
-                    Lượt Theo Dõi
-                  </div>
-                </div>
-              </Col>
-
-              <Col className="p-0 d-flex gap-2 align-items-center">
-                <div
-                  className="shadow-sm d-flex justify-content-center align-items-center rounded-14px"
-                  style={{ width: 45, height: 45 }}
-                >
-                  <i className="bi bi-person-heart fs-18px" />
-                </div>
-                <div>
-                  <div className="fs-24px line-height-normal fw-medium">
-                    {followingUsers?.items.length}
-                  </div>
-                  <div className="text-secondary fs-14px d-none d-md-block">
-                    Đang Theo Dõi
-                  </div>
-                </div>
-              </Col>
-            </Row>
+            <SummaryInfo
+              userResponse={userResponse}
+              followers={followerUsers?.items as TFollowUsers[]}
+              followings={followingUsers?.items as TFollowUsers[]}
+            />
           </div>
           <Link href="/profile/edit" passHref={true}>
             <Button
