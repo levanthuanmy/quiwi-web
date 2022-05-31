@@ -139,7 +139,9 @@ const ItemFollowUser: FC<{ followUser: TFollowUsers }> = ({ followUser }) => {
   return (
     <div
       className="btn btn-outline-light mb-3 d-flex align-items-center gap-2 rounded-14px"
-      onClick={() => router.push(`/users/${followUser.id}`)}
+      onClick={() => {
+        router.push(`/users/${followUser.followingUserId}`)
+      }}
     >
       <div>
         {followUser.followingUser?.avatar?.length ? (
