@@ -1,0 +1,54 @@
+.container {
+  /* border-radius: 4px; */
+  position: relative;
+}
+
+.timeoutContainer {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 1rem;
+}
+
+.questionImage {
+  max-height: 320px;
+  min-width: 30%;
+  width: 60%;
+  object-fit: contain;
+}
+
+.answerLayout {
+  flex-grow: 1;
+  position: relative;
+  max-height: 500px;
+  /*// thiennc5*/
+  /*background-color: #15e2ef;*/
+}
+
+@media (min-width: 1200px) {
+  .container {
+    border-radius: 20px;
+  }
+  .questionImage {
+    width: 100%;
+  }
+}
+
+@media (min-width: 992px) {
+  .questionTitle {
+    border-radius: 20px;
+  }
+
+}
+
+@media (min-width: 768px) {
+  .timeoutContainer {
+    font-size: 1.5rem;
+    width: 64px;
+    height: 64px;
+    margin: 0;
+  }
+}
