@@ -23,7 +23,7 @@ const Home: NextPage = () => {
   const [invitationInputError, setInvitationInputError] = useState<string>('')
   const authContext = useAuth()
   const router = useRouter()
-
+  const user = authContext.getUser()
   const popularParams = {
     filter: {
       relations: ['questions', 'questions.questionAnswers', 'user'],

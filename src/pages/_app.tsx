@@ -52,6 +52,7 @@ function MyApp({ Component, pageProps }: AppProps) {
     '/game/practice',
     '/host/lobby',
     '/lobby',
+    'quiz/[id]/play',
   ])
 
   useEffect(() => {
