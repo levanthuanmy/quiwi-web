@@ -9,7 +9,8 @@ const QuestionMedia: FC<{
   numSubmission: number
 }> = ({timeout, media, numSubmission}) => {
   return (
-    <div className="text-center mb-2 d-flex justify-content-xl-between justify-content-center align-items-center px-12px">
+    <div
+      className="text-center mb-2 d-flex justify-content-xl-between justify-content-center align-items-center px-12px">
       {/* Timeout */}
       <div
         className={classNames(
@@ -33,7 +34,7 @@ const QuestionMedia: FC<{
 
 
       <Image
-        src={media || 'assets/default-question-image.png'}
+        src={media || '/assets/default-question-image.png'}
         alt="question-image"
         fluid={true}
         className={classNames(styles.questionImage, 'mx-3 flex-grow-1')}

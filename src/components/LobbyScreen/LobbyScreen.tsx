@@ -29,80 +29,49 @@ const LobbyScreen: FC<LobbyScreenProps> = ({invitationCode, isHost}) => {
   const [showToast, setShowToast] = useState<boolean>(false)
   const [showQR, setShowQR] = useState<boolean>(false)
   const isMobile = useIsMobile()
-  const {gameSession, saveGameSession, clearGameSession, gameSocket} = useGameSession()
-  const socket = gameSocket()
+  const {gameSession, saveGameSession, clearGameSession, gameSocket, gameSkOn, gameSkOnce} = useGameSession()
 
   useEffect(() => {
+    if (!gameSession) return
+    const lsPlayers: TPlayer[] = [...gameSession.players]
+    setPlayerList(lsPlayers)
 
-  }, [])
+    gameSkOn('new-player', (data) => {
+      console.log('new-player', data)
 
-  useEffect(() => {
-    try {
-      if (!gameSession) return
-      const lsPlayers: TPlayer[] = [...gameSession.players]
-      setPlayerList(lsPlayers)
+      const newPlayerList: TPlayer[] = [...lsPlayers, data.newPlayer]
+      setPlayerList(newPlayerList)
+      gameSession.players = newPlayerList
+      saveGameSession(gameSession)
+    })
 
-      // test data
-      const names = [
-        'Thiện Thiện Thiện',
-        'Khoa',
-        'Mỹ',
-        'Thiện',
-        'Mỹ Mỹ Mỹ',
-        'Khoa Khoa Khoa',
-      ]
-      // for (let i = 0; i < 20; i++) {
-      //   lsPlayers.push({
-      //     id: i,
-      //     gameLobbyId: 1,
-      //     nickname: names[i % names.length] + i.toString(),
-      //     score: 0,
-      //   },)
-      // }
-      // setPlayerList(lsPlayers)
-      socket?.off('new-player')
-      socket?.on('new-player', (data) => {
-        console.log('new-player', data)
+    gameSkOn('player-left', (data) => {
+      // console.log('player-left', data)
 
-        const newPlayerList: TPlayer[] = [...lsPlayers, data.newPlayer]
-        setPlayerList(newPlayerList)
-        gameSession.players = newPlayerList
-        saveGameSession(gameSession)
-      })
+      let _players = [...playerList]
+      _.remove(_players, (player) => player.id === data.id)
+      setPlayerList(_players)
+      gameSession.players = [..._players]
+      saveGameSession(gameSession)
+    })
 
-      socket?.off('player-left')
-      socket?.on('player-left', (data) => {
-        console.log('player-left', data)
+    gameSkOnce('host-out', () => {
+      router.push('/')
+    })
 
-        let _players = [...playerList]
-        _.remove(_players, (player) => player.id === data.id)
-        setPlayerList(_players)
-        gameSession.players = [..._players]
-        saveGameSession(gameSession)
-      })
+    gameSkOnce('game-started', (data) => {
+      // console.log('game started', data)
+      router.push(`/game/play`)
+    })
 
-      socket?.off('host-out')
-      socket?.on('host-out', () => {
-        router.push('/')
-      })
-
-      socket?.off('game-started')
-      socket?.on('game-started', (data) => {
-        console.log('game started', data)
-        router.push(`/game`)
-      })
-
-      socket?.off('error')
-      socket?.on('error', (data) => {
-        console.log('socket error', data)
-      })
-    } catch (error) {
-      console.log('useEffect - error', error)
-    }
+    gameSkOn('error', (data) => {
+      console.log('LobbyScreen.tsx - error', data)
+    })
   }, [gameSession])
 
   useEffect(() => {
-    setUser(JsonParse(lsUser) as TUser)
+    if (lsUser)
+      setUser(JsonParse(lsUser) as TUser)
   }, [])
 
   const handleLeaveRoom = () => {
@@ -121,7 +90,7 @@ const LobbyScreen: FC<LobbyScreenProps> = ({invitationCode, isHost}) => {
           invitationCode: invitationCode,
           token: accessToken,
         }
-        socket?.emit('start-game', msg)
+        gameSocket()?.emit('start-game', msg)
       }
     } catch (error) {
       console.log('handleStartGame - error', error)

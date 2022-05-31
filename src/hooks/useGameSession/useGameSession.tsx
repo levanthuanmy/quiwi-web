@@ -1,12 +1,12 @@
 import {useEffect, useState} from 'react'
 import {Socket} from "socket.io-client";
-import {TStartQuizResponse} from '../../types/types'
+import {TQuestion, TStartQuizResponse} from '../../types/types'
 import {JsonParse} from '../../utils/helper'
 import {useLocalStorage} from '../useLocalStorage/useLocalStorage'
 
 import {SocketManager} from '../useSocket/socketManager'
 
-export const useGameSession = (): { connectGameSocket: () => void; clearGameSession: () => void; gameSocket: () => (Socket | null); disconnectGameSocket: () => void; gameSession: TStartQuizResponse | null; saveGameSession: (gameSS: TStartQuizResponse) => void } => {
+export const useGameSession = (): { gameSkOnce: (ev: string, listener: (...args: any[]) => void) => void; getQuestionWithID: (qid: number) => (TQuestion | null); gameSkOn: (ev: string, listener: (...args: any[]) => void) => void; connectGameSocket: () => void; clearGameSession: () => void; gameSocket: () => (Socket | null); disconnectGameSocket: () => void; gameSession: TStartQuizResponse | null; saveGameSession: (gameSS: TStartQuizResponse) => void } => {
   const sk = SocketManager()
 
 
@@ -43,7 +43,8 @@ export const useGameSession = (): { connectGameSocket: () => void; clearGameSess
 
   // alias cho sk.socketOf("GAMES") thôi
   const gameSocket = (): (Socket | null) => {
-    sk.connect("GAMES")
+    // test xem có cần thiết connect lại trong này ko
+    // sk.connect("GAMES")
     return sk.socketOf("GAMES")
   }
 
@@ -59,6 +60,15 @@ export const useGameSession = (): { connectGameSocket: () => void; clearGameSess
     }
   }
 
+  const gameSkOn = (ev: string, listener: (...args: any[]) => void) => {
+    gameSocket()?.off(ev)
+    gameSocket()?.on(ev, listener)
+  }
+
+  const gameSkOnce = (ev: string, listener: (...args: any[]) => void) => {
+    gameSocket()?.once(ev, listener)
+  }
+
   const clearGameSession = () => {
     try {
       if (deleteCount <= 0)
@@ -72,5 +82,21 @@ export const useGameSession = (): { connectGameSocket: () => void; clearGameSess
     }
   }
 
-  return ({gameSession, saveGameSession, clearGameSession, connectGameSocket, disconnectGameSocket, gameSocket})
+  const getQuestionWithID = (qid: number): (TQuestion | null) => {
+    return gameSession?.quiz?.questions[qid] || null
+  }
+
+  return (
+    {
+      gameSession,
+      saveGameSession,
+      clearGameSession,
+      connectGameSocket,
+      disconnectGameSocket,
+      gameSocket,
+      gameSkOn,
+      gameSkOnce,
+      getQuestionWithID
+    }
+  )
 }

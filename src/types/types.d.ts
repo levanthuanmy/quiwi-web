@@ -79,20 +79,30 @@ export type TStartQuizResponse = {
   quizId: number
   status: TGameStatus
   chats: MessageProps[]
+  gameRoundStatistics: TGameRoundStatistic[]
+}
+
+export type QuestionGameResponse = {
+  currentQuestionIndex: number
+  question: TQuestion
+}
+
+export type TStartCommunityQuizResponse = {
+  room: TStartQuizResponse
+  questionGameResponse: QuestionGameResponse
   // gameRoundStatistics: TGameRoundStatistic[]
 }
 
-// export type TGameRoundStatistic = {
-//   playersWithAnswer: TPlayer[]
-//   playersWithoutAnswer: TPlayer[]
-//   playersSortedByScore: {
-//     currentStreak: number
-//     gameRounds: TGameRound[]
-//     maxStreak: number
-//     nickname: string
-//     score: number
-//   }[]
-// }
+export type TGameRoundStatistic = {
+  playersWithAnswer: TPlayer[]
+  playersWithoutAnswer: TPlayer[]
+
+  numberOfCorrectAnswers: number
+  numberOfSubmission: number
+  numberOfTimeout: number
+
+  roundNumber: number
+}
 
 export type TFollowUsers = {
   id?: number

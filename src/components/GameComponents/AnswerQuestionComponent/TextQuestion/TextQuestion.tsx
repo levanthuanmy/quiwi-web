@@ -27,8 +27,7 @@ const TextQuestion: FC<TextQuestionProps> = ({
                                              }) => {
   const [answerText, setAnswerText] = useState<string | null>(null)
   const focusDiv = useRef();
-
-  console.log("=>(TextQuestion.tsx:31) questionAnswers", option?.questionAnswers);
+  
   useEffect(() => {
     if (isTimeOut && !isSubmitted) {
       if (answerText) {

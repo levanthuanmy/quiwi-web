@@ -1,15 +1,15 @@
-import {NextPage} from 'next'
-import {useRouter} from 'next/router'
-import {useEffect, useState} from 'react'
-import AnswerBoard from '../../components/GameComponents/AnswerBoard/AnswerBoard'
-import GameMenuBar from '../../components/GameMenuBar/GameMenuBar'
-import {useGameSession} from '../../hooks/useGameSession/useGameSession'
+import { NextPage } from 'next'
+import { useRouter } from 'next/router'
+import { useEffect, useState } from 'react'
+import AnswerBoard from '../../../components/GameComponents/AnswerBoard/AnswerBoard'
+import GameMenuBar from '../../../components/GameMenuBar/GameMenuBar'
+import { useGameSession } from '../../../hooks/useGameSession/useGameSession'
 import styles from './GamePage.module.css'
 
 const GamePage: NextPage = () => {
   const router = useRouter()
-  const {questionId} = router.query
-  const {gameSession, connectGameSocket} = useGameSession()
+  const { questionId } = router.query
+  const { gameSession, connectGameSocket } = useGameSession()
   const [isExpand, setIsExpand] = useState<boolean>(false)
 
   useEffect(() => {
@@ -22,13 +22,14 @@ const GamePage: NextPage = () => {
   return (
     <>
       <div className={`${styles.gameBackground}`}>
-        <div className={`${styles.gameView} d-flex justify-content-center position-relative`}>
+        <div
+          className={`${styles.gameView} d-flex justify-content-center position-relative`}
+        >
           <div
             // className={`d-flex flex-column flex-grow-3 gap-3 ${styles.gameCol} me-lg-3 m-0 `}
             className={`${styles.answerBoard}`}
           >
             <AnswerBoard
-              questionId={Number(questionId) ?? 0}
               className="flex-grow-1"
             />
             {/* <EmojiBar className={styles.emojiBar} />
