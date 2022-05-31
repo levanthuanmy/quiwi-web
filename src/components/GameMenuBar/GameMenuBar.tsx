@@ -1,9 +1,9 @@
 import classNames from 'classnames'
-import React, { FC, useState } from 'react'
-import { useSocket } from '../../hooks/useSocket/useSocket'
-import { TStartQuizResponse, TUser } from '../../types/types'
+import React, {FC, useState} from 'react'
+import {SocketManager} from '../../hooks/useSocket/socketManager'
+import {TStartQuizResponse, TUser} from '../../types/types'
 import ChatWindow from '../GameComponents/ChatWindow/ChatWindow'
-import { MessageProps } from '../GameComponents/ChatWindow/Message/Message'
+import {MessageProps} from '../GameComponents/ChatWindow/Message/Message'
 import PlayerList from '../GameComponents/PlayerList/PlayerList'
 import styles from './GameMenuBar.module.css'
 
@@ -14,12 +14,12 @@ type GameMenuBarProps = {
   user?: TUser
 }
 const GameMenuBar: FC<GameMenuBarProps> = ({
-  isExpand,
-  setIsExpand,
-  gameSession,
-}) => {
+                                             isExpand,
+                                             setIsExpand,
+                                             gameSession,
+                                           }) => {
   const [chatContent, setChatContent] = useState<MessageProps[]>([])
-  const { socket } = useSocket()
+  const socket = SocketManager().socketOf("GAMES")
 
   const receivedMessage = (message: MessageProps) => {
     if (message) {
@@ -33,7 +33,7 @@ const GameMenuBar: FC<GameMenuBarProps> = ({
 
   const renderItems = (
     <>
-      <PlayerList playerList={gameSession.players} />
+      <PlayerList playerList={gameSession.players}/>
       <div
         className={`${styles.slider} bg-primary`}
         onMouseDown={(e) => {
@@ -71,13 +71,13 @@ const GameMenuBar: FC<GameMenuBarProps> = ({
         isExpand ? `shadow-lg ${styles.expand}` : '',
         {
           minHeight: '976px',
-          right: 0, 
+          right: 0,
         }
       )}
     >
       <div
         className="position-relative cursor-pointer "
-        style={{ height: 40 }}
+        style={{height: 40}}
         onClick={() => setIsExpand((prev) => !prev)}
       >
         <i

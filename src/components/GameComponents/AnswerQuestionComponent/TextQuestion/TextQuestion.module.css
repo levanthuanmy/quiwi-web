@@ -3,12 +3,13 @@
     padding: 5px;
 }
 
-.halfHeight {
-    height: 50%;
+.playerList {
+    flex-grow: 1;
+    /*height: 50%;*/
 }
 
-.fullHeight {
-    height: 100%;
+.playerListFullScreen {
+    flex-grow: 1;
 }
 
 .answerInput {
@@ -16,23 +17,9 @@
     font-size: 48px;
     caret-color: white;
     border: 10px dashed white;
-    /*height: 100%;*/
-
-
-    /*-webkit-box-: 0 0 6px white;*/
-    /*-moz-box-shadow: 0 0 5px white;*/
-    /*box-shadow: 0 0 5px white;*/
 }
 
-@media (max-width: 576px) {
-    .halfHeight {
-        height: 30%;
-    }
-
-    .fullHeight {
-        height: 30%;
-    }
-
+@media (max-width: 992px) {
     .answerInput {
         font-weight: bold;
         font-size: 24px;
@@ -40,19 +27,17 @@
 }
 
 .selectionBox {
-    height: 80%;
+    height: 40%;
     border-radius: 16px;
     padding-left: 10px;
     padding-right: 10px;
     padding-bottom: 10px;
-
-
 }
 
 @media (max-width: 576px) {
     .selectionBox {
-        height: 60%;
-        border-radius: 0px;
+        height: 40%;
+        border-radius: 0;
         padding: 0 10px 0 10px;
     }
 
@@ -62,9 +47,9 @@
     }
 }
 
-.selectionBox:hover {
-    cursor: pointer;
-}
+/*.selectionBox:hover {*/
+/*    cursor: pointer;*/
+/*}*/
 
 .selectionTextHuge {
     font-size: 18px;

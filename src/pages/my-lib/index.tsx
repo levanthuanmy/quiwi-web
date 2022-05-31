@@ -24,7 +24,7 @@ const MyLibPage: NextPage = () => {
 
   return (
     <DashboardLayout>
-      <div className="w-100 bg-secondary bg-opacity-10">
+      <div className="w-100 bg-secondary bg-opacity-10 min-vh-100">
         <Container fluid="lg" className="p-3">
           {isValidating ? (
             'fetching...'

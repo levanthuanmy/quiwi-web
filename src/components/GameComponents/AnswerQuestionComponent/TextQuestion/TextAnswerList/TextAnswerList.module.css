@@ -1,0 +1,30 @@
+.answer {
+    font-size: 32px;
+    border-radius: 20px;
+    max-width: 80%;
+}
+
+.playerList {
+    gap: 15px;
+    /*min-height: 10vh;*/
+    /*min-width: 50vw;*/
+    /*max-height: 30vh;*/
+    /*max-width: 70vw;*/
+    /*border-radius: 10px;*/
+    /*padding: 20px;*/
+    /*background-color: white;*/
+    align-items: center;
+    justify-content: center;
+    overflow-y: scroll;
+}
+
+@media (max-width: 992px) {
+    .answer {
+        font-size: 24px;
+    }
+
+    .playerList {
+        gap: 10px;
+    }
+}
+

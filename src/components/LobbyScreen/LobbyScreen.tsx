@@ -2,17 +2,16 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import _ from 'lodash'
 import Head from 'next/head'
-import { useRouter } from 'next/router'
-import { FC, useEffect, useState } from 'react'
-import { Modal, Toast, ToastContainer } from 'react-bootstrap'
+import {useRouter} from 'next/router'
+import {FC, useEffect, useState} from 'react'
+import {Modal, Toast, ToastContainer} from 'react-bootstrap'
 import QRCode from 'react-qr-code'
 import Cookies from 'universal-cookie'
-import { useGameSession } from '../../hooks/useGameSession/useGameSession'
+import {useGameSession} from '../../hooks/useGameSession/useGameSession'
 import useIsMobile from '../../hooks/useIsMobile/useIsMobile'
-import { useLocalStorage } from '../../hooks/useLocalStorage/useLocalStorage'
-import { useSocket } from '../../hooks/useSocket/useSocket'
-import { TPlayer, TStartGameRequest, TUser } from '../../types/types'
-import { JsonParse } from '../../utils/helper'
+import {useLocalStorage} from '../../hooks/useLocalStorage/useLocalStorage'
+import {TPlayer, TStartGameRequest, TUser} from '../../types/types'
+import {JsonParse} from '../../utils/helper'
 import MyButton from '../MyButton/MyButton'
 import PlayerLobbyItem from '../PlayerLobbyItem/PlayerLobbyItem'
 import PlayerLobbyList from '../PlayerLobbyList/PlayerLobbyList'
@@ -22,84 +21,57 @@ type LobbyScreenProps = {
   invitationCode: string
   isHost: boolean
 }
-const LobbyScreen: FC<LobbyScreenProps> = ({ invitationCode, isHost }) => {
+const LobbyScreen: FC<LobbyScreenProps> = ({invitationCode, isHost}) => {
   const [playerList, setPlayerList] = useState<TPlayer[]>([])
-  const { socket } = useSocket()
   const [lsUser] = useLocalStorage('user', '')
   const [user, setUser] = useState<TUser>()
   const router = useRouter()
   const [showToast, setShowToast] = useState<boolean>(false)
   const [showQR, setShowQR] = useState<boolean>(false)
   const isMobile = useIsMobile()
-  const { gameSession, saveGameSession, clearGameSession } = useGameSession()
+  const {gameSession, saveGameSession, clearGameSession, gameSocket, gameSkOn, gameSkOnce} = useGameSession()
 
   useEffect(() => {
-    // if (socket && socket.disconnected) socket?.connect()
-  }, [])
+    if (!gameSession) return
+    const lsPlayers: TPlayer[] = [...gameSession.players]
+    setPlayerList(lsPlayers)
+
+    gameSkOn('new-player', (data) => {
+      console.log('new-player', data)
+
+      const newPlayerList: TPlayer[] = [...lsPlayers, data.newPlayer]
+      setPlayerList(newPlayerList)
+      gameSession.players = newPlayerList
+      saveGameSession(gameSession)
+    })
+
+    gameSkOn('player-left', (data) => {
+      // console.log('player-left', data)
+
+      let _players = [...playerList]
+      _.remove(_players, (player) => player.id === data.id)
+      setPlayerList(_players)
+      gameSession.players = [..._players]
+      saveGameSession(gameSession)
+    })
+
+    gameSkOnce('host-out', () => {
+      router.push('/')
+    })
+
+    gameSkOnce('game-started', (data) => {
+      // console.log('game started', data)
+      router.push(`/game/play`)
+    })
+
+    gameSkOn('error', (data) => {
+      console.log('LobbyScreen.tsx - error', data)
+    })
+  }, [gameSession])
 
   useEffect(() => {
-    try {
-      if (!gameSession) return
-      const lsPlayers: TPlayer[] = [...gameSession.players]
-      setPlayerList(lsPlayers)
-
-      // test data
-      const names = [
-        'Thiện Thiện Thiện',
-        'Khoa',
-        'Mỹ',
-        'Thiện',
-        'Mỹ Mỹ Mỹ',
-        'Khoa Khoa Khoa',
-      ]
-      // for (let i = 0; i < 20; i++) {
-      //   lsPlayers.push({
-      //     id: i,
-      //     gameLobbyId: 1,
-      //     nickname: names[i % names.length] + i.toString(),
-      //     score: 0,
-      //   },)
-      // }
-      // setPlayerList(lsPlayers)
-
-      socket?.on('new-player', (data) => {
-        console.log('new-player', data)
-
-        const newPlayerList: TPlayer[] = [...lsPlayers, data.newPlayer]
-        setPlayerList(newPlayerList)
-        gameSession.players = newPlayerList
-        saveGameSession(gameSession)
-      })
-
-      socket?.on('player-left', (data) => {
-        console.log('player-left', data)
-
-        let _players = [...playerList]
-        _.remove(_players, (player) => player.id === data.id)
-        setPlayerList(_players)
-        gameSession.players = [..._players]
-        saveGameSession(gameSession)
-      })
-
-      socket?.on('host-out', () => {
-        router.push('/')
-      })
-
-      socket?.on('game-started', (data) => {
-        console.log('game started', data)
-        router.push(`/game`)
-      })
-
-      socket?.on('error', (data) => {
-        console.log('socket error', data)
-      })
-    } catch (error) {
-      console.log('useEffect - error', error)
-    }
-  }, [socket, gameSession])
-
-  useEffect(() => {
-    setUser(JsonParse(lsUser) as TUser)
+    if (lsUser)
+      setUser(JsonParse(lsUser) as TUser)
   }, [])
 
   const handleLeaveRoom = () => {
@@ -111,7 +83,6 @@ const LobbyScreen: FC<LobbyScreenProps> = ({ invitationCode, isHost }) => {
     try {
       const cookies = new Cookies()
       const accessToken = cookies.get('access-token')
-      useLocalStorage
 
       if (user) {
         const msg: TStartGameRequest = {
@@ -119,7 +90,7 @@ const LobbyScreen: FC<LobbyScreenProps> = ({ invitationCode, isHost }) => {
           invitationCode: invitationCode,
           token: accessToken,
         }
-        socket?.emit('start-game', msg)
+        gameSocket()?.emit('start-game', msg)
       }
     } catch (error) {
       console.log('handleStartGame - error', error)
@@ -151,9 +122,10 @@ const LobbyScreen: FC<LobbyScreenProps> = ({ invitationCode, isHost }) => {
   }
 
   return (
-    <div className="bg-secondary fw-medium bg-opacity-10 min-vh-100 d-flex flex-column justify-content-center align-items-center">
+    <div
+      className="bg-secondary fw-medium bg-opacity-10 min-vh-100 d-flex flex-column justify-content-center align-items-center">
       <Head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.googleapis.com"/>
         <link
           rel="preconnect"
           href="https://fonts.gstatic.com"
@@ -223,7 +195,7 @@ const LobbyScreen: FC<LobbyScreenProps> = ({ invitationCode, isHost }) => {
               Tham gia bằng
               <span className={styles.joinLink} onClick={copyInvitationCode}>
                 {' link '}
-                <i className={`bi bi-clipboard-plus-fill`} />
+                <i className={`bi bi-clipboard-plus-fill`}/>
               </span>
             </div>
           </div>
@@ -248,7 +220,7 @@ const LobbyScreen: FC<LobbyScreenProps> = ({ invitationCode, isHost }) => {
           Copy
           <span className={styles.joinLink} onClick={copyInvitationCode}>
             {' link vào phòng '}
-            <i className={`bi bi-clipboard-plus-fill`} />
+            <i className={`bi bi-clipboard-plus-fill`}/>
           </span>
         </div>
       </>
@@ -320,8 +292,8 @@ const LobbyScreen: FC<LobbyScreenProps> = ({ invitationCode, isHost }) => {
         >
           RỜI PHÒNG
         </MyButton>
-        <br />
-        <br />
+        <br/>
+        <br/>
         {isHost && (
           <MyButton
             className="text-white fw-medium px-12px"
@@ -341,7 +313,7 @@ const LobbyScreen: FC<LobbyScreenProps> = ({ invitationCode, isHost }) => {
           {playerList.length} người tham gia!
         </div>
         <div className={`d-flex flex-wrap ${styles.playerList}`}>
-          <PlayerLobbyList players={playerList} />
+          <PlayerLobbyList players={playerList}/>
         </div>
       </>
     )

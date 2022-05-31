@@ -1,9 +1,9 @@
 import classNames from 'classnames'
 import {useRouter} from 'next/router'
-import React, {FC, memo, useEffect, useState} from 'react'
+import React, {FC, memo, useEffect, useRef, useState} from 'react'
 import {useGameSession} from '../../../hooks/useGameSession/useGameSession'
 import {useLocalStorage} from '../../../hooks/useLocalStorage/useLocalStorage'
-import {useSocket} from '../../../hooks/useSocket/useSocket'
+import {SocketManager} from '../../../hooks/useSocket/socketManager'
 import {TQuestion, TStartQuizResponse, TUser} from '../../../types/types'
 import {JsonParse} from '../../../utils/helper'
 import GameSessionRanking from '../GameSessionRanking/GameSessionRanking'
@@ -14,12 +14,11 @@ import {AnswerSectionFactory} from "../AnswerQuestionComponent/AnswerSectionFact
 
 type AnswerBoardProps = {
   className?: string
-  questionId: number | 0
 }
 
-const AnswerBoard: FC<AnswerBoardProps> = ({className, questionId}) => {
-  const {socket} = useSocket()
-  const {gameSession, saveGameSession, clearGameSession} = useGameSession()
+const AnswerBoard: FC<AnswerBoardProps> = ({className}) => {
+  const {gameSession, saveGameSession, clearGameSession, gameSocket, gameSkOn, getQuestionWithID} = useGameSession()
+
   const [lsUser] = useLocalStorage('user', '')
   const [isHost, setIsHost] = useState<boolean>(false)
   const [currentQID, setCurrentQID] = useState<number>(-1)
@@ -34,9 +33,8 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, questionId}) => {
 
   const [endTime, setEndTime] = useState<number>(0)
   const [countDown, setCountDown] = useState<number>(-101)
-  const [itIsTimeToSubmitYourAwesomeAnswer, setItIsTimeToSubmitYourAwesomeAnswer] = useState<boolean>(false)
-  const [isSubmitted, setIsSubmitted] = useState<boolean>(false)
 
+  const [isSubmitted, setIsSubmitted] = useState<boolean>(false)
   const [numSubmission, setNumSubmission] = useState<number>(0)
 
   let answerSectionFactory: AnswerSectionFactory
@@ -51,72 +49,60 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, questionId}) => {
     const user: TUser = JsonParse(lsUser)
     setIsHost(user.id === gameSession.hostId)
     if (currentQID < 0) {
-      setCurrentQID(0)
+      const firstQuestion = getQuestionWithID(0)
+      if (firstQuestion) {
+        setCurrentQID(0)
+        displayQuestion(firstQuestion)
+      }
     }
   }, [gameSession])
 
-  //  mỗi lần nhảy câu mới thì gọi
-  useEffect(() => {
-    const question = gameSession?.quiz?.questions[currentQID]
-    console.log("=>(AnswerBoard.tsx:61) gameSession?.quiz?.questions", gameSession?.quiz?.questions);
-    if (question) {
-      if (question.duration > 0) {
-        let endDate = new Date();
-        endDate.setSeconds(endDate.getSeconds() + question.duration);
-        let endTime = Math.round(endDate.getTime());
-        setEndTime(endTime)
-        setCurrentQuestion(question)
-      }
-    }
-  }, [currentQID])
-
-  // hết giờ thì handle như nào?
-  const handleTimeout = () => {
-    if (!isSubmitted) {
-      setItIsTimeToSubmitYourAwesomeAnswer(true)
-    }
-  }
+  const intervalRef = useRef<NodeJS.Timer | null>(null)
 
   // nhảy mỗi lần countdown
   useEffect(() => {
     if (!currentQuestion) return
     setCountDown(currentQuestion.duration)
-    const interval = setInterval(() => {
+    intervalRef.current = setInterval(() => {
       let curr = Math.round((new Date()).getTime());
       let _countDown = Math.ceil((endTime - curr) / 1000);
       setCountDown(_countDown)
 
-      if ((_countDown <= 0)) {
-        handleTimeout()
-        clearInterval(interval)
+      if (_countDown <= 0) {
+        if (intervalRef.current)
+          clearInterval(intervalRef.current)
       }
     }, 1000)
   }, [endTime])
 
-  useEffect(() => {
-
-  }, [isSubmitted])
-
-  const displayQuestionId = (questionId: number) => {
+  const displayQuestion = (question: TQuestion) => {
     resetGameState()
-    setCurrentQID(questionId)
+    if (question) {
+      if (question.duration > 0) {
+        // chạy cái này sớm nhất có thể thui
+        setCurrentQuestion(question)
+        // rồi mới tính toán để timeout
+        let endDate = new Date();
+        endDate.setSeconds(endDate.getSeconds() + question.duration);
+        let endTime = Math.round(endDate.getTime());
+        setEndTime(endTime)
+      }
+    }
   }
 
   const resetGameState = () => {
     setIsSubmitted(false)
-    setItIsTimeToSubmitYourAwesomeAnswer(false)
   }
 
   const handleSocket = () => {
-    if (!socket) return
-
-    socket.on('new-submission', (data) => {
-      // console.log('new-submission', data)
+    if (!gameSocket()) return
+    gameSkOn('new-submission', (data) => {
+      console.log('new-submission', data)
       // nhớ check mode
       setNumSubmission(numSubmission + 1)
     })
 
-    socket.on('next-question', (data) => {
+    gameSkOn('next-question', (data) => {
       setIsShowNext(false)
       setShowRanking(false)
 
@@ -124,49 +110,51 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, questionId}) => {
         ...JsonParse(localStorage.getItem('game-session')),
         players: [...rankingData],
       } as TStartQuizResponse)
-      // setRoomStatus('Đang trả lời câu hỏi')
-      console.log('next-question', data)
-      if (currentQID != data.currentQuestionIndex) {
-        displayQuestionId(data.currentQuestionIndex)
+
+      const currentQuestionId = data.currentQuestionIndex as number
+      const newQuestion = data.question as TQuestion
+
+      if (currentQID != currentQuestionId) {
+        setCurrentQID(currentQuestionId)
+        displayQuestion(newQuestion)
       }
     })
 
-    socket.on('view-result', (data) => {
-      // console.log('view', data)
-      // setRoomStatus('Xem xếp hạng')
+    gameSkOn('view-result', (data) => {
+      console.log('view-result', data)
+      //nếu mà chưa countdown xong thì set count down
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current)
+        intervalRef.current = null
+        setCountDown(0)
+      }
     })
 
-    socket.on('timeout', (data) => {
+    gameSkOn('timeout', (data) => {
       console.log('timeout', data)
-      handleTimeout()
     })
 
-    socket.on('ranking', (data) => {
+    gameSkOn('ranking', (data) => {
       setShowRanking(true)
       setRankingData(data?.playersSortedByScore)
-      // console.log('view-ranking', data)
     })
 
-    socket.on('error', (data) => {
+    gameSkOn('error', (data) => {
       console.log('answer board socket error', data)
     })
   }
 
   const goToNextQuestion = () => {
-    if (!gameSession?.quiz?.questions) return
-    if (currentQID >= gameSession?.quiz?.questions.length - 1) {
-      return
-    }
-
+    if (!gameSession) return
     const msg = {invitationCode: gameSession.invitationCode}
-    socket?.emit('next-question', msg)
+    gameSocket()?.emit('next-question', msg)
     console.log(msg)
   }
 
   const viewRanking = () => {
     if (!gameSession) return
     const msg = {invitationCode: gameSession.invitationCode}
-    socket?.emit('view-ranking', msg)
+    gameSocket()?.emit('view-ranking', msg)
     setIsShowNext(true)
   }
 
@@ -182,7 +170,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, questionId}) => {
     }
 
     setIsSubmitted(true)
-    socket?.emit('submit-answer', msg)
+    gameSocket()?.emit('submit-answer', msg)
   }
 
   const exitRoom = () => {
@@ -194,8 +182,6 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, questionId}) => {
   const renderAnswersSection = () => {
     if (!currentQuestion) return
     if (!answerSectionFactory) answerSectionFactory = new AnswerSectionFactory(isHost, styles.answerLayout, isSubmitted)
-
-    console.log("=>(AnswerBoard.tsx:198) currentQuestio 11 n", currentQuestion.questionAnswers);
     return answerSectionFactory.initAnswerSectionForType(currentQuestion.type, countDown, currentQuestion, handleSubmitAnswer)
   }
 
@@ -227,13 +213,13 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, questionId}) => {
   return (
     <>
       {isHost && renderHostControlSystem()}
-        <div
-          className={classNames(
-            'd-flex flex-column h-100',
-            className,
-            styles.container
-          )}
-        >
+      <div
+        className={classNames(
+          'd-flex flex-column h-100',
+          className,
+          styles.container
+        )}
+      >
         <pre
           className={classNames(
             'fs-4 shadow-sm fw-semiBold p-2 px-3 bg-white mb-2',
@@ -242,29 +228,30 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, questionId}) => {
           {currentQuestion?.question}
         </pre>
 
-          <QuestionMedia
-            timeout={countDown}
-            media={currentQuestion?.media ?? null}
-            numSubmission={numSubmission}
-            key={currentQID}
-          />
+        <QuestionMedia
+          //timeout sẽ âm để tránh 1 số lỗi, đừng sửa chỗ này
+          timeout={countDown > 0 ? countDown : 0}
+          media={currentQuestion?.media ?? null}
+          numSubmission={numSubmission}
+          key={currentQID}
+        />
 
-          {currentQuestion?.question && renderAnswersSection()}
+        {currentQuestion?.question && renderAnswersSection()}
 
-          <GameSessionRanking
-            show={showRanking}
-            onHide={() => {
-              setShowRanking(false)
-              saveGameSession({
-                ...gameSession,
-                players: [...rankingData],
-              } as TStartQuizResponse)
-            }}
-            rankingData={rankingData}
-          />
+        <GameSessionRanking
+          show={showRanking}
+          onHide={() => {
+            setShowRanking(false)
+            saveGameSession({
+              ...gameSession,
+              players: [...rankingData],
+            } as TStartQuizResponse)
+          }}
+          rankingData={rankingData}
+        />
 
-          {/* này chắc là thêm state current tab rồi render component theo state điều kiện nha, check active tab theo state luôn  */}
-        </div>
+        {/* này chắc là thêm state current tab rồi render component theo state điều kiện nha, check active tab theo state luôn  */}
+      </div>
     </>
   )
 }

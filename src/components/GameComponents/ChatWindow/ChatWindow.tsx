@@ -1,22 +1,22 @@
 import classNames from 'classnames'
 import _ from 'lodash'
-import { FC, useEffect, useRef, useState } from 'react'
-import { useAuth } from '../../../hooks/useAuth/useAuth'
-import { useLocalStorage } from '../../../hooks/useLocalStorage/useLocalStorage'
-import { useSocket } from '../../../hooks/useSocket/useSocket'
-import { TPlayer, TStartQuizResponse, TUser } from '../../../types/types'
-import { JsonParse } from '../../../utils/helper'
+import {FC, useEffect, useRef, useState} from 'react'
+import {useAuth} from '../../../hooks/useAuth/useAuth'
+import {useLocalStorage} from '../../../hooks/useLocalStorage/useLocalStorage'
+import {SocketManager} from '../../../hooks/useSocket/socketManager'
+import {TPlayer, TStartQuizResponse, TUser} from '../../../types/types'
+import {JsonParse} from '../../../utils/helper'
 import MyInput from '../../MyInput/MyInput'
 import styles from './ChatWindow.module.css'
-import { Message, MessageProps, SendMessageProps } from './Message/Message'
+import {Message, MessageProps, SendMessageProps} from './Message/Message'
 
 const ChatWindow: FC<{
   gameSession: TStartQuizResponse
   chatContent: MessageProps[]
   setChatContent: Function
-}> = ({ gameSession, chatContent, setChatContent }) => {
+}> = ({gameSession, chatContent, setChatContent}) => {
   const [chatValue, setChatValue] = useState<string>('')
-  const { socket } = useSocket()
+  const socket = SocketManager().socketOf("GAMES")
   const [lsPlayer, setLsPlayer] = useLocalStorage('game-session-player', '')
   const [player, setPLayer] = useState<TPlayer>()
   const authContext = useAuth()
@@ -68,7 +68,7 @@ const ChatWindow: FC<{
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'auto' })
+    messagesEndRef.current?.scrollIntoView({behavior: 'auto'})
   }
 
   useEffect(() => {
@@ -95,7 +95,7 @@ const ChatWindow: FC<{
               }}
             />
           ))}
-          <div ref={messagesEndRef} />
+          <div ref={messagesEndRef}/>
           <br></br>
         </div>
       </div>

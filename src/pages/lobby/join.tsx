@@ -1,21 +1,14 @@
-import { NextPage } from 'next'
-import { useRouter } from 'next/router'
-import { useState } from 'react'
-import { Form, Image } from 'react-bootstrap'
+import {NextPage} from 'next'
+import {useRouter} from 'next/router'
+import {useState} from 'react'
+import {Form, Image} from 'react-bootstrap'
 import Cookies from 'universal-cookie'
-import { number } from 'yup'
 import MyButton from '../../components/MyButton/MyButton'
 import MyInput from '../../components/MyInput/MyInput'
-import { useLocalStorage } from '../../hooks/useLocalStorage/useLocalStorage'
-import { useSocket } from '../../hooks/useSocket/useSocket'
-import { post } from '../../libs/api'
-import {
-  TApiResponse,
-  TGamePlayBodyRequest,
-  TJoinQuizResponse,
-  TStartQuizResponse,
-} from '../../types/types'
-import { JsonParse } from '../../utils/helper'
+import {useLocalStorage} from '../../hooks/useLocalStorage/useLocalStorage'
+import {post} from '../../libs/api'
+import {TApiResponse, TGamePlayBodyRequest, TJoinQuizResponse, TStartQuizResponse,} from '../../types/types'
+import {JsonParse} from '../../utils/helper'
 import {useGameSession} from "../../hooks/useGameSession/useGameSession";
 
 type TJoinQuizRequest = {
@@ -26,43 +19,57 @@ type TJoinQuizRequest = {
 
 const JoiningPage: NextPage = () => {
   const router = useRouter()
-
   const invitationCode = router.query?.invitationCode?.toString() || ''
-  // eslint-disable-next-line no-unused-vars
-  const {gameSession, saveGameSession, clearGameSession} = useGameSession()
-  // eslint-disable-next-line no-unused-vars
+
+  const {saveGameSession, gameSocket, connectGameSocket, gameSkOn, gameSkOnce} = useGameSession()
+
   const [lsPlayer, setLsPlayer] = useLocalStorage('game-session-player', '')
   const [nickname, setNickName] = useState<string>('')
   const [lsUser] = useLocalStorage('user', '')
-  const { socket } = useSocket()
 
   const handleOnClick = async () => {
+    if (!nickname) {
+      alert('Vui lòng nhập tên hiển thị')
+      return
+    }
+    if (!gameSocket()) {
+      connectGameSocket()
+      // đợi socket có rồi mới join room
+      gameSkOnce("connect", () => {
+        joinRoom()
+      });
+
+      gameSkOnce("error", (data) => {
+        console.log("Lobby/join.tsx socket error", data);
+      });
+    } else {
+      // host đã kết nối socket rồi => join luôn
+      joinRoom()
+    }
+  }
+
+
+  const joinRoom = async () => {
+    const cookies = new Cookies()
+    const accessToken: string = cookies.get('access-token')
+
+    let joinRoomRequest: TJoinQuizRequest = {
+      nickname,
+      invitationCode,
+    }
+
+    const body: TGamePlayBodyRequest<TJoinQuizRequest> = {
+      socketId: gameSocket()!.id,
+      data: joinRoomRequest,
+    }
+
+    if (accessToken?.length) {
+      // joinRoomRequest.token = accessToken
+      joinRoomRequest.userId = JsonParse(lsUser)['id']
+    }
+
+    console.log("Join quiz - body", body);
     try {
-      if (!nickname) {
-        alert('Vui lòng nhập tên hiển thị')
-        return
-      }
-      if (!socket) return
-
-      const cookies = new Cookies()
-      const accessToken: string = cookies.get('access-token')
-
-      let joinRoomRequest: TJoinQuizRequest = {
-        nickname,
-        invitationCode,
-      }
-
-      const body: TGamePlayBodyRequest<TJoinQuizRequest> = {
-        socketId: socket.id,
-        data: joinRoomRequest,
-      }
-
-      if (accessToken?.length) {
-        const userId: number = JsonParse(lsUser)['id']
-        // joinRoomRequest.token = accessToken
-        joinRoomRequest.userId = userId
-      }
-
       const response: TApiResponse<TJoinQuizResponse> = await post(
         'api/games/join-room',
         {},
@@ -84,8 +91,10 @@ const JoiningPage: NextPage = () => {
     }
   }
 
+
   return (
-    <div className="bg-secondary fw-medium bg-opacity-25 min-vh-100 d-flex flex-column justify-content-center align-items-center">
+    <div
+      className="bg-secondary fw-medium bg-opacity-25 min-vh-100 d-flex flex-column justify-content-center align-items-center">
       <div className="bg-white px-3 py-5 rounded-20px shadow-sm">
         <div className="mb-5 text-center">
           <Image
