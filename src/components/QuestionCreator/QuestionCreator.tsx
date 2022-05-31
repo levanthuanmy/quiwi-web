@@ -1,8 +1,11 @@
 import classNames from 'classnames'
-import {Field, Form as FormikForm, Formik} from 'formik'
+import { ContentState, convertToRaw, EditorState } from 'draft-js'
+import draftToHtml from 'draftjs-to-html'
+import { Field, Form as FormikForm, Formik } from 'formik'
 import _ from 'lodash'
-import {useRouter} from 'next/router'
-import React, {FC, useEffect, useState} from 'react'
+import dynamic from 'next/dynamic'
+import { useRouter } from 'next/router'
+import React, { FC, memo, useEffect, useState } from 'react'
 import {
   Col,
   Dropdown,
@@ -10,35 +13,48 @@ import {
   Form,
   Image,
   Modal,
-  Row,
+  Row
 } from 'react-bootstrap'
-import {post} from '../../libs/api'
-import {TEditQuestion} from '../../pages/quiz/creator/[id]'
+import { EditorProps } from 'react-draft-wysiwyg'
+import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
+import { post } from '../../libs/api'
+import { TEditQuestion } from '../../pages/quiz/creator/[id]'
 import {
   TAnswer,
   TApiResponse,
   TMatcherQuestion,
   TQuestion,
   TQuestionType,
-  TQuiz,
+  TQuiz
 } from '../../types/types'
-import {MAPPED_QUESTION_TYPE, TIMEOUT_OPTIONS} from '../../utils/constants'
+import {
+  MAPPED_QUESTION_TYPE,
+  RICH_TEXT_TOOLBAR,
+  TIMEOUT_OPTIONS
+} from '../../utils/constants'
 import {
   getUrl,
   storage,
   storageRef,
-  uploadFile,
+  uploadFile
 } from '../../utils/firebaseConfig'
-import {getCurrentTrueAnswer} from '../../utils/helper'
+import { getCurrentTrueAnswer } from '../../utils/helper'
 import IconQuestion, {
   QuestionType,
-  questionTypeStyles,
+  questionTypeStyles
 } from '../IconQuestion/IconQuestion'
 import ItemMultipleAnswer from '../ItemMultipleAnswer/ItemMultipleAnswer'
 import MyButton from '../MyButton/MyButton'
 import MyInput from '../MyInput/MyInput'
 import QuestionActionButton from '../QuestionActionButton/QuestionActionButton'
 import QuestionConfigBtn from '../QuestionConfigBtn/QuestionConfigBtn'
+
+const Editor = dynamic<EditorProps>(
+  () => import('react-draft-wysiwyg').then((mod) => mod.Editor),
+  { ssr: false }
+)
+const htmlToDraft =
+  typeof window === 'object' && require('html-to-draftjs').default
 
 const defaultAnswer: TAnswer = {
   answer: '',
@@ -55,9 +71,9 @@ const defaultQuestion: TQuestion = {
   orderPosition: 0,
   question: '',
   questionAnswers: [
-    {...defaultAnswer, orderPosition: 0},
-    {...defaultAnswer, orderPosition: 1},
-    {...defaultAnswer, orderPosition: 2},
+    { ...defaultAnswer, orderPosition: 0 },
+    { ...defaultAnswer, orderPosition: 1 },
+    { ...defaultAnswer, orderPosition: 2 },
   ],
   media: '',
   score: 100,
@@ -71,40 +87,47 @@ type QuestionCreatorProps = {
   isEditQuestion: TEditQuestion
 }
 const QuestionCreator: FC<QuestionCreatorProps> = ({
-                                                     show,
-                                                     onHide,
-                                                     setQuiz,
-                                                     quiz,
-                                                     isEditQuestion,
-                                                   }) => {
+  show,
+  onHide,
+  setQuiz,
+  quiz,
+  isEditQuestion,
+}) => {
   const router = useRouter()
   const quizId = Number(router.query.id)
   const [fillAnswers, setFillAnswers] = useState<string[]>([])
   const [answers, setAnswers] = useState<TAnswer[]>([
-    {...defaultAnswer, orderPosition: 0},
-    {...defaultAnswer, orderPosition: 1},
-    {...defaultAnswer, orderPosition: 2},
+    { ...defaultAnswer, orderPosition: 0 },
+    { ...defaultAnswer, orderPosition: 1 },
+    { ...defaultAnswer, orderPosition: 2 },
   ])
   const [newQuestion, setNewQuestion] = useState<TQuestion>(defaultQuestion)
   const type: QuestionType = isEditQuestion.isEdit
     ? MAPPED_QUESTION_TYPE[newQuestion?.type]
     : (router.query?.type?.toString() as QuestionType) || 'single'
   const [isScoreError, setIsScoreError] = useState<boolean>(false)
+  const [richTextQuestion, setRichTextQuestion] = useState(
+    EditorState.createEmpty()
+  )
 
   useEffect(() => {
     if (isEditQuestion.isEdit) {
-      const _ans = quiz?.questions.find(
+      const _ques = quiz?.questions.find(
         (question) => question.id === isEditQuestion.questionId
-      )?.questionAnswers as TAnswer[]
+      ) as TQuestion
+      const _ans = _ques?.questionAnswers
 
-      setNewQuestion(
-        quiz?.questions.find(
-          (question) => question.id === isEditQuestion.questionId
-        ) as TQuestion
-      )
+      setNewQuestion(_ques)
       setAnswers(_ans)
-
       setFillAnswers(_ans?.map((an) => an.answer))
+
+      setRichTextQuestion(
+        EditorState.createWithContent(
+          ContentState.createFromBlockArray(
+            htmlToDraft(_ques?.question).contentBlocks
+          )
+        )
+      )
     } else {
       setNewQuestion(defaultQuestion)
     }
@@ -112,9 +135,9 @@ const QuestionCreator: FC<QuestionCreatorProps> = ({
 
   const resetStates = () => {
     setAnswers([
-      {...defaultAnswer, orderPosition: 0},
-      {...defaultAnswer, orderPosition: 1},
-      {...defaultAnswer, orderPosition: 2},
+      { ...defaultAnswer, orderPosition: 0 },
+      { ...defaultAnswer, orderPosition: 1 },
+      { ...defaultAnswer, orderPosition: 2 },
     ])
     setFillAnswers([])
   }
@@ -148,12 +171,15 @@ const QuestionCreator: FC<QuestionCreatorProps> = ({
 
       let _newQuestion: TQuestion = {
         ...newQuestion,
+        question: draftToHtml(
+          convertToRaw(richTextQuestion.getCurrentContent())
+        ),
         questionAnswers: answers,
         type: isEditQuestion.isEdit
           ? newQuestion.type
           : (Object.keys(MAPPED_QUESTION_TYPE).find(
-            (key) => _.get(MAPPED_QUESTION_TYPE, key) === type
-          ) as TQuestionType),
+              (key) => _.get(MAPPED_QUESTION_TYPE, key) === type
+            ) as TQuestionType),
         orderPosition: isEditQuestion.isEdit
           ? newQuestion.orderPosition
           : quiz.questions.length,
@@ -176,12 +202,12 @@ const QuestionCreator: FC<QuestionCreatorProps> = ({
         const _questions = [...quiz.questions]
         for (let i = 0; i < _questions.length; i++) {
           if (_questions[i].id === isEditQuestion.questionId) {
-            _questions[i] = {..._newQuestion, id: isEditQuestion.questionId}
+            _questions[i] = { ..._newQuestion, id: isEditQuestion.questionId }
           }
         }
-        body = {...quiz, questions: [..._questions]}
+        body = { ...quiz, questions: [..._questions] }
       } else {
-        body = {...quiz, questions: [...quiz.questions, _newQuestion]}
+        body = { ...quiz, questions: [...quiz.questions, _newQuestion] }
       }
       const res = await post<TApiResponse<TQuiz>>(
         `/api/quizzes/${quizId}`,
@@ -225,7 +251,6 @@ const QuestionCreator: FC<QuestionCreatorProps> = ({
 
   const handleScoreInputChange = (e: any) => {
     const value = Number(e?.target?.value)
-    console.log('handleScoreInputChange - value', value)
     const isValid = value >= 0 && value <= 100
     setIsScoreError(!isValid)
     setNewQuestion((prev) => ({
@@ -254,7 +279,7 @@ const QuestionCreator: FC<QuestionCreatorProps> = ({
               className="mb-3 mb-md-0 d-flex flex-column gap-2"
             >
               <QuestionConfigBtn
-                prefixIcon={<IconQuestion type={type}/>}
+                prefixIcon={<IconQuestion type={type} />}
                 title={
                   <div className="fw-medium text-dark">
                     {questionTypeStyles[type].title}
@@ -270,7 +295,7 @@ const QuestionCreator: FC<QuestionCreatorProps> = ({
                   onDropCapture={handleUploadImage}
                   className="position-absolute top-0 w-100 h-100 opacity-0 cursor-pointer"
                   accept="image/png, image/jpeg, image/jpg"
-                  style={{left: 0}}
+                  style={{ left: 0 }}
                 />
                 <QuestionConfigBtn
                   prefixIcon={
@@ -280,7 +305,7 @@ const QuestionCreator: FC<QuestionCreatorProps> = ({
                     />
                   }
                   title="Thêm hình ảnh"
-                  suffixIcon={<i className="bi bi-plus-lg fs-18px"/>}
+                  suffixIcon={<i className="bi bi-plus-lg fs-18px" />}
                 />
               </div>
 
@@ -297,7 +322,7 @@ const QuestionCreator: FC<QuestionCreatorProps> = ({
                       />
                     }
                     title={`${newQuestion.duration} giây`}
-                    suffixIcon={<i className="bi bi-chevron-down fs-18px"/>}
+                    suffixIcon={<i className="bi bi-chevron-down fs-18px" />}
                     className="text-start"
                   />
                 </Dropdown.Toggle>
@@ -307,7 +332,7 @@ const QuestionCreator: FC<QuestionCreatorProps> = ({
                     <Dropdown.Item
                       key={key}
                       onClick={() =>
-                        setNewQuestion({...newQuestion, duration: item})
+                        setNewQuestion({ ...newQuestion, duration: item })
                       }
                     >
                       {item} giây
@@ -349,22 +374,23 @@ const QuestionCreator: FC<QuestionCreatorProps> = ({
                 ) : (
                   <></>
                 )}
-                <Col xs="12" md="6" className="p-0">
-                  <Form.Control
-                    as="textarea"
-                    className="bg-white shadow-none fs-20px border-0"
-                    defaultValue={newQuestion.question}
-                    onChange={(e) => {
-                      const cloneQuestion = {...newQuestion}
-                      cloneQuestion.question = e.target.value
-                      setNewQuestion(cloneQuestion)
-                    }}
-                    style={{
-                      height: 240,
-                      resize: 'none',
-                    }}
+                <Col
+                  xs="12"
+                  md={newQuestion?.media?.length ? '6' : '12'}
+                  className="p-0 bg-white position-relative"
+                  style={{ height: 240 }}
+                >
+                  <Editor
+                    toolbar={RICH_TEXT_TOOLBAR}
+                    toolbarClassName="position-relative"
+                    editorState={richTextQuestion}
+                    wrapperClassName="demo-wrapper w-100 bg-white h-100"
+                    editorClassName="demo-editor"
                     placeholder="Nhập câu hỏi của bạn ở đây..."
-                  />
+                    onEditorStateChange={(editorState) => {
+                      setRichTextQuestion(editorState)
+                    }}
+                  ></Editor>
                 </Col>
               </Row>
             </Col>
@@ -393,11 +419,11 @@ const QuestionCreator: FC<QuestionCreatorProps> = ({
                   onClick={() =>
                     setAnswers((prev) => [
                       ...prev,
-                      {...defaultAnswer, orderPosition: prev.length},
+                      { ...defaultAnswer, orderPosition: prev.length },
                     ])
                   }
                 >
-                  <div className="bi bi-plus-circle-fill fs-1 mb-0 text-primary cursor-pointer"/>
+                  <div className="bi bi-plus-circle-fill fs-1 mb-0 text-primary cursor-pointer" />
                 </Col>
               )}
             </Row>
@@ -413,7 +439,7 @@ const QuestionCreator: FC<QuestionCreatorProps> = ({
                 <Col xs="12" sm="auto" className="mb-3 mb-sm-0">
                   <Form.Select
                     className="rounded-10px shadow-none"
-                    style={{height: 50}}
+                    style={{ height: 50 }}
                     defaultValue={_.get(newQuestion, 'matcher', '10EXC')}
                     onChange={(e) => {
                       setNewQuestion((prev) => ({
@@ -441,13 +467,13 @@ const QuestionCreator: FC<QuestionCreatorProps> = ({
                           setFillAnswers(currentAns)
                         }}
                       >
-                        <i className="bi bi-trash"/>
+                        <i className="bi bi-trash" />
                       </MyButton>
                     </div>
                   ))}
 
                   <Formik
-                    initialValues={{newAnswer: ''}}
+                    initialValues={{ newAnswer: '' }}
                     onSubmit={(values, actions) => {
                       if (values.newAnswer.length) {
                         setFillAnswers([...fillAnswers, values.newAnswer])
@@ -456,7 +482,7 @@ const QuestionCreator: FC<QuestionCreatorProps> = ({
                       actions.resetForm()
                     }}
                   >
-                    {({isSubmitting}) => (
+                    {({ isSubmitting }) => (
                       <FormikForm className="d-flex w-100">
                         <Field
                           maxLength={100}
@@ -472,7 +498,7 @@ const QuestionCreator: FC<QuestionCreatorProps> = ({
                           type="submit"
                           disabled={isSubmitting}
                         >
-                          <i className="bi bi-plus-lg"/>
+                          <i className="bi bi-plus-lg" />
                         </MyButton>
                       </FormikForm>
                     )}
@@ -499,4 +525,4 @@ const QuestionCreator: FC<QuestionCreatorProps> = ({
   )
 }
 
-export default QuestionCreator
+export default memo(QuestionCreator)

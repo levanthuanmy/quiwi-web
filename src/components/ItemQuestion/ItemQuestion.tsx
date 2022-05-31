@@ -109,7 +109,7 @@ const ItemQuestion: FC<ItemQuestionProps> = ({
         <Accordion.Body>
           <div className="fw-medium mb-3">
             <div className="fs-14px text-secondary">Câu hỏi</div>
-            <pre>{question.question}</pre>
+            <div dangerouslySetInnerHTML={{ __html: question.question }} />
             {question.media?.length ? (
               <Image
                 src={question.media}

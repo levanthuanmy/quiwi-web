@@ -40,15 +40,15 @@ const ItemQuiz: FC<ItemQuizProps> = ({ quiz, exploreMode = false }) => {
           )}
         </p>
 
-        <div className="fs-14px text-secondary d-flex">
+        <div className="fs-14px text-secondary d-flex justify-content-between">
           {exploreMode ? (
-            <div className="bi bi-person-fill text-truncate d-flex align-items-center w-100 justify-content-center">
+            <div className="bi bi-person-fill text-truncate d-flex align-items-center justify-content-center">
               <span className="ps-1">{quiz.user?.name}</span>
             </div>
           ) : (
             <div
               className={classNames(
-                'bi text-truncate d-flex align-items-center w-100 justify-content-center',
+                'bi text-truncate d-flex align-items-center justify-content-center',
                 {
                   'bi-lock-fill': !quiz.isPublic,
                   'bi-globe': quiz.isPublic,
@@ -61,11 +61,11 @@ const ItemQuiz: FC<ItemQuizProps> = ({ quiz, exploreMode = false }) => {
             </div>
           )}
 
-          <div className="bi bi-play-fill text-truncate d-flex align-items-center w-100 justify-content-center">
+          <div className="bi bi-play-fill text-truncate d-flex align-items-center justify-content-center">
             <span className="ps-1">{quiz.numPlayed} lượt chơi</span>
           </div>
-          <div className="bi bi-stack text-truncate d-flex align-items-center w-100 justify-content-center">
-            <span className="ps-1">{quiz.questions?.length} câu hỏi</span>
+          <div className="bi bi-stack text-truncate d-flex align-items-center justify-content-center">
+            <span className="ps-1">{quiz.questions?.length} câu</span>
           </div>
         </div>
       </div>

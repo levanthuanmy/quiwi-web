@@ -41,3 +41,5 @@ export const MAPPED_QUESTION_MATCHER: Record<string, string> = {
 }
 
 export const TIMEOUT_OPTIONS = [15, 30, 60, 120, 180]
+
+export const RICH_TEXT_TOOLBAR = {}
