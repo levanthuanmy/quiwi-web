@@ -1,27 +1,30 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import classNames from 'classnames'
 import _ from 'lodash'
-import { useRouter } from 'next/router'
-import { FC, memo, useEffect, useState } from 'react'
-import { useCommunitySocket } from '../../../hooks/useCommunitySocket/useCommunitySocket'
-import { useGameSession } from '../../../hooks/useGameSession/useGameSession'
-import { useLocalStorage } from '../../../hooks/useLocalStorage/useLocalStorage'
-import { TQuestion, TStartQuizResponse, TUser } from '../../../types/types'
-import { JsonParse } from '../../../utils/helper'
-import { AnswerSectionFactory } from '../../GameComponents/AnswerQuestionComponent/AnswerSectionFactory/AnswerSectionFactory'
+import {useRouter} from 'next/router'
+import {FC, memo, useEffect, useState} from 'react'
+import {useCommunitySocket} from '../../../hooks/useCommunitySocket/useCommunitySocket'
+import {useGameSession} from '../../../hooks/useGameSession/useGameSession'
+import {useLocalStorage} from '../../../hooks/useLocalStorage/useLocalStorage'
+import {TQuestion, TStartQuizResponse, TUser} from '../../../types/types'
+import {JsonParse} from '../../../utils/helper'
+import {
+  AnswerSectionFactory
+} from '../../GameComponents/AnswerQuestionComponent/AnswerSectionFactory/AnswerSectionFactory'
 import MoreButton from '../../GameComponents/MoreButton/MoreButton'
-import { QuestionMedia } from '../../GameComponents/QuestionMedia/QuestionMedia'
+import {QuestionMedia} from '../../GameComponents/QuestionMedia/QuestionMedia'
 import styles from './AnswerBoard.module.css'
+import {Image} from "react-bootstrap";
 
 type AnswerBoardProps = {
   className?: string
   questionId: number | 0
 }
 
-const AnswerBoard: FC<AnswerBoardProps> = ({ className, questionId }) => {
-  const { gameSession, saveGameSession, clearGameSession, gameSocket } =
+const AnswerBoard: FC<AnswerBoardProps> = ({className, questionId}) => {
+  const {gameSession, saveGameSession, clearGameSession, gameSocket} =
     useGameSession()
-  const { socket } = useCommunitySocket()
+  const {socket} = useCommunitySocket()
 
   const [lsUser] = useLocalStorage('user', '')
   const [isHost, setIsHost] = useState<boolean>(false)
@@ -88,7 +91,8 @@ const AnswerBoard: FC<AnswerBoardProps> = ({ className, questionId }) => {
     }, 1000)
   }, [endTime])
 
-  useEffect(() => {}, [isSubmitted])
+  useEffect(() => {
+  }, [isSubmitted])
 
   const displayQuestionId = (questionId: number) => {
     resetGameState()
@@ -156,7 +160,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({ className, questionId }) => {
       return
     }
     setIsShowNext(false)
-    const msg = { invitationCode: gameSession.invitationCode }
+    const msg = {invitationCode: gameSession.invitationCode}
     socket?.emit('next-question', msg)
     console.log(msg)
   }

@@ -78,7 +78,7 @@ export class AnswerSectionFactory {
     return <TextQuestion
       socketSubmit={submitAnswerHandle}
       className={this.answerLayout}
-      option={question}
+      question={question}
       showAnswer={countDown <= 0 && countDown > -100}
       isHost={this.isHost}
       isTimeOut={countDown <= 2 && countDown > -100}

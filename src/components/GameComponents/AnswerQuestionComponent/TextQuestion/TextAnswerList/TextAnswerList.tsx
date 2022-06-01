@@ -19,21 +19,19 @@ const TextAnswerList: FC<TextAnswerListProps> = (props: TextAnswerListProps) => 
   ]
 
   return (
-    <>
-      <div className={`d-flex flex-wrap h-100 w-100 ${styles.playerList}`}>
-        {
-          props.answers.map((answer, idx) => {
-            return <Col
-              key={idx}
-              className={`d-flex align-items-center col-auto ${styles.answer}`}
-              style={{backgroundColor: colors[idx % colors.length]}}
-            >
-              <span className="px-32px py-1 fw-medium text-white">{answer}</span>
-            </Col>
-          })
-        }
-      </div>
-    </>
+    <div className={`d-flex flex-wrap ${styles.playerList} customScrollbar ${props.className}`}>
+      {
+        props.answers.map((answer, idx) => {
+          return <Col
+            key={idx}
+            className={`d-flex align-items-center col-auto ${styles.answer}`}
+            style={{backgroundColor: colors[idx % colors.length]}}
+          >
+            <span className="px-32px py-1 fw-medium text-white">{answer}</span>
+          </Col>
+        })
+      }
+    </div>
   )
 }
 

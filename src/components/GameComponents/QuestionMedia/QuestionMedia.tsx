@@ -7,10 +7,11 @@ const QuestionMedia: FC<{
   timeout: number
   media: string | null
   numSubmission: number
-}> = ({timeout, media, numSubmission}) => {
+  className?: string
+}> = ({timeout, media, numSubmission, className}) => {
   return (
     <div
-      className="text-center mb-2 d-flex justify-content-xl-between justify-content-center align-items-center px-12px">
+      className={`text-center mb-2 d-flex justify-content-xl-between justify-content-center align-items-center px-12px ${className}`}>
       {/* Timeout */}
       <div
         className={classNames(

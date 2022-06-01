@@ -1,7 +1,6 @@
 .answer {
-    font-size: 32px;
+    font-size: 24px;
     border-radius: 20px;
-    max-width: 80%;
 }
 
 .playerList {
@@ -18,9 +17,10 @@
     overflow-y: scroll;
 }
 
+
 @media (max-width: 992px) {
     .answer {
-        font-size: 24px;
+        font-size: 16px;
     }
 
     .playerList {
@@ -28,3 +28,24 @@
     }
 }
 
+
+.customScrollbar::-webkit-scrollbar {
+    width: 8px;
+}
+
+/* Track */
+.customScrollbar::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 5px rgba(255, 255, 255, 0);
+    border-radius: 8px;
+}
+
+/* Handle */
+.customScrollbar::-webkit-scrollbar-thumb {
+    background: #00988469;
+    border-radius: 8px;
+}
+
+/* Handle on hover */
+.customScrollbar::-webkit-scrollbar-thumb:hover {
+    background: #00655878;
+}

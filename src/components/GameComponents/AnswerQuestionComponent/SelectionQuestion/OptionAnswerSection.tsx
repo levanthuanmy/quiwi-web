@@ -51,8 +51,8 @@ const OptionAnswerSection: FC<OptionAnswerSectionProps> = ({
     }
   }
   const getIconForHost = (answer: TAnswer): string => {
-    if (!showAnswer) return "bi-question-circle"
-    return answer.isCorrect ? "bi-check-circle-fill" : "bi-x-circle-fill"
+    if (!showAnswer) return `bi-question-${baseIcon}`
+    return answer.isCorrect ? `bi-check-${baseIcon}-fill` : `bi-x-${baseIcon}-fill`
   }
 
   const getIconForPlayer = (answer: TAnswer): string => {
@@ -85,7 +85,7 @@ const OptionAnswerSection: FC<OptionAnswerSectionProps> = ({
         return "50%"
       }
       // if (!isMobile)
-        return `${Math.floor(100/option?.questionAnswers.length)}%`
+      return `${Math.floor(100 / option?.questionAnswers.length)}%`
 
       // return "16%"
     }

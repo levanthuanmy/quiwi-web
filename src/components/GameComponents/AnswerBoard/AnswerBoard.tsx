@@ -158,17 +158,24 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className}) => {
     setIsShowNext(true)
   }
 
-  const handleSubmitAnswer = (answerSet: Set<any>) => {
+  const handleSubmitAnswer = (answer: any) => {
     if (!gameSession) return
     if (isSubmitted) return
     if (isHost) return
-    console.log("=>(AnswerBoard.tsx:183) answerSet", Array.from(answerSet));
-    const msg = {
+    let msg = {
       invitationCode: gameSession.invitationCode,
-      answerIds: Array.from(answerSet),
       nickname: gameSession.nickName,
+      answerIds: {},
+      answer: ""
     }
 
+    if (answer instanceof Set) {
+      console.log("=>(AnswerBoard.tsx:174) submit selection");
+      msg.answerIds = Array.from(answer)
+    } else if (typeof answer === "string") {
+      console.log("=>(AnswerBoard.tsx:174) submit text");
+      msg.answer = answer
+    }
     setIsSubmitted(true)
     gameSocket()?.emit('submit-answer', msg)
   }
@@ -220,20 +227,24 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className}) => {
           styles.container
         )}
       >
-        <pre
-          className={classNames(
-            'fs-4 shadow-sm fw-semiBold p-2 px-3 bg-white mb-2',
-            styles.questionTitle
-          )}>
-          {currentQuestion?.question}
-        </pre>
+        {currentQuestion?.question ?
 
+          <div
+            className={classNames(
+              'shadow-sm px-3 pt-2 bg-white mb-2',
+              styles.questionTitle
+            )}
+            dangerouslySetInnerHTML={{__html: currentQuestion.question}}
+          />
+          : <></>
+        }
         <QuestionMedia
           //timeout sẽ âm để tránh 1 số lỗi, đừng sửa chỗ này
           timeout={countDown > 0 ? countDown : 0}
           media={currentQuestion?.media ?? null}
           numSubmission={numSubmission}
           key={currentQID}
+          className={styles.questionMedia}
         />
 
         {currentQuestion?.question && renderAnswersSection()}

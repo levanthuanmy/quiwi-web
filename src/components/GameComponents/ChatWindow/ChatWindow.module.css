@@ -1,84 +1,76 @@
 .chatWindow {
-  min-height: 0;
-  height: 50%;
-  background: white;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  border-radius: 8px;
-  overflow: hidden;
-  flex: 1
+    min-height: 0;
+    height: 50%;
+    background: white;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    border-radius: 8px;
+    overflow: hidden;
+    flex: 1
 }
 
 .chatBox {
-  flex-grow: 1;
-  position: relative;
-  overflow-x: hidden;
-  overflow-y: hidden;
+    flex-grow: 1;
+    position: relative;
+    overflow-x: hidden;
+    overflow-y: hidden;
 }
 
 .chatList {
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  top: 4px;
-  right: 4px;
-  overflow-x: hidden;
-  overflow-y: scroll;
-  resize: vertical;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    top: 4px;
+    right: 4px;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    resize: vertical;
 
-  flex-direction: column-reverse;
+    flex-direction: column-reverse;
 }
 
 .chatInput {
-  padding: 8px;
-  height: fit-content;
-  width: 100%;
+    padding: 8px;
+    height: fit-content;
+    width: 100%;
 }
 
 /* làm mờ thanh chọn emoji */
 .chatBox::after {
-  content: '';
-  position: absolute;
-  z-index: 1;
-  bottom: 0;
-  left: 0;
-  pointer-events: none;
-  background-image: linear-gradient(
-    to bottom,
-    rgba(0, 0, 0, 0) 97%,
-    rgb(255, 255, 255) 99%
-  );
-  width: 100vw;
-  height: 100vh;
-}
-
-.noScroll {
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
-}
-.noScroll::-webkit-scrollbar {
-  display: none; /* Chrome, Safari and Opera */
+    content: '';
+    position: absolute;
+    z-index: 1;
+    bottom: 0;
+    left: 0;
+    pointer-events: none;
+    background-image: linear-gradient(
+            to bottom,
+            rgba(0, 0, 0, 0) 97%,
+            rgb(255, 255, 255) 99%
+    );
+    width: 100vw;
+    height: 100vh;
 }
 
 .chatList::-webkit-scrollbar {
-  width: 8px;
+    width: 8px;
 }
 
 /* Track */
 .chatList::-webkit-scrollbar-track {
-  /* box-shadow: inset 0 0 5px grey;  */
-  box-shadow: inset 0 0 5px rgba(255, 255, 255, 0);
-  border-radius: 8px;
+    /* box-shadow: inset 0 0 5px grey;  */
+    box-shadow: inset 0 0 5px rgba(255, 255, 255, 0);
+    border-radius: 8px;
 }
 
 /* Handle */
 .chatList::-webkit-scrollbar-thumb {
-  background: #00988469;
-  border-radius: 8px;
+    background: #00988469;
+    border-radius: 8px;
 }
 
 /* Handle on hover */
 .chatList::-webkit-scrollbar-thumb:hover {
-  background: #00655878;
+    background: #00655878;
 }

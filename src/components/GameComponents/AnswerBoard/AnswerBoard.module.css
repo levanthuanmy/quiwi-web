@@ -1,54 +1,95 @@
 .container {
-  /* border-radius: 4px; */
-  position: relative;
+    /* border-radius: 4px; */
+    position: relative;
+}
+
+@media (max-width: 576px) {
+    .container {
+        padding-bottom: 60px;
+    }
 }
 
 .timeoutContainer {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-left: 1rem;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 1rem;
 }
 
 .questionImage {
-  max-height: 320px;
-  min-width: 30%;
-  width: 60%;
-  object-fit: contain;
+    max-height: 320px;
+    min-width: 30%;
+    width: 60%;
+    object-fit: contain;
 }
 
 .answerLayout {
-  flex-grow: 1;
-  position: relative;
-  max-height: 500px;
-  /*// thiennc5*/
-  /*background-color: #15e2ef;*/
+    flex-grow: 1;
+    position: relative;
+    max-height: 600px;
+    /*// thiennc*/
+    /*background-color: #15e2ef;*/
 }
 
 @media (min-width: 1200px) {
-  .container {
-    border-radius: 20px;
-  }
-  .questionImage {
-    width: 100%;
-  }
-}
+    .container {
+        border-radius: 20px;
+    }
 
-@media (min-width: 992px) {
-  .questionTitle {
-    border-radius: 20px;
-  }
-
+    .questionImage {
+        width: 100%;
+    }
 }
 
 @media (min-width: 768px) {
-  .timeoutContainer {
-    font-size: 1.5rem;
-    width: 64px;
-    height: 64px;
-    margin: 0;
-  }
+    .timeoutContainer {
+        font-size: 1.5rem;
+        width: 64px;
+        height: 64px;
+        margin: 0;
+    }
+}
+
+.questionTitle {
+    border-radius: 20px;
+    overflow-y: scroll;
+    min-height: 16px;
+    max-height: 40%;
+}
+
+.questionMedia {
+
+}
+
+/*question title*/
+@media (max-width: 576px) {
+    .questionTitle {
+        border-radius: 0px;
+        max-height: 25%;
+        overflow-y: scroll;
+    }
+}
+
+.questionTitle::-webkit-scrollbar {
+    width: 8px;
+}
+
+/* Track */
+.questionTitle::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 5px rgba(255, 255, 255, 0);
+    border-radius: 8px;
+}
+
+/* Handle */
+.questionTitle::-webkit-scrollbar-thumb {
+    background: #00988469;
+    border-radius: 8px;
+}
+
+/* Handle on hover */
+.questionTitle::-webkit-scrollbar-thumb:hover {
+    background: #00655878;
 }

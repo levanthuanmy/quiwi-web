@@ -9,7 +9,7 @@ import {bool} from "yup";
 type SingpleChoiceAnswerSectionProps = {
   className?: string
   // gửi socket khi đã chọn kết quả cuối cùng
-  socketSubmit: (answerSet: Set<number>) => void
+  socketSubmit: (answer: any) => void
   option?: TQuestion
   showAnswer: boolean
   isHost: boolean
