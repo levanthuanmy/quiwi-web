@@ -20,10 +20,17 @@ const ItemQuiz: FC<ItemQuizProps> = ({ quiz, exploreMode = false }) => {
     <div className="bg-white h-100 rounded-14px shadow-sm overflow-hidden">
       <div
         className={classNames('p-12px cursor-pointer', styles.infoContainer)}
-        onClick={() => (exploreMode ? router.push(`/quiz/${quiz.id}`) : {})}
       >
         <p className="fw-medium fs-18px d-flex justify-content-between align-items-center">
-          {quiz.title}
+          <div
+            title={exploreMode ? 'Bấm vào để xem chi tiết quiz' : ''}
+            className="w-100"
+            onClick={() =>
+              exploreMode ? router.push(`/quiz/${quiz.id}`) : null
+            }
+          >
+            {quiz.title}
+          </div>
           {!exploreMode && (
             <Button
               variant="outline-secondary"
@@ -42,7 +49,10 @@ const ItemQuiz: FC<ItemQuizProps> = ({ quiz, exploreMode = false }) => {
 
         <div className="fs-14px text-secondary d-flex justify-content-between">
           {exploreMode ? (
-            <div className="bi bi-person-fill text-truncate d-flex align-items-center justify-content-center">
+            <div
+              title={quiz.user?.name}
+              className="bi bi-person-fill text-truncate d-flex align-items-center justify-content-center"
+            >
               <span className="ps-1">{quiz.user?.name}</span>
             </div>
           ) : (
@@ -87,13 +97,18 @@ const ItemQuiz: FC<ItemQuizProps> = ({ quiz, exploreMode = false }) => {
         )}
 
         <MyButton
+          title={
+            exploreMode ? 'Bấm để làm quiz này' : 'Bấm để bắt đầu quiz này'
+          }
           className={classNames(
             'text-white text-nowrap rounded-circle bi bi-play-fill fs-32px shadow d-flex justify-content-center align-items-center',
             styles.startBtn
           )}
-          onClick={() => {
-            authNavigate.navigate(`/host/lobby?quizId=${quiz.id}`)
-          }}
+          onClick={() =>
+            exploreMode
+              ? router.push(`/quiz/${quiz.id}/play`)
+              : authNavigate.navigate(`/host/lobby?quizId=${quiz.id}`)
+          }
         ></MyButton>
       </div>
 
