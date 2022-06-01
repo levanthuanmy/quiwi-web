@@ -13,7 +13,7 @@ import {
   Form,
   Image,
   Modal,
-  Row
+  Row,
 } from 'react-bootstrap'
 import { EditorProps } from 'react-draft-wysiwyg'
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
@@ -25,23 +25,23 @@ import {
   TMatcherQuestion,
   TQuestion,
   TQuestionType,
-  TQuiz
+  TQuiz,
 } from '../../types/types'
 import {
   MAPPED_QUESTION_TYPE,
   RICH_TEXT_TOOLBAR,
-  TIMEOUT_OPTIONS
+  TIMEOUT_OPTIONS,
 } from '../../utils/constants'
 import {
   getUrl,
   storage,
   storageRef,
-  uploadFile
+  uploadFile,
 } from '../../utils/firebaseConfig'
 import { getCurrentTrueAnswer } from '../../utils/helper'
 import IconQuestion, {
   QuestionType,
-  questionTypeStyles
+  questionTypeStyles,
 } from '../IconQuestion/IconQuestion'
 import ItemMultipleAnswer from '../ItemMultipleAnswer/ItemMultipleAnswer'
 import MyButton from '../MyButton/MyButton'
@@ -77,6 +77,7 @@ const defaultQuestion: TQuestion = {
   ],
   media: '',
   score: 100,
+  matcher: '10EXC',
 }
 
 type QuestionCreatorProps = {
