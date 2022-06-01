@@ -30,7 +30,7 @@ const MyLibPage: NextPage = () => {
             'fetching...'
           ) : (
             <Row>
-              <Col xs="12" className="fs-22px fw-medium mb-3">
+              <Col xs="12" className="fs-32px fw-medium mb-3">
                 Quiz của bạn
               </Col>
               {data?.response.items.map((quiz, key) => (

@@ -35,6 +35,7 @@ const QuizCreatorPage: NextPage = () => {
     show: false,
     questionId: null,
   }) // use when removing question
+  const [showQuizModalAlert, setShowQuizModalAlert] = useState<boolean>(false) // use when removing quiz
   const [isEditQuestion, setIsEditQuestion] = useState<TEditQuestion>({
     isEdit: false,
     questionId: null,
@@ -103,6 +104,20 @@ const QuizCreatorPage: NextPage = () => {
     }
   }
 
+  const onAcceptRemoveQuizAlert = async () => {
+    try {
+      await post<TApiResponse<TQuiz>>(
+        `/api/quizzes/${quizId}/delete`,
+        {},
+        {},
+        true
+      )
+      router.back()
+    } catch (error) {
+      console.log('onAcceptRemoveQuizAlert - error', error)
+    }
+  }
+
   const onEditQuestion = (questionId: number) => {
     setIsEditQuestion({ isEdit: true, questionId })
     setIsShowQuestionCreator(true)
@@ -134,6 +149,16 @@ const QuizCreatorPage: NextPage = () => {
               isValidating={isValidating}
               setQuiz={setQuiz}
             />
+            <div className="mt-3">
+              <MyButton
+                className="text-white w-100 d-flex align-items-center justify-content-between"
+                onClick={() => setShowQuizModalAlert(true)}
+                variant="danger"
+              >
+                Xoá quiz này
+                <div className="bi bi-trash" />
+              </MyButton>
+            </div>
             <div className="mt-3">
               <MyButton
                 className="text-white w-100 d-flex align-items-center justify-content-between"
@@ -202,6 +227,22 @@ const QuizCreatorPage: NextPage = () => {
       >
         <div className="text-center h3">
           Bạn có chắc chắn muốn xoá câu hỏi này
+        </div>
+        <div className="text-center">
+          Bạn không thể hoàn tác lại hành động này
+        </div>
+      </MyModal>
+
+      <MyModal
+        show={showQuizModalAlert}
+        onHide={() => setShowQuizModalAlert(false)}
+        activeButtonTitle="Đồng ý"
+        activeButtonCallback={onAcceptRemoveQuizAlert}
+        inActiveButtonCallback={() => setShowQuizModalAlert(false)}
+        inActiveButtonTitle="Huỷ"
+      >
+        <div className="text-center h3">
+          Bạn có chắc chắn muốn xoá bộ quiz này
         </div>
         <div className="text-center">
           Bạn không thể hoàn tác lại hành động này
