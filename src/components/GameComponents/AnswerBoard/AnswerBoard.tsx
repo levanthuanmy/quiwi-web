@@ -73,10 +73,10 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className}) => {
           clearInterval(intervalRef.current)
       }
     }, 1000)
+    resetGameState()
   }, [endTime])
 
   const displayQuestion = (question: TQuestion) => {
-    resetGameState()
     if (question) {
       if (question.duration > 0) {
         // chạy cái này sớm nhất có thể thui
