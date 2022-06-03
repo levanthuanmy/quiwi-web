@@ -18,8 +18,11 @@ export const HOME_MENU_OPTIONS = [
     url: '/ranking',
     iconClassName: 'bi bi-bar-chart-line',
   },
-  { title: 'Lịch sử tham gia', url: '/history', iconClassName: 'bi bi-clipboard2-data' },
-
+  {
+    title: 'Lịch sử tham gia',
+    url: '/history',
+    iconClassName: 'bi bi-clipboard2-data',
+  },
 ]
 
 export const PROFILE_MENU_OPTIONS = [
@@ -30,6 +33,11 @@ export const PROFILE_MENU_OPTIONS = [
     iconClassName: '',
   },
 ]
+
+export const GAME_MODE_MAPPING: Record<string, string> = {
+  '10CLASSIC': 'Truyền Thống',
+  '20MRT': 'Marathon',
+}
 
 export const MAPPED_QUESTION_TYPE: Record<TQuestionType, QuestionType> = {
   '10SG': 'single',
@@ -45,3 +53,5 @@ export const MAPPED_QUESTION_MATCHER: Record<string, string> = {
 export const TIMEOUT_OPTIONS = [15, 30, 60, 120, 180]
 
 export const RICH_TEXT_TOOLBAR = {}
+
+
