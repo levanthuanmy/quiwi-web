@@ -1,85 +1,78 @@
 .timeoutContainer {
-    border-radius: 100vh;
-    width: 80px;
-    height: 32px;
-    display: flex;
-    gap: 8px;
-    align-items: center;
-    justify-content: center;
-    margin-left: 1rem;
-    font-size: 1rem;
-    padding: 0px 8px 0px 8px;
+  border-radius: 100vh;
+  width: 80px;
+  height: 32px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  margin-left: 1rem;
+  font-size: 1rem;
+  padding: 0px 8px 0px 8px;
 }
 
 .timeout {
-    width: 80px;
-    height: fit-content;
-    white-space: nowrap;
+  width: 80px;
+  height: fit-content;
+  white-space: nowrap;
 }
 
 .streakContainer {
-    width: 64px;
-    height: 32px;
-    border-radius: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-right: 1rem;
-    white-space: pre-wrap;
+  height: 32px;
+  white-space: pre-wrap;
 }
 
 .questionImage {
-    height: 30vh;
-    min-height: 180px;
-    min-width: 30%;
-    /*width: 0%;*/
-    object-fit: contain;
+  height: 30vh;
+  min-height: 180px;
+  min-width: 30%;
+  /*width: 0%;*/
+  object-fit: contain;
 }
 
 @media (max-width: 576px) {
-    .timeoutContainer {
-        border-radius: 100vh;
-        width: 80px;
-        height: 24px;
-        gap: 4px;
-        margin-left: 0rem;
-        font-size: 1rem;
-        padding: 0px 8px 0px 8px;
-    }
+  .timeoutContainer {
+    border-radius: 100vh;
+    width: 80px;
+    height: 24px;
+    gap: 4px;
+    margin-left: 0rem;
+    font-size: 1rem;
+    padding: 0px 8px 0px 8px;
+  }
 
-    .streakContainer {
-        width: 64px;
-        height: 32px;
-        border-radius: 50%;
-        margin-right: 0;
-        white-space: pre-wrap;
-    }
+  .streakContainer {
+    width: 64px;
+    height: 32px;
+    border-radius: 50%;
+    margin-right: 0;
+    white-space: pre-wrap;
+  }
 }
 
 @media (min-width: 576px) {
-    .questionImage {
+  .questionImage {
+    /*width: 100%;*/
+  }
 
-        /*width: 100%;*/
-    }
+  .questionTitle {
+    border-radius: 20px;
+  }
 
-    .questionTitle {
-        border-radius: 20px;
-    }
+  .timeout {
+    width: 100px;
+  }
 
-    .timeout {
-        width: 100px;
-    }
+  .timeoutContainer {
+    font-size: 1.5rem;
+    width: 110px;
+    height: 48px;
+    margin: 0;
+  }
 
-    .timeoutContainer {
-        font-size: 1.5rem;
-        width: 110px;
-        height: 48px;
-        margin: 0;
-    }
-
-    .streakContainer {
-        font-size: 1.5rem;
-        height: 48px;
-        margin: 0;
-    }
+  .streakContainer {
+    font-size: 1.5rem;
+    height: 48px;
+    margin: 0;
+  }
 }

@@ -1,23 +1,30 @@
 import classNames from 'classnames'
-import {useRouter} from 'next/router'
-import React, {FC, memo, useEffect, useRef, useState} from 'react'
-import {useGameSession} from '../../../hooks/useGameSession/useGameSession'
-import {useLocalStorage} from '../../../hooks/useLocalStorage/useLocalStorage'
-import {SocketManager} from '../../../hooks/useSocket/socketManager'
-import {TQuestion, TStartQuizResponse, TUser} from '../../../types/types'
-import {JsonParse} from '../../../utils/helper'
+import { useRouter } from 'next/router'
+import React, { FC, memo, useEffect, useRef, useState } from 'react'
+import { useGameSession } from '../../../hooks/useGameSession/useGameSession'
+import { useLocalStorage } from '../../../hooks/useLocalStorage/useLocalStorage'
+import { SocketManager } from '../../../hooks/useSocket/socketManager'
+import { TQuestion, TStartQuizResponse, TUser } from '../../../types/types'
+import { JsonParse } from '../../../utils/helper'
 import GameSessionRanking from '../GameSessionRanking/GameSessionRanking'
 import MoreButton from '../MoreButton/MoreButton'
-import {QuestionMedia} from '../QuestionMedia/QuestionMedia'
+import { QuestionMedia } from '../QuestionMedia/QuestionMedia'
 import styles from './AnswerBoard.module.css'
-import {AnswerSectionFactory} from "../AnswerQuestionComponent/AnswerSectionFactory/AnswerSectionFactory";
+import { AnswerSectionFactory } from '../AnswerQuestionComponent/AnswerSectionFactory/AnswerSectionFactory'
 
 type AnswerBoardProps = {
   className?: string
 }
 
-const AnswerBoard: FC<AnswerBoardProps> = ({className}) => {
-  const {gameSession, saveGameSession, clearGameSession, gameSocket, gameSkOn, getQuestionWithID} = useGameSession()
+const AnswerBoard: FC<AnswerBoardProps> = ({ className }) => {
+  const {
+    gameSession,
+    saveGameSession,
+    clearGameSession,
+    gameSocket,
+    gameSkOn,
+    getQuestionWithID,
+  } = useGameSession()
 
   const [lsUser] = useLocalStorage('user', '')
   const [isHost, setIsHost] = useState<boolean>(false)
@@ -38,7 +45,6 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className}) => {
   const [numSubmission, setNumSubmission] = useState<number>(0)
 
   let answerSectionFactory: AnswerSectionFactory
-
 
   useEffect(() => {
     handleSocket()
@@ -64,13 +70,12 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className}) => {
     if (!currentQuestion) return
     setCountDown(currentQuestion.duration)
     intervalRef.current = setInterval(() => {
-      let curr = Math.round((new Date()).getTime());
-      let _countDown = Math.ceil((endTime - curr) / 1000);
+      let curr = Math.round(new Date().getTime())
+      let _countDown = Math.ceil((endTime - curr) / 1000)
       setCountDown(_countDown)
 
       if (_countDown <= 0) {
-        if (intervalRef.current)
-          clearInterval(intervalRef.current)
+        if (intervalRef.current) clearInterval(intervalRef.current)
       }
     }, 1000)
     resetGameState()
@@ -82,9 +87,9 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className}) => {
         // chạy cái này sớm nhất có thể thui
         setCurrentQuestion(question)
         // rồi mới tính toán để timeout
-        let endDate = new Date();
-        endDate.setSeconds(endDate.getSeconds() + question.duration);
-        let endTime = Math.round(endDate.getTime());
+        let endDate = new Date()
+        endDate.setSeconds(endDate.getSeconds() + question.duration)
+        let endTime = Math.round(endDate.getTime())
         setEndTime(endTime)
       }
     }
@@ -146,14 +151,14 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className}) => {
 
   const goToNextQuestion = () => {
     if (!gameSession) return
-    const msg = {invitationCode: gameSession.invitationCode}
+    const msg = { invitationCode: gameSession.invitationCode }
     gameSocket()?.emit('next-question', msg)
     console.log(msg)
   }
 
   const viewRanking = () => {
     if (!gameSession) return
-    const msg = {invitationCode: gameSession.invitationCode}
+    const msg = { invitationCode: gameSession.invitationCode }
     gameSocket()?.emit('view-ranking', msg)
     setIsShowNext(true)
   }
@@ -166,14 +171,14 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className}) => {
       invitationCode: gameSession.invitationCode,
       nickname: gameSession.nickName,
       answerIds: {},
-      answer: ""
+      answer: '',
     }
 
     if (answer instanceof Set) {
-      console.log("=>(AnswerBoard.tsx:174) submit selection");
+      console.log('=>(AnswerBoard.tsx:174) submit selection')
       msg.answerIds = Array.from(answer)
-    } else if (typeof answer === "string") {
-      console.log("=>(AnswerBoard.tsx:174) submit text");
+    } else if (typeof answer === 'string') {
+      console.log('=>(AnswerBoard.tsx:174) submit text')
       msg.answer = answer
     }
     setIsSubmitted(true)
@@ -188,33 +193,45 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className}) => {
 
   const renderAnswersSection = () => {
     if (!currentQuestion) return
-    if (!answerSectionFactory) answerSectionFactory = new AnswerSectionFactory(isHost, styles.answerLayout, isSubmitted)
-    return answerSectionFactory.initAnswerSectionForType(currentQuestion.type, countDown, currentQuestion, handleSubmitAnswer)
+    if (!answerSectionFactory)
+      answerSectionFactory = new AnswerSectionFactory(
+        isHost,
+        styles.answerLayout,
+        isSubmitted
+      )
+    return answerSectionFactory.initAnswerSectionForType(
+      currentQuestion.type,
+      countDown,
+      currentQuestion,
+      handleSubmitAnswer
+    )
   }
 
   const renderHostControlSystem = () => {
-    return <div className="my-3 d-flex justify-content-between position-fixed fixed-bottom">
-      <MoreButton
-        iconClassName="bi bi-x-circle-fill"
-        className={classNames('text-white fw-medium', styles.nextButton)}
-        title="Thoát phòng"
-        onClick={exitRoom}
-      />
-      <MoreButton
-        isEnable={countDown <= 0}
-        iconClassName="bi bi-bar-chart"
-        className={classNames('text-white fw-medium', styles.nextButton)}
-        title={'Xem xếp hạng'}
-        onClick={viewRanking}
-      />
-      <MoreButton
-        isEnable={isShowNext}
-        iconClassName="bi bi-arrow-right-circle-fill"
-        className={classNames('text-white fw-medium', styles.nextButton)}
-        title="Câu tiếp theo"
-        onClick={goToNextQuestion}
-      />
-    </div>
+    return (
+      <div className="my-3 d-flex justify-content-between position-fixed fixed-bottom">
+        <MoreButton
+          iconClassName="bi bi-x-circle-fill"
+          className={classNames('text-white fw-medium', styles.nextButton)}
+          title="Thoát phòng"
+          onClick={exitRoom}
+        />
+        <MoreButton
+          isEnable={countDown <= 0}
+          iconClassName="bi bi-bar-chart"
+          className={classNames('text-white fw-medium', styles.nextButton)}
+          title={'Xem xếp hạng'}
+          onClick={viewRanking}
+        />
+        <MoreButton
+          isEnable={isShowNext}
+          iconClassName="bi bi-arrow-right-circle-fill"
+          className={classNames('text-white fw-medium', styles.nextButton)}
+          title="Câu tiếp theo"
+          onClick={goToNextQuestion}
+        />
+      </div>
+    )
   }
 
   return (
@@ -227,17 +244,17 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className}) => {
           styles.container
         )}
       >
-        {currentQuestion?.question ?
-
+        {currentQuestion?.question ? (
           <div
             className={classNames(
-              'shadow-sm px-3 pt-2 bg-white mb-2',
+              'shadow px-3 pt-2 bg-white mb-2 rounded-10px',
               styles.questionTitle
             )}
-            dangerouslySetInnerHTML={{__html: currentQuestion.question}}
+            dangerouslySetInnerHTML={{ __html: currentQuestion.question }}
           />
-          : <></>
-        }
+        ) : (
+          <></>
+        )}
         <QuestionMedia
           //timeout sẽ âm để tránh 1 số lỗi, đừng sửa chỗ này
           timeout={countDown > 0 ? countDown : 0}
