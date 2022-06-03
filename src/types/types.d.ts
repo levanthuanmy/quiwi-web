@@ -226,3 +226,36 @@ export type TUserItems = {
   quantity: number
   item: TItem
 }
+
+export type TGameRound = {
+  score: number
+  question?: TQuestion
+  questionId: number
+  playerId: number
+  answer?: string
+  answerIds: number[]
+}
+
+export type TDetailPlayer = TPlayer & {
+  gameRounds: TGameRound[]
+}
+
+export type TGameHistory = {
+  nickName: string
+  gameMode: {
+    curIndexQuestion: number
+  }
+  mode: string
+  host: TUser
+  hostId: number
+  invitationCode: string
+  players: TDetailPlayer[]
+  quiz: TQuiz
+  quizId: number
+  status: TGameStatus
+  chats: MessageProps[]
+  gameRoundStatistics: TGameRoundStatistic[]
+  createdAt: Date
+  updatedAt: Date
+}
+

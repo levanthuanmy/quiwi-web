@@ -18,6 +18,8 @@ export const HOME_MENU_OPTIONS = [
     url: '/ranking',
     iconClassName: 'bi bi-bar-chart-line',
   },
+  { title: 'Lịch sử tham gia', url: '/history', iconClassName: 'bi bi-clipboard2-data' },
+
 ]
 
 export const PROFILE_MENU_OPTIONS = [
