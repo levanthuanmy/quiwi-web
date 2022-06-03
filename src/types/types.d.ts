@@ -241,6 +241,7 @@ export type TDetailPlayer = TPlayer & {
 }
 
 export type TGameHistory = {
+  id: number
   nickName: string
   gameMode: {
     curIndexQuestion: number
@@ -258,4 +259,3 @@ export type TGameHistory = {
   createdAt: Date
   updatedAt: Date
 }
-

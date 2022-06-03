@@ -1,0 +1,42 @@
+.dropdown::after {
+  display: none !important;
+}
+
+.dropdown:hover {
+  color: gray;
+}
+
+.dropdown:focus {
+  box-shadow: none !important;
+}
+.firstCell {
+  max-width: 16rem;
+  text-overflow: unset;
+}
+
+.table {
+  margin: auto auto;
+  max-width: 100%;
+}
+
+.cell {
+  vertical-align: middle;
+}
+
+@media (min-width: 992px) {
+  .firstCell {
+    min-width: 16rem;
+  }
+  .table {
+    width: 75%;
+  }
+}
+
+@media (min-width: 768px) {
+  .firstCell {
+    min-width: 12rem;
+  }
+  .table {
+    width: 90%;
+  }
+}
