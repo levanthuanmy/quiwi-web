@@ -1,3 +1,4 @@
+import classNames from 'classnames'
 import { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
@@ -7,9 +8,7 @@ import { useGameSession } from '../../../hooks/useGameSession/useGameSession'
 import styles from './GamePage.module.css'
 
 const GamePage: NextPage = () => {
-  const router = useRouter()
-  const { questionId } = router.query
-  const { gameSession, connectGameSocket } = useGameSession()
+  const { gameSession } = useGameSession()
   const [isExpand, setIsExpand] = useState<boolean>(false)
 
   useEffect(() => {
@@ -21,17 +20,15 @@ const GamePage: NextPage = () => {
 
   return (
     <>
-      <div className={`${styles.gameBackground}`}>
+      <div className={classNames(styles.gameBackground, 'bg-black')}>
         <div
-          className={`${styles.gameView} d-flex justify-content-center position-relative`}
+          className={classNames(
+            styles.gameView,
+            'd-flex justify-content-center position-relative'
+          )}
         >
-          <div
-            // className={`d-flex flex-column flex-grow-3 gap-3 ${styles.gameCol} me-lg-3 m-0 `}
-            className={`${styles.answerBoard}`}
-          >
-            <AnswerBoard
-              className="flex-grow-1"
-            />
+          <div className={classNames(styles.answerBoard)}>
+            <AnswerBoard className="flex-grow-1" />
             {/* <EmojiBar className={styles.emojiBar} />
             <EmojiBar className={styles.emojiBar} /> */}
           </div>
