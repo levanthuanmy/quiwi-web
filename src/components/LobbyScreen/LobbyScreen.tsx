@@ -2,16 +2,16 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import _ from 'lodash'
 import Head from 'next/head'
-import {useRouter} from 'next/router'
-import {FC, useEffect, useState} from 'react'
-import {Modal, Toast, ToastContainer} from 'react-bootstrap'
+import { useRouter } from 'next/router'
+import { FC, useEffect, useState } from 'react'
+import { Modal, Toast, ToastContainer } from 'react-bootstrap'
 import QRCode from 'react-qr-code'
 import Cookies from 'universal-cookie'
-import {useGameSession} from '../../hooks/useGameSession/useGameSession'
+import { useGameSession } from '../../hooks/useGameSession/useGameSession'
 import useIsMobile from '../../hooks/useIsMobile/useIsMobile'
-import {useLocalStorage} from '../../hooks/useLocalStorage/useLocalStorage'
-import {TPlayer, TStartGameRequest, TUser} from '../../types/types'
-import {JsonParse} from '../../utils/helper'
+import { useLocalStorage } from '../../hooks/useLocalStorage/useLocalStorage'
+import { TPlayer, TStartGameRequest, TUser } from '../../types/types'
+import { JsonParse } from '../../utils/helper'
 import MyButton from '../MyButton/MyButton'
 import PlayerLobbyItem from '../PlayerLobbyItem/PlayerLobbyItem'
 import PlayerLobbyList from '../PlayerLobbyList/PlayerLobbyList'
@@ -21,7 +21,7 @@ type LobbyScreenProps = {
   invitationCode: string
   isHost: boolean
 }
-const LobbyScreen: FC<LobbyScreenProps> = ({invitationCode, isHost}) => {
+const LobbyScreen: FC<LobbyScreenProps> = ({ invitationCode, isHost }) => {
   const [playerList, setPlayerList] = useState<TPlayer[]>([])
   const [lsUser] = useLocalStorage('user', '')
   const [user, setUser] = useState<TUser>()
@@ -29,7 +29,14 @@ const LobbyScreen: FC<LobbyScreenProps> = ({invitationCode, isHost}) => {
   const [showToast, setShowToast] = useState<boolean>(false)
   const [showQR, setShowQR] = useState<boolean>(false)
   const isMobile = useIsMobile()
-  const {gameSession, saveGameSession, clearGameSession, gameSocket, gameSkOn, gameSkOnce} = useGameSession()
+  const {
+    gameSession,
+    saveGameSession,
+    clearGameSession,
+    gameSocket,
+    gameSkOn,
+    gameSkOnce,
+  } = useGameSession()
 
   useEffect(() => {
     if (!gameSession) return
@@ -70,8 +77,7 @@ const LobbyScreen: FC<LobbyScreenProps> = ({invitationCode, isHost}) => {
   }, [gameSession])
 
   useEffect(() => {
-    if (lsUser)
-      setUser(JsonParse(lsUser) as TUser)
+    if (lsUser) setUser(JsonParse(lsUser) as TUser)
   }, [])
 
   const handleLeaveRoom = () => {
@@ -98,8 +104,12 @@ const LobbyScreen: FC<LobbyScreenProps> = ({invitationCode, isHost}) => {
   }
 
   const copyInvitationCode = () => {
-    navigator.clipboard.writeText(
-      `http://${window.location.host}/lobby/join?invitationCode=${invitationCode}`
+    navigator?.clipboard?.writeText(
+      `${window.location.host}/lobby/join?invitationCode=${invitationCode}`
+    )
+    console.log(
+      'copyInvitationCode - ',
+      `${window.location.host}/lobby/join?invitationCode=${invitationCode}`
     )
     setShowToast(true)
   }
@@ -122,10 +132,9 @@ const LobbyScreen: FC<LobbyScreenProps> = ({invitationCode, isHost}) => {
   }
 
   return (
-    <div
-      className="bg-secondary fw-medium bg-opacity-10 min-vh-100 d-flex flex-column justify-content-center align-items-center">
+    <div className="bg-secondary fw-medium bg-opacity-10 min-vh-100 d-flex flex-column justify-content-center align-items-center">
       <Head>
-        <link rel="preconnect" href="https://fonts.googleapis.com"/>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
           rel="preconnect"
           href="https://fonts.gstatic.com"
@@ -195,7 +204,7 @@ const LobbyScreen: FC<LobbyScreenProps> = ({invitationCode, isHost}) => {
               Tham gia bằng
               <span className={styles.joinLink} onClick={copyInvitationCode}>
                 {' link '}
-                <i className={`bi bi-clipboard-plus-fill`}/>
+                <i className={`bi bi-clipboard-plus-fill`} />
               </span>
             </div>
           </div>
@@ -220,7 +229,7 @@ const LobbyScreen: FC<LobbyScreenProps> = ({invitationCode, isHost}) => {
           Copy
           <span className={styles.joinLink} onClick={copyInvitationCode}>
             {' link vào phòng '}
-            <i className={`bi bi-clipboard-plus-fill`}/>
+            <i className={`bi bi-clipboard-plus-fill`} />
           </span>
         </div>
       </>
@@ -292,8 +301,8 @@ const LobbyScreen: FC<LobbyScreenProps> = ({invitationCode, isHost}) => {
         >
           RỜI PHÒNG
         </MyButton>
-        <br/>
-        <br/>
+        <br />
+        <br />
         {isHost && (
           <MyButton
             className="text-white fw-medium px-12px"
@@ -313,7 +322,7 @@ const LobbyScreen: FC<LobbyScreenProps> = ({invitationCode, isHost}) => {
           {playerList.length} người tham gia!
         </div>
         <div className={`d-flex flex-wrap ${styles.playerList}`}>
-          <PlayerLobbyList players={playerList}/>
+          <PlayerLobbyList players={playerList} />
         </div>
       </>
     )

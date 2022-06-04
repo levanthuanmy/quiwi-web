@@ -4,7 +4,12 @@ import React, { FC, memo, useEffect, useRef, useState } from 'react'
 import { useGameSession } from '../../../hooks/useGameSession/useGameSession'
 import { useLocalStorage } from '../../../hooks/useLocalStorage/useLocalStorage'
 import { SocketManager } from '../../../hooks/useSocket/socketManager'
-import { TQuestion, TStartQuizResponse, TUser } from '../../../types/types'
+import {
+  TQuestion,
+  TStartQuizResponse,
+  TUser,
+  TViewResult,
+} from '../../../types/types'
 import { JsonParse } from '../../../utils/helper'
 import GameSessionRanking from '../GameSessionRanking/GameSessionRanking'
 import MoreButton from '../MoreButton/MoreButton'
@@ -43,6 +48,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({ className }) => {
 
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false)
   const [numSubmission, setNumSubmission] = useState<number>(0)
+  const [viewResultData, setViewResultData] = useState<TViewResult>()
 
   let answerSectionFactory: AnswerSectionFactory
 
@@ -125,8 +131,9 @@ const AnswerBoard: FC<AnswerBoardProps> = ({ className }) => {
       }
     })
 
-    gameSkOn('view-result', (data) => {
+    gameSkOn('view-result', (data: TViewResult) => {
       console.log('view-result', data)
+      setViewResultData(data)
       //nếu mà chưa countdown xong thì set count down
       if (intervalRef.current) {
         clearInterval(intervalRef.current)
@@ -276,6 +283,8 @@ const AnswerBoard: FC<AnswerBoardProps> = ({ className }) => {
             } as TStartQuizResponse)
           }}
           rankingData={rankingData}
+          viewResultData={viewResultData as TViewResult}
+          currentQuestion={currentQuestion as TQuestion}
         />
 
         {/* này chắc là thêm state current tab rồi render component theo state điều kiện nha, check active tab theo state luôn  */}

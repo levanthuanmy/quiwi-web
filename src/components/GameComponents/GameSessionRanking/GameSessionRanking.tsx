@@ -1,7 +1,14 @@
 import classNames from 'classnames'
-import { FC, memo, useEffect, useState } from 'react'
+import _ from 'lodash'
+import { FC, memo, useEffect, useMemo, useState } from 'react'
 import { Modal, Table } from 'react-bootstrap'
-import { TStartQuizResponse } from '../../../types/types'
+import Chart from 'react-google-charts'
+import {
+  TQuestion,
+  TStartQuizResponse,
+  TViewResult,
+} from '../../../types/types'
+import { ANSWER_COLORS } from '../../../utils/constants'
 import { JsonParse } from '../../../utils/helper'
 import MyModal from '../../MyModal/MyModal'
 
@@ -9,11 +16,15 @@ type GameSessionRankingProps = {
   show: boolean
   onHide: () => void
   rankingData: any[]
+  viewResultData: TViewResult
+  currentQuestion: TQuestion
 }
 const GameSessionRanking: FC<GameSessionRankingProps> = ({
   show,
   onHide,
   rankingData,
+  viewResultData,
+  currentQuestion,
 }) => {
   // const { gameSession } = useGameSession()
   const [currentPlayerRankingIndex, setCurrentPlayerRankingIndex] =
@@ -46,6 +57,54 @@ const GameSessionRanking: FC<GameSessionRankingProps> = ({
       gameSession.players.findIndex((item) => item.nickname === nickname) -
       index
     )
+  }
+
+  const answersSubmittedData = useMemo(() => {
+    let data: (string | number)[][] = []
+    if (viewResultData && currentQuestion) {
+      if (!_.isEmpty(viewResultData.answersStatistic)) {
+        data = Object.keys(viewResultData?.answersStatistic).map(
+          (key, index) => [
+            currentQuestion.questionAnswers.find(
+              (ans) => ans.id === Number(key)
+            )?.answer || key,
+            viewResultData?.answersStatistic[key],
+            ANSWER_COLORS[index % ANSWER_COLORS.length] || ANSWER_COLORS[0],
+            viewResultData?.answersStatistic[key],
+          ]
+        )
+      } else {
+        data = Object.keys(viewResultData?.answerTextStatistic).map(
+          (key, index) => [
+            key,
+            viewResultData?.answerTextStatistic[key],
+            ANSWER_COLORS[index % ANSWER_COLORS.length] || ANSWER_COLORS[0],
+            viewResultData?.answerTextStatistic[key],
+          ]
+        )
+      }
+    }
+
+    return [
+      [
+        'Câu trả lời',
+        'Số người chọn',
+        { role: 'style' },
+        { role: 'annotation' },
+      ],
+      ...data,
+    ]
+  }, [viewResultData, currentQuestion])
+
+  const options = {
+    legend: 'none',
+    vAxis: {
+      gridlines: {
+        color: 'transparent',
+      },
+      textPosition: 'none',
+    },
+    backgroundColor: 'transparent',
   }
 
   return (
@@ -173,6 +232,15 @@ const GameSessionRanking: FC<GameSessionRankingProps> = ({
           </tbody>
         </Table>
       </div>
+      <div className="pt-5 fw-medium fs-22px">Thống kê câu trả lời</div>
+      <div className="fst-italic pb-3 text-secondary">Số lượng người chọn mỗi câu trả lời</div>
+      <Chart
+        chartType="ColumnChart"
+        width={'100%'}
+        // height={'400px'}
+        data={answersSubmittedData}
+        options={options}
+      />
     </MyModal>
   )
 }
