@@ -1,25 +1,24 @@
+import classNames from 'classnames'
 import { NextPage } from 'next'
+import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
-import { Button, Container, Dropdown, Table } from 'react-bootstrap'
+import { Container, Dropdown, Table } from 'react-bootstrap'
+import * as XLSX from 'xlsx'
 import DashboardLayout from '../../components/DashboardLayout/DashboardLayout'
 import { useAuth } from '../../hooks/useAuth/useAuth'
 import { get } from '../../libs/api'
 import {
   TApiResponse,
-  TPaginationResponse,
   TGameHistory,
+  TPaginationResponse,
 } from '../../types/types'
-import dayjs from 'dayjs'
 import { GAME_MODE_MAPPING } from '../../utils/constants'
-import styles from './HistoryPage.module.css'
-import classNames from 'classnames'
-import { useRouter } from 'next/router'
-require('dayjs/locale/vi')
-import * as XLSX from 'xlsx'
 import {
-  formatDate_HHmmDDMMMYYYY,
   formatDate_DDMMMMYYYY,
+  formatDate_HHmmDDMMMYYYY,
 } from '../../utils/helper'
+import styles from './HistoryPage.module.css'
+require('dayjs/locale/vi')
 
 const HistoryPage: NextPage = () => {
   const authContext = useAuth()
@@ -55,6 +54,28 @@ const HistoryPage: NextPage = () => {
     }
     getGameHistory()
   }, [user])
+
+  // include correct answers percentage, timeout submission
+  const calculateScorePercentages = (game: TGameHistory) => {
+    let countCorrectAnswers = 0
+    let countTimeoutSubmission = 0
+    for (const gameRoundStatistic of game.gameRoundStatistics) {
+      let correctAnswer = gameRoundStatistic.numberOfCorrectAnswers
+      countCorrectAnswers += correctAnswer / (game.players.length || 1)
+
+      let timeoutSubmission = gameRoundStatistic.numberOfTimeout
+      countTimeoutSubmission += timeoutSubmission / (game.players.length || 1)
+    }
+
+    return {
+      correctAnswersPercentage: (
+        countCorrectAnswers / (game.gameRoundStatistics.length || 1)
+      ).toFixed(2),
+      timeoutSubmissionPercentage: (
+        countTimeoutSubmission / (game.gameRoundStatistics.length || 1)
+      ).toFixed(2),
+    }
+  }
 
   const generateSummarySheet = (game: TGameHistory) => {
     const summaryWorksheet: XLSX.WorkSheet = {}
@@ -96,6 +117,48 @@ const HistoryPage: NextPage = () => {
         s: { r: 3, c: 4 },
         e: { r: 3, c: 8 },
       },
+
+      {
+        // From A5 -> D5
+        s: { r: 4, c: 0 },
+        e: { r: 4, c: 3 },
+      },
+      {
+        // From E5 -> H5
+        s: { r: 4, c: 4 },
+        e: { r: 4, c: 8 },
+      },
+      {
+        // From A6 -> H6
+        s: { r: 5, c: 0 },
+        e: { r: 5, c: 8 },
+      },
+      {
+        // From A7 -> H7
+        s: { r: 6, c: 0 },
+        e: { r: 6, c: 8 },
+      },
+      {
+        // From A8 -> D8
+        s: { r: 7, c: 0 },
+        e: { r: 7, c: 3 },
+      },
+      {
+        // From E8 -> H8
+        s: { r: 7, c: 4 },
+        e: { r: 7, c: 8 },
+      },
+
+      {
+        // From A9 -> D9
+        s: { r: 8, c: 0 },
+        e: { r: 8, c: 3 },
+      },
+      {
+        // From E9 -> H9
+        s: { r: 8, c: 4 },
+        e: { r: 8, c: 8 },
+      },
     ]
     summaryWorksheet['!merges'] = merge
     XLSX.utils.sheet_add_aoa(
@@ -113,6 +176,19 @@ const HistoryPage: NextPage = () => {
         [
           {
             t: 's',
+            v: 'Chủ phòng',
+          },
+          {},
+          {},
+          {},
+          {
+            v: game.host?.name || game.host?.username,
+          },
+        ],
+        // Row 3
+        [
+          {
+            t: 's',
 
             v: 'Ngày làm bài',
           },
@@ -120,10 +196,10 @@ const HistoryPage: NextPage = () => {
           {},
           {},
           {
-            v: formatDate_HHmmDDMMMYYYY(game.createdAt),
+            v: formatDate_DDMMMMYYYY(game.createdAt),
           },
         ],
-        // Row 3
+        // Row 4
         [
           {
             t: 's',
@@ -138,10 +214,68 @@ const HistoryPage: NextPage = () => {
             v: `${game.players.length} người chơi`,
           },
         ],
+
+        // Row 5
+        [
+          {
+            t: 's',
+
+            v: 'Mã phòng',
+          },
+          {},
+          {},
+          {},
+          {
+            t: 's',
+            v: `${game.invitationCode}`,
+          },
+        ],
       ],
       { origin: 'A1' }
     )
 
+    const percentages = calculateScorePercentages(game)
+    // Add percentages
+    XLSX.utils.sheet_add_aoa(
+      summaryWorksheet,
+      [
+        // Row 1
+        [
+          {
+            t: 's',
+            v: 'Tổng quan',
+          },
+        ],
+        // Row 2
+        [
+          {
+            t: 's',
+            v: 'Sô phần trăm trả lời đúng',
+          },
+          {},
+          {},
+          {},
+          {
+            v: percentages.correctAnswersPercentage,
+          },
+        ],
+        // Row 3
+        [
+          {
+            t: 's',
+
+            v: 'Sô phần trăm chưa trả lời (trễ giờ)',
+          },
+          {},
+          {},
+          {},
+          {
+            v: percentages.timeoutSubmissionPercentage,
+          },
+        ],
+      ],
+      { origin: 'A7' }
+    )
     summaryWorksheet['A1'].style = {
       font: { sz: 16, bold: true, color: '#FF00FF' },
     }
@@ -159,7 +293,7 @@ const HistoryPage: NextPage = () => {
   }
   const renderRow = (gameHistory: TGameHistory) => {
     return (
-      <tr>
+      <tr key={gameHistory.id}>
         <td
           className={classNames(
             styles.firstCell,
