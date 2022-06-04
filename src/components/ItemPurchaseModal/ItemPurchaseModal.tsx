@@ -2,6 +2,8 @@ import { FC } from 'react'
 import { Button, ButtonGroup, Col, Image, Modal, Row } from 'react-bootstrap'
 import { TItem } from '../../types/types'
 import MyModal from '../MyModal/MyModal'
+import {playSound} from '../../utils/helper'
+import {SOUND_EFFECT} from '../../utils/constants'
 
 type ItemPurchaseProps = {
   avatar?: string
@@ -81,6 +83,7 @@ const ItemPurchaseModal: FC<ItemPurchaseProps> = ({
                       variant="outline-secondary"
                       onClick={() => {
                         if (quantity > 1) {
+                          playSound(SOUND_EFFECT['BUY_BUTTON_SOUND_CLICK'])
                           setQuantity(quantity - 1)
                         }
                       }}
@@ -99,6 +102,7 @@ const ItemPurchaseModal: FC<ItemPurchaseProps> = ({
                       variant="outline-secondary"
                       onClick={() => {
                         if (quantity < 10) {
+                          playSound(SOUND_EFFECT['BUY_BUTTON_SOUND_CLICK'])
                           setQuantity(quantity + 1)
                         }
                       }}
