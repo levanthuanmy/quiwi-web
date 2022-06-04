@@ -1,0 +1,40 @@
+.moreButton {
+  border-radius: 50vh;
+  color: white;
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.moreTitle {
+  font-size:24px;
+  white-space: nowrap;
+  align-self: center;
+  padding-left: 20px;
+}
+
+.moreButtonIcon {
+  font-size: 24px;
+  /*height: 32px;*/
+  /*width: 32px;*/
+  padding-right: 16px;
+  align-items: center;
+}
+
+@media (max-width: 576px) {
+  .moreButton {
+    gap: 4px;
+    padding: 0px 6px 0px 6px;
+  }
+
+  .moreTitle {
+    font-size: 24px;
+    padding-left: 2px;
+  }
+
+  .moreButtonIcon {
+    font-size: 24px;
+    padding-right: 2px;
+    align-items: center;
+  }
+}

@@ -12,16 +12,19 @@ import {
 } from '../../../types/types'
 import { JsonParse } from '../../../utils/helper'
 import GameSessionRanking from '../GameSessionRanking/GameSessionRanking'
-import MoreButton from '../MoreButton/MoreButton'
 import { QuestionMedia } from '../QuestionMedia/QuestionMedia'
 import styles from './AnswerBoard.module.css'
 import { AnswerSectionFactory } from '../AnswerQuestionComponent/AnswerSectionFactory/AnswerSectionFactory'
+import {Button} from "react-bootstrap";
+import GameButton from "../GameButton/GameButton";
+import cn from "classnames";
 
 type AnswerBoardProps = {
   className?: string
+  isShowHostControl:boolean
 }
 
-const AnswerBoard: FC<AnswerBoardProps> = ({ className }) => {
+const AnswerBoard: FC<AnswerBoardProps> = ({ className,isShowHostControl }) => {
   const {
     gameSession,
     saveGameSession,
@@ -216,34 +219,62 @@ const AnswerBoard: FC<AnswerBoardProps> = ({ className }) => {
 
   const renderHostControlSystem = () => {
     return (
-      <div className="my-3 d-flex justify-content-between position-fixed fixed-bottom">
-        <MoreButton
+      <div className={cn(styles.hostControl)}>
+        <GameButton
           iconClassName="bi bi-x-circle-fill"
-          className={classNames('text-white fw-medium', styles.nextButton)}
-          title="Thoát phòng"
+          className={classNames('text-white fw-medium')}
+          title="Thoát"
           onClick={exitRoom}
         />
-        <MoreButton
+        <GameButton
           isEnable={countDown <= 0}
           iconClassName="bi bi-bar-chart"
-          className={classNames('text-white fw-medium', styles.nextButton)}
-          title={'Xem xếp hạng'}
+          className={classNames('text-white fw-medium')}
+          title={'Xếp hạng'}
           onClick={viewRanking}
         />
-        <MoreButton
+        <GameButton
           isEnable={isShowNext}
           iconClassName="bi bi-arrow-right-circle-fill"
-          className={classNames('text-white fw-medium', styles.nextButton)}
-          title="Câu tiếp theo"
+          className={classNames('text-white fw-medium')}
+          title="Câu sau"
           onClick={goToNextQuestion}
         />
       </div>
     )
   }
 
+  // const renderHostControlSystem = () => {
+  //   return (
+  //     <div className="d-flex w-100 justify-content-between">
+  //       <Button
+  //         className={classNames(styles.nextButton)}
+  //         onClick={exitRoom}
+  //       >
+  //         <div className={classNames(styles.moreTitle)}>Thoát phòng</div>
+  //         <i className={classNames("bi bi-x-circle-fill", styles.moreButtonIcon)}/>
+  //       </Button>
+  //       <Button
+  //         className={classNames(styles.nextButton)}
+  //         onClick={viewRanking}
+  //       >
+  //         <div className={classNames(styles.moreTitle)}>Xem xếp hạng</div>
+  //         <i className={classNames("bi bi-bar-chart", styles.moreButtonIcon)}/>
+  //       </Button>
+  //       <Button
+  //         className={classNames(styles.nextButton)}
+  //         onClick={goToNextQuestion}
+  //       >
+  //         <div className={classNames(styles.moreTitle)}>Câu tiếp theo</div>
+  //         <i className={classNames("bi-arrow-right-circle-fill", styles.moreButtonIcon)}/>
+  //       </Button>
+  //     </div>
+  //   )
+  // }
+
   return (
     <>
-      {isHost && renderHostControlSystem()}
+
       <div
         className={classNames(
           'd-flex flex-column h-100',
@@ -271,8 +302,11 @@ const AnswerBoard: FC<AnswerBoardProps> = ({ className }) => {
           className={styles.questionMedia}
         />
 
+        {/*height min của question view là 300*/}
+        {/*edit styles.answerLayout trong css*/}
         {currentQuestion?.question && renderAnswersSection()}
-
+        {isHost && isShowHostControl && renderHostControlSystem()}
+        <div className={styles.blankDiv}/>
         <GameSessionRanking
           show={showRanking}
           onHide={() => {

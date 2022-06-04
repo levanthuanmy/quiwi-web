@@ -1,3 +1,13 @@
+.questionMedia {
+  padding-left: 12px;
+  padding-right: 12px;
+}
+@media (max-width: 576px) {
+  .questionMedia {
+    padding-left: 4px;
+    padding-right: 4px;
+  }
+}
 .timeoutContainer {
   border-radius: 100vh;
   width: 80px;
@@ -31,6 +41,12 @@
 }
 
 @media (max-width: 576px) {
+  .questionImage {
+    height: 100%;
+  }
+}
+
+@media (max-width: 576px) {
   .timeoutContainer {
     border-radius: 100vh;
     width: 80px;
@@ -51,9 +67,6 @@
 }
 
 @media (min-width: 576px) {
-  .questionImage {
-    /*width: 100%;*/
-  }
 
   .questionTitle {
     border-radius: 20px;

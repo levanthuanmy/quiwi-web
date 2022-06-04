@@ -1,28 +1,12 @@
 .container {
     /* border-radius: 4px; */
     position: relative;
-}
-
-.hostControl {
-    margin-top: 12px;
-    margin-bottom: 12px;
-    display: flex;
-    justify-content: space-between;
-    align-items: end;
+    min-height: 400px;
 }
 
 @media (max-width: 576px) {
     .container {
-        /*padding-bottom: 60px;*/
-    }
-
-    .hostControl {
-        flex-direction: column;
-        gap: 12px;
-        position: fixed;
-        right: 4px;
-        bottom: calc(16px + 52px + 8px);
-        z-index: 999;
+        padding-bottom: 60px;
     }
 }
 
@@ -46,7 +30,7 @@
 .answerLayout {
     flex-grow: 1;
     position: relative;
-    min-height: 400px;
+    max-height: 400px;
     /*// thiennc*/
     /*background-color: #15e2ef;*/
 }
@@ -72,7 +56,7 @@
 
 .questionTitle {
     overflow-y: scroll;
-    min-height: 80px;
+    min-height: 16px;
     max-height: 40%;
 }
 
@@ -83,7 +67,6 @@
 @media (max-width: 576px) {
     .questionTitle {
         border-radius: 0px;
-        min-height: 80px;
         max-height: 25%;
         overflow-y: scroll;
     }
@@ -110,10 +93,31 @@
     background: #00655878;
 }
 
+.rankingChart {
+    /*thiennc remove*/
+    background-color: white;
+    height: 200px;
+    display: flex;
 
-@media (max-width: 576px) {
-    .blankDiv {
-        height: 10%;
-    }
+    /**/
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
 
+    align-items: center;
+    justify-content: center;
+
+    gap: 20px;
+}
+
+.rankingName {
+    text-align: center;
+    color: black;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.rankingScore {
+    flex-grow: 1;
 }

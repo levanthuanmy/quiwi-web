@@ -1,0 +1,97 @@
+.fabContainer {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap:3px;
+  flex-direction: row-reverse;
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  /*max-height: 52px;*/
+  height: 52px;
+  /*min-width: 52px;*/
+  /*background-color: lightgray;*/
+  transition: width 200ms ease;
+  /*background-color: #00a8ff;*/
+
+}
+
+@media (max-width: 576px) {
+  .fabContainer {
+    right: 4px;
+  }
+}
+
+.fabItem {
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  height: 52px;
+  min-width: 52px;
+  position: relative;
+  background-color: green;
+}
+
+.fabAction {
+  transform: translateY(50px) scale(0);
+  transition: transform 300ms, opacity 300ms;
+  opacity: 0;
+}
+
+.fabContainerOpen {
+  max-height: max-content;
+}
+
+
+
+.fabButton {
+  background-color: #00a8ff;
+}
+
+
+
+.fabAction:hover {
+
+}
+
+.fabActiontooltip {
+  transform: translateX(-100%) scale(1);
+  opacity: 1;
+}
+
+.fabActionOpen {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+}
+
+.tooltip {
+  padding: 4px 6px;
+  font-size: 12px;
+  position: absolute;
+  left: -12px;
+  transform: translateX(-75%);
+  background-color: #353b48;
+  border-radius: 4px;
+  color: white;
+  opacity: 0;
+  transition: transform 300ms, opacity 300ms;
+  user-select: none;
+}
+
+.container {
+  transition: background-color 150ms ease;
+  width: 900%;
+}
+
+.container:hover {
+  background-color: #f2f2f2;
+}
+
+.item {
+  height: 52px;
+  width: 52px;
+  border-radius: 50%;
+}
+
