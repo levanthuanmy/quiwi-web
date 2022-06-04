@@ -2,6 +2,8 @@ import classNames from 'classnames'
 import React, { FC, memo } from 'react'
 import { useAuth } from '../../hooks/useAuth/useAuth'
 import styles from './ItemMenuBar.module.css'
+import {playSound} from '../../utils/helper'
+import {SOUND_EFFECT} from '../../utils/constants'
 
 type ItemMenuBarProps = {
   title: string
@@ -16,6 +18,10 @@ const ItemMenuBar: FC<ItemMenuBarProps> = ({
   isActive,
 }) => {
   const authNavigate = useAuth()
+  const clickEventSoundNivigate = (url: string) => {
+    playSound(SOUND_EFFECT['SIDE_BAR_SOUND_CLICK']);
+    authNavigate.navigate(url);
+  }
   return (
     <div
       className={classNames(
@@ -25,7 +31,7 @@ const ItemMenuBar: FC<ItemMenuBarProps> = ({
           'fw-medium': isActive,
         }
       )}
-      onClick={() => authNavigate.navigate(url)}
+      onClick={() => clickEventSoundNivigate(url)}
       title={title}
     >
       <div

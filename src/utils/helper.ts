@@ -1,5 +1,6 @@
 import dayjs from 'dayjs'
 import { TAnswer, TQuestion } from '../types/types'
+import {Howl} from 'howler'
 
 export const JsonParse = (input: string | null) => {
   try {
@@ -74,4 +75,12 @@ export const formatDate_HHmmDDMMMYYYY = (d: Date) => {
 
 export const formatDate_DDMMMMYYYY = (d: Date) => {
   return dayjs(d).locale('vi').format('DD MMMM YYYY')
+}
+
+export const playSound = (src: string) => {
+  const sound = new Howl ({
+    src,
+    html5: true
+  })
+  sound.play();
 }

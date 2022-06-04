@@ -2,10 +2,9 @@ import _ from 'lodash'
 import { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
-import { Col, Container, Pagination, Row, Image } from 'react-bootstrap'
+import { Col, Container, Image, Pagination, Row } from 'react-bootstrap'
 import DashboardLayout from '../../components/DashboardLayout/DashboardLayout'
 import ItemShopV2 from '../../components/ItemShopV2/ItemShopV2'
-import MyModal from '../../components/MyModal/MyModal'
 import MyTabBar from '../../components/MyTabBar/MyTabBar'
 import SearchBar from '../../components/SearchBar/SearchBar'
 import { get } from '../../libs/api'
@@ -14,8 +13,9 @@ import {
   TItem,
   TItemCategory,
   TPaginationResponse,
-  TUserProfile,
+  TUserProfile
 } from '../../types/types'
+import AnimatedNumber from "animated-number-react";
 
 // const socket = io(`${API_URL}/games`, { transports: ['websocket'] })
 
@@ -33,6 +33,12 @@ const ItemPage: NextPage = () => {
   const pageSize = 8
   const router = useRouter()
   const { q } = router.query
+  const stateCoinChange = {
+    value: 150,
+  };
+
+  const formatValue = (value: any) => value.toFixed(0);
+
 
   const getFirst = (totalPages: number) => {
     setCurrentPagination(1)
@@ -248,7 +254,14 @@ const ItemPage: NextPage = () => {
                   height="32"
                 ></Image>
 
-                <div className="ps-3">{userResponse?.user.coin}</div>
+                <div className="ps-3">
+                  <AnimatedNumber
+                    value={userResponse?.user.coin}
+                    formatValue={formatValue}
+                  />
+                  {/* {userResponse?.user.coin} */}
+                </div>
+
               </div>
             </Col>
           </Row>

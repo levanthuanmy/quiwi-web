@@ -5,6 +5,8 @@ import { TItem } from '../../types/types'
 import { ItemPurchaseModal } from '../ItemPurchaseModal/ItemPurchaseModal'
 import MyModal from '../MyModal/MyModal'
 import styles from './ItemShopV2.module.css'
+import {playSound} from '../../utils/helper'
+import {SOUND_EFFECT} from '../../utils/constants'
 
 type ItemShopProps = {
   item: TItem
@@ -17,6 +19,7 @@ const ItemShopV2: FC<ItemShopProps> = ({ item, userBuyItem }) => {
   const [error, setError] = useState('')
   const [quantity, setQuantity] = useState(1)
   const buyItem = async () => {
+    playSound(SOUND_EFFECT['CONFIRM_BUY_BUTTON_SOUND_CLICK']);
     setShowConfirmationModal(false)
     try {
       const params = {
@@ -62,7 +65,10 @@ const ItemShopV2: FC<ItemShopProps> = ({ item, userBuyItem }) => {
         ) : (
           <Button
             className={styles.btnBuy}
-            onClick={() => setShowConfirmationModal(true)}
+            onClick={() => {
+              playSound(SOUND_EFFECT['BUY_BUTTON_SOUND_CLICK']);
+              setShowConfirmationModal(true)
+            }}
           >
             MUA NGAY
           </Button>
