@@ -15,6 +15,11 @@ import styles from './HistoryPage.module.css'
 import classNames from 'classnames'
 import { useRouter } from 'next/router'
 require('dayjs/locale/vi')
+import * as XLSX from 'xlsx'
+import {
+  formatDate_HHmmDDMMMYYYY,
+  formatDate_DDMMMMYYYY,
+} from '../../utils/helper'
 
 const HistoryPage: NextPage = () => {
   const authContext = useAuth()
@@ -51,6 +56,107 @@ const HistoryPage: NextPage = () => {
     getGameHistory()
   }, [user])
 
+  const generateSummarySheet = (game: TGameHistory) => {
+    const summaryWorksheet: XLSX.WorkSheet = {}
+    const merge = [
+      {
+        // From A1 -> H1
+        s: { r: 0, c: 0 },
+        e: { r: 0, c: 8 },
+      },
+      {
+        // From A2 -> D2
+        s: { r: 1, c: 0 },
+        e: { r: 1, c: 3 },
+      },
+      {
+        // From E2 -> H2
+        s: { r: 1, c: 4 },
+        e: { r: 1, c: 8 },
+      },
+
+      {
+        // From A3 -> D3
+        s: { r: 2, c: 0 },
+        e: { r: 2, c: 3 },
+      },
+      {
+        // From E3 -> H3
+        s: { r: 2, c: 4 },
+        e: { r: 2, c: 8 },
+      },
+
+      {
+        // From A4 -> D4
+        s: { r: 3, c: 0 },
+        e: { r: 3, c: 3 },
+      },
+      {
+        // From E4 -> H4
+        s: { r: 3, c: 4 },
+        e: { r: 3, c: 8 },
+      },
+    ]
+    summaryWorksheet['!merges'] = merge
+    XLSX.utils.sheet_add_aoa(
+      summaryWorksheet,
+      [
+        // Row 1
+        [
+          {
+            t: 's',
+
+            v: game.quiz.title,
+          },
+        ],
+        // Row 2
+        [
+          {
+            t: 's',
+
+            v: 'Ngày làm bài',
+          },
+          {},
+          {},
+          {},
+          {
+            v: formatDate_HHmmDDMMMYYYY(game.createdAt),
+          },
+        ],
+        // Row 3
+        [
+          {
+            t: 's',
+
+            v: 'Số người chơi',
+          },
+          {},
+          {},
+          {},
+          {
+            t: 's',
+            v: `${game.players.length} người chơi`,
+          },
+        ],
+      ],
+      { origin: 'A1' }
+    )
+
+    summaryWorksheet['A1'].style = {
+      font: { sz: 16, bold: true, color: '#FF00FF' },
+    }
+    return summaryWorksheet
+  }
+
+  const handleOnExport = (game: TGameHistory) => {
+    const wb = XLSX.utils.book_new()
+
+    wb.SheetNames.push('Thông tin chung')
+
+    wb.Sheets['Thông tin chung'] = generateSummarySheet(game)
+
+    XLSX.writeFile(wb, `${game.quiz.title}_${game.createdAt}.xlsx`)
+  }
   const renderRow = (gameHistory: TGameHistory) => {
     return (
       <tr>
@@ -68,12 +174,10 @@ const HistoryPage: NextPage = () => {
         </td>
         <td className={classNames(styles.cell)}>
           <span className="d-none d-lg-table-cell">
-            {dayjs(gameHistory.createdAt)
-              .locale('vi')
-              .format('HH:mm, DD MMMM YYYY')}
+            {formatDate_HHmmDDMMMYYYY(gameHistory.createdAt)}
           </span>
           <span className="d-table-cell d-lg-none">
-            {dayjs(gameHistory.createdAt).locale('vi').format('DD MMMM YYYY')}
+            {formatDate_DDMMMMYYYY(gameHistory.createdAt)}
           </span>
         </td>
         <td className={classNames(styles.cell)}>
@@ -98,7 +202,9 @@ const HistoryPage: NextPage = () => {
               <Dropdown.Item href={`/history/${gameHistory.id}`}>
                 Xem chi tiết
               </Dropdown.Item>
-              <Dropdown.Item href="#/action-2">Tải xuống</Dropdown.Item>
+              <Dropdown.Item onClick={() => handleOnExport(gameHistory)}>
+                Tải xuống
+              </Dropdown.Item>
               <Dropdown.Item href="#/action-3">Xóa khỏi lịch sử</Dropdown.Item>
             </Dropdown.Menu>
           </Dropdown>

@@ -1,3 +1,4 @@
+import dayjs from 'dayjs'
 import { TAnswer, TQuestion } from '../types/types'
 
 export const JsonParse = (input: string | null) => {
@@ -66,3 +67,11 @@ export const resizeBase64Img = (
       reject(error)
     }
   })
+
+export const formatDate_HHmmDDMMMYYYY = (d: Date) => {
+  return dayjs(d).locale('vi').format('HH:mm, DD MMMM YYYY')
+}
+
+export const formatDate_DDMMMMYYYY = (d: Date) => {
+  return dayjs(d).locale('vi').format('DD MMMM YYYY')
+}
