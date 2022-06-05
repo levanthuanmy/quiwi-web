@@ -102,7 +102,7 @@ const SignInPage: NextPage = () => {
         onHide={() => setError('')}
         size="sm"
         header={
-          <Modal.Title className="text-danger">Đã có lỗi xảy ra</Modal.Title>
+          <Modal.Title className="text-danger">Đăng nhập thất bại</Modal.Title>
         }
         inActiveButtonCallback={() => setError('')}
         inActiveButtonTitle="Huỷ"
