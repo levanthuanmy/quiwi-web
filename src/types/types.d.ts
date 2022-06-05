@@ -266,3 +266,41 @@ export type TViewResult = {
   answersStatistic: Record<string, number>
   answerTextStatistic: Record<string, number>
 }
+
+export type TQuest = {
+  id?: number
+  questTitle: string
+  type: string
+  activityEvent: string
+  typeActionDetail: string
+  userQuest: TUserQuest[]
+  questGoal: TQuestGoal[]
+}
+
+export type TQuestGoal = {
+  id?: number
+  questId: string
+  type: string
+  reward: TReward
+}
+
+export type TReward = {
+  id: number
+  name: string
+  avatar: string
+  type: string
+  description: string
+  price: number
+  itemCategoryId: number
+  itemCategory: TItemCategory
+  createdAt: Date
+  updatedAt: Date
+  isOwn?: boolean
+  coin: number
+}
+
+export type TUserQuest = {
+  id: number
+  process: number
+  status: string
+}
