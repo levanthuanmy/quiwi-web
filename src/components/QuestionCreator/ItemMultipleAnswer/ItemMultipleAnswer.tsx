@@ -2,23 +2,23 @@ import classNames from 'classnames'
 import { useRouter } from 'next/router'
 import React, { FC, memo, useEffect, useState } from 'react'
 import { Form, Image } from 'react-bootstrap'
-import { TAnswer } from '../../types/types'
+import { TAnswer } from '../../../types/types'
 import {
   getUrl,
   storage,
   storageRef,
   uploadFile,
-} from '../../utils/firebaseConfig'
-import { getCurrentTrueAnswer } from '../../utils/helper'
-import { QuestionType } from '../IconQuestion/IconQuestion'
-import QuestionActionButton from '../QuestionActionButton/QuestionActionButton'
+} from '../../../utils/firebaseConfig'
+import { getCurrentTrueAnswer } from '../../../utils/helper'
+import { QuestionType } from '../../IconQuestion/IconQuestion'
+import QuestionActionButton from '../../QuestionActionButton/QuestionActionButton'
 
 type ItemMultipleAnswerProps = {
   answers: TAnswer[]
   setAnswers: React.Dispatch<React.SetStateAction<TAnswer[]>>
   index: number
   onRemove: () => void
-  type: 'single' | 'multiple' | 'fill'
+  type: 'single' | 'multiple'
 }
 const ItemMultipleAnswer: FC<ItemMultipleAnswerProps> = ({
   answers,
@@ -27,7 +27,6 @@ const ItemMultipleAnswer: FC<ItemMultipleAnswerProps> = ({
   onRemove,
   type = 'single',
 }) => {
-  const router = useRouter()
   const [isCorrectAns, setIsCorrectAns] = useState(answers[index].isCorrect)
 
   useEffect(() => {
@@ -117,7 +116,6 @@ const ItemMultipleAnswer: FC<ItemMultipleAnswerProps> = ({
           <input
             type="file"
             onChange={handleUploadImage}
-            onDropCapture={handleUploadImage}
             className="position-absolute top-0 w-100 h-100 opacity-0 cursor-pointer"
             accept="image/png, image/jpeg, image/jpg"
             style={{ left: 0 }}

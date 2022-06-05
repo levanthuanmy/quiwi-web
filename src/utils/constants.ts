@@ -62,4 +62,11 @@ export const TIMEOUT_OPTIONS = [15, 30, 60, 120, 180]
 
 export const RICH_TEXT_TOOLBAR = {}
 
-export const ANSWER_COLORS: Array<string> = ['#00a991', '#e2352a', '#f67702', '#0082BE', "#facc50", "#773172"]
+export const ANSWER_COLORS: Array<string> = [
+  '#00a991',
+  '#e2352a',
+  '#f67702',
+  '#0082BE',
+  '#facc50',
+  '#773172',
+]

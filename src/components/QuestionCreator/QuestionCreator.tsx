@@ -1,20 +1,10 @@
-import classNames from 'classnames'
 import { ContentState, convertToRaw, EditorState } from 'draft-js'
 import draftToHtml from 'draftjs-to-html'
-import { Field, Form as FormikForm, Formik } from 'formik'
 import _ from 'lodash'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import React, { FC, memo, useEffect, useState } from 'react'
-import {
-  Col,
-  Dropdown,
-  FloatingLabel,
-  Form,
-  Image,
-  Modal,
-  Row,
-} from 'react-bootstrap'
+import { Modal } from 'react-bootstrap'
 import { EditorProps } from 'react-draft-wysiwyg'
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
 import { post } from '../../libs/api'
@@ -22,16 +12,11 @@ import { TEditQuestion } from '../../pages/quiz/creator/[id]'
 import {
   TAnswer,
   TApiResponse,
-  TMatcherQuestion,
   TQuestion,
   TQuestionType,
   TQuiz,
 } from '../../types/types'
-import {
-  MAPPED_QUESTION_TYPE,
-  RICH_TEXT_TOOLBAR,
-  TIMEOUT_OPTIONS,
-} from '../../utils/constants'
+import { MAPPED_QUESTION_TYPE } from '../../utils/constants'
 import {
   getUrl,
   storage,
@@ -39,46 +24,18 @@ import {
   uploadFile,
 } from '../../utils/firebaseConfig'
 import { getCurrentTrueAnswer } from '../../utils/helper'
-import IconQuestion, {
-  QuestionType,
-  questionTypeStyles,
-} from '../IconQuestion/IconQuestion'
-import ItemMultipleAnswer from '../ItemMultipleAnswer/ItemMultipleAnswer'
+import { QuestionType, questionTypeStyles } from '../IconQuestion/IconQuestion'
 import MyButton from '../MyButton/MyButton'
-import MyInput from '../MyInput/MyInput'
-import QuestionActionButton from '../QuestionActionButton/QuestionActionButton'
-import QuestionConfigBtn from '../QuestionConfigBtn/QuestionConfigBtn'
+import AnswerEditorSection from './AnswerEditorSection/AnswerEditorSection'
+import { defaultAnswer, defaultQuestion } from './QuestionCreator.constants'
+import QuestionEditorSection from './QuestionEditorSection/QuestionEditorSection'
 
-const Editor = dynamic<EditorProps>(
+const Editor: React.ComponentType<EditorProps> = dynamic<EditorProps>(
   () => import('react-draft-wysiwyg').then((mod) => mod.Editor),
   { ssr: false }
 )
 const htmlToDraft =
   typeof window === 'object' && require('html-to-draftjs').default
-
-const defaultAnswer: TAnswer = {
-  answer: '',
-  isCorrect: false,
-  orderPosition: 0,
-  media: '',
-  type: '20SELECTION',
-}
-
-const defaultQuestion: TQuestion = {
-  type: '10SG',
-  difficulty: 1,
-  duration: 30,
-  orderPosition: 0,
-  question: '',
-  questionAnswers: [
-    { ...defaultAnswer, orderPosition: 0 },
-    { ...defaultAnswer, orderPosition: 1 },
-    { ...defaultAnswer, orderPosition: 2 },
-  ],
-  media: '',
-  score: 100,
-  matcher: '10EXC',
-}
 
 type QuestionCreatorProps = {
   show: boolean
@@ -234,6 +191,7 @@ const QuestionCreator: FC<QuestionCreatorProps> = ({
 
   const handleUploadImage = async (evt: any) => {
     try {
+      evt.preventDefault()
       const data: File = evt.target.files[0]
 
       const path = `/images/${data.name}`
@@ -272,243 +230,29 @@ const QuestionCreator: FC<QuestionCreatorProps> = ({
       fullscreen="lg-down"
     >
       <Modal.Body className="p-0">
-        <div className="bg-secondary bg-opacity-10 p-3">
-          <Row>
-            <Col
-              xs="12"
-              md="auto"
-              className="mb-3 mb-md-0 d-flex flex-column gap-2"
-            >
-              <QuestionConfigBtn
-                prefixIcon={<IconQuestion type={type} />}
-                title={
-                  <div className="fw-medium text-dark">
-                    {questionTypeStyles[type].title}
-                  </div>
-                }
-                suffixIcon=""
-              />
+        <QuestionEditorSection
+          type={type}
+          questionTypeStyles={questionTypeStyles}
+          handleUploadImage={handleUploadImage}
+          newQuestion={newQuestion}
+          setNewQuestion={setNewQuestion}
+          isScoreError={isScoreError}
+          handleScoreInputChange={handleScoreInputChange}
+          setRichTextQuestion={setRichTextQuestion}
+          richTextQuestion={richTextQuestion}
+          Editor={Editor}
+        />
 
-              <div className="position-relative">
-                <input
-                  type="file"
-                  onChange={handleUploadImage}
-                  onDropCapture={handleUploadImage}
-                  className="position-absolute top-0 w-100 h-100 opacity-0 cursor-pointer"
-                  accept="image/png, image/jpeg, image/jpg"
-                  style={{ left: 0 }}
-                />
-                <QuestionConfigBtn
-                  prefixIcon={
-                    <QuestionActionButton
-                      iconClassName="bi bi-image"
-                      className="bg-primary text-white"
-                    />
-                  }
-                  title="Thêm hình ảnh"
-                  suffixIcon={<i className="bi bi-plus-lg fs-18px" />}
-                />
-              </div>
-
-              <Dropdown id="timeoutDropdown">
-                <Dropdown.Toggle
-                  id="dropdown-basic"
-                  className="w-100 p-0 bg-transparent border-0 shadow-none"
-                >
-                  <QuestionConfigBtn
-                    prefixIcon={
-                      <QuestionActionButton
-                        iconClassName="bi bi-clock"
-                        className="bg-primary text-white"
-                      />
-                    }
-                    title={`${newQuestion.duration} giây`}
-                    suffixIcon={<i className="bi bi-chevron-down fs-18px" />}
-                    className="text-start"
-                  />
-                </Dropdown.Toggle>
-
-                <Dropdown.Menu className="w-100 rounded-10px shadow-sm">
-                  {TIMEOUT_OPTIONS.map((item, key) => (
-                    <Dropdown.Item
-                      key={key}
-                      onClick={() =>
-                        setNewQuestion({ ...newQuestion, duration: item })
-                      }
-                    >
-                      {item} giây
-                    </Dropdown.Item>
-                  ))}
-                </Dropdown.Menu>
-              </Dropdown>
-
-              <FloatingLabel
-                controlId="floatingInput"
-                label="Nhập điểm số (0 - 100)"
-                className="fs-14px"
-              >
-                <Form.Control
-                  type="number"
-                  placeholder="Nhập điểm số (từ 0 đến 100)"
-                  className={classNames('rounded-10px border', {
-                    'border-danger border-2 shadow-none': isScoreError,
-                  })}
-                  min={0}
-                  max={100}
-                  value={newQuestion?.score}
-                  onChange={handleScoreInputChange}
-                />
-              </FloatingLabel>
-            </Col>
-            <Col className="ps-12px ps-md-0">
-              <Row className="flex-column-reverse flex-md-row border m-0 rounded-10px overflow-hidden">
-                {newQuestion?.media?.length ? (
-                  <Col xs="12" md="6" className="p-0">
-                    <Image
-                      src={newQuestion.media}
-                      width="100%"
-                      height="240"
-                      alt=""
-                      className="object-fit-cover"
-                    />
-                  </Col>
-                ) : (
-                  <></>
-                )}
-                <Col
-                  xs="12"
-                  md={newQuestion?.media?.length ? '6' : '12'}
-                  className="p-0 bg-white position-relative"
-                  style={{ height: 240 }}
-                >
-                  <Editor
-                    toolbar={RICH_TEXT_TOOLBAR}
-                    toolbarClassName="position-relative"
-                    editorState={richTextQuestion}
-                    wrapperClassName="demo-wrapper w-100 bg-white h-100"
-                    editorClassName="demo-editor"
-                    placeholder="Nhập câu hỏi của bạn ở đây..."
-                    onEditorStateChange={(editorState) => {
-                      setRichTextQuestion(editorState)
-                    }}
-                  ></Editor>
-                </Col>
-              </Row>
-            </Col>
-          </Row>
-        </div>
-
-        <div className="bg-white p-3">
-          {(type === 'multiple' || type === 'single') && (
-            <Row>
-              {answers.map((_, key) => (
-                <Col key={key} xs="12" sm="6" lg="4" xl="3" className="mb-3">
-                  <ItemMultipleAnswer
-                    index={key}
-                    answers={answers}
-                    setAnswers={setAnswers}
-                    onRemove={() => removeAnswerAtIndex(key)}
-                    type={type}
-                  />
-                </Col>
-              ))}
-
-              {answers.length < 6 && (
-                <Col
-                  xs="auto"
-                  className="my-auto"
-                  onClick={() =>
-                    setAnswers((prev) => [
-                      ...prev,
-                      { ...defaultAnswer, orderPosition: prev.length },
-                    ])
-                  }
-                >
-                  <div className="bi bi-plus-circle-fill fs-1 mb-0 text-primary cursor-pointer" />
-                </Col>
-              )}
-            </Row>
-          )}
-
-          {type === 'fill' && (
-            <div>
-              <div className="text-center mb-4 fs-18px fw-medium">
-                Đánh dấu một câu trả lời là đúng, nếu câu trả lời
-              </div>
-
-              <Row>
-                <Col xs="12" sm="auto" className="mb-3 mb-sm-0">
-                  <Form.Select
-                    className="rounded-10px shadow-none"
-                    style={{ height: 50 }}
-                    defaultValue={_.get(newQuestion, 'matcher', '10EXC')}
-                    onChange={(e) => {
-                      setNewQuestion((prev) => ({
-                        ...prev,
-                        matcher: e.target.value as TMatcherQuestion,
-                      }))
-                    }}
-                  >
-                    <option value="10EXC">Chính xác</option>
-                    <option value="20CNT">Chứa đựng</option>
-                  </Form.Select>
-                </Col>
-
-                <Col>
-                  {fillAnswers.map((answer, key) => (
-                    <div key={key} className="d-flex mb-3 fw-medium w-100">
-                      <div className="p-12px border rounded-8px w-100 bg-primary bg-opacity-25">
-                        {answer}
-                      </div>
-                      <MyButton
-                        className="ms-3 bg-danger shadow-none border-danger text-white"
-                        onClick={() => {
-                          const currentAns = [...fillAnswers]
-                          currentAns.splice(key, 1)
-                          setFillAnswers(currentAns)
-                        }}
-                      >
-                        <i className="bi bi-trash" />
-                      </MyButton>
-                    </div>
-                  ))}
-
-                  <Formik
-                    initialValues={{ newAnswer: '' }}
-                    onSubmit={(values, actions) => {
-                      if (values.newAnswer.length) {
-                        setFillAnswers([...fillAnswers, values.newAnswer])
-                      }
-                      actions.setSubmitting(false)
-                      actions.resetForm()
-                    }}
-                  >
-                    {({ isSubmitting }) => (
-                      <FormikForm className="d-flex w-100">
-                        <Field
-                          maxLength={100}
-                          type="text"
-                          name="newAnswer"
-                          placeholder="Nhập đáp án mới"
-                          as={MyInput}
-                          className="mb-3 w-100"
-                        />
-
-                        <MyButton
-                          className="ms-3 text-white"
-                          type="submit"
-                          disabled={isSubmitting}
-                        >
-                          <i className="bi bi-plus-lg" />
-                        </MyButton>
-                      </FormikForm>
-                    )}
-                  </Formik>
-                </Col>
-              </Row>
-            </div>
-          )}
-        </div>
+        <AnswerEditorSection
+          type={type}
+          answers={answers}
+          setAnswers={setAnswers}
+          removeAnswerAtIndex={removeAnswerAtIndex}
+          setNewQuestion={setNewQuestion}
+          newQuestion={newQuestion}
+          fillAnswers={fillAnswers}
+          setFillAnswers={setFillAnswers}
+        />
       </Modal.Body>
 
       <Modal.Footer>

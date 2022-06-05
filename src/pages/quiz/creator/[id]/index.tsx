@@ -198,7 +198,9 @@ const QuizCreatorPage: NextPage = () => {
         onHide={() => {
           setIsShowQuestionCreator(false)
           setIsEditQuestion({ isEdit: false, questionId: null })
-          router.replace(`/quiz/creator/${quizId}`)
+          router.replace(`/quiz/creator/${quizId}`, undefined, {
+            scroll: false,
+          })
           addQuestionRef.current?.scrollIntoView()
         }}
         quiz={quiz}

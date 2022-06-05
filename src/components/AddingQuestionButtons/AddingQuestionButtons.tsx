@@ -10,6 +10,12 @@ const AddingQuestionButtons: FC<AddingQuestionButtonsProps> = ({ quizId }) => {
   const router = useRouter()
   const mainRoute = `/quiz/creator/${quizId}`
 
+  const handleAddingQuestionClick = (path: string) => {
+    router.replace(path, undefined, {
+      scroll: false,
+    })
+  }
+
   return (
     <div
       id="addingQuestion"
@@ -19,27 +25,39 @@ const AddingQuestionButtons: FC<AddingQuestionButtonsProps> = ({ quizId }) => {
       <Row className="mt-3">
         <Col
           xs="6"
-          sm="4"
+          sm="3"
           className="d-flex flex-column align-items-center mb-3 mb-md-0"
-          onClick={() => router.replace(`${mainRoute}?type=single`)}
+          onClick={() => handleAddingQuestionClick(`${mainRoute}?type=single`)}
         >
           <IconQuestion type="single" showTitle />
         </Col>
         <Col
           xs="6"
-          sm="4"
+          sm="3"
           className="d-flex flex-column align-items-center"
-          onClick={() => router.replace(`${mainRoute}?type=multiple`)}
+          onClick={() =>
+            handleAddingQuestionClick(`${mainRoute}?type=multiple`)
+          }
         >
           <IconQuestion type="multiple" showTitle />
         </Col>
         <Col
           xs="6"
-          sm="4"
+          sm="3"
           className="d-flex flex-column align-items-center"
-          onClick={() => router.replace(`${mainRoute}?type=fill`)}
+          onClick={() => handleAddingQuestionClick(`${mainRoute}?type=fill`)}
         >
           <IconQuestion type="fill" showTitle />
+        </Col>
+        <Col
+          xs="6"
+          sm="3"
+          className="d-flex flex-column align-items-center"
+          onClick={() =>
+            handleAddingQuestionClick(`${mainRoute}?type=conjunction`)
+          }
+        >
+          <IconQuestion type="conjunction" showTitle />
         </Col>
       </Row>
     </div>
