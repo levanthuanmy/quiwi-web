@@ -14,8 +14,8 @@ type IItem = {
     avatar: string,
     type: string,
     price: number
-  }
-  
+}
+
 
 const Item: FC<IItem> = (props) => {
     const [isCollapse, setIsCollapse] = useState(false)
@@ -27,14 +27,18 @@ const Item: FC<IItem> = (props) => {
     return (
         <div>
             <div className={classNames('', styles.layoutImage)}>
-                    <ItemToolTip props={props} >
-                    <Image className={classNames('', props.type === "RARE" ? styles.imageType : styles.imageTypeNormal)}
+                <ItemToolTip props={props} >
+                    <Image className={classNames('',
+                        props.type === "RARE" ? styles.imageTypeRare :
+                            props.type === "EPIC" ? styles.imageTypeEpic :
+                                props.type === "LEGENDARY" ? styles.imageTypeLegendary :
+                                    styles.imageTypeNormal)}
                         src={props.avatar}
                         width={50}
                         height={50}
                         alt="coin"
                     ></Image>
-                    </ItemToolTip>
+                </ItemToolTip>
             </div>
         </div>
     )

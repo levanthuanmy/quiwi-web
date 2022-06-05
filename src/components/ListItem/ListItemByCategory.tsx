@@ -64,22 +64,20 @@ const ListItemByCategory: FC<IListItem> = (props) => {
       </div>
 
       <Collapse in={isCollapse} className={classNames('', styles.content)}>
-        <Row className="justify-content-md-center">
-          <Col>
-            <div className={classNames('badges-list')}>
+        <div className="justify-content-md-center">
+            <div className={classNames('', styles.itemList)}>
               {itemsRes?.map((item, idx) => (
                 <Item
-                  key={idx}
-                  name={item.name}
-                  des={item.description}
-                  avatar={item.avatar}
-                  type={item.type}
-                  price={item.price}
-                ></Item>
+                key={idx}
+                name={item.name}
+                des={item.description}
+                avatar={item.avatar}
+                type={item.type}
+                price={item.price}
+              ></Item>
               ))}
             </div>
-          </Col>
-        </Row>
+        </div>
       </Collapse>
     </div>
   )

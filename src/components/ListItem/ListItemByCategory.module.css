@@ -1,8 +1,12 @@
 .content {
   height: auto;
-  background-color: rgb(233, 229, 224);
 }
 
 .listItem {
   padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.itemList {
+  display: flex;
 }

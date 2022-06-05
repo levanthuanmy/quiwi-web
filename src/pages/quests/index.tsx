@@ -1,13 +1,63 @@
 import classNames from 'classnames'
 import { NextPage } from 'next'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Col, Container, Row } from 'react-bootstrap'
 import DashboardLayout from '../../components/DashboardLayout/DashboardLayout'
 import MyTabBar from '../../components/MyTabBar/MyTabBar'
 import QuestItem from '../../components/QuestItem/QuestItem'
+import { useAuth } from '../../hooks/useAuth/useAuth'
+import { get, post } from '../../libs/api'
+import {
+  TApiResponse,
+  TQuest,
+  TPaginationResponse
+} from '../../types/types'
 
 const QuestPage: NextPage = () => {
   const [toggleState, setToggleState] = useState<number>(0)
+  const [itemsResponse, setItemsResponse] =
+    useState<TPaginationResponse<TQuest>>()
+  const authContext = useAuth()
+  useEffect(() => {
+    const getItemCategories = async () => {
+      if (authContext !== undefined) {
+        let currentUserId = authContext.getUser()?.id || null
+        try {
+          const popularParams = {
+            filter: {
+              relations: ["questRequirement", "questGoal", "userQuest"],
+
+              where: {
+                userQuest: {
+                  userId: currentUserId
+                }
+              },
+            }
+          }
+
+          const res: TApiResponse<TPaginationResponse<TQuest>> = await get(
+            `/api/quest/all`,
+            true,
+            popularParams
+          )
+          if (res.response) {
+            console.log("ÁDAS")
+            console.log(res.response)
+            setItemsResponse(res.response)
+            console.log(itemsResponse)
+          }
+        } catch (error) {
+          alert('Có lỗi nè')
+          console.log(error)
+        }
+      }
+    }
+
+    getItemCategories()
+    // if (!itemsResponse){
+    //   getItems()
+    // }
+  }, [])
 
   const tabOptions = [
     'Nhiệm vụ ngày',
@@ -32,67 +82,17 @@ const QuestPage: NextPage = () => {
           >
             {toggleState === 0 ? (
               <>
-                <Col xs={12} className="p-0 mb-3">
-                  <QuestItem
-                    currentValue={3}
-                    targetValue={5}
-                    name={'Top 1 thần thánh'}
-                    des={'Có 5 lần đạt top 1'}
-                    isDone={false}
-                  ></QuestItem>
-                </Col>
-
-                <Col xs={12} className="p-0 mb-3">
-                  <QuestItem
-                    currentValue={1}
-                    targetValue={1}
-                    name={'Top 3 thần thánh'}
-                    des={'Có 1 lần đạt top 3'}
-                    isDone={true}
-                  ></QuestItem>
-                </Col>
-
-                <Col xs={12} className="p-0 mb-3">
-                  <QuestItem
-                    currentValue={1}
-                    targetValue={5}
-                    name={'Top 2 thần thánh'}
-                    des={'Có 5 lần đạt top 2'}
-                    isDone={false}
-                  ></QuestItem>
-                </Col>
-
-                <Col xs={12} className="p-0 mb-3">
-                  <QuestItem
-                    currentValue={10}
-                    targetValue={10}
-                    name={'Hoàn thành 10 bài quiz'}
-                    des={'Hoàn thành đầy đủ 10 bài quiz'}
-                    isDone={false}
-                  ></QuestItem>
-                </Col>
+                {itemsResponse?.items?.map((item, idx) => (
+                  <Col xs={12} className="p-0 mb-3">
+                    <QuestItem
+                      props={item}
+                    ></QuestItem>
+                  </Col>
+                ))}
               </>
             ) : toggleState === 2 ? (
               <>
-                <Col xs={12} className="p-0 mb-3">
-                  <QuestItem
-                    currentValue={3}
-                    targetValue={5}
-                    name={'Top 1 thần thánh'}
-                    des={'Có 5 lần đạt top 1'}
-                    isDone={false}
-                  ></QuestItem>
-                </Col>
 
-                <Col xs={12} className="p-0 mb-3">
-                  <QuestItem
-                    currentValue={10}
-                    targetValue={10}
-                    name={'Hoàn thành 10 bài quiz'}
-                    des={'Hoàn thành đầy đủ 10 bài quiz'}
-                    isDone={false}
-                  ></QuestItem>
-                </Col>
               </>
             ) : null}
           </Row>
