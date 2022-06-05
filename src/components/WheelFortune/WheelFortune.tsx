@@ -4,6 +4,8 @@ import { FC, useState } from 'react'
 import { SOUND_EFFECT } from '../../utils/constants'
 import { playSound } from '../../utils/helper'
 import styles from './WheelFortune.module.css'
+import JackspotModal from '../JackpotModal'
+import AnimatedNumbers from 'react-animated-numbers';
 
 export interface WheelData {
   option: string;
@@ -41,8 +43,7 @@ const Wheel = dynamic<Props>(
   { ssr: false }
 )
 
-type ItemShopProps = {
-
+type WheelProps = {
 }
 
 const data = [
@@ -57,9 +58,10 @@ const data = [
 ]
 
 
-const WheelOfFortune: FC<ItemShopProps> = () => {
+const WheelOfFortune: FC<WheelProps> = () => {
   const [mustSpin, setMustSpin] = useState(false);
   const [prizeNumber, setPrizeNumber] = useState(0);
+  const [openJackpotModal, setOpenJackpotModal] = useState(false);
 
   const handleSpinClick = () => {
     const newPrizeNumber = Math.floor(Math.random() * data.length)
@@ -86,14 +88,32 @@ const WheelOfFortune: FC<ItemShopProps> = () => {
           innerBorderWidth={10}
           onStopSpinning={() => {
             setMustSpin(false);
+            setOpenJackpotModal(true);
+            playSound(SOUND_EFFECT['JACKPOT_CONGRATULATION']);
           }}
           spinDuration={0.45}
         />
         <button className={styles.btnBuy} onClick={handleSpinClick}>SPIN</button>
       </div>
-      <div style={{width:'500px', backgroundColor:'red'}}>
-
+      <div style={{ width: '500px' }}>
+        <div>Số lượng điểm Jackpot</div>
+        <div>Tổng số người đã quay thưởng: 0</div>
+        <div>
+          <AnimatedNumbers
+            includeComma
+            animateToNumber={10000000}
+            fontStyle={{ fontSize: 100 }}
+            configs={[{"mass":1,"tension":140,"friction":126},{"mass":1,"tension":130,"friction":114},{"mass":1,"tension":150,"friction":112},{"mass":1,"tension":130,"friction":120}]}
+          ></AnimatedNumbers>
+        </div>
+        <div>Số lượt quay: 0</div>
       </div>
+      <JackspotModal
+        onHide={() => {
+          setOpenJackpotModal(false)
+        }}
+        showModal={openJackpotModal}
+      />
     </div>
   )
 }
