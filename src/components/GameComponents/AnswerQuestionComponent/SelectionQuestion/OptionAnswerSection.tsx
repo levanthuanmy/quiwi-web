@@ -1,12 +1,10 @@
 import classNames from 'classnames'
-import React, {FC, useState} from 'react'
-import {Col, Image, Modal, Row} from 'react-bootstrap'
-import {animated, useSpring, useTransition} from 'react-spring'
+import React, {FC} from 'react'
+import {Col, Image, Row} from 'react-bootstrap'
 import {TAnswer, TQuestion} from '../../../../types/types'
 import styles from './SingleChoiceAnswerSection.module.css'
-import useIsMobile from "../../../../hooks/useIsMobile/useIsMobile";
 import useScreenSize from "../../../../hooks/useScreenSize/useScreenSize";
-import QRCode from "react-qr-code";
+import {ANSWER_COLORS} from "../../../../utils/constants";
 
 type OptionAnswerSectionProps = {
   className?: string
@@ -17,14 +15,11 @@ type OptionAnswerSectionProps = {
   isHost: boolean
   baseIcon: string
 }
-const colorArray: Array<string> = ['#00a991', '#e2352a', '#f67702', '#0082BE', "#facc50", "#773172"]
+
 const incorrectColor = "#cccccc"
 
-const normalAlphaValue: string = "E6" // D9
-const correctAlphaValue: string = "FF"
-const incorrectAlphaValue: string = "26"
-
 const alphabet = ['A', 'B', 'C', 'D', 'E', 'F']
+
 const OptionAnswerSection: FC<OptionAnswerSectionProps> = ({
                                                              className,
                                                              handleSubmitAnswer,
@@ -34,8 +29,7 @@ const OptionAnswerSection: FC<OptionAnswerSectionProps> = ({
                                                              isHost,
                                                              baseIcon
                                                            }) => {
-  const isMobile = useIsMobile()
-  const screenSize = useScreenSize()
+  const {fromMedium} = useScreenSize()
 
   // 2 case:
   const getBackgroundColorForAnswer = (
@@ -46,7 +40,7 @@ const OptionAnswerSection: FC<OptionAnswerSectionProps> = ({
     if (showAnswer && !answer.isCorrect) {
       return incorrectColor//hexColor += (answer.isCorrect ? correctAlphaValue : incorrectAlphaValue)
     } else {
-      return colorArray[index]
+      return ANSWER_COLORS[index]
     }
   }
   const getIconForHost = (answer: TAnswer): string => {
@@ -78,7 +72,7 @@ const OptionAnswerSection: FC<OptionAnswerSectionProps> = ({
   const getColHeight = (): string => {
 
     if (option?.questionAnswers) {
-      if (screenSize >= 768) {
+      if (fromMedium) {
         if (option?.questionAnswers.length > 4)
           return "34%"
         return "50%"
@@ -116,7 +110,7 @@ const OptionAnswerSection: FC<OptionAnswerSectionProps> = ({
               style={{
                 background: getBackgroundColorForAnswer(
                   item,
-                  index % colorArray.length
+                  index % ANSWER_COLORS.length
                 ),
                 transition: "all .5s ease",
                 WebkitTransition: "all .5s ease",

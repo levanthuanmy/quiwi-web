@@ -1,7 +1,7 @@
 import {FC} from 'react'
 import {Col, Image} from 'react-bootstrap'
 import styles from './PlayerLobbyItem.module.css'
-import useIsMobile from "../../hooks/useIsMobile/useIsMobile";
+import useScreenSize from "../../hooks/useScreenSize/useScreenSize";
 
 type PlayerLobbyItemProps = {
   displayName: string,
@@ -11,7 +11,7 @@ type PlayerLobbyItemProps = {
 }
 
 const PlayerLobbyItem: FC<PlayerLobbyItemProps> = (props: PlayerLobbyItemProps) => {
-  const isMobile = useIsMobile()
+  const {isMobile} = useScreenSize()
   return (
     <>
       <Col

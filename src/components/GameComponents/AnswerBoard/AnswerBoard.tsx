@@ -1,23 +1,18 @@
 import classNames from 'classnames'
-import { useRouter } from 'next/router'
-import React, { FC, memo, useEffect, useRef, useState } from 'react'
-import { useGameSession } from '../../../hooks/useGameSession/useGameSession'
-import { useLocalStorage } from '../../../hooks/useLocalStorage/useLocalStorage'
-import { SocketManager } from '../../../hooks/useSocket/socketManager'
-import {
-  TQuestion,
-  TStartQuizResponse,
-  TUser,
-  TViewResult,
-} from '../../../types/types'
-import { JsonParse } from '../../../utils/helper'
+import cn from 'classnames'
+import {useRouter} from 'next/router'
+import React, {FC, memo, useEffect, useRef, useState} from 'react'
+import {useGameSession} from '../../../hooks/useGameSession/useGameSession'
+import {useLocalStorage} from '../../../hooks/useLocalStorage/useLocalStorage'
+import {TQuestion, TStartQuizResponse, TUser, TViewResult,} from '../../../types/types'
+import {JsonParse} from '../../../utils/helper'
 import GameSessionRanking from '../GameSessionRanking/GameSessionRanking'
-import { QuestionMedia } from '../QuestionMedia/QuestionMedia'
+import {QuestionMedia} from '../QuestionMedia/QuestionMedia'
 import styles from './AnswerBoard.module.css'
-import { AnswerSectionFactory } from '../AnswerQuestionComponent/AnswerSectionFactory/AnswerSectionFactory'
-import {Button, Fade} from "react-bootstrap";
+import {AnswerSectionFactory} from '../AnswerQuestionComponent/AnswerSectionFactory/AnswerSectionFactory'
+import {Fade} from "react-bootstrap";
 import GameButton from "../GameButton/GameButton";
-import cn from "classnames";
+import useScreenSize from "../../../hooks/useScreenSize/useScreenSize";
 
 type AnswerBoardProps = {
   className?: string
@@ -53,6 +48,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({ className,isShowHostControl }) => {
   const [numSubmission, setNumSubmission] = useState<number>(0)
   const [viewResultData, setViewResultData] = useState<TViewResult>()
 
+  const {fromMedium} = useScreenSize()
   let answerSectionFactory: AnswerSectionFactory
 
   useEffect(() => {
@@ -218,6 +214,8 @@ const AnswerBoard: FC<AnswerBoardProps> = ({ className,isShowHostControl }) => {
   }
 
   const renderHostControlSystem = () => {
+    // console.log("=>(AnswerBoard.tsx:224) fromMedium", fromMedium);
+    console.log("=>(AnswerBoard.tsx:225) isShowHostControl", isShowHostControl);
     return (
       <Fade in={isShowHostControl}>
         <div className={cn(styles.hostControl)}>
