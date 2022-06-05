@@ -1,0 +1,29 @@
+
+.containerWheel{
+ display: flex;
+ justify-content: center;
+ flex-direction: column;
+}
+
+.containerParent{
+  display: flex;
+  justify-content: space-between;
+}
+
+.btnBuy {
+  margin: auto;
+  width: 50%;
+  height: 2rem;
+  text-align: center;
+  padding: 0 2rem 0 2rem;
+  border-radius: 20px;
+  color: #009883;
+  font-weight: bold;
+  background-color: white;
+  border-color: #009883;
+}
+
+.btnBuy:hover {
+  color: white;
+  background-color: #009883;
+}

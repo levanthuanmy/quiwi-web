@@ -4,6 +4,7 @@ import { TItem } from '../../types/types'
 import MyModal from '../MyModal/MyModal'
 import {playSound} from '../../utils/helper'
 import {SOUND_EFFECT} from '../../utils/constants'
+import WheelOfFortune from '../WheelFortune/WheelFortune'
 
 type ItemPurchaseProps = {
   avatar?: string
@@ -40,6 +41,7 @@ const ItemPurchaseModal: FC<ItemPurchaseProps> = ({
       }
     >
       <div>
+        {/* <div><WheelOfFortune/></div> */}
         <Row>
           <Col xs={4}>
             <Image alt="coin" src={item.avatar} fluid={true}></Image>
