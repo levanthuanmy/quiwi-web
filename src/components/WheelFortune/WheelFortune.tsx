@@ -1,8 +1,45 @@
+import dynamic from 'next/dynamic'
 import { FC, useState } from 'react'
-import { Wheel } from 'react-custom-roulette'
+// import { Wheel } from 'react-custom-roulette'
 import { SOUND_EFFECT } from '../../utils/constants'
 import { playSound } from '../../utils/helper'
 import styles from './WheelFortune.module.css'
+
+export interface WheelData {
+  option: string;
+  style?: StyleType;
+}
+
+export interface StyleType {
+  backgroundColor?: string;
+  textColor?: string;
+}
+
+
+interface Props {
+  mustStartSpinning: boolean;
+  prizeNumber: number;
+  data: WheelData[];
+  onStopSpinning?: () => any;
+  backgroundColors?: string[];
+  textColors?: string[];
+  outerBorderColor?: string;
+  outerBorderWidth?: number;
+  innerRadius?: number;
+  innerBorderColor?: string;
+  innerBorderWidth?: number;
+  radiusLineColor?: string;
+  radiusLineWidth?: number;
+  fontSize?: number;
+  perpendicularText?: boolean;
+  textDistance?: number;
+  spinDuration?: number;
+}
+
+const Wheel = dynamic<Props>(
+  () => import('react-custom-roulette').then(mod => mod.Wheel),
+  { ssr: false }
+)
 
 type ItemShopProps = {
 
@@ -20,7 +57,7 @@ const data = [
 ]
 
 
-const WheelOfFortune: FC<ItemShopProps> = ({ }) => {
+const WheelOfFortune: FC<ItemShopProps> = () => {
   const [mustSpin, setMustSpin] = useState(false);
   const [prizeNumber, setPrizeNumber] = useState(0);
 
