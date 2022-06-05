@@ -12,3 +12,18 @@
 .fontDes {
     font-size: 18;
 }
+
+.layoutImage {
+    align-items: flex-start !important;
+    align-content: flex-start;
+    
+}
+
+.listItem {
+    padding-bottom: 10px;
+    display: flex !important;
+}
+
+.price {
+    justify-content: space-between;
+}
