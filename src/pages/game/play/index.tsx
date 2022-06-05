@@ -1,27 +1,25 @@
 import classNames from 'classnames'
 import {NextPage} from 'next'
-import React, {useEffect, useState} from 'react'
+import React, {useState} from 'react'
 import AnswerBoard from '../../../components/GameComponents/AnswerBoard/AnswerBoard'
 import GameMenuBar from '../../../components/GameMenuBar/GameMenuBar'
 import {useGameSession} from '../../../hooks/useGameSession/useGameSession'
 import styles from './GamePage.module.css'
 import {FAB, FABAction} from "../../../components/GameComponents/FAB/FAB";
-import {TUser} from "../../../types/types";
-import {JsonParse} from "../../../utils/helper";
-import {useLocalStorage} from "../../../hooks/useLocalStorage/useLocalStorage";
 import useScreenSize from "../../../hooks/useScreenSize/useScreenSize";
+import {Fade} from "react-bootstrap";
 
 
 const GamePage: NextPage = () => {
-  const {gameSession} = useGameSession()
+  const {gameSession, isHost} = useGameSession()
   const [isShowChat, setIsShowChat] = useState<boolean>(false)
   const [isShowHostControl, setIsShowHostControl] = useState<boolean>(false)
-  const [isHost, setIsHost] = useState<boolean>(false)
   const {fromMedium} = useScreenSize()
   const fabs: FABAction[] = [{
     label: "Khung chat",
     icon: "bi bi-chat-dots-fill",
     onClick: () => {
+      resetAllFAB()
       setIsShowChat(!isShowChat)
     },
   }]
@@ -30,17 +28,15 @@ const GamePage: NextPage = () => {
     label: "Hiện bảng điều khiển",
     icon: "bi bi-dpad-fill",
     onClick: () => {
+      resetAllFAB()
       setIsShowHostControl(!isShowHostControl)
     }
   }
 
-  const [lsUser] = useLocalStorage('user', '')
-
-  useEffect(() => {
-    if (!gameSession) return
-    const user: TUser = JsonParse(lsUser)
-    setIsHost(user.id === gameSession.hostId)
-  }, [gameSession])
+  const resetAllFAB = () => {
+    if (isShowChat) setIsShowChat(false)
+    if (isShowHostControl) setIsShowHostControl(false)
+  }
 
   return (<>
       <div className={classNames(styles.gameBackground, 'bg-black customScrollbar')}>
@@ -60,14 +56,19 @@ const GamePage: NextPage = () => {
             <EmojiBar className={styles.emojiBar} /> */}
           </div>
 
-          {gameSession && isShowChat && (
-            <GameMenuBar
-              isExpand={true}
-              gameSession={gameSession}
-            />
+          {gameSession && (
+            <Fade
+              in={isShowChat}
+            >
+              <div>
+                <GameMenuBar
+                  gameSession={gameSession}
+                />
+              </div>
+            </Fade>
           )}
           <FAB
-            actions={[...fabs, !fromMedium ? (isHost ? hostAction : null) : null]}
+            actions={[...fabs, !fromMedium ? (isHost() ? hostAction : null) : null]}
           />
         </div>
       </div>

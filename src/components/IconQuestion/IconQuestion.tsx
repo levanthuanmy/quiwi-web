@@ -2,7 +2,7 @@ import classNames from 'classnames'
 import React, { FC } from 'react'
 import styles from './IconQuestion.module.css'
 
-export type QuestionType = 'single' | 'multiple' | 'fill'
+export type QuestionType = 'single' | 'multiple' | 'fill' | 'conjunction'
 
 export const questionTypeStyles: Record<
   QuestionType,
@@ -22,6 +22,11 @@ export const questionTypeStyles: Record<
     icon: 'bi bi-pencil-square',
     colorClassName: 'bg-warning',
     title: 'Điền vào chỗ trống',
+  },
+  conjunction: {
+    icon: 'bi bi-reception-1',
+    colorClassName: 'bg-success',
+    title: 'Nối từ',
   },
 }
 

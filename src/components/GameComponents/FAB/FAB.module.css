@@ -4,6 +4,13 @@
   flex-direction: row-reverse;
 }
 
+.innerFabContainerFlex {
+  display: flex;
+  gap:3px;
+  flex-direction: row-reverse;
+  width: fit-content;
+}
+
 .fabContainerFixed {
   margin: 0;
   padding: 0;

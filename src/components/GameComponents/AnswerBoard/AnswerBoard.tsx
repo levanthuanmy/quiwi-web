@@ -214,8 +214,6 @@ const AnswerBoard: FC<AnswerBoardProps> = ({ className,isShowHostControl }) => {
   }
 
   const renderHostControlSystem = () => {
-    // console.log("=>(AnswerBoard.tsx:224) fromMedium", fromMedium);
-    console.log("=>(AnswerBoard.tsx:225) isShowHostControl", isShowHostControl);
     return (
       <Fade in={isShowHostControl}>
         <div className={cn(styles.hostControl)}>

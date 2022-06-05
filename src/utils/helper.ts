@@ -77,6 +77,10 @@ export const formatDate_DDMMMMYYYY = (d: Date) => {
   return dayjs(d).locale('vi').format('DD MMMM YYYY')
 }
 
+export const formatDate_DDMMYYYY = (d: Date) => {
+  return dayjs(d).locale('vi').format('DD-MM-YYYY')
+}
+
 export const playSound = (src: string) => {
   const sound = new Howl ({
     src,

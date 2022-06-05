@@ -3,6 +3,7 @@ import cn from "classnames";
 import classNames from "classnames";
 import styles from "./FAB.module.css";
 import {Collapse, Fade} from "react-bootstrap";
+import {width} from "dom-helpers";
 
 export type FABAction = {
   label: string
@@ -24,7 +25,7 @@ export const FAB: FC<FABProps> = (props) => {
         setOpen(!open)
       }}
       className={classNames(
-        'd-flex align-items-center cursor-pointer text-secondary text-truncate gap-3',
+        'd-flex align-items-center cursor-pointer text-secondary text-truncate gap-3 bg-transparent',
       )}
       title={"Mở menu"}
     >
@@ -64,11 +65,15 @@ export const FAB: FC<FABProps> = (props) => {
       className={cn(styles.fabContainerFlex, styles.fabContainerFixed)}
     >
       {renderDefault()}
-      <Fade in={open}>
-        <div className={styles.fabContainerFlex}>
-          {renderFAB()}
+      <Collapse in={open} dimension={"width"}>
+        <div>
+          <Fade in={open}>
+            <div className={styles.innerFabContainerFlex}>
+              {renderFAB()}
+            </div>
+          </Fade>
         </div>
-      </Fade>
+      </Collapse>
 
     </div>
   );
