@@ -1,15 +1,15 @@
 import {useEffect, useState} from 'react'
 import {Socket} from "socket.io-client";
-import {TQuestion, TStartQuizResponse} from '../../types/types'
+import {TQuestion, TStartQuizResponse, TUser} from '../../types/types'
 import {JsonParse} from '../../utils/helper'
 import {useLocalStorage} from '../useLocalStorage/useLocalStorage'
-
 import {SocketManager} from '../useSocket/socketManager'
 
-export const useGameSession = (): { gameSkOnce: (ev: string, listener: (...args: any[]) => void) => void; getQuestionWithID: (qid: number) => (TQuestion | null); gameSkOn: (ev: string, listener: (...args: any[]) => void) => void; connectGameSocket: () => void; clearGameSession: () => void; gameSocket: () => (Socket | null); disconnectGameSocket: () => void; gameSession: TStartQuizResponse | null; saveGameSession: (gameSS: TStartQuizResponse) => void } => {
+export const useGameSession = (): { gameSkOnce: (ev: string, listener: (...args: any[]) => void) => void; isHost: () => boolean; getQuestionWithID: (qid: number) => (TQuestion | null); gameSkOn: (ev: string, listener: (...args: any[]) => void) => void; connectGameSocket: () => void; clearGameSession: () => void; gameSocket: () => (Socket | null); disconnectGameSocket: () => void; gameSession: TStartQuizResponse | null; saveGameSession: (gameSS: TStartQuizResponse) => void } => {
   const sk = SocketManager()
 
-
+  const [lsUser] = useLocalStorage('user', '')
+  let _isHost: boolean | null = null
   const [lsGameSession, setLsGameSession] = useLocalStorage('game-session', '')
   const [gameSession, setGameSession] = useState<TStartQuizResponse | null>(
     null
@@ -86,6 +86,17 @@ export const useGameSession = (): { gameSkOnce: (ev: string, listener: (...args:
     return gameSession?.quiz?.questions[qid] || null
   }
 
+  const isHost = ():boolean => {
+    if (_isHost == null) {
+      if (!gameSession) _isHost = false
+      else {
+        const user: TUser = JsonParse(lsUser)
+        _isHost = (user.id === gameSession.hostId)
+      }
+    }
+    return _isHost
+  }
+
   return (
     {
       gameSession,
@@ -96,7 +107,8 @@ export const useGameSession = (): { gameSkOnce: (ev: string, listener: (...args:
       gameSocket,
       gameSkOn,
       gameSkOnce,
-      getQuestionWithID
+      getQuestionWithID,
+      isHost
     }
   )
 }

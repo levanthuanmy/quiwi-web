@@ -8,12 +8,10 @@ import PlayerList from '../GameComponents/PlayerList/PlayerList'
 import styles from './GameMenuBar.module.css'
 
 type GameMenuBarProps = {
-  isExpand: boolean
   gameSession: TStartQuizResponse
   user?: TUser
 }
 const GameMenuBar: FC<GameMenuBarProps> = ({
-                                             isExpand,
                                              gameSession,
                                            }) => {
   const [chatContent, setChatContent] = useState<MessageProps[]>([])
@@ -26,7 +24,7 @@ const GameMenuBar: FC<GameMenuBarProps> = ({
   }
 
   socket?.on('chat', (data: MessageProps) => {
-    receivedMessage(data as MessageProps)
+    receivedMessage(data)
   })
 
   const renderItems = (
@@ -76,14 +74,11 @@ const GameMenuBar: FC<GameMenuBarProps> = ({
           className={classNames(
             'position-absolute d-flex justify-content-center align-items-center ',
             styles.button,
-            {
-              'bi bi-chevron-double-right': isExpand,
-              'bi bi-chevron-double-left': !isExpand,
-            }
+            'bi bi-chevron-double-right'
           )}
         />
       </div>
-      {isExpand ? renderItems : null}
+      {renderItems}
     </div>
   )
 }
