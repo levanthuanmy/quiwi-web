@@ -13,7 +13,8 @@ const QuestionMedia: FC<{
     <div
       className={classNames(
         className,
-        `text-center mb-2 d-flex justify-content-xl-between justify-content-center align-items-center px-12px bg-dark bg-opacity-50 rounded-10px shadow`
+        `text-center mb-2 d-flex justify-content-xl-between justify-content-center align-items-center bg-dark bg-opacity-50 rounded-10px shadow`
+        , styles.questionMedia
       )}
     >
       {/* Timeout */}
@@ -37,7 +38,7 @@ const QuestionMedia: FC<{
         src={media || '/assets/default-question-image.png'}
         alt="question-image"
         fluid={true}
-        className={classNames(styles.questionImage, 'mx-3 flex-grow-1')}
+        className={classNames(styles.questionImage, 'mx-1 flex-grow-1')}
       />
 
       {/* Số người submit */}

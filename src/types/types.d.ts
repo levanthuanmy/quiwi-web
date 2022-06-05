@@ -259,3 +259,10 @@ export type TGameHistory = {
   createdAt: Date
   updatedAt: Date
 }
+
+export type TViewResult = {
+  gameRoundStatistic: TGameRoundStatistic
+  correctAnswers: number[]
+  answersStatistic: Record<string, number>
+  answerTextStatistic: Record<string, number>
+}

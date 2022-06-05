@@ -9,13 +9,11 @@ import styles from './GameMenuBar.module.css'
 
 type GameMenuBarProps = {
   isExpand: boolean
-  setIsExpand: React.Dispatch<React.SetStateAction<boolean>>
   gameSession: TStartQuizResponse
   user?: TUser
 }
 const GameMenuBar: FC<GameMenuBarProps> = ({
                                              isExpand,
-                                             setIsExpand,
                                              gameSession,
                                            }) => {
   const [chatContent, setChatContent] = useState<MessageProps[]>([])
@@ -66,7 +64,7 @@ const GameMenuBar: FC<GameMenuBarProps> = ({
   return (
     <div
       className={classNames(
-        'd-none d-lg-flex flex-column bg-white ',
+        'd-flex flex-column bg-white ',
         styles.container,
         isExpand ? `shadow-lg ${styles.expand}` : '',
         {
@@ -78,7 +76,6 @@ const GameMenuBar: FC<GameMenuBarProps> = ({
       <div
         className="position-relative cursor-pointer "
         style={{height: 40}}
-        onClick={() => setIsExpand((prev) => !prev)}
       >
         <i
           className={classNames(

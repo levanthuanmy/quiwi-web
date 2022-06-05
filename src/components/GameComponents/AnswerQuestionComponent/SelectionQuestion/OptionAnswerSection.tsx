@@ -37,7 +37,6 @@ const OptionAnswerSection: FC<OptionAnswerSectionProps> = ({
   const isMobile = useIsMobile()
   const screenSize = useScreenSize()
 
-  const [showImage, setShowImage] = useState<string>("")
   // 2 case:
   const getBackgroundColorForAnswer = (
     answer: TAnswer,

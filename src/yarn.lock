@@ -752,6 +752,11 @@
   dependencies:
     "@types/draft-js" "*"
 
+"@types/howler@^2.2.7":
+  version "2.2.7"
+  resolved "https://registry.yarnpkg.com/@types/howler/-/howler-2.2.7.tgz#5acfbed57f9e1d99b8dabe1b824729e1c1ea1fae"
+  integrity sha512-PEZldwZqJJw1PWRTpupyC7ajVTZA8aHd8nB/Y0n6zRZi5u8ktYDntsHj13ltEiBRqWwF06pASxBEvCTxniG8eA==
+
 "@types/html-to-draftjs@^1.4.0":
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/@types/html-to-draftjs/-/html-to-draftjs-1.4.0.tgz#bfd712d3c5993e0644b76d2654adeae214678fae"
@@ -919,6 +924,13 @@ ajv@^6.10.0, ajv@^6.12.4:
     fast-json-stable-stringify "^2.0.0"
     json-schema-traverse "^0.4.1"
     uri-js "^4.2.2"
+
+animated-number-react@^0.1.2:
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/animated-number-react/-/animated-number-react-0.1.2.tgz#54bd219c2443b5025d734a1960c30ba7370758ae"
+  integrity sha512-NsocKXtCKk0cBFITS8lGxRo02QGr4LQLh61S1KUkeEpn30H3fj0Tqz/XSyJeZ6JLJMWOP/8MV/us2Xj9I8DnVw==
+  dependencies:
+    prop-types "^15.6.1"
 
 ansi-regex@^2.0.0:
   version "2.1.1"
@@ -2042,6 +2054,11 @@ hoist-non-react-statics@^3.3.0, hoist-non-react-statics@^3.3.2:
   dependencies:
     react-is "^16.7.0"
 
+howler@^2.2.3:
+  version "2.2.3"
+  resolved "https://registry.yarnpkg.com/howler/-/howler-2.2.3.tgz#a2eff9b08b586798e7a2ee17a602a90df28715da"
+  integrity sha512-QM0FFkw0LRX1PR8pNzJVAY25JhIWvbKMBFM4gqk+QdV+kPXOhleWGCB6AiAF/goGjIHK2e/nIElplvjQwhr0jg==
+
 html-to-draftjs@^1.5.0:
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/html-to-draftjs/-/html-to-draftjs-1.5.0.tgz#0df0eabf429deaedb63f5c859889e2c983606e86"
@@ -2752,9 +2769,9 @@ prop-types-extra@^1.1.0:
     react-is "^16.3.2"
     warning "^4.0.0"
 
-prop-types@^15.6.2, prop-types@^15.7.2, prop-types@^15.8.1:
+prop-types@^15.6.1, prop-types@^15.6.2, prop-types@^15.7.2, prop-types@^15.8.1:
   version "15.8.1"
-  resolved "https://registry.npmjs.org/prop-types/-/prop-types-15.8.1.tgz"
+  resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.8.1.tgz#67d87bf1a694f48435cf332c24af10214a3140b5"
   integrity sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg==
   dependencies:
     loose-envify "^1.4.0"
@@ -2877,6 +2894,11 @@ react-fast-compare@^2.0.1:
   version "2.0.4"
   resolved "https://registry.npmjs.org/react-fast-compare/-/react-fast-compare-2.0.4.tgz"
   integrity sha512-suNP+J1VU1MWFKcyt7RtjiSWUjvidmQSlqu+eHslq+342xCbGTYmC0mEhPCOHxlW0CywylOC1u2DFAT+bv4dBw==
+
+react-google-charts@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/react-google-charts/-/react-google-charts-4.0.0.tgz#f648e4fe8ac8a1f47542c2cac040df6afb21e2d6"
+  integrity sha512-9OG0EkBb9JerKEPQYdhmAXnhGLzOdOHOPS9j7l+P1a3z1kcmq9mGDa7PUoX/VQUY4IjZl2/81nsO4o+1cuYsuw==
 
 react-is@^16.13.1, react-is@^16.3.2, react-is@^16.7.0:
   version "16.13.1"
