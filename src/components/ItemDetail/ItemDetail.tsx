@@ -13,9 +13,9 @@ type IItem = {
     avatar: string,
     type: string,
     price: number
-  }
+}
 
-const ItemDetail: FC<{props: IItem }> = (props) => {
+const ItemDetail: FC<{ props: IItem }> = (props) => {
     return (
         <div >
             <Card className={classNames('', styles.cardStyle)}>
@@ -31,7 +31,11 @@ const ItemDetail: FC<{props: IItem }> = (props) => {
 
                         </Col>
                         <Col sm={4} className={classNames('', styles.image)}>
-                            <Image className={classNames('', props.props.type === "RARE" ? styles.imageType : styles.imageTypeNormal)}
+                            <Image className={classNames('',
+                                props.props.type === "RARE" ? styles.imageTypeRare :
+                                    props.props.type === "EPIC" ? styles.imageTypeEpic :
+                                        props.props.type === "LEGENDARY" ? styles.imageTypeLegendary :
+                                            styles.imageTypeNormal)}
                                 src=
                                 {props.props.avatar}
                                 width={50}
