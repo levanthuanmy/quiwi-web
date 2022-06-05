@@ -9,12 +9,14 @@ import { useAuth } from '../../hooks/useAuth/useAuth'
 import { get } from '../../libs/api'
 import {
   TApiResponse,
+  TDetailPlayer,
   TGameHistory,
   TPaginationResponse,
 } from '../../types/types'
 import { GAME_MODE_MAPPING } from '../../utils/constants'
 import {
   formatDate_DDMMMMYYYY,
+  formatDate_DDMMYYYY,
   formatDate_HHmmDDMMMYYYY,
 } from '../../utils/helper'
 import styles from './HistoryPage.module.css'
@@ -77,8 +79,8 @@ const HistoryPage: NextPage = () => {
     }
   }
 
-  const generateSummarySheet = (game: TGameHistory) => {
-    const summaryWorksheet: XLSX.WorkSheet = {}
+  const generateOverviewInformation = (game: TGameHistory) => {
+    const overviewWorkSheet: XLSX.WorkSheet = {}
     const merge = [
       {
         // From A1 -> H1
@@ -159,10 +161,16 @@ const HistoryPage: NextPage = () => {
         s: { r: 8, c: 4 },
         e: { r: 8, c: 8 },
       },
+
+      {
+        // From E11 -> H11
+        s: { r: 10, c: 0 },
+        e: { r: 10, c: 8 },
+      },
     ]
-    summaryWorksheet['!merges'] = merge
+    overviewWorkSheet['!merges'] = merge
     XLSX.utils.sheet_add_aoa(
-      summaryWorksheet,
+      overviewWorkSheet,
       [
         // Row 1
         [
@@ -237,7 +245,7 @@ const HistoryPage: NextPage = () => {
     const percentages = calculateScorePercentages(game)
     // Add percentages
     XLSX.utils.sheet_add_aoa(
-      summaryWorksheet,
+      overviewWorkSheet,
       [
         // Row 1
         [
@@ -273,23 +281,132 @@ const HistoryPage: NextPage = () => {
             v: percentages.timeoutSubmissionPercentage,
           },
         ],
+        [],
+        [
+          {
+            t: 's',
+            v: 'Chuyển sang các Sheet để xem kết quả từng câu',
+          },
+        ],
       ],
       { origin: 'A7' }
     )
-    summaryWorksheet['A1'].style = {
+    overviewWorkSheet['A1'].style = {
       font: { sz: 16, bold: true, color: '#FF00FF' },
     }
-    return summaryWorksheet
+    return overviewWorkSheet
+  }
+
+  const handleSheetForEachQuestion = (index: number, game: TGameHistory) => {
+    const regex = /<[^>]+>/g
+    const gameRoundStatistic = game.gameRoundStatistics.find(
+      (g) => g.roundNumber === index
+    )
+    const question = game.quiz.questions.find((q) => q.orderPosition === index)
+
+    const title = question?.question.replaceAll(regex, '')
+    const questionSheet: XLSX.WorkSheet = {}
+    // for (const ga)
+  }
+
+  const getPlayerFinalScore = (player: TDetailPlayer, rank: number) => {
+    const res: Record<string, number | string> = {}
+    res['rank'] = rank
+    res['player'] = player.nickname
+    res['score'] = player['score']
+    let correctAnswer = 0
+    const totalAnswers = player.gameRounds.length
+    for (const gameRound of player.gameRounds) {
+      if (
+        gameRound.score === gameRound.question?.score ||
+        gameRound.score > 0
+      ) {
+        correctAnswer++
+      }
+    }
+
+    res['correctAnswers'] = correctAnswer
+    res['incorrectAnswers'] = totalAnswers - correctAnswer
+
+    return res
+  }
+
+  const generateFinalScoreSheet = (game: TGameHistory) => {
+    const ws: XLSX.WorkSheet = {}
+
+    const merge = [
+      {
+        // From A1 -> H1
+        s: { r: 0, c: 0 },
+        e: { r: 0, c: 8 },
+      },
+      {
+        // From A2 -> H2
+        s: { r: 1, c: 0 },
+        e: { r: 1, c: 8 },
+      },
+    ]
+
+    ws['!merges'] = merge
+
+    XLSX.utils.sheet_add_aoa(ws, [
+      // Row 1
+      [
+        {
+          t: 's',
+
+          v: game.quiz.title,
+        },
+      ],
+      [
+        {
+          v: 'Điểm tổng kết',
+        },
+      ],
+      [
+        {
+          v: 'Xếp hạng',
+        },
+        {
+          v: 'Tên người chơi',
+        },
+        {
+          v: 'Tổng điểm',
+        },
+        {
+          v: 'Câu trả lời đúng',
+        },
+        {
+          v: 'Câu trả lời sai',
+        },
+      ],
+    ])
+
+    XLSX.utils.sheet_add_json(
+      ws,
+      game.players.map((player, index) => getPlayerFinalScore(player, index)),
+      {
+        origin: -1,
+        skipHeader: true,
+      }
+    )
+
+    return ws
   }
 
   const handleOnExport = (game: TGameHistory) => {
     const wb = XLSX.utils.book_new()
 
     wb.SheetNames.push('Thông tin chung')
+    wb.SheetNames.push('Điểm tổng kết')
 
-    wb.Sheets['Thông tin chung'] = generateSummarySheet(game)
+    wb.Sheets['Thông tin chung'] = generateOverviewInformation(game)
+    wb.Sheets['Điểm tổng kết'] = generateFinalScoreSheet(game)
 
-    XLSX.writeFile(wb, `${game.quiz.title}_${game.createdAt}.xlsx`)
+    XLSX.writeFile(
+      wb,
+      `${formatDate_DDMMYYYY(game.createdAt)} ${game.quiz.title}.xlsx`
+    )
   }
   const renderRow = (gameHistory: TGameHistory) => {
     return (
