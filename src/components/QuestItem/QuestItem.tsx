@@ -63,11 +63,11 @@ const QuestItem: FC<{ props: TQuest }> = (props) => {
 
 
 
-              <Row className={classNames('justify-content-md-center"', styles.listItem)}>
+              <div className={classNames('justify-content-md-center"', styles.listItem)}>
                 {props.props.questGoal
                   .filter(item => item.type !== "00COIN")
                   .map((item, idx) => (
-                    <Col sm={1}><div className={classNames('', styles.layoutImage)}>
+                    <div className={classNames('', styles.layoutImage)}>
                       <Item
                         key={idx}
                         name={item.reward.name}
@@ -76,10 +76,9 @@ const QuestItem: FC<{ props: TQuest }> = (props) => {
                         type={item.reward.type}
                         price={item.reward.price}
                       ></Item>
-                    </div> </Col>
+                    </div>
                   ))}
-
-              </Row>
+              </div>
 
               <div className="progress">
                 <div className={classNames("progress-bar progress-bar-striped bg-success")} role="progressbar" style={{ width: props.props.userQuest[0].process.toString() + "%" }}></div>

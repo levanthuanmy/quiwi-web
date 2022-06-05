@@ -16,7 +16,7 @@
 .layoutImage {
     align-items: flex-start !important;
     align-content: flex-start;
-    
+    display: flex;
 }
 
 .listItem {
