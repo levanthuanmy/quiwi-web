@@ -1,24 +1,20 @@
-.fabContainer {
+.fabContainerFlex {
   display: flex;
-  list-style: none;
-  margin: 0;
-  padding: 0;
   gap:3px;
   flex-direction: row-reverse;
+}
+
+.fabContainerFixed {
+  margin: 0;
+  padding: 0;
   position: fixed;
   right: 16px;
   bottom: 16px;
-  /*max-height: 52px;*/
   height: 52px;
-  /*min-width: 52px;*/
-  /*background-color: lightgray;*/
-  transition: width 200ms ease;
-  /*background-color: #00a8ff;*/
-
 }
 
 @media (max-width: 576px) {
-  .fabContainer {
+  .fabContainerFixed {
     right: 4px;
   }
 }

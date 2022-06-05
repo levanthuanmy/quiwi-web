@@ -3,7 +3,7 @@ import React, {FC, useState} from 'react'
 import {SocketManager} from '../../hooks/useSocket/socketManager'
 import {TStartQuizResponse, TUser} from '../../types/types'
 import ChatWindow from '../GameComponents/ChatWindow/ChatWindow'
-import {MessageProps} from '../GameComponents/ChatWindow/Message/Message'
+import {MessageProps} from '../GameComponents/ChatWindow/Message'
 import PlayerList from '../GameComponents/PlayerList/PlayerList'
 import styles from './GameMenuBar.module.css'
 
@@ -64,13 +64,8 @@ const GameMenuBar: FC<GameMenuBarProps> = ({
   return (
     <div
       className={classNames(
-        'd-flex flex-column bg-white ',
-        styles.container,
-        isExpand ? `shadow-lg ${styles.expand}` : '',
-        {
-          minHeight: '976px',
-          right: 0,
-        }
+        'd-flex flex-column bg-white shadow-lg',
+        styles.container
       )}
     >
       <div

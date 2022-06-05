@@ -3,7 +3,7 @@ import {TAnswer, TQuestion} from "../../../../types/types";
 import styles from "./TextQuestion.module.css"
 import classNames from "classnames";
 import {Set} from "immutable";
-import TextAnswerList from "./TextAnswerList/TextAnswerList";
+import TextAnswerList from "./TextAnswerList";
 import {bool} from "yup";
 
 type TextQuestionProps = {

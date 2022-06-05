@@ -2,11 +2,12 @@ import _ from 'lodash'
 import { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
-import { Col, Container, Image, Pagination, Row } from 'react-bootstrap'
+import { Button, Col, Container, Image, Pagination, Row } from 'react-bootstrap'
 import DashboardLayout from '../../components/DashboardLayout/DashboardLayout'
 import ItemShopV2 from '../../components/ItemShopV2/ItemShopV2'
 import MyTabBar from '../../components/MyTabBar/MyTabBar'
 import SearchBar from '../../components/SearchBar/SearchBar'
+import { WheelFortuneModal } from '../../components/WheelFortuneModal/WheelFortuneModal'
 import { get } from '../../libs/api'
 import {
   TApiResponse,
@@ -15,11 +16,11 @@ import {
   TPaginationResponse,
   TUserProfile
 } from '../../types/types'
-import AnimatedNumber from "animated-number-react";
 
 // const socket = io(`${API_URL}/games`, { transports: ['websocket'] })
 
 const ItemPage: NextPage = () => {
+  const [showWheelFortuneModal, setShowWheelFortuneModal] = useState(false)
   const [toggleState, setToggleState] = useState<number>(0)
   const [itemsResponse, setItemsResponse] =
     useState<TPaginationResponse<TItem>>()
@@ -255,11 +256,7 @@ const ItemPage: NextPage = () => {
                 ></Image>
 
                 <div className="ps-3">
-                  <AnimatedNumber
-                    value={userResponse?.user.coin}
-                    formatValue={formatValue}
-                  />
-                  {/* {userResponse?.user.coin} */}
+                  {userResponse?.user.coin}
                 </div>
 
               </div>
@@ -278,6 +275,13 @@ const ItemPage: NextPage = () => {
                 }
               />
             </Col>
+          </Row>
+          <Row>
+            <Button onClick={() => {
+              setShowWheelFortuneModal(true)
+            }}>
+              Vòng quay may mắn
+            </Button>
           </Row>
           <Row className="">
             {itemsResponse?.items.map((item, idx) => (
@@ -343,6 +347,15 @@ const ItemPage: NextPage = () => {
               )}
             </Col>
           </Row>
+
+          <WheelFortuneModal
+            onHide={() => {
+              setShowWheelFortuneModal(false)
+            }}
+            userSpinningNumber={0}
+            showModal={showWheelFortuneModal}
+          />
+
         </Container>
       </div>
     </DashboardLayout>

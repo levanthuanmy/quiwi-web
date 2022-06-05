@@ -3,8 +3,8 @@ import React, {Dispatch, FC, SetStateAction} from 'react'
 import {Image} from 'react-bootstrap'
 import {TGameModeEnum} from '../../types/types'
 import styles from './GameModeScreen.module.css'
-import useIsMobile from "../../hooks/useIsMobile/useIsMobile";
 import Slider from "react-slick";
+import useScreenSize from "../../hooks/useScreenSize/useScreenSize";
 
 type GameModeScreenProps = {
   //   title: string
@@ -20,7 +20,7 @@ type TGameModeOption = {
 }
 
 const GameModeScreen: FC<GameModeScreenProps> = ({setGameMode}) => {
-  const isMobile = useIsMobile();
+  const {isMobile} = useScreenSize();
   const modes: TGameModeOption[] = [
     {
       mode: '10CLASSIC',

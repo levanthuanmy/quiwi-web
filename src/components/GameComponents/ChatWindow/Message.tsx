@@ -1,9 +1,9 @@
 import _ from 'lodash'
 import {FC, useEffect, useState} from 'react'
 import {Image} from 'react-bootstrap'
-import {SocketManager} from '../../../../hooks/useSocket/socketManager'
-import {TPlayer, TUser} from '../../../../types/types'
-import {MyTooltip} from '../../../MyToolTip/MyTooltip'
+import {SocketManager} from '../../../hooks/useSocket/socketManager'
+import {TPlayer, TUser} from '../../../types/types'
+import {MyTooltip} from '../../MyToolTip/MyTooltip'
 import styles from './Message.module.css'
 
 export type SendMessageProps = {

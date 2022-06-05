@@ -1,20 +1,15 @@
 import classNames from 'classnames'
 import {NextPage} from 'next'
-import router, {useRouter} from 'next/router'
 import React, {useEffect, useState} from 'react'
 import AnswerBoard from '../../../components/GameComponents/AnswerBoard/AnswerBoard'
 import GameMenuBar from '../../../components/GameMenuBar/GameMenuBar'
 import {useGameSession} from '../../../hooks/useGameSession/useGameSession'
 import styles from './GamePage.module.css'
-import EndGameBoard from "../../../components/GameComponents/EndGameBoard/EndGameBoard";
 import {FAB, FABAction} from "../../../components/GameComponents/FAB/FAB";
-import MoreButton from "../../../components/GameComponents/MoreButton/MoreButton";
-import useIsMobile from "../../../hooks/useIsMobile/useIsMobile";
 import {TUser} from "../../../types/types";
 import {JsonParse} from "../../../utils/helper";
 import {useLocalStorage} from "../../../hooks/useLocalStorage/useLocalStorage";
-import cn from "classnames";
-import GameButton from "../../../components/GameComponents/GameButton/GameButton";
+import useScreenSize from "../../../hooks/useScreenSize/useScreenSize";
 
 
 const GamePage: NextPage = () => {
@@ -22,7 +17,7 @@ const GamePage: NextPage = () => {
   const [isShowChat, setIsShowChat] = useState<boolean>(false)
   const [isShowHostControl, setIsShowHostControl] = useState<boolean>(false)
   const [isHost, setIsHost] = useState<boolean>(false)
-  const isMobile = useIsMobile()
+  const {fromMedium} = useScreenSize()
   const fabs: FABAction[] = [{
     label: "Khung chat",
     icon: "bi bi-chat-dots-fill",
@@ -45,8 +40,6 @@ const GamePage: NextPage = () => {
     if (!gameSession) return
     const user: TUser = JsonParse(lsUser)
     setIsHost(user.id === gameSession.hostId)
-    // connectGameSocket()
-    // console.log('Game / index :: gameSession null => ', gameSession)
   }, [gameSession])
 
   return (<>
@@ -60,7 +53,7 @@ const GamePage: NextPage = () => {
           <div className={classNames(styles.answerBoard)}>
             <AnswerBoard
               className="flex-grow-1"
-              isShowHostControl={isShowHostControl || !isMobile}
+              isShowHostControl={isShowHostControl}
             />
             {/*<EndGameBoard className="flex-grow-1"/>*/}
             {/* <EmojiBar className={styles.emojiBar} />
@@ -74,7 +67,7 @@ const GamePage: NextPage = () => {
             />
           )}
           <FAB
-            actions={[...fabs, isMobile ? (isHost ? hostAction : null) : null]}
+            actions={[...fabs, !fromMedium ? (isHost ? hostAction : null) : null]}
           />
         </div>
       </div>

@@ -2,16 +2,16 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import _ from 'lodash'
 import Head from 'next/head'
-import { useRouter } from 'next/router'
-import { FC, useEffect, useState } from 'react'
-import { Modal, Toast, ToastContainer } from 'react-bootstrap'
+import {useRouter} from 'next/router'
+import {FC, useEffect, useState} from 'react'
+import {Modal, Toast, ToastContainer} from 'react-bootstrap'
 import QRCode from 'react-qr-code'
 import Cookies from 'universal-cookie'
-import { useGameSession } from '../../hooks/useGameSession/useGameSession'
-import useIsMobile from '../../hooks/useIsMobile/useIsMobile'
-import { useLocalStorage } from '../../hooks/useLocalStorage/useLocalStorage'
-import { TPlayer, TStartGameRequest, TUser } from '../../types/types'
-import { JsonParse } from '../../utils/helper'
+import {useGameSession} from '../../hooks/useGameSession/useGameSession'
+import useScreenSize from '../../hooks/useScreenSize/useScreenSize'
+import {useLocalStorage} from '../../hooks/useLocalStorage/useLocalStorage'
+import {TPlayer, TStartGameRequest, TUser} from '../../types/types'
+import {JsonParse} from '../../utils/helper'
 import MyButton from '../MyButton/MyButton'
 import PlayerLobbyItem from '../PlayerLobbyItem/PlayerLobbyItem'
 import PlayerLobbyList from '../PlayerLobbyList/PlayerLobbyList'
@@ -28,7 +28,7 @@ const LobbyScreen: FC<LobbyScreenProps> = ({ invitationCode, isHost }) => {
   const router = useRouter()
   const [showToast, setShowToast] = useState<boolean>(false)
   const [showQR, setShowQR] = useState<boolean>(false)
-  const isMobile = useIsMobile()
+  const {isMobile} = useScreenSize()
   const {
     gameSession,
     saveGameSession,

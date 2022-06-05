@@ -8,7 +8,7 @@ import {TPlayer, TStartQuizResponse, TUser} from '../../../types/types'
 import {JsonParse} from '../../../utils/helper'
 import MyInput from '../../MyInput/MyInput'
 import styles from './ChatWindow.module.css'
-import {Message, MessageProps, SendMessageProps} from './Message/Message'
+import {Message, MessageProps, SendMessageProps} from './Message'
 
 const ChatWindow: FC<{
   gameSession: TStartQuizResponse
