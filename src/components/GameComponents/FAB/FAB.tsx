@@ -2,6 +2,7 @@ import React, {FC, useState} from "react";
 import cn from "classnames";
 import classNames from "classnames";
 import styles from "./FAB.module.css";
+import {Collapse, Fade} from "react-bootstrap";
 
 export type FABAction = {
   label: string
@@ -37,32 +38,38 @@ export const FAB: FC<FABProps> = (props) => {
     </div>
   }
   const renderFAB = () => {
+    if (!props.actions) return <></>
     return props.actions.map((action, index) => (
       action && <div
-        key={index}
-        className={classNames(
-          'd-flex align-items-center cursor-pointer text-secondary text-truncate gap-3',
-        )}
-        onClick={action.onClick}
-        title={action.label}
-      >
-        <div
+          key={index}
           className={classNames(
-            'fs-32px text-white-50 d-flex justify-content-center align-items-center bg-primary',
-            styles.item,
-            action.icon
+            'd-flex align-items-center cursor-pointer text-secondary text-truncate gap-3',
           )}
-        />
+          onClick={action.onClick}
+          title={action.label}
+      >
+          <div
+              className={classNames(
+                'fs-32px text-white-50 d-flex justify-content-center align-items-center bg-primary',
+                styles.item,
+                action.icon
+              )}
+          />
         {/*<div className="fs-18px">{action.label}</div>*/}
       </div>
     ))
   }
   return (
     <div
-      className={cn(styles.fabContainer)}
+      className={cn(styles.fabContainerFlex, styles.fabContainerFixed)}
     >
       {renderDefault()}
-      {open && renderFAB()}
+      <Fade in={open}>
+        <div className={styles.fabContainerFlex}>
+          {renderFAB()}
+        </div>
+      </Fade>
+
     </div>
   );
 };
