@@ -102,6 +102,10 @@ export type TGameRoundStatistic = {
   numberOfTimeout: number
 
   roundNumber: number
+
+  answersStatistic?: Record<number, number>
+
+  answerTextStatistic?: Record<string, number>
 }
 
 export type TFollowUsers = {

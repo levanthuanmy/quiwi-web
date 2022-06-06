@@ -35,7 +35,7 @@ export const PROFILE_MENU_OPTIONS = [
 ]
 
 export const GAME_MODE_MAPPING: Record<string, string> = {
-  '10CLASSIC': 'Truyền Thống',
+  '10CLASSIC': 'Tốc độ',
   '20MRT': 'Marathon',
 }
 
@@ -43,6 +43,12 @@ export const MAPPED_QUESTION_TYPE: Record<TQuestionType, QuestionType> = {
   '10SG': 'single',
   '20MUL': 'multiple',
   '30TEXT': 'fill',
+}
+
+export const QUESTION_TYPE_MAPPING_TO_TEXT: Record<TQuestionType, string> = {
+  '10SG': 'Chọn một câu trả lời',
+  '20MUL': 'Chọn nhiều câu trả lời',
+  '30TEXT': 'Trả lời câu hỏi chữ',
 }
 
 export const MAPPED_QUESTION_MATCHER: Record<string, string> = {

@@ -233,7 +233,9 @@ const GameSessionRanking: FC<GameSessionRankingProps> = ({
         </Table>
       </div>
       <div className="pt-5 fw-medium fs-22px">Thống kê câu trả lời</div>
-      <div className="fst-italic pb-3 text-secondary">Số lượng người chọn mỗi câu trả lời</div>
+      <div className="fst-italic pb-3 text-secondary">
+        Số lượng người chọn mỗi câu trả lời
+      </div>
       <Chart
         chartType="ColumnChart"
         width={'100%'}
