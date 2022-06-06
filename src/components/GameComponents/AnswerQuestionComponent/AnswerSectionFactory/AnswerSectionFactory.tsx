@@ -3,6 +3,7 @@ import MultipleChoiceAnswerSection from "../SelectionQuestion/MultipleChoiceAnsw
 import SingleChoiceAnswerSection from "../SelectionQuestion/SingleChoiceAnswerSection";
 import {TQuestionType, TQuestion} from "../../../../types/types";
 import TextQuestion from "../TextQuestion/TextQuestion";
+import ConnectQuestion from "../ConnectQuestion/ConnectQuestion";
 
 export class AnswerSectionFactory {
   isHost: boolean;
@@ -40,6 +41,8 @@ export class AnswerSectionFactory {
         return this.initSingleAnswer(countDown, question, handleSubmitAnswer);
       case "20MUL":
         return this.initMultipleAnswer(countDown, question, handleSubmitAnswer);
+      case "21ODMUL":
+        return this.initConnectAnswer(countDown, question, handleSubmitAnswer);
       case "30TEXT":
         return this.initTextAnswer(countDown, question, handleSubmitAnswer);
     }
@@ -86,5 +89,18 @@ export class AnswerSectionFactory {
     />
   }
 
+  protected initConnectAnswer(countDown: number,
+                           question: TQuestion,
+                           submitAnswerHandle: (answer: any) => void): JSX.Element {
+    return <ConnectQuestion
+      socketSubmit={submitAnswerHandle}
+      className={this.answerLayout}
+      question={question}
+      showAnswer={countDown <= 0 && countDown > -100}
+      isHost={this.isHost}
+      isTimeOut={countDown <= 2 && countDown > -100}
+      isSubmitted={this.isSubmitted}
+    />
+  }
 }
 

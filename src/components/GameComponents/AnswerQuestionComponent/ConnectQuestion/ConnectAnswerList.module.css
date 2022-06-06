@@ -1,0 +1,41 @@
+.answer {
+    font-size: 30px;
+    border-radius: 6px;
+}
+
+.word {
+    padding: 4px 16px 4px 16px;
+    white-space: pre;
+}
+
+.selected {
+
+}
+
+.selection {
+
+}
+
+@media (max-width: 576px) {
+    .word {
+        padding: 0px 8px 0px 8px;
+    }
+}
+
+.playerList {
+    gap: 8px;
+    align-items: center;
+    justify-content: center;
+    overflow-y: scroll;
+}
+
+
+@media (max-width: 576px) {
+    .answer {
+        font-size: 20px;
+    }
+
+    .playerList {
+        gap: 4px;
+    }
+}

@@ -206,7 +206,8 @@ const AnswerBoard: FC<AnswerBoardProps> = ({ className,isShowHostControl }) => {
         isSubmitted
       )
     return answerSectionFactory.initAnswerSectionForType(
-      currentQuestion.type,
+      // currentQuestion.type,
+      "21ODMUL",
       countDown,
       currentQuestion,
       handleSubmitAnswer

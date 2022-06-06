@@ -192,7 +192,7 @@ export type TQuizBodyRequest = {
   questions: TQuestion[]
 }
 
-export type TQuestionType = '10SG' | '20MUL' | '30TEXT'
+export type TQuestionType = '10SG' | '20MUL' | '21ODMUL' | '30TEXT'
 export type TMatcher = '10EXC' | '20CNT'
 
 export type TQuestion = {
@@ -217,7 +217,7 @@ export type TAnswer = {
   isCorrect: boolean
   orderPosition: number
   media: string
-  type: '10TEXT' | '20SELECTION'
+  type: '10TEXT' | '20SELECTION' | '21PLHDR'
 }
 
 export type TUserItems = {

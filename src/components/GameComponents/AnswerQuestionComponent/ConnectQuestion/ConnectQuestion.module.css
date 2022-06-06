@@ -1,0 +1,31 @@
+.container {
+    height: 40%;
+    max-height: 40%;
+    border-radius: 16px;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-bottom: 10px;
+}
+
+.selectedBox {
+    max-height: 50%;
+    min-height: 20%;
+}
+
+.selectionBox {
+    flex-grow: 1;
+}
+
+.availableOption {
+    /*max-height: 50%;*/
+    flex-grow: 1;
+    overflow-y: scroll;
+}
+
+.selectedOption {
+
+    flex-grow: 1;
+    overflow-y: scroll;
+}
+
+

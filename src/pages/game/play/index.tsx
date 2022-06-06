@@ -7,7 +7,7 @@ import {useGameSession} from '../../../hooks/useGameSession/useGameSession'
 import styles from './GamePage.module.css'
 import {FAB, FABAction} from "../../../components/GameComponents/FAB/FAB";
 import useScreenSize from "../../../hooks/useScreenSize/useScreenSize";
-import {Fade} from "react-bootstrap";
+import {Collapse, Fade} from "react-bootstrap";
 
 
 const GamePage: NextPage = () => {
@@ -60,11 +60,12 @@ const GamePage: NextPage = () => {
             <Fade
               in={isShowChat}
             >
-              <div>
-                <GameMenuBar
-                  gameSession={gameSession}
-                />
-              </div>
+              {isShowChat ?
+                <div>
+                  <GameMenuBar
+                    gameSession={gameSession}
+                  />
+                </div> : <></>}
             </Fade>
           )}
           <FAB
