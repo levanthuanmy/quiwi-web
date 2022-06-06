@@ -20,6 +20,8 @@ const AnswerEditorSection: FC<{
   newQuestion: TQuestion
   fillAnswers: string[]
   setFillAnswers: (value: React.SetStateAction<string[]>) => void
+  correctIndexes: number[]
+  setCorrectIndexes: React.Dispatch<React.SetStateAction<number[]>>
   // eslint-disable-next-line react/display-name
 }> = ({
   type,
@@ -30,9 +32,9 @@ const AnswerEditorSection: FC<{
   newQuestion,
   fillAnswers,
   setFillAnswers,
+  correctIndexes,
+  setCorrectIndexes,
 }) => {
-  const [correctIndexes, setCorrectIndexes] = useState<number[]>([])
-
   return (
     <>
       <div className="bg-white p-3">

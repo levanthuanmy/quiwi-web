@@ -26,7 +26,11 @@ const ItemConjunctionAnswer: FC<{
 
   const handleAnswerChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     try {
-      const newAnswer = { ...conjunctionAnswers[currentIndex], answer: e.target.value }
+      const newAnswer: TAnswer = {
+        ...conjunctionAnswers[currentIndex],
+        answer: e.target.value,
+        type: '10TEXT',
+      }
 
       editAnswer(newAnswer)
     } catch (error) {
@@ -55,7 +59,9 @@ const ItemConjunctionAnswer: FC<{
             'bg-white text-black': currentCorrectIndex === -1,
           })}
           title={
-            currentCorrectIndex !== -1 ? (currentCorrectIndex + 1).toString() : undefined
+            currentCorrectIndex !== -1
+              ? (currentCorrectIndex + 1).toString()
+              : undefined
           }
           onClick={() => {
             if (conjunctionAnswers[currentIndex].isCorrect === false) {

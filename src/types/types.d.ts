@@ -217,8 +217,10 @@ export type TAnswer = {
   isCorrect: boolean
   orderPosition: number
   media: string
-  type: '10TEXT' | '20SELECTION' | '21PLHDR'
+  type: TAnswerType
 }
+
+export type TAnswerType = '10TEXT' | '20SELECTION' | '21PLHDR'
 
 export type TUserItems = {
   id?: number

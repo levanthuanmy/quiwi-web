@@ -67,6 +67,7 @@ const QuestionCreator: FC<QuestionCreatorProps> = ({
   const [richTextQuestion, setRichTextQuestion] = useState(
     EditorState.createEmpty()
   )
+  const [correctIndexes, setCorrectIndexes] = useState<number[]>([]) // 21ODMUL
 
   useEffect(() => {
     if (isEditQuestion.isEdit) {
@@ -77,7 +78,6 @@ const QuestionCreator: FC<QuestionCreatorProps> = ({
 
       setNewQuestion(_ques)
       setAnswers(_ans)
-      setFillAnswers(_ans?.map((an) => an.answer))
 
       setRichTextQuestion(
         EditorState.createWithContent(
@@ -86,6 +86,23 @@ const QuestionCreator: FC<QuestionCreatorProps> = ({
           )
         )
       )
+
+      if (_ques?.type === '30TEXT') {
+        setFillAnswers(_ans?.map((an) => an.answer))
+      }
+
+      if (_ques?.type === '21ODMUL') {
+        const countCorrect = _ques.questionAnswers.filter(
+          (ans) => ans.isCorrect === true
+        ).length
+        let _correctIndexes = Array<number>(countCorrect).fill(0)
+        for (let i = 0; i < _ques.questionAnswers.length; i++) {
+          if (_ques.questionAnswers[i].isCorrect) {
+            _correctIndexes[_ques.questionAnswers[i].orderPosition] = i
+          }
+        }
+        setCorrectIndexes(_correctIndexes)
+      }
     } else {
       setNewQuestion(defaultQuestion)
     }
@@ -98,6 +115,8 @@ const QuestionCreator: FC<QuestionCreatorProps> = ({
       { ...defaultAnswer, orderPosition: 2 },
     ])
     setFillAnswers([])
+    setRichTextQuestion(EditorState.createEmpty())
+    setCorrectIndexes([])
   }
 
   const removeAnswerAtIndex = (index: number) => {
@@ -153,6 +172,15 @@ const QuestionCreator: FC<QuestionCreatorProps> = ({
         }))
 
         _newQuestion['questionAnswers'] = [..._fillAnswer]
+      }
+
+      if (type === 'conjunction') {
+        _newQuestion['questionAnswers'] = answers.map((answer, idx) => {
+          if (answer.isCorrect) {
+            answer.orderPosition = correctIndexes.indexOf(idx)
+          }
+          return answer
+        })
       }
 
       let body = {}
@@ -252,6 +280,8 @@ const QuestionCreator: FC<QuestionCreatorProps> = ({
           newQuestion={newQuestion}
           fillAnswers={fillAnswers}
           setFillAnswers={setFillAnswers}
+          setCorrectIndexes={setCorrectIndexes}
+          correctIndexes={correctIndexes}
         />
       </Modal.Body>
 

@@ -126,9 +126,11 @@ const ItemQuestion: FC<ItemQuestionProps> = ({
           <div className="fw-medium">
             <div className="fs-14px text-secondary">
               Câu trả lời{' '}
-              <span className="text-uppercase">
-                {_.get(MAPPED_QUESTION_MATCHER, `${question?.matcher}`)}
-              </span>
+              {question.type === '30TEXT' && (
+                <span className="text-uppercase">
+                  {_.get(MAPPED_QUESTION_MATCHER, `${question?.matcher}`)}
+                </span>
+              )}
             </div>
             <Row>
               {question.questionAnswers.map((answer, key) => (

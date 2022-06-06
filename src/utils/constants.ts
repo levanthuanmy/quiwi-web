@@ -43,6 +43,7 @@ export const MAPPED_QUESTION_TYPE: Record<TQuestionType, QuestionType> = {
   '10SG': 'single',
   '20MUL': 'multiple',
   '30TEXT': 'fill',
+  '21ODMUL': 'conjunction',
 }
 
 export const MAPPED_QUESTION_MATCHER: Record<string, string> = {
@@ -51,12 +52,15 @@ export const MAPPED_QUESTION_MATCHER: Record<string, string> = {
 }
 
 export const SOUND_EFFECT: Record<string, string> = {
-  'SIDE_BAR_SOUND_CLICK': 'https://thumbs.dreamstime.com/audiothumb_24512/245127744.mp3',
-  'BUY_BUTTON_SOUND_CLICK': 'https://thumbs.dreamstime.com/audiothumb_24512/245127744.mp3',
-  'INCREASE_QUANTITY_BUTTON_SOUND_CLICK': 'https://thumbs.dreamstime.com/audiothumb_24512/245127744.mp3',
-  'CONFIRM_BUY_BUTTON_SOUND_CLICK': 'https://thumbs.dreamstime.com/audiothumb_24512/245127746.mp3',
-  'SPIN_BUTTON': 'https://thumbs.dreamstime.com/audiothumb_14723/147239759.mp3',
-  'JACKPOT_CONGRATULATION': 'https://thumbs.dreamstime.com/audiothumb_19382/193829621.mp3'
+  SIDE_BAR_SOUND_CLICK:
+    'http://freesoundeffect.net/sites/default/files/orangejuicejug-684-sound-effect-70773316.mp3',
+  BUY_BUTTON_SOUND_CLICK:
+    'http://freesoundeffect.net/sites/default/files/orangejuicejug-684-sound-effect-70773316.mp3',
+  INCREASE_QUANTITY_BUTTON_SOUND_CLICK:
+    'http://freesoundeffect.net/sites/default/files/orangejuicejug-684-sound-effect-70773316.mp3',
+  CONFIRM_BUY_BUTTON_SOUND_CLICK:
+    'http://freesoundeffect.net/sites/default/files/gold-prize-04-sound-effect-61322022.mp3',
+  SPIN_BUTTON: 'https://thumbs.dreamstime.com/audiothumb_14723/147239759.mp3',
 }
 
 export const TIMEOUT_OPTIONS = [15, 30, 60, 120, 180]
