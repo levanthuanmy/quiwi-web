@@ -247,7 +247,7 @@ const generateOverviewInformation = (game: TGameHistory) => {
 
 const getPlayerFinalScore = (player: TDetailPlayer, rank: number) => {
   const res: Record<string, number | string> = {}
-  res['rank'] = rank
+  res['rank'] = rank + 1
   res['player'] = player.nickname
   res['score'] = player['score']
   let correctAnswer = 0
@@ -327,11 +327,33 @@ const generateFinalScoreSheet = (game: TGameHistory) => {
   return ws
 }
 
+const getPlayerScoreForEachQuestion = (
+  index: number,
+  player: TDetailPlayer
+) => {
+  const gameRound = player.gameRounds[index]
+
+  const playerRowSheet = [
+    {
+      v: 'Thời gian trả lời câu hỏi',
+    },
+    {},
+    {},
+    {},
+    {
+      v: 'BUH BUH LMAO',
+    },
+  ]
+
+  return playerRowSheet
+}
+
 const getSheetForEachQuestion = (index: number, game: TGameHistory) => {
   const regex = /<[^>]+>/g
   const gameRoundStatistic = game.gameRoundStatistics.find(
     (g) => g.roundNumber === index
   )!
+
   const question = game.quiz.questions.find((q) => q.orderPosition === index)!
 
   const quiz = game.quiz.title
@@ -435,14 +457,6 @@ const getSheetForEachQuestion = (index: number, game: TGameHistory) => {
   ws['!merges'] = merge
 
   const answers: string[] = []
-  const answersStatistic: Record<
-    number,
-    {
-      answer: string
-      isCorrect: boolean
-      numOfAnswers: number
-    }
-  > = {}
 
   const answersStatistics = []
 
@@ -453,29 +467,18 @@ const getSheetForEachQuestion = (index: number, game: TGameHistory) => {
       answers.push(questionAnswer.answer)
     }
     // Convert from quesitionAnswerId to questionAnswer as text
-
     if (question.type !== '30TEXT') {
-      answersStatistic[questionAnswer.id!] = {
-        answer: questionAnswer.answer,
-        isCorrect: questionAnswer.isCorrect,
-        numOfAnswers: _.get(
-          gameRoundStatistic,
-          `answersStatistic.${question.id}`,
-          0
-        ),
-      }
       answersStatistics.push({
         answer: questionAnswer.answer,
         isCorrect: questionAnswer.isCorrect,
         numOfAnswers: _.get(
           gameRoundStatistic,
-          `answersStatistic.${question.id}`,
+          `answersStatistic.${questionAnswer.id}`,
           0
         ),
       })
     }
   }
-
   const correctAnswersPercentage =
     gameRoundStatistic?.numberOfCorrectAnswers / game.players.length
 
@@ -612,6 +615,28 @@ const getSheetForEachQuestion = (index: number, game: TGameHistory) => {
       numChoiceText,
     ],
     { origin: 'A8' }
+  )
+
+  const playersScoreForEachQuestionText = [
+    [
+      {
+        v: 'Kết quả trận đấu',
+      },
+      {},
+    ],
+  ]
+
+  for (let i = 0; i < game.players.length; i++) {
+    const player = game.players[i]
+
+    playersScoreForEachQuestionText.push(
+      getPlayerScoreForEachQuestion(i, player)
+    )
+  }
+  XLSX.utils.sheet_add_aoa(
+    ws,
+    playersScoreForEachQuestionText,
+    { origin: 'A13' }
   )
 
   return ws
