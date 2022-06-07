@@ -7,11 +7,7 @@ import MyTabBar from '../../components/MyTabBar/MyTabBar'
 import QuestItem from '../../components/QuestItem/QuestItem'
 import { useAuth } from '../../hooks/useAuth/useAuth'
 import { get, post } from '../../libs/api'
-import {
-  TApiResponse,
-  TQuest,
-  TPaginationResponse
-} from '../../types/types'
+import { TApiResponse, TQuest, TPaginationResponse } from '../../types/types'
 
 const QuestPage: NextPage = () => {
   const [toggleState, setToggleState] = useState<number>(0)
@@ -25,14 +21,14 @@ const QuestPage: NextPage = () => {
         try {
           const popularParams = {
             filter: {
-              relations: ["questRequirement", "questGoal", "userQuest"],
+              relations: ['questRequirement', 'questGoal', 'userQuest'],
 
               where: {
                 userQuest: {
-                  userId: currentUserId
-                }
+                  userId: currentUserId,
+                },
               },
-            }
+            },
           }
 
           const res: TApiResponse<TPaginationResponse<TQuest>> = await get(
@@ -41,7 +37,7 @@ const QuestPage: NextPage = () => {
             popularParams
           )
           if (res.response) {
-            console.log("ÁDAS")
+            console.log('ÁDAS')
             console.log(res.response)
             setItemsResponse(res.response)
             console.log(itemsResponse)
@@ -83,17 +79,13 @@ const QuestPage: NextPage = () => {
             {toggleState === 0 ? (
               <>
                 {itemsResponse?.items?.map((item, idx) => (
-                  <Col xs={12} className="p-0 mb-3">
-                    <QuestItem
-                      props={item}
-                    ></QuestItem>
+                  <Col xs={12} key={idx} className="p-0 mb-3">
+                    <QuestItem quest={item}></QuestItem>
                   </Col>
                 ))}
               </>
             ) : toggleState === 2 ? (
-              <>
-
-              </>
+              <></>
             ) : null}
           </Row>
         </div>
