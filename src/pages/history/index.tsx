@@ -43,7 +43,6 @@ const HistoryPage: NextPage = () => {
           true,
           params
         )
-        console.log('==== ~ getGameHistory ~ res', res)
 
         if (res.response) {
           setGamesHistory(res)
@@ -58,45 +57,65 @@ const HistoryPage: NextPage = () => {
   const handleOnExport = (game: TGameHistory) => {
     getExcelFile(game)
   }
+
   const renderRow = (gameHistory: TGameHistory) => {
     return (
-      <tr key={gameHistory.id}>
+      <tr key={gameHistory.id} className="">
         <td
           className={classNames(
             styles.firstCell,
             styles.cell,
-            'ps-3 cursor-pointer text-wrap'
+            'cursor-pointer text-wrap px-0'
           )}
           onClick={() => {
             router.push(`/history/${gameHistory.id}`)
           }}
         >
-          {gameHistory.quiz.title}
+          <div
+            className={classNames(
+              'ps-3 py-3  fw-medium rounded-start-14px bg-light'
+            )}
+          >
+            {gameHistory.quiz.title}
+          </div>
         </td>
+
         <td className={classNames(styles.cell)}>
-          <span className="d-none d-lg-table-cell">
-            {formatDate_HHmmDDMMMYYYY(gameHistory.createdAt)}
-          </span>
-          <span className="d-table-cell d-lg-none">
-            {formatDate_DDMMMMYYYY(gameHistory.createdAt)}
-          </span>
+          <div className={classNames('py-3 bg-light')}>
+            <span className="d-none d-lg-table-cell">
+              {formatDate_HHmmDDMMMYYYY(gameHistory.createdAt)}
+            </span>
+            <span className="d-table-cell d-lg-none">
+              {formatDate_DDMMMMYYYY(gameHistory.createdAt)}
+            </span>
+          </div>
         </td>
+
         <td className={classNames(styles.cell)}>
-          {GAME_MODE_MAPPING[gameHistory.mode] ?? 'Truyền Thống'}
+          <div className={classNames('py-3 bg-light text-center',  styles.borderRadiusSm)}>
+            {GAME_MODE_MAPPING[gameHistory.mode] ?? 'Truyền Thống'}
+          </div>
         </td>
         <td
-          className={classNames(styles.cell, 'd-none d-lg-table-cell text-end')}
+          className={classNames(
+            styles.cell,
+            'd-none d-lg-table-cell text-end '
+          )}
         >
-          {gameHistory.players.length}
+          <div className={classNames('py-3 bg-light')}>
+            {gameHistory.players.length}
+          </div>
         </td>
         <td className={classNames(styles.cell, 'd-none d-md-table-cell')}>
           <Dropdown>
             <Dropdown.Toggle
               variant="white"
-              className={styles.dropdown}
+              className={classNames(styles.dropdown, 'bg-light py-3 m-0')}
               id="dropdown-basic"
             >
-              <i className="bi bi-three-dots-vertical fs-16px"></i>
+              <div>
+              <i className="bi bi-three-dots-vertical fs-14px"></i>
+              </div>
             </Dropdown.Toggle>
 
             <Dropdown.Menu>
@@ -115,16 +134,12 @@ const HistoryPage: NextPage = () => {
   }
   return (
     <DashboardLayout>
-      <div className="w-100 bg-secondary bg-opacity-10 min-vh-100">
+      <div className="w-100 bg-white bg-opacity-10 min-vh-100">
         <Container>
           <div className="fs-32px fw-medium mb-3 ms-2">Lịch sử</div>
           <div>
-            <Table
-              className={classNames(styles.table, 'shadow shadow-sm')}
-              hover
-              variant="light"
-            >
-              <thead>
+            <Table borderless className={classNames(styles.table)}>
+              <tbody>
                 <tr>
                   <th className="ps-3">Tên bài</th>
                   <th>Ngày làm</th>
@@ -135,8 +150,6 @@ const HistoryPage: NextPage = () => {
                   </th>
                   <th className="d-none d-md-table-cell"></th>
                 </tr>
-              </thead>
-              <tbody>
                 {gamesHistory?.response?.items.map((game) => renderRow(game))}
               </tbody>
             </Table>

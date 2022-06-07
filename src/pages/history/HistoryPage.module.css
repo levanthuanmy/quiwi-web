@@ -1,7 +1,11 @@
 .dropdown::after {
   display: none !important;
 }
-
+.dropdown {
+  border-end-end-radius: 14px;
+  border-top-right-radius: 14px;
+  height: 56px !important;
+}
 .dropdown:hover {
   color: gray;
 }
@@ -9,6 +13,7 @@
 .dropdown:focus {
   box-shadow: none !important;
 }
+
 .firstCell {
   max-width: 16rem;
   text-overflow: unset;
@@ -21,6 +26,13 @@
 
 .cell {
   vertical-align: middle;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+.borderRadiusSm {
+  border-end-end-radius: 14px;
+  border-top-right-radius: 14px;
 }
 
 @media (min-width: 992px) {
@@ -38,5 +50,8 @@
   }
   .table {
     width: 90%;
+  }
+  .borderRadiusSm {
+    border-radius:  0;
   }
 }
