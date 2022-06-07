@@ -62,15 +62,17 @@ const NavBar: FC<NavBarProps> = ({
 
   const onReadNotify = async (notif: TNotification, index: number) => {
     try {
-      await get(`/api/notification/mark-as-read/${notif.id}`, true)
+      if (!notif.isRead) {
+        await get(`/api/notification/mark-as-read/${notif.id}`, true)
 
-      setNotifications((prev) => {
-        let _current = [...prev]
-        _current[index] = { ...prev[index], isRead: true }
-        return _current
-      })
+        setNotifications((prev) => {
+          let _current = [...prev]
+          _current[index] = { ...prev[index], isRead: true }
+          return _current
+        })
 
-      setNotiCount((prev) => prev - 1)
+        setNotiCount((prev) => prev - 1)
+      }
 
       notif?.url?.length ? router.push(notif?.url) : null
     } catch (error) {
