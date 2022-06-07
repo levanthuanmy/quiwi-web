@@ -1,0 +1,51 @@
+.dropdown::after {
+  display: none !important;
+}
+.dropdown {
+  border-end-end-radius: 14px;
+  border-top-right-radius: 14px;
+  height: 56px !important;
+}
+.dropdown {
+  width: 100% !important;
+}
+
+.dropdown:hover {
+  color: gray;
+}
+
+.dropdown:focus {
+  box-shadow: none !important;
+}
+
+.firstCell {
+  max-width: 16rem;
+  text-overflow: unset;
+}
+
+.cell {
+  vertical-align: middle;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+.borderRadiusSm {
+  border-end-end-radius: 14px;
+  border-top-right-radius: 14px;
+}
+
+@media (min-width: 992px) {
+  .firstCell {
+    min-width: 16rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .firstCell {
+    min-width: 12rem;
+  }
+
+  .borderRadiusSm {
+    border-radius: 0;
+  }
+}
