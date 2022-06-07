@@ -5,7 +5,10 @@ import { SOUND_EFFECT } from '../../utils/constants'
 import { playSound } from '../../utils/helper'
 import styles from './WheelFortune.module.css'
 import JackspotModal from '../JackpotModal'
-import AnimatedNumbers from 'react-animated-numbers';
+const AnimatedNumbers = dynamic(() => import('react-animated-numbers'), {
+  ssr: false
+})
+// import AnimatedNumbers from 'react-animated-numbers';
 
 export interface WheelData {
   option: string;
