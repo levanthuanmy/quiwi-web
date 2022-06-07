@@ -68,6 +68,7 @@ export const SOUND_EFFECT: Record<string, string> = {
   CONFIRM_BUY_BUTTON_SOUND_CLICK:
     'http://freesoundeffect.net/sites/default/files/gold-prize-04-sound-effect-61322022.mp3',
   SPIN_BUTTON: 'https://thumbs.dreamstime.com/audiothumb_14723/147239759.mp3',
+  NOTIFICATION: '/sounds/messenger_tone.mp3',
 }
 
 export const TIMEOUT_OPTIONS = [15, 30, 60, 120, 180]

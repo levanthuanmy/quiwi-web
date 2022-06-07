@@ -311,3 +311,13 @@ export type TUserQuest = {
   process: number
   status: string
 }
+
+export type TNotification = {
+  id: number
+  user: TUser
+  userId: number
+  url: string
+  title: string
+  description: string
+  isRead: boolean
+}
