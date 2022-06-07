@@ -67,8 +67,10 @@ const HistoryGameRow: FC<{
         <Dropdown>
           <Dropdown.Toggle
             variant="white"
-            className={classNames(styles.dropdown, 'bg-light py-3 m-0')}
-            id="dropdown-basic"
+            className={classNames(
+              styles.dropdown,
+              'bg-light py-3 m-0 text-end'
+            )}
           >
             <div>
               <i className="bi bi-three-dots-vertical fs-14px"></i>

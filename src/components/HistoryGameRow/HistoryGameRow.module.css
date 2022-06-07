@@ -6,6 +6,10 @@
   border-top-right-radius: 14px;
   height: 56px !important;
 }
+.dropdown {
+  width: 100% !important;
+}
+
 .dropdown:hover {
   color: gray;
 }
