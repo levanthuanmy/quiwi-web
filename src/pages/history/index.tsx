@@ -2,8 +2,10 @@ import classNames from 'classnames'
 import { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
-import { Container, Dropdown, Table } from 'react-bootstrap'
+import { Col, Container, Pagination, Row, Table } from 'react-bootstrap'
 import DashboardLayout from '../../components/DashboardLayout/DashboardLayout'
+import { HistoryGameRow } from '../../components/HistoryGameRow/HistoryGameRow'
+import MyTabBar from '../../components/MyTabBar/MyTabBar'
 import { useAuth } from '../../hooks/useAuth/useAuth'
 import { get } from '../../libs/api'
 import {
@@ -11,137 +13,192 @@ import {
   TGameHistory,
   TPaginationResponse,
 } from '../../types/types'
-import { GAME_MODE_MAPPING } from '../../utils/constants'
-import { getExcelFile } from '../../utils/exportToExcel'
-import {
-  formatDate_DDMMMMYYYY,
-  formatDate_HHmmDDMMMYYYY,
-} from '../../utils/helper'
 import styles from './HistoryPage.module.css'
+import useSWR from 'swr'
+import SearchBar from '../../components/SearchBar/SearchBar'
+
 require('dayjs/locale/vi')
-
+const tabs = [
+  {
+    showType: 'Đã tổ chức',
+  },
+  {
+    showType: 'Đã tham gia',
+  },
+]
 const HistoryPage: NextPage = () => {
-  const authContext = useAuth()
-  const user = authContext.getUser()
   const router = useRouter()
-  const [gamesHistory, setGamesHistory] =
-    useState<TApiResponse<TPaginationResponse<TGameHistory>>>()
 
-  // Get Game Hisotry
+  const { q } = router.query
+
+  const pageSize = 8
+  const maxPaginationList = 5
+  const [currentTab, setCurrentTab] = useState<number>(0)
+  const [pageIndex, setPageIndex] = useState(1)
+  const params: Record<string, any> = {
+    filter: {
+      order: {
+        createdAt: 'DESC',
+      },
+    },
+    pageIndex: pageIndex,
+    pageSize: pageSize,
+    // q
+  }
+  const { data, isValidating } = useSWR<
+    TApiResponse<TPaginationResponse<TGameHistory>>
+  >(
+    [
+      currentTab === 0
+        ? `/api/games/hosted-game-history`
+        : `/api/games/joined-game-history`,
+      true,
+      params,
+    ],
+    get
+  )
+
   useEffect(() => {
-    const getGameHistory = async () => {
-      try {
-        const params: Record<string, object> = {
-          filter: {
-            order: {
-              createdAt: 'DESC',
-            },
-          },
-        }
-        const res = await get<TApiResponse<TPaginationResponse<TGameHistory>>>(
-          '/api/games/hosted-game-history',
-          true,
-          params
-        )
+    getItems(1)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
-        if (res.response) {
-          setGamesHistory(res)
-        }
-      } catch (error) {
-        alert((error as Error).message)
-      }
+  const [currentListPagination, setCurrentListPagination] = useState<number[]>()
+  const [currentPagination, setCurrentPagination] = useState<number>(1)
+  const getFirst = (totalPages: number) => {
+    setCurrentPagination(1)
+    let arr = []
+    for (let i = 1; i <= totalPages; i++) {
+      arr.push(i)
+      if (i === maxPaginationList) break
     }
-    getGameHistory()
-  }, [user])
-
-  const handleOnExport = (game: TGameHistory) => {
-    getExcelFile(game)
+    return arr
   }
 
-  const renderRow = (gameHistory: TGameHistory) => {
-    return (
-      <tr key={gameHistory.id} className="">
-        <td
-          className={classNames(
-            styles.firstCell,
-            styles.cell,
-            'cursor-pointer text-wrap px-0'
-          )}
-          onClick={() => {
-            router.push(`/history/${gameHistory.id}`)
-          }}
-        >
-          <div
-            className={classNames(
-              'ps-3 py-3  fw-medium rounded-start-14px bg-light'
-            )}
-          >
-            {gameHistory.quiz.title}
-          </div>
-        </td>
+  const getLast = (totalPages: number) => {
+    setCurrentPagination(totalPages)
+    let arr = []
+    let count = 0
+    for (let i = totalPages; i >= 1; i--) {
+      arr.unshift(i)
+      count++
+      if (count === maxPaginationList) break
+    }
+    return arr
+  }
+  //Gọi hàm để set lại danh sách mảng số Pagination
+  const getPagination = (totalPages: number, pageCur: number) => {
+    if (pageCur > totalPages || pageCur < 1)
+      return currentListPagination ? [...currentListPagination] : []
+    setCurrentPagination(pageCur)
+    if (totalPages === 0 || totalPages === 1 || !totalPages) return [1]
+    let arr: any = []
+    //Nếu nút pagination được chọn khác với pagination hiện tại
+    if (
+      pageCur !== currentPagination &&
+      currentListPagination &&
+      currentListPagination.indexOf(pageCur) > maxPaginationList / 2 &&
+      currentListPagination.length === maxPaginationList
+    ) {
+      //Ở vị trí lớn hơn nút giữa nhưng không phải nút cuối
+      if (currentListPagination.indexOf(pageCur) < maxPaginationList - 1) {
+        arr = [...currentListPagination]
+        let lastPag = arr[maxPaginationList - 1]
+        //Nếu phần tử cuối có giá trị lớn hơn số trang hoặc bằng thì sẽ giữ nguyên
+        if (lastPag >= totalPages) return arr
+        //Shift mảng lên 1 vị trí
+        arr.push(lastPag + 1)
+        arr.splice(0, 1)
+      } else {
+        //Shift mảng lên 2 vị trí
+        arr = [...currentListPagination]
+        let lastPag = arr[maxPaginationList - 1]
+        if (lastPag >= totalPages) return arr
+        for (let k = 0; k < 2; k++) {
+          lastPag = lastPag + 1
+          arr.push(lastPag)
+          arr.splice(0, 1)
+          if (lastPag === totalPages) break
+        }
+      }
+    } else if (
+      pageCur !== currentPagination &&
+      currentListPagination &&
+      currentListPagination.indexOf(pageCur) < maxPaginationList / 2 &&
+      currentListPagination.length === maxPaginationList
+    ) {
+      //Ở vị trí nhỏ hơn nút giữa nhưng không phải nút cuối
+      if (currentListPagination.indexOf(pageCur) < maxPaginationList - 1) {
+        arr = [...currentListPagination]
+        let firstPag = arr[0]
+        //Nếu phần tử đầu có giá trị 1 (đầu trang) thì sẽ giữ nguyên
+        if (firstPag === 1) return arr
+        //Shift mảng về 1 vị trí
+        arr.unshift(firstPag - 1)
+        arr.splice(arr.length - 1, 1)
+      } else {
+        //Shift mảng về 2 vị trí
+        arr = [...currentListPagination]
+        let firstPag = arr[maxPaginationList - 1]
+        if (firstPag === 1) return arr
+        for (let k = 0; k < 2; k++) {
+          firstPag = firstPag - 1
+          arr.unshift(firstPag)
+          arr.splice(arr.length - 1, 1)
+          if (firstPag === 1) break
+        }
+      }
+    }
+    return arr
+  }
 
-        <td className={classNames(styles.cell)}>
-          <div className={classNames('py-3 bg-light')}>
-            <span className="d-none d-lg-table-cell">
-              {formatDate_HHmmDDMMMYYYY(gameHistory.createdAt)}
-            </span>
-            <span className="d-table-cell d-lg-none">
-              {formatDate_DDMMMMYYYY(gameHistory.createdAt)}
-            </span>
-          </div>
-        </td>
+  const getItems = async (pageIndex: number) => {
+    if (
+      data &&
+      data.response.totalPages > 0 &&
+      (pageIndex > data?.response.totalPages || pageIndex < 1)
+    ) {
+      return
+    }
 
-        <td className={classNames(styles.cell)}>
-          <div className={classNames('py-3 bg-light text-center',  styles.borderRadiusSm)}>
-            {GAME_MODE_MAPPING[gameHistory.mode] ?? 'Truyền Thống'}
-          </div>
-        </td>
-        <td
-          className={classNames(
-            styles.cell,
-            'd-none d-lg-table-cell text-end '
-          )}
-        >
-          <div className={classNames('py-3 bg-light')}>
-            {gameHistory.players.length}
-          </div>
-        </td>
-        <td className={classNames(styles.cell, 'd-none d-md-table-cell')}>
-          <Dropdown>
-            <Dropdown.Toggle
-              variant="white"
-              className={classNames(styles.dropdown, 'bg-light py-3 m-0')}
-              id="dropdown-basic"
-            >
-              <div>
-              <i className="bi bi-three-dots-vertical fs-14px"></i>
-              </div>
-            </Dropdown.Toggle>
-
-            <Dropdown.Menu>
-              <Dropdown.Item href={`/history/${gameHistory.id}`}>
-                Xem chi tiết
-              </Dropdown.Item>
-              <Dropdown.Item onClick={() => handleOnExport(gameHistory)}>
-                Tải xuống
-              </Dropdown.Item>
-              <Dropdown.Item href="#/action-3">Xóa khỏi lịch sử</Dropdown.Item>
-            </Dropdown.Menu>
-          </Dropdown>
-        </td>
-      </tr>
-    )
+    setPageIndex(pageIndex)
+    if (pageIndex === 1) {
+      setCurrentListPagination(getFirst(data?.response?.totalPages ?? 1))
+    } else if (pageIndex === data?.response?.totalPages) {
+      setCurrentListPagination(getLast(data?.response.totalPages))
+    } else {
+      setCurrentListPagination(
+        getPagination(data?.response?.totalPages ?? 1, pageIndex)
+      )
+    }
   }
   return (
     <DashboardLayout>
       <div className="w-100 bg-white bg-opacity-10 min-vh-100">
-        <Container>
-          <div className="fs-32px fw-medium mb-3 ms-2">Lịch sử</div>
+        <Container fluid="lg">
+          <Row className="my-3 justify-content-between">
+            <Col xs={2} className="fs-22px fw-medium">
+              Lịch sử
+            </Col>
+            <Col>
+              <SearchBar
+                pageUrl="history"
+                inputClassName="border border-primary"
+              />
+            </Col>
+          </Row>
+          <MyTabBar
+            currentTab={currentTab}
+            setCurrentTab={setCurrentTab}
+            tabs={tabs.map((tab) => tab.showType)}
+          />
+
+          <br />
           <div>
             <Table borderless className={classNames(styles.table)}>
               <tbody>
                 <tr>
-                  <th className="ps-3">Tên bài</th>
+                  <th className={classNames('ps-3')}>Tên bài</th>
                   <th>Ngày làm</th>
                   <th>Chế độ chơi</th>
 
@@ -150,9 +207,58 @@ const HistoryPage: NextPage = () => {
                   </th>
                   <th className="d-none d-md-table-cell"></th>
                 </tr>
-                {gamesHistory?.response?.items.map((game) => renderRow(game))}
+                {data?.response?.items.map((game) => (
+                  <HistoryGameRow key={game.id} gameHistory={game} />
+                ))}
               </tbody>
             </Table>
+            <Row className="mt-3">
+              <Col style={{ display: 'flex', justifyContent: 'center' }}>
+                {data?.response ? (
+                  <Pagination>
+                    <Pagination.First
+                      onClick={() => {
+                        getItems(1)
+                      }}
+                    />
+                    <Pagination.Prev
+                      onClick={() => {
+                        getItems(currentPagination - 1)
+                      }}
+                    />
+                    {currentListPagination?.map((item, idx) =>
+                      item === currentPagination ? (
+                        <Pagination.Item key={idx} active>
+                          {item}
+                        </Pagination.Item>
+                      ) : (
+                        <Pagination.Item
+                          key={idx}
+                          onClick={() => {
+                            getItems(data.response.totalPages)
+                          }}
+                        >
+                          {item}
+                        </Pagination.Item>
+                      )
+                    )}
+
+                    <Pagination.Next
+                      onClick={() => {
+                        getItems(currentPagination + 1)
+                      }}
+                    />
+                    <Pagination.Last
+                      onClick={() => {
+                        getItems(data.response.totalPages)
+                      }}
+                    />
+                  </Pagination>
+                ) : (
+                  <div></div>
+                )}
+              </Col>
+            </Row>
           </div>
         </Container>
       </div>

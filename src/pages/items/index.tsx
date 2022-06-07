@@ -14,7 +14,7 @@ import {
   TItem,
   TItemCategory,
   TPaginationResponse,
-  TUserProfile
+  TUserProfile,
 } from '../../types/types'
 
 // const socket = io(`${API_URL}/games`, { transports: ['websocket'] })
@@ -36,10 +36,9 @@ const ItemPage: NextPage = () => {
   const { q } = router.query
   const stateCoinChange = {
     value: 150,
-  };
+  }
 
-  const formatValue = (value: any) => value.toFixed(0);
-
+  const formatValue = (value: any) => value.toFixed(0)
 
   const getFirst = (totalPages: number) => {
     setCurrentPagination(1)
@@ -255,10 +254,7 @@ const ItemPage: NextPage = () => {
                   height="32"
                 ></Image>
 
-                <div className="ps-3">
-                  {userResponse?.user.coin}
-                </div>
-
+                <div className="ps-3">{userResponse?.user.coin}</div>
               </div>
             </Col>
           </Row>
@@ -277,9 +273,11 @@ const ItemPage: NextPage = () => {
             </Col>
           </Row>
           <Row>
-            <Button onClick={() => {
-              setShowWheelFortuneModal(true)
-            }}>
+            <Button
+              onClick={() => {
+                setShowWheelFortuneModal(true)
+              }}
+            >
               Vòng quay may mắn
             </Button>
           </Row>
@@ -310,9 +308,12 @@ const ItemPage: NextPage = () => {
                   />
                   {currentListPagination?.map((item, idx) =>
                     item === currentPagination ? (
-                      <Pagination.Item active>{item}</Pagination.Item>
+                      <Pagination.Item active key={idx}>
+                        {item}
+                      </Pagination.Item>
                     ) : (
                       <Pagination.Item
+                        key={idx}
                         onClick={() =>
                           getItems(
                             getCategoryIdByToggleState(toggleState),
@@ -355,7 +356,6 @@ const ItemPage: NextPage = () => {
             userSpinningNumber={0}
             showModal={showWheelFortuneModal}
           />
-
         </Container>
       </div>
     </DashboardLayout>

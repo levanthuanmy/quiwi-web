@@ -10,7 +10,7 @@ type MyTabBarProps = {
 const MyTabBar: FC<MyTabBarProps> = ({ currentTab, setCurrentTab, tabs }) => {
   return (
     <>
-      <Row className="fs-14px bg-primary bg-opacity-10 p-2 rounded-20px m-0 w-100">
+      <Row className="fs-14px bg-primary justify-content-center bg-opacity-10 p-2 rounded-20px m-0 w-100">
         {tabs?.map((tab, key) => (
           <Col
             xs={6}
