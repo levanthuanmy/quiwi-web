@@ -1,9 +1,27 @@
 require('dayjs/locale/vi')
 import _ from 'lodash'
-import * as XLSX from 'xlsx'
-import { TAnswer, TDetailPlayer, TGameHistory } from '../types/types'
+import * as XLSX from 'sheetjs-style'
+import { TDetailPlayer, TGameHistory } from '../types/types'
 import { QUESTION_TYPE_MAPPING_TO_TEXT } from './constants'
 import { formatDate_DDMMMMYYYY, formatDate_DDMMYYYY } from './helper'
+
+const alignCenterSetting = {
+  alignment: {
+    vertical: 'center',
+    horizontal: 'center',
+  },
+}
+const getTitle = (title: String) => {
+  return {
+    v: title,
+    s: {
+      font: {
+        sz: 20,
+        bold: true,
+      },
+    },
+  }
+}
 
 // include correct answers percentage, timeout submission
 const calculateScorePercentages = (game: TGameHistory) => {
@@ -19,10 +37,12 @@ const calculateScorePercentages = (game: TGameHistory) => {
 
   return {
     correctAnswersPercentage: (
-      countCorrectAnswers / (game.gameRoundStatistics.length || 1)
+      (countCorrectAnswers / (game.gameRoundStatistics.length || 1)) *
+      100
     ).toFixed(2),
     timeoutSubmissionPercentage: (
-      countTimeoutSubmission / (game.gameRoundStatistics.length || 1)
+      (countTimeoutSubmission / (game.gameRoundStatistics.length || 1)) *
+      100
     ).toFixed(2),
   }
 }
@@ -121,17 +141,10 @@ const generateOverviewInformation = (game: TGameHistory) => {
     overviewWorkSheet,
     [
       // Row 1
-      [
-        {
-          t: 's',
-
-          v: game.quiz.title,
-        },
-      ],
+      [getTitle(game.quiz.title)],
       // Row 2
       [
         {
-          t: 's',
           v: 'Chủ phòng',
         },
         {},
@@ -144,8 +157,6 @@ const generateOverviewInformation = (game: TGameHistory) => {
       // Row 3
       [
         {
-          t: 's',
-
           v: 'Ngày làm bài',
         },
         {},
@@ -158,15 +169,12 @@ const generateOverviewInformation = (game: TGameHistory) => {
       // Row 4
       [
         {
-          t: 's',
-
           v: 'Số người chơi',
         },
         {},
         {},
         {},
         {
-          t: 's',
           v: `${game.players.length} người chơi`,
         },
       ],
@@ -174,15 +182,12 @@ const generateOverviewInformation = (game: TGameHistory) => {
       // Row 5
       [
         {
-          t: 's',
-
           v: 'Mã phòng',
         },
         {},
         {},
         {},
         {
-          t: 's',
           v: `${game.invitationCode}`,
         },
       ],
@@ -198,8 +203,10 @@ const generateOverviewInformation = (game: TGameHistory) => {
       // Row 1
       [
         {
-          t: 's',
           v: 'Tổng quan',
+          s: {
+            ...alignCenterSetting,
+          },
         },
       ],
       // Row 2
@@ -218,8 +225,6 @@ const generateOverviewInformation = (game: TGameHistory) => {
       // Row 3
       [
         {
-          t: 's',
-
           v: 'Sô phần trăm chưa trả lời (trễ giờ)',
         },
         {},
@@ -232,8 +237,10 @@ const generateOverviewInformation = (game: TGameHistory) => {
       [],
       [
         {
-          t: 's',
           v: 'Chuyển sang các Sheet sau để xem kết quả từng câu',
+          s: {
+            ...alignCenterSetting,
+          },
         },
       ],
     ],
@@ -249,7 +256,7 @@ const getPlayerFinalScore = (player: TDetailPlayer, rank: number) => {
   const res: Record<string, number | string> = {}
   res['rank'] = rank + 1
   res['player'] = player.nickname
-  res['score'] = player['score']
+  res['score'] = player['score'].toFixed(2)
   let correctAnswer = 0
   const totalAnswers = player.gameRounds.length
   for (const gameRound of player.gameRounds) {
@@ -284,16 +291,13 @@ const generateFinalScoreSheet = (game: TGameHistory) => {
 
   XLSX.utils.sheet_add_aoa(ws, [
     // Row 1
-    [
-      {
-        t: 's',
-
-        v: game.quiz.title,
-      },
-    ],
+    [getTitle(game.quiz.title)],
     [
       {
         v: 'Điểm tổng kết',
+        s: {
+          ...alignCenterSetting,
+        },
       },
     ],
     [
@@ -333,15 +337,37 @@ const getPlayerScoreForEachQuestion = (
 ) => {
   const gameRound = player.gameRounds[index]
 
+  const answers = []
+
+  if (gameRound.selectionAnswers) {
+    for (const index in gameRound.selectionAnswers) {
+      answers.push(gameRound.selectionAnswers[index].answer)
+    }
+  }
+
+  let isCorrect = ''
+  if (gameRound.score === gameRound.question?.score) {
+    isCorrect = 'Đúng'
+  } else if (!gameRound.answer && !gameRound.answerIds.length) {
+    isCorrect = 'Không trả lời'
+  } else {
+    isCorrect = 'Sai'
+  }
   const playerRowSheet = [
     {
-      v: 'Thời gian trả lời câu hỏi',
+      v: player.nickname,
     },
     {},
     {},
     {},
     {
-      v: 'BUH BUH LMAO',
+      v: gameRound.answer || answers.join(', '),
+    },
+    {
+      v: isCorrect,
+    },
+    {
+      v: gameRound.score.toFixed(2),
     },
   ]
 
@@ -359,6 +385,8 @@ const getSheetForEachQuestion = (index: number, game: TGameHistory) => {
   const quiz = game.quiz.title
   const questionTitle = question?.question.replaceAll(regex, '')
   const ws: XLSX.WorkSheet = {}
+
+  const numPlayers = game.players.length // to merge rows
   const merge = [
     {
       // From A1 -> H1
@@ -453,7 +481,20 @@ const getSheetForEachQuestion = (index: number, game: TGameHistory) => {
       s: { r: 12, c: 0 },
       e: { r: 12, c: 8 },
     },
+    {
+      // From A14 -> D14
+      s: { r: 13, c: 0 },
+      e: { r: 13, c: 3 },
+    },
   ]
+
+  for (let i = 0; i < numPlayers; i++) {
+    merge.push({
+      s: { r: 14 + i, c: 0 },
+      e: { r: 14 + i, c: 3 },
+    })
+  }
+
   ws['!merges'] = merge
 
   const answers: string[] = []
@@ -480,16 +521,12 @@ const getSheetForEachQuestion = (index: number, game: TGameHistory) => {
     }
   }
   const correctAnswersPercentage =
-    gameRoundStatistic?.numberOfCorrectAnswers / game.players.length
+    (gameRoundStatistic?.numberOfCorrectAnswers / game.players.length) * 100
 
   XLSX.utils.sheet_add_aoa(
     ws,
     [
-      [
-        {
-          v: quiz,
-        },
-      ],
+      [getTitle(quiz)],
       [
         {
           v: 'Câu hỏi',
@@ -525,7 +562,7 @@ const getSheetForEachQuestion = (index: number, game: TGameHistory) => {
       ],
       [
         {
-          v: 'Câu hỏi đúng là',
+          v: 'Câu trả lời đúng là',
         },
         {},
         {},
@@ -542,7 +579,7 @@ const getSheetForEachQuestion = (index: number, game: TGameHistory) => {
         {},
         {},
         {
-          v: correctAnswersPercentage.toString(),
+          v: correctAnswersPercentage.toFixed(2),
         },
       ],
       [],
@@ -608,6 +645,9 @@ const getSheetForEachQuestion = (index: number, game: TGameHistory) => {
       [
         {
           v: 'Tổng quan câu trả lời của người chơi',
+          s: {
+            ...alignCenterSetting,
+          },
         },
       ],
       answerText,
@@ -621,8 +661,28 @@ const getSheetForEachQuestion = (index: number, game: TGameHistory) => {
     [
       {
         v: 'Kết quả trận đấu',
+        s: {
+          ...alignCenterSetting,
+        },
       },
       {},
+    ],
+    [
+      {
+        v: 'Tên người chơi',
+      },
+      {},
+      {},
+      {},
+      {
+        v: 'Đã chọn (nhiều câu trả lời sẽ cách nhau bởi dấu phẩy)',
+      },
+      {
+        v: 'Kết quả',
+      },
+      {
+        v: 'Điểm nhận được',
+      },
     ],
   ]
 
@@ -630,14 +690,12 @@ const getSheetForEachQuestion = (index: number, game: TGameHistory) => {
     const player = game.players[i]
 
     playersScoreForEachQuestionText.push(
-      getPlayerScoreForEachQuestion(i, player)
+      getPlayerScoreForEachQuestion(index, player)
     )
   }
-  XLSX.utils.sheet_add_aoa(
-    ws,
-    playersScoreForEachQuestionText,
-    { origin: 'A13' }
-  )
+  XLSX.utils.sheet_add_aoa(ws, playersScoreForEachQuestionText, {
+    origin: 'A13',
+  })
 
   return ws
   // for (const ga)
@@ -659,7 +717,13 @@ const getExcelFile = (game: TGameHistory) => {
 
     wb.Sheets[sheetName] = questionResultSheet
   }
-  return wb
+  XLSX.writeFile(
+    wb,
+    `${formatDate_DDMMYYYY(game.createdAt)} ${game.quiz.title}.xlsx`,
+    {
+      cellStyles: true,
+    }
+  )
 }
 
 export { getExcelFile }
