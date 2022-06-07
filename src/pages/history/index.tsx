@@ -3,13 +3,11 @@ import { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { Container, Dropdown, Table } from 'react-bootstrap'
-import * as XLSX from 'xlsx'
 import DashboardLayout from '../../components/DashboardLayout/DashboardLayout'
 import { useAuth } from '../../hooks/useAuth/useAuth'
 import { get } from '../../libs/api'
 import {
   TApiResponse,
-  TDetailPlayer,
   TGameHistory,
   TPaginationResponse,
 } from '../../types/types'
@@ -17,7 +15,6 @@ import { GAME_MODE_MAPPING } from '../../utils/constants'
 import { getExcelFile } from '../../utils/exportToExcel'
 import {
   formatDate_DDMMMMYYYY,
-  formatDate_DDMMYYYY,
   formatDate_HHmmDDMMMYYYY,
 } from '../../utils/helper'
 import styles from './HistoryPage.module.css'
@@ -59,12 +56,7 @@ const HistoryPage: NextPage = () => {
   }, [user])
 
   const handleOnExport = (game: TGameHistory) => {
-    const wb = getExcelFile(game)
-
-    XLSX.writeFile(
-      wb,
-      `${formatDate_DDMMYYYY(game.createdAt)} ${game.quiz.title}.xlsx`
-    )
+    getExcelFile(game)
   }
   const renderRow = (gameHistory: TGameHistory) => {
     return (

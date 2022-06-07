@@ -240,6 +240,7 @@ export type TGameRound = {
   playerId: number
   answer?: string
   answerIds: number[]
+  selectionAnswers: Record<string, TAnswer>
 }
 
 export type TDetailPlayer = TPlayer & {
