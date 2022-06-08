@@ -260,7 +260,10 @@ const getPlayerFinalScore = (player: TDetailPlayer, rank: number) => {
   let correctAnswer = 0
   const totalAnswers = player.gameRounds.length
   for (const gameRound of player.gameRounds) {
-    if (gameRound.score === gameRound.question?.score || gameRound.score > 0) {
+    if (
+      gameRound.score >= (gameRound.question?.score ?? 0) ||
+      gameRound.score > 0
+    ) {
       correctAnswer++
     }
   }
@@ -726,4 +729,4 @@ const getExcelFile = (game: TGameHistory) => {
   )
 }
 
-export { getExcelFile }
+export { getExcelFile, calculateScorePercentages }

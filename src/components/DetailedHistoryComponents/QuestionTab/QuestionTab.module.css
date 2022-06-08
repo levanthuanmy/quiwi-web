@@ -1,0 +1,8 @@
+.questionRow:hover {
+    background-color: #f8f9fa;
+    cursor: pointer;
+   
+}
+.questionRow { 
+    border: 1px solid #f8f9fa;
+}
