@@ -27,3 +27,12 @@
 .price {
     justify-content: space-between;
 }
+
+.activeButton {
+    color: white;
+}
+
+.disableButton {
+    color: white;
+    background-color:darkgray;
+}

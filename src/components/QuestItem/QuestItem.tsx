@@ -6,7 +6,10 @@ import classNames from 'classnames'
 import MyButton from "../MyButton/MyButton"
 import { TQuest } from '../../types/types'
 import Item from '../Item/Item'
-
+import { get, post } from '../../libs/api'
+import {
+  TApiResponse
+} from '../../types/types'
 type IQuestItem = {
   currentValue: number,
   targetValue: number,
@@ -23,6 +26,16 @@ const QuestItem: FC<{ quest: TQuest }> = ({quest}) => {
   //   if (props.currentValue === props.targetValue)
   //     setDoneState(value);
   // }
+
+  const doneQuest = async () => {
+    const res: TApiResponse<string> = await post(
+      `/api/quest/finish-quest/${quest.id}`,
+      {},
+        {},
+        true
+    )
+    console.log(res.message)
+  }
 
 
   return (
@@ -89,7 +102,7 @@ const QuestItem: FC<{ quest: TQuest }> = ({quest}) => {
         </Col>
         <Col sm={2}>
           {/* <MyButton disabled={!(progress === 100 && !doneState)} className={classNames("w-100 text-white")} onClick={() => toggleTab(true)}>{doneState ? "Đã nhận" : progress === 100 ? "Nhận" : "Chưa xong" }</MyButton> */}
-          <MyButton className={classNames("w-100 text-white")} >{quest.userQuest[0].status}</MyButton>
+          <MyButton disabled= {quest.userQuest[0].process !== 100 || quest.userQuest[0].status === "FINISH"} className={classNames("w-100 text-white ")} onClick={() =>doneQuest() } >{ quest.userQuest[0].status == "FINISH"? "Đã xong" : "Nhận"}</MyButton>
         </Col>
       </Row>
     </div>
