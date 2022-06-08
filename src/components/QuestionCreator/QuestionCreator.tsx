@@ -145,7 +145,11 @@ const QuestionCreator: FC<QuestionCreatorProps> = ({
   const onSaveQuestion = async () => {
     try {
       if (!quiz) return
-      if (type !== 'fill' && getCurrentTrueAnswer(answers) < 1) {
+      if (
+        type !== 'fill' &&
+        type !== 'essay' &&
+        getCurrentTrueAnswer(answers) < 1
+      ) {
         alert('Bạn cần có ít nhất 1 câu trả lời là đúng')
         return
       }
@@ -189,6 +193,10 @@ const QuestionCreator: FC<QuestionCreatorProps> = ({
           }
           return answer
         })
+      }
+
+      if (type === 'essay') {
+        _newQuestion.questionAnswers = []
       }
 
       let body = {}

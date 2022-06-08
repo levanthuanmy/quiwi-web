@@ -219,6 +219,12 @@ const AnswerEditorSection: FC<{
             </Row>
           </>
         )}
+
+        {type === 'essay' && (
+          <div className="fs-32px text-secondary text-center">
+            Câu trả lời của người tham gia sẽ được nhập ở đây
+          </div>
+        )}
       </div>
     </>
   )

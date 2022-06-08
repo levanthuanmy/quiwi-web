@@ -44,6 +44,7 @@ export const MAPPED_QUESTION_TYPE: Record<TQuestionType, QuestionType> = {
   '20MUL': 'multiple',
   '30TEXT': 'fill',
   '21ODMUL': 'conjunction',
+  '31ESSAY': 'essay',
 }
 
 export const QUESTION_TYPE_MAPPING_TO_TEXT: Record<TQuestionType, string> = {
@@ -51,6 +52,7 @@ export const QUESTION_TYPE_MAPPING_TO_TEXT: Record<TQuestionType, string> = {
   '20MUL': 'Chọn nhiều câu trả lời',
   '30TEXT': 'Trả lời câu hỏi chữ',
   '21ODMUL': 'Nối từ',
+  '31ESSAY': 'Trả lời tự do',
 }
 
 export const MAPPED_QUESTION_MATCHER: Record<string, string> = {
