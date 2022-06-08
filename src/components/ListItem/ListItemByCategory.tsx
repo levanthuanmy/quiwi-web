@@ -33,8 +33,9 @@ const ListItemByCategory: FC<IListItem> = (props) => {
           if (res.response) {
             let items: Array<TItem> = []
             res.response.forEach((element) => {
-              if (element.item.itemCategoryId === props.id)
-                items.push(element.item)
+              if (element.item != null)
+                if (element.item.itemCategoryId === props.id)
+                  items.push(element.item)
             })
             setItemsRes(items)
           }
@@ -65,9 +66,9 @@ const ListItemByCategory: FC<IListItem> = (props) => {
 
       <Collapse in={isCollapse} className={classNames('', styles.content)}>
         <div className="justify-content-md-center">
-            <div className={classNames('', styles.itemList)}>
-              {itemsRes?.map((item, idx) => (
-                <Item
+          <div className={classNames('', styles.itemList)}>
+            {itemsRes?.map((item, idx) => (
+              <Item
                 key={idx}
                 name={item.name}
                 des={item.description}
@@ -75,8 +76,8 @@ const ListItemByCategory: FC<IListItem> = (props) => {
                 type={item.type}
                 price={item.price}
               ></Item>
-              ))}
-            </div>
+            ))}
+          </div>
         </div>
       </Collapse>
     </div>
