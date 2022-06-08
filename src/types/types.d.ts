@@ -322,3 +322,26 @@ export type TNotification = {
   isRead: boolean
   createdAt: string
 }
+
+export type TWheelFortune = {
+  id: number
+  jackpotTotalScore: number
+  wheelSetting: any
+  numberPlayerJoin: number
+}
+
+export type TUserWheelFortune = {
+  id: number
+  userId: number
+  numberSpin: number
+}
+
+
+export type TResultWheelFortune = {
+  prizeNumber: number
+  isJackpot: boolean
+  jackpotScore: number
+  numberSpin: number
+  score: number
+  numberJoinSpinning: number
+}

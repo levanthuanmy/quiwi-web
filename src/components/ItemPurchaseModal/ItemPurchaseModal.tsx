@@ -1,10 +1,9 @@
 import { FC } from 'react'
 import { Button, ButtonGroup, Col, Image, Modal, Row } from 'react-bootstrap'
 import { TItem } from '../../types/types'
+import { SOUND_EFFECT } from '../../utils/constants'
+import { playSound } from '../../utils/helper'
 import MyModal from '../MyModal/MyModal'
-import {playSound} from '../../utils/helper'
-import {SOUND_EFFECT} from '../../utils/constants'
-import WheelOfFortune from '../WheelFortune/WheelFortune'
 
 type ItemPurchaseProps = {
   avatar?: string
@@ -133,3 +132,4 @@ const ItemPurchaseModal: FC<ItemPurchaseProps> = ({
 }
 
 export { ItemPurchaseModal }
+
