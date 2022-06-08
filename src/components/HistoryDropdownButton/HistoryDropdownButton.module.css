@@ -1,0 +1,22 @@
+.dropdown::after {
+  display: none !important;
+}
+.dropdown {
+  height: 56px !important;
+}
+.dropdown {
+  width: 100% !important;
+}
+
+.dropdown:hover {
+  color: gray;
+}
+
+.dropdown:focus {
+  box-shadow: none !important;
+}
+
+.borderRadius {
+  border-end-end-radius: 14px;
+  border-top-right-radius: 14px;
+}

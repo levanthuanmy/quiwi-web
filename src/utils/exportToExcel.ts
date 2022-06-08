@@ -726,4 +726,4 @@ const getExcelFile = (game: TGameHistory) => {
   )
 }
 
-export { getExcelFile }
+export { getExcelFile, calculateScorePercentages }

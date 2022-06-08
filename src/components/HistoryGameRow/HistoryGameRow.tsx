@@ -9,6 +9,7 @@ import {
   formatDate_HHmmDDMMMYYYY,
   formatDate_DDMMMMYYYY,
 } from '../../utils/helper'
+import { HistoryDropdownButton } from '../HistoryDropdownButton/HistoryDropdownButton'
 import styles from './HistoryGameRow.module.css'
 
 const HistoryGameRow: FC<{
@@ -64,29 +65,11 @@ const HistoryGameRow: FC<{
         </div>
       </td>
       <td className={classNames(styles.cell, 'd-none d-md-table-cell')}>
-        <Dropdown>
-          <Dropdown.Toggle
-            variant="white"
-            className={classNames(
-              styles.dropdown,
-              'bg-light py-3 m-0 text-end'
-            )}
-          >
-            <div>
-              <i className="bi bi-three-dots-vertical fs-14px"></i>
-            </div>
-          </Dropdown.Toggle>
-
-          <Dropdown.Menu>
-            <Dropdown.Item href={`/history/${gameHistory.id}`}>
-              Xem chi tiết
-            </Dropdown.Item>
-            <Dropdown.Item onClick={() => getExcelFile(gameHistory)}>
-              Tải xuống
-            </Dropdown.Item>
-            <Dropdown.Item href="#/action-3">Xóa khỏi lịch sử</Dropdown.Item>
-          </Dropdown.Menu>
-        </Dropdown>
+        <HistoryDropdownButton
+          key={gameHistory.id}
+          gameHistory={gameHistory}
+          isFromHistoryPage={true}
+        />
       </td>
     </tr>
   )
