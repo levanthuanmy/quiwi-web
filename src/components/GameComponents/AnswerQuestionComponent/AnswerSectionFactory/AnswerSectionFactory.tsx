@@ -45,6 +45,8 @@ export class AnswerSectionFactory {
         return this.initConnectAnswer(countDown, question, handleSubmitAnswer);
       case "30TEXT":
         return this.initTextAnswer(countDown, question, handleSubmitAnswer);
+      case "31ESSAY":
+        return this.initTextAnswer(countDown, question, handleSubmitAnswer);
     }
   }
 
