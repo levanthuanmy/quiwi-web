@@ -1,6 +1,6 @@
 import dayjs from 'dayjs'
 import { TAnswer, TQuestion } from '../types/types'
-import {Howl} from 'howler'
+import { Howl } from 'howler'
 
 export const JsonParse = (input: string | null) => {
   try {
@@ -82,9 +82,37 @@ export const formatDate_DDMMYYYY = (d: Date) => {
 }
 
 export const playSound = (src: string) => {
-  const sound = new Howl ({
+  const sound = new Howl({
     src,
-    html5: true
+    html5: true,
   })
-  sound.play();
+  sound.play()
+}
+export function timeSince(date: string | Date) {
+  var seconds = Math.floor(
+    (new Date().getTime() - new Date(date).getTime()) / 1000
+  )
+
+  var interval = seconds / 31536000
+
+  if (interval > 1) {
+    return Math.floor(interval) + ' năm trước'
+  }
+  interval = seconds / 2592000
+  if (interval > 1) {
+    return Math.floor(interval) + ' tháng trước'
+  }
+  interval = seconds / 86400
+  if (interval > 1) {
+    return Math.floor(interval) + ' ngày trước'
+  }
+  interval = seconds / 3600
+  if (interval > 1) {
+    return Math.floor(interval) + ' giờ trước'
+  }
+  interval = seconds / 60
+  if (interval > 1) {
+    return Math.floor(interval) + ' phút trước'
+  }
+  return Math.floor(seconds) + ' giây trước'
 }

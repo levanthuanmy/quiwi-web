@@ -1,10 +1,10 @@
-import {useRouter} from 'next/router'
-import React, {ReactNode, useEffect, useState} from 'react'
+import { useRouter } from 'next/router'
+import React, { ReactNode, useEffect, useState } from 'react'
 import Cookies from 'universal-cookie'
-import {TUser} from '../../types/types'
-import {JsonParse} from '../../utils/helper'
-import {useLocalStorage} from '../useLocalStorage/useLocalStorage'
-import {SocketManager} from '../useSocket/socketManager'
+import { TUser } from '../../types/types'
+import { JsonParse } from '../../utils/helper'
+import { useLocalStorage } from '../useLocalStorage/useLocalStorage'
+import { SocketManager } from '../useSocket/socketManager'
 
 type UseAuthValue = {
   isAuth: boolean
@@ -17,20 +17,15 @@ type UseAuthValue = {
 }
 const AuthContext = React.createContext<UseAuthValue>({
   isAuth: false,
-  toPrevRoute: async () => {
-  },
-  navigate: async () => {
-  },
-  signOut: async () => {
-  },
-  signIn: async () => {
-  },
+  toPrevRoute: async () => {},
+  navigate: async () => {},
+  signOut: async () => {},
+  signIn: async () => {},
   getUser: () => undefined,
-  setUser: () => {
-  },
+  setUser: () => {},
 })
 
-export const AuthProvider = ({children}: { children?: ReactNode }) => {
+export const AuthProvider = ({ children }: { children?: ReactNode }) => {
   const socketManager = SocketManager()
   const router = useRouter()
   const [prevRoute, setPrevRoute] = useLocalStorage('prev-route', '/')
@@ -44,14 +39,14 @@ export const AuthProvider = ({children}: { children?: ReactNode }) => {
     setIsAuth(
       Boolean(
         userState?.token?.accessToken?.length ||
-        cookies.get('access-token')?.length
+          cookies.get('access-token')?.length
       )
     )
   }, [userState])
 
   useEffect(() => {
     const _lsUser = JsonParse(lsUser) as TUser
-    if (_lsUser?.username?.length) {
+    if (_lsUser?.token?.accessToken.length) {
       setUserState(_lsUser)
       cookies.set('access-token', _lsUser.token.accessToken)
       cookies.set('refresh-token', _lsUser.token.refreshToken)

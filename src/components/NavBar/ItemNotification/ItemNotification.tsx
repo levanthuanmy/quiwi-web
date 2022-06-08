@@ -1,6 +1,7 @@
 import classNames from 'classnames'
 import React, { FC, memo } from 'react'
 import { TNotification } from '../../../types/types'
+import { timeSince } from '../../../utils/helper'
 
 const ItemNotification: FC<{
   notification: TNotification
@@ -22,6 +23,10 @@ const ItemNotification: FC<{
 
         <div className="fs-14px text-secondary">
           {notification?.description}
+        </div>
+
+        <div className="fs-14px text-secondary fst-italic text-end">
+          • {timeSince(notification.createdAt)}
         </div>
       </div>
       <div

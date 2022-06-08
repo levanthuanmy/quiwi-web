@@ -320,4 +320,5 @@ export type TNotification = {
   title: string
   description: string
   isRead: boolean
+  createdAt: string
 }

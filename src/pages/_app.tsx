@@ -20,6 +20,7 @@ import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 import { useGameSession } from '../hooks/useGameSession/useGameSession'
 import { CommunityGameSocketProvider } from '../hooks/useCommunitySocket/useCommunitySocket'
+import { ToastProvider } from 'react-toast-notifications'
 
 function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter()
@@ -68,9 +69,11 @@ function MyApp({ Component, pageProps }: AppProps) {
       <DndProvider backend={HTML5Backend}>
         <CommunityGameSocketProvider>
           <AuthProvider>
-            <MyHead />
-            <Component {...pageProps} />
-            <FullScreenLoader isLoading={shouldLoad} />
+            <ToastProvider>
+              <MyHead />
+              <Component {...pageProps} />
+              <FullScreenLoader isLoading={shouldLoad} />
+            </ToastProvider>
           </AuthProvider>
         </CommunityGameSocketProvider>
       </DndProvider>

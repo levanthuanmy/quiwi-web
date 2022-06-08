@@ -1,8 +1,10 @@
 import classNames from 'classnames'
+import _ from 'lodash'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
 import React, { FC, memo, useEffect, useState } from 'react'
 import { Collapse } from 'react-bootstrap'
+import { useToasts } from 'react-toast-notifications'
 import { useAuth } from '../../hooks/useAuth/useAuth'
 import { SocketManager } from '../../hooks/useSocket/socketManager'
 import { get } from '../../libs/api'
@@ -12,7 +14,7 @@ import {
   TPaginationResponse,
 } from '../../types/types'
 import { SOUND_EFFECT } from '../../utils/constants'
-import { playSound } from '../../utils/helper'
+import { playSound, timeSince } from '../../utils/helper'
 import MyButton from '../MyButton/MyButton'
 import ItemNotification from './ItemNotification/ItemNotification'
 import styles from './NavBar.module.css'
@@ -40,6 +42,7 @@ const NavBar: FC<NavBarProps> = ({
   const notificationSocket = socket.socketOf('NOTIFICATION')
   const [notifications, setNotifications] = useState<TNotification[]>([])
   const [notiCount, setNotiCount] = useState<number>(notifications?.length || 0)
+  const { addToast } = useToasts()
 
   useEffect(() => {
     if (authContext.isAuth) {
@@ -70,10 +73,24 @@ const NavBar: FC<NavBarProps> = ({
   useEffect(() => {
     if (notificationSocket) {
       notificationSocket.off('notification')
-      notificationSocket.on('notification', (data) => {
+
+      notificationSocket.on('notification', (data: TNotification) => {
         playSound(SOUND_EFFECT['NOTIFICATION'])
         setNotifications((prev) => [data, ...prev])
         setNotiCount((prev) => prev + 1)
+        addToast(
+          <div onClick={() => onReadNotify(data)}>
+            <div className="fs-18px">{data.title}</div>
+            <div className="">{data.description}</div>
+            <div className="fs-14px text-secondary fst-italic text-end">
+              • {timeSince(data.createdAt)}
+            </div>
+          </div>,
+          {
+            appearance: 'info',
+            autoDismiss: true,
+          }
+        )
       })
     }
   }, [notificationSocket])
@@ -88,14 +105,19 @@ const NavBar: FC<NavBarProps> = ({
     return count
   }
 
-  const onReadNotify = async (notif: TNotification, index: number) => {
+  const onReadNotify = async (notif: TNotification, index?: number) => {
     try {
       if (!notif.isRead) {
         await get(`/api/notification/mark-as-read/${notif.id}`, true)
 
         setNotifications((prev) => {
           let _current = [...prev]
-          _current[index] = { ...prev[index], isRead: true }
+          if (index !== undefined) {
+            _current[index] = { ...prev[index], isRead: true }
+          } else {
+            const idx = prev.findIndex((e) => e.id === notif.id)
+            _current[idx] = { ...prev[idx], isRead: true }
+          }
           return _current
         })
 

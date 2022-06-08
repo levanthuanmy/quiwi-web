@@ -203,7 +203,7 @@ const AnswerEditorSection: FC<{
                 <Col key={key} xs="auto" className="mb-3">
                   <div
                     className={classNames('rounded-pill px-3 py-1 text-white', {
-                      'border border-5': answers[item].type === '21PLHDR',
+                      'border border-5': answers[item]?.type === '21PLHDR',
                     })}
                     style={{
                       backgroundColor:
