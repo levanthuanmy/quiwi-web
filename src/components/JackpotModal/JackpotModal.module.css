@@ -1,0 +1,71 @@
+
+.containerWheel{
+ display: flex;
+ justify-content: center;
+ flex-direction: column;
+}
+
+.containerParent{
+  display: flex;
+  justify-content: space-between;
+}
+
+.btnBuy {
+  margin: auto;
+  margin-top: 15px;
+  width: 50%;
+  height: 2rem;
+  text-align: center;
+  padding: 0 2rem 0 2rem;
+  border-radius: 10px;
+  color: #009883;
+  font-weight: bold;
+  background-color: white;
+  border-color: #009883;
+}
+
+.btnBuy:hover {
+  color: white;
+  background-color: #009883;
+}
+
+.btn_hover {
+  margin: 10%;
+  text-align: center;
+  width: 200px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+  margin: 20px;
+  height: 55px;
+  text-align:center;
+  border: none;
+  background-size: 300% 100%;
+
+  border-radius: 50px;
+  moz-transition: all .4s ease-in-out;
+  -o-transition: all .4s ease-in-out;
+  -webkit-transition: all .4s ease-in-out;
+  transition: all .4s ease-in-out;
+}
+
+.btn_hover:hover {
+  background-position: 100% 0;
+  moz-transition: all .4s ease-in-out;
+  -o-transition: all .4s ease-in-out;
+  -webkit-transition: all .4s ease-in-out;
+  transition: all .4s ease-in-out;
+}
+
+.btn_hover:focus {
+  outline: none;
+}
+
+.btn_hover {
+  background-image: linear-gradient(to right, #0ba360, #3cba92, #30dd8a, #2bb673);
+  box-shadow: 0 4px 15px 0 rgba(23, 168, 108, 0.75);
+}
+
+
+

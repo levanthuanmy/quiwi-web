@@ -3,15 +3,24 @@ import Jackpot from '../Jackpot';
 import MyModal from '../MyModal/MyModal';
 import { useWindowSize } from 'react-use'
 import Confetti from 'react-confetti'
+import styles from './JackpotModal.module.css'
+import { Image } from 'react-bootstrap';
+import { playSound } from '../../utils/helper';
+import { SOUND_EFFECT } from '../../utils/constants';
 
 
 type JackpotModalProps = {
   showModal: boolean
   onHide: VoidFunction
+  score: number
 }
 
-const JackpotModal: FC<JackpotModalProps> = ({ showModal, onHide }) => {
-  const { width, height } = useWindowSize()
+const JackpotModal: FC<JackpotModalProps> = ({ showModal, onHide, score }) => {
+  const { width, height } = useWindowSize();
+
+  if (showModal){
+    playSound(SOUND_EFFECT['JACKPOT_CONGRATULATION']);
+  }
 
   return (
     <MyModal
@@ -19,17 +28,30 @@ const JackpotModal: FC<JackpotModalProps> = ({ showModal, onHide }) => {
       onHide={onHide}
       size="lg"
     >
-      <Jackpot
-        text="JACKPOT"
-        durationInSeconds={5}
-        itemHeight={140}
-        itemWidth={80}
-      />
-      <div>Chúc mừng bạn đã chúng thưởng giải đặc biệt 100,000,000 Kiwi</div>
-      <Confetti
-        width={width}
-        height={height}
-      />
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <Jackpot
+          text="JACKPOT"
+          durationInSeconds={5}
+          itemHeight={140}
+          itemWidth={80}
+        />
+        <h2 style={{ textAlign: 'center', marginTop: '10px' }}>Chúc mừng bạn!</h2>
+        <div className="d-flex rounded-20px align-items-center p-2 fw-medium fs-18px">
+          <div className="ps-3">Bạn đã trúng thưởng {score}</div>
+          <Image
+            alt="avatar"
+            src="/assets/quiwi-coin.png"
+            width="32"
+            height="32"
+            style={{marginLeft:'5px'}}
+          ></Image>
+        </div>
+        <button className={styles.btn_hover} onClick={onHide}>Tiếp tục</button>
+        <Confetti
+          width={width}
+          height={height}
+        />
+      </div>
     </MyModal>
   )
 }

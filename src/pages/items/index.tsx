@@ -38,8 +38,6 @@ const ItemPage: NextPage = () => {
     value: 150,
   }
 
-  const formatValue = (value: any) => value.toFixed(0)
-
   const getFirst = (totalPages: number) => {
     setCurrentPagination(1)
     let arr = []
@@ -352,6 +350,7 @@ const ItemPage: NextPage = () => {
           <WheelFortuneModal
             onHide={() => {
               setShowWheelFortuneModal(false)
+              getUser();
             }}
             userSpinningNumber={0}
             showModal={showWheelFortuneModal}

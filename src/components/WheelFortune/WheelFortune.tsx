@@ -5,6 +5,9 @@ import { SOUND_EFFECT } from '../../utils/constants'
 import { playSound } from '../../utils/helper'
 import styles from './WheelFortune.module.css'
 import JackspotModal from '../JackpotModal'
+import { Image } from 'react-bootstrap'
+import { TApiResponse, TResultWheelFortune, TWheelFortune } from '../../types/types'
+import { get } from '../../libs/api'
 const AnimatedNumbers = dynamic(() => import('react-animated-numbers'), {
   ssr: false
 })
@@ -47,30 +50,52 @@ const Wheel = dynamic<Props>(
 )
 
 type WheelProps = {
+  data: any
+  jackpotTotalScore?: number
+  numberPlayerJoin?: number
+  userNumSpin?: number
+  onHide: VoidFunction
+  onShow: VoidFunction
 }
 
-const data = [
-  { option: 'Jackspot', style: { backgroundColor: 'darkred', textColor: 'black' } },
-  { option: '100' },
-  { option: '300' },
-  { option: '500' },
-  { option: '600' },
-  { option: '150' },
-  { option: '200' },
-  { option: '3000' },
-]
 
-
-const WheelOfFortune: FC<WheelProps> = () => {
+const WheelOfFortune: FC<WheelProps> = ({ data, jackpotTotalScore, numberPlayerJoin, userNumSpin, onHide, onShow }) => {
   const [mustSpin, setMustSpin] = useState(false);
-  const [prizeNumber, setPrizeNumber] = useState(0);
   const [openJackpotModal, setOpenJackpotModal] = useState(false);
+  const [resultSpinning, setResultSpinning] = useState<TResultWheelFortune>();
+  const [jscore, setJscore] = useState(jackpotTotalScore ?? 0);
+  const [totalSpinning, setTotalSpinning] = useState(userNumSpin ?? 0);
+  const [totalJoinSpinning, setTotalJoinSpinning] = useState(numberPlayerJoin ?? 0);
+  const [totalScore, setTotalScore] = useState(0);
+  const [prizeNumber, setPrizeNumber] = useState(0);
+  // console.log(data);
 
   const handleSpinClick = () => {
-    const newPrizeNumber = Math.floor(Math.random() * data.length)
-    setPrizeNumber(newPrizeNumber)
-    setMustSpin(true)
-    playSound(SOUND_EFFECT['SPIN_BUTTON']);
+    if (mustSpin) return;
+    const getResultOfSpinning = async () => {
+      try {
+        const res: TApiResponse<TResultWheelFortune> = await get(
+          `/api/wheel-fortune/spin-wheel`,
+          true
+        )
+        if (res.response) {
+          setPrizeNumber(res.response.prizeNumber);
+          setJscore(res.response.jackpotScore);
+          setTotalSpinning(res.response.numberSpin);
+          setTotalJoinSpinning(res.response.numberJoinSpinning);
+          setTotalScore(res.response.score);
+          setResultSpinning(res.response);
+          setMustSpin(true)
+          playSound(SOUND_EFFECT['SPIN_BUTTON']);
+          onShow();
+        }
+      } catch (error) {
+        alert('Không đủ số lượng quay')
+        console.log(error)
+      }
+    }
+    getResultOfSpinning();
+    console.log(prizeNumber);
   }
 
   return (
@@ -91,31 +116,39 @@ const WheelOfFortune: FC<WheelProps> = () => {
           innerBorderWidth={10}
           onStopSpinning={() => {
             setMustSpin(false);
-            setOpenJackpotModal(true);
-            playSound(SOUND_EFFECT['JACKPOT_CONGRATULATION']);
+            onHide();
+            setOpenJackpotModal(resultSpinning?.isJackpot ?? false);
           }}
           spinDuration={0.45}
         />
         <button className={styles.btnBuy} onClick={handleSpinClick}>SPIN</button>
       </div>
       <div style={{ width: '500px' }}>
-        <div>Số lượng điểm Jackpot</div>
-        <div>Tổng số người đã quay thưởng: 0</div>
-        <div>
+        <h3>Tổng số đã quay thưởng: {totalJoinSpinning}</h3>
+        <h4>Số lượng điểm Jackpot</h4>
+        <div className='d-flex rounded-20px align-items-center p-2 fw-medium fs-18px' >
           <AnimatedNumbers
             includeComma
-            animateToNumber={10000000}
-            fontStyle={{ fontSize: 100 }}
-            configs={[{"mass":1,"tension":140,"friction":126},{"mass":1,"tension":130,"friction":114},{"mass":1,"tension":150,"friction":112},{"mass":1,"tension":130,"friction":120}]}
+            animateToNumber={jscore}
+            fontStyle={{ fontSize: 50 }}
+            configs={[{ "mass": 1, "tension": 140, "friction": 126 }, { "mass": 1, "tension": 130, "friction": 114 }, { "mass": 1, "tension": 150, "friction": 112 }, { "mass": 1, "tension": 130, "friction": 120 }]}
           ></AnimatedNumbers>
+          <Image
+            alt="avatar"
+            src="/assets/quiwi-coin.png"
+            width="50"
+            height="50"
+            style={{ marginLeft: '5px' }}
+          ></Image>
         </div>
-        <div>Số lượt quay: 0</div>
+        <div>Số lượt quay: {totalSpinning}</div>
       </div>
       <JackspotModal
         onHide={() => {
           setOpenJackpotModal(false)
         }}
         showModal={openJackpotModal}
+        score={totalScore}
       />
     </div>
   )
