@@ -1,0 +1,8 @@
+.playerRow:hover {
+  background-color: #f8f9fa;
+  cursor: pointer;
+}
+
+.playerRow {
+  border: 1px solid #f8f9fa;
+}

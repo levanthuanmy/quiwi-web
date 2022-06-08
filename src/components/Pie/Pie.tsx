@@ -10,18 +10,18 @@ const Circle: FC<{
   colour: string
   pct: number
 }> = ({ colour, pct }) => {
-  const r = 70
+  const r = 48
   const circ = 2 * Math.PI * r
   const strokePct = ((100 - pct) * circ) / 100
   return (
     <circle
       className={styles.circle}
       r={r}
-      cx={100}
-      cy={100}
+      cx={132}
+      cy={64}
       fill="transparent"
       stroke={strokePct !== circ ? colour : ''} // remove colour as 0% sets full circumference
-      strokeWidth={'2rem'}
+      strokeWidth={'1em'}
       strokeDasharray={circ}
       strokeDashoffset={pct ? strokePct : 0}
       strokeLinecap="round"
@@ -51,9 +51,9 @@ const Pie: FC<{
 }> = ({ percentage, colour }) => {
   const pct = cleanPercentage(percentage)
   return (
-    <svg width={200} height={200}>
+    <svg width={128} height={128}>
       <g transform={`rotate(-90 ${'100 100'})`}>
-        <Circle colour="lightgrey" pct={0} />
+        <Circle colour="lightgrey" pct={100} />
         <Circle colour={colour} pct={pct} />
       </g>
       <Text percentage={pct} />

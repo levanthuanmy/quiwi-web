@@ -16,7 +16,7 @@ const HistoryGameRow: FC<{
   gameHistory: TGameHistory
 }> = ({ gameHistory }) => {
   return (
-    <tr className="">
+    <tr className="bg-light rounded-14px">
       <td
         className={classNames(
           styles.firstCell,
@@ -27,17 +27,13 @@ const HistoryGameRow: FC<{
           router.push(`/history/${gameHistory.id}`)
         }}
       >
-        <div
-          className={classNames(
-            'ps-3 py-3  fw-medium rounded-start-14px bg-light'
-          )}
-        >
+        <div className={classNames('ps-3 py-3  fw-medium rounded-start-14px')}>
           {gameHistory.quiz.title}
         </div>
       </td>
 
       <td className={classNames(styles.cell)}>
-        <div className={classNames('py-3 bg-light')}>
+        <div className={classNames('py-3')}>
           <span className="d-none d-lg-table-cell">
             {formatDate_HHmmDDMMMYYYY(gameHistory.createdAt)}
           </span>
@@ -48,21 +44,14 @@ const HistoryGameRow: FC<{
       </td>
 
       <td className={classNames(styles.cell)}>
-        <div
-          className={classNames(
-            'py-3 bg-light text-center',
-            styles.borderRadiusSm
-          )}
-        >
+        <div className={classNames('py-3  text-center', styles.borderRadiusSm)}>
           {GAME_MODE_MAPPING[gameHistory.mode] ?? 'Truyền Thống'}
         </div>
       </td>
       <td
         className={classNames(styles.cell, 'd-none d-lg-table-cell text-end ')}
       >
-        <div className={classNames('py-3 bg-light')}>
-          {gameHistory.players.length}
-        </div>
+        <div className={classNames('py-3 ')}>{gameHistory.players.length}</div>
       </td>
       <td className={classNames(styles.cell, 'd-none d-md-table-cell')}>
         <HistoryDropdownButton

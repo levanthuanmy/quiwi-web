@@ -3,10 +3,11 @@ import { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { Col, Container, Pagination, Row, Table } from 'react-bootstrap'
+import useSWR from 'swr'
 import DashboardLayout from '../../components/DashboardLayout/DashboardLayout'
 import { HistoryGameRow } from '../../components/HistoryGameRow/HistoryGameRow'
 import MyTabBar from '../../components/MyTabBar/MyTabBar'
-import { useAuth } from '../../hooks/useAuth/useAuth'
+import SearchBar from '../../components/SearchBar/SearchBar'
 import { get } from '../../libs/api'
 import {
   TApiResponse,
@@ -14,8 +15,6 @@ import {
   TPaginationResponse,
 } from '../../types/types'
 import styles from './HistoryPage.module.css'
-import useSWR from 'swr'
-import SearchBar from '../../components/SearchBar/SearchBar'
 
 require('dayjs/locale/vi')
 const tabs = [

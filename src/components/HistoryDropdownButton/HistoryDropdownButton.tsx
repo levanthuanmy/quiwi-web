@@ -16,7 +16,7 @@ const HistoryDropdownButton: FC<{
         className={classNames(
           styles.dropdown,
           isFromHistoryPage ? styles.borderRadius : '',
-          isFromHistoryPage ? 'bg-light' : '',
+       
           'py-3 m-0 text-end'
         )}
       >

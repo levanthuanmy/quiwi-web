@@ -19,7 +19,7 @@
 }
 
 .firstCell {
-  max-width: 16rem;
+  max-width: 14rem;
   text-overflow: unset;
 }
 
@@ -27,6 +27,7 @@
   vertical-align: middle;
   padding-left: 0 !important;
   padding-right: 0 !important;
+  height: 100%;
 }
 
 .borderRadiusSm {
@@ -36,7 +37,7 @@
 
 @media (min-width: 992px) {
   .firstCell {
-    min-width: 16rem;
+    min-width: 14rem;
   }
 }
 
