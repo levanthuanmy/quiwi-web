@@ -1,7 +1,10 @@
 import { useRouter } from 'next/router'
 import React, { FC } from 'react'
 import { Col, Row } from 'react-bootstrap'
-import IconQuestion from '../IconQuestion/IconQuestion'
+import IconQuestion, {
+  QuestionType,
+  questionTypeStyles,
+} from '../IconQuestion/IconQuestion'
 
 type AddingQuestionButtonsProps = {
   quizId: number
@@ -23,42 +26,19 @@ const AddingQuestionButtons: FC<AddingQuestionButtonsProps> = ({ quizId }) => {
     >
       <div className="fw-medium">Thêm câu hỏi mới</div>
       <Row className="mt-3">
-        <Col
-          xs="6"
-          sm="3"
-          className="d-flex flex-column align-items-center mb-3 mb-md-0"
-          onClick={() => handleAddingQuestionClick(`${mainRoute}?type=single`)}
-        >
-          <IconQuestion type="single" showTitle />
-        </Col>
-        <Col
-          xs="6"
-          sm="3"
-          className="d-flex flex-column align-items-center"
-          onClick={() =>
-            handleAddingQuestionClick(`${mainRoute}?type=multiple`)
-          }
-        >
-          <IconQuestion type="multiple" showTitle />
-        </Col>
-        <Col
-          xs="6"
-          sm="3"
-          className="d-flex flex-column align-items-center"
-          onClick={() => handleAddingQuestionClick(`${mainRoute}?type=fill`)}
-        >
-          <IconQuestion type="fill" showTitle />
-        </Col>
-        <Col
-          xs="6"
-          sm="3"
-          className="d-flex flex-column align-items-center"
-          onClick={() =>
-            handleAddingQuestionClick(`${mainRoute}?type=conjunction`)
-          }
-        >
-          <IconQuestion type="conjunction" showTitle />
-        </Col>
+        {Object.keys(questionTypeStyles).map((key) => (
+          <Col
+            key={key}
+            xs="6"
+            sm="3"
+            className="d-flex flex-column align-items-center mb-3"
+            onClick={() =>
+              handleAddingQuestionClick(`${mainRoute}?type=${key}`)
+            }
+          >
+            <IconQuestion type={key as QuestionType} showTitle />
+          </Col>
+        ))}
       </Row>
     </div>
   )

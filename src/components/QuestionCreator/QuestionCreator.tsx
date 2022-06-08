@@ -56,8 +56,8 @@ const QuestionCreator: FC<QuestionCreatorProps> = ({
   const [fillAnswers, setFillAnswers] = useState<string[]>([])
   const [answers, setAnswers] = useState<TAnswer[]>([
     { ...defaultAnswer, orderPosition: 0 },
-    { ...defaultAnswer, orderPosition: 1 },
-    { ...defaultAnswer, orderPosition: 2 },
+    // { ...defaultAnswer, orderPosition: 1 },
+    // { ...defaultAnswer, orderPosition: 2 },
   ])
   const [newQuestion, setNewQuestion] = useState<TQuestion>(defaultQuestion)
   const type: QuestionType = isEditQuestion.isEdit
@@ -124,8 +124,16 @@ const QuestionCreator: FC<QuestionCreatorProps> = ({
       const cloneAnswers = [...answers]
       cloneAnswers.splice(index, 1)
 
-      for (let i = 0; i < cloneAnswers.length; i++) {
-        cloneAnswers[i].orderPosition = i
+      if (type === 'single' || type === 'multiple') {
+        for (let i = 0; i < cloneAnswers.length; i++) {
+          cloneAnswers[i].orderPosition = i
+        }
+      }
+
+      if (type === 'conjunction') {
+        if (answers[index].isCorrect) {
+          setCorrectIndexes((prev) => prev.filter((item) => !(item === index)))
+        }
       }
 
       setAnswers(cloneAnswers)

@@ -10,6 +10,7 @@ import MyInput from '../../MyInput/MyInput'
 import { defaultAnswer } from '../QuestionCreator.constants'
 import ItemConjunctionAnswer from '../ItemConjunctionAnswer/ItemConjunctionAnswer'
 import { ANSWER_COLORS } from '../../../utils/constants'
+import classNames from 'classnames'
 
 const AnswerEditorSection: FC<{
   type: QuestionType
@@ -159,21 +160,40 @@ const AnswerEditorSection: FC<{
                     correctIndexes={correctIndexes}
                     setCorrectIndexes={setCorrectIndexes}
                     setConjunctionAnswers={setAnswers}
+                    onRemove={() => removeAnswerAtIndex(key)}
                   />
                 </Col>
               ))}
               {answers.length < 10 && (
-                <Col
-                  xs="auto"
-                  className="my-auto"
-                  onClick={() =>
-                    setAnswers((prev) => [
-                      ...prev,
-                      { ...defaultAnswer, orderPosition: prev.length },
-                    ])
-                  }
-                >
-                  <div className="bi bi-plus-circle-fill fs-1 mb-0 text-primary cursor-pointer" />
+                <Col xs="auto" className="my-auto">
+                  <div
+                    className="bi bi-plus-circle-fill fs-24px mb-0 text-primary cursor-pointer d-flex align-items-center gap-2 pb-3"
+                    onClick={() =>
+                      setAnswers((prev) => [
+                        ...prev,
+                        { ...defaultAnswer, orderPosition: prev.length },
+                      ])
+                    }
+                  >
+                    <span className="fs-18px">Thêm lựa chọn</span>
+                  </div>
+                  <div
+                    className="bi bi-plus-circle-fill fs-24px mb-0 text-secondary cursor-pointer d-flex align-items-center gap-2"
+                    onClick={() => {
+                      const _ans: TAnswer[] = [
+                        ...answers,
+                        {
+                          ...defaultAnswer,
+                          isCorrect: true,
+                          type: '21PLHDR',
+                        },
+                      ]
+                      setAnswers(_ans)
+                      setCorrectIndexes((prev) => [...prev, _ans.length - 1])
+                    }}
+                  >
+                    <span className="fs-18px">Thêm từ đệm</span>
+                  </div>
                 </Col>
               )}
             </Row>
@@ -182,13 +202,17 @@ const AnswerEditorSection: FC<{
               {correctIndexes.map((item, key) => (
                 <Col key={key} xs="auto" className="mb-3">
                   <div
-                    className="rounded-pill px-3 py-1 text-white"
+                    className={classNames('rounded-pill px-3 py-1 text-white', {
+                      'border border-5': answers[item].type === '21PLHDR',
+                    })}
                     style={{
                       backgroundColor:
-                        ANSWER_COLORS[key % ANSWER_COLORS.length],
+                        answers[item].type === '21PLHDR'
+                          ? 'gray'
+                          : ANSWER_COLORS[key % ANSWER_COLORS.length],
                     }}
                   >
-                    {answers[item].answer}
+                    {answers[item]?.answer}
                   </div>
                 </Col>
               ))}

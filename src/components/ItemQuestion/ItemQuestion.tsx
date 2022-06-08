@@ -139,6 +139,8 @@ const ItemQuestion: FC<ItemQuestionProps> = ({
                     className={classNames('bi bi-circle-fill me-2', {
                       'text-danger': !answer.isCorrect,
                       'text-primary': answer.isCorrect,
+                      'text-secondary':
+                        answer.isCorrect && answer.type === '21PLHDR',
                     })}
                   />
                   <div>

@@ -10,12 +10,14 @@ const ItemConjunctionAnswer: FC<{
   setCorrectIndexes: Dispatch<SetStateAction<number[]>>
   currentIndex: number
   setConjunctionAnswers: Dispatch<SetStateAction<TAnswer[]>>
+  onRemove: Function
 }> = ({
   correctIndexes,
   setCorrectIndexes,
   currentIndex,
   setConjunctionAnswers,
   conjunctionAnswers,
+  onRemove,
 }) => {
   const currentCorrectIndex = useMemo(() => {
     if (conjunctionAnswers[currentIndex].isCorrect) {
@@ -29,7 +31,10 @@ const ItemConjunctionAnswer: FC<{
       const newAnswer: TAnswer = {
         ...conjunctionAnswers[currentIndex],
         answer: e.target.value,
-        type: '10TEXT',
+        type:
+          conjunctionAnswers[currentIndex].type === '21PLHDR'
+            ? '21PLHDR'
+            : '10TEXT',
       }
 
       editAnswer(newAnswer)
@@ -55,7 +60,12 @@ const ItemConjunctionAnswer: FC<{
         <QuestionActionButton
           iconClassName="bi bi-check-lg"
           className={classNames('me-2', {
-            'bg-primary text-white': currentCorrectIndex !== -1,
+            'bg-primary text-white':
+              currentCorrectIndex !== -1 &&
+              conjunctionAnswers[currentIndex].type !== '21PLHDR',
+            'bg-secondary text-white':
+              currentCorrectIndex !== -1 &&
+              conjunctionAnswers[currentIndex].type === '21PLHDR',
             'bg-white text-black': currentCorrectIndex === -1,
           })}
           title={
@@ -84,7 +94,7 @@ const ItemConjunctionAnswer: FC<{
         <QuestionActionButton
           iconClassName="bi bi-trash"
           className="me-2 bg-danger text-white"
-          // onClick={onRemove}
+          onClick={() => onRemove()}
         />
       </div>
       <Form.Control

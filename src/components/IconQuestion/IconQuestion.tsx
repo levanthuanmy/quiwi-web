@@ -2,7 +2,13 @@ import classNames from 'classnames'
 import React, { FC } from 'react'
 import styles from './IconQuestion.module.css'
 
-export type QuestionType = 'single' | 'multiple' | 'fill' | 'conjunction'
+export type QuestionType =
+  | 'single'
+  | 'multiple'
+  | 'fill'
+  | 'conjunction'
+  // | 'modernFill'
+  | 'essay'
 
 export const questionTypeStyles: Record<
   QuestionType,
@@ -27,6 +33,16 @@ export const questionTypeStyles: Record<
     icon: 'bi bi-reception-1',
     colorClassName: 'bg-success',
     title: 'Nối từ',
+  },
+  // modernFill: {
+  //   icon: 'bi bi-grid-3x2-gap',
+  //   colorClassName: 'bg-danger',
+  //   title: 'Điền từ kiểu mới',
+  // },
+  essay: {
+    icon: 'bi bi-justify-left',
+    colorClassName: 'bg-secondary',
+    title: 'Trả lời tự do',
   },
 }
 

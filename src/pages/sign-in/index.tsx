@@ -98,7 +98,7 @@ const SignInPage: NextPage = () => {
       </div>
 
       <MyModal
-        show={error.length > 0}
+        show={error?.length > 0}
         onHide={() => setError('')}
         size="sm"
         header={
