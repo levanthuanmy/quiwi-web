@@ -6,7 +6,11 @@ import { Collapse } from 'react-bootstrap'
 import { useAuth } from '../../hooks/useAuth/useAuth'
 import { SocketManager } from '../../hooks/useSocket/socketManager'
 import { get } from '../../libs/api'
-import { TNotification } from '../../types/types'
+import {
+  TApiResponse,
+  TNotification,
+  TPaginationResponse,
+} from '../../types/types'
 import { SOUND_EFFECT } from '../../utils/constants'
 import { playSound } from '../../utils/helper'
 import MyButton from '../MyButton/MyButton'
@@ -46,6 +50,20 @@ const NavBar: FC<NavBarProps> = ({
       } else {
         socket.connect('NOTIFICATION')
       }
+
+      const getInitNotifications = async () => {
+        try {
+          const res = await get<
+            TApiResponse<TPaginationResponse<TNotification>>
+          >(`/api/notification`, true)
+          setNotifications(res.response.items)
+          setNotiCount(countUnread(res.response.items))
+        } catch (error) {
+          console.log('getInitNotifications - error', error)
+        }
+      }
+
+      getInitNotifications()
     }
   }, [authContext.isAuth])
 
@@ -59,6 +77,16 @@ const NavBar: FC<NavBarProps> = ({
       })
     }
   }, [notificationSocket])
+
+  const countUnread = (notifications: TNotification[]) => {
+    let count = 0
+    for (let noti of notifications) {
+      if (!noti.isRead) {
+        count++
+      }
+    }
+    return count
+  }
 
   const onReadNotify = async (notif: TNotification, index: number) => {
     try {

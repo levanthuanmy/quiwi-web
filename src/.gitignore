@@ -40,4 +40,4 @@ yarn-error.log*
 #idea
 /.idea/
 
-/yarn.lock
+yarn.lock
