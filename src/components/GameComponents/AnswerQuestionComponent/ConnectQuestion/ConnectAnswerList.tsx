@@ -65,7 +65,8 @@ export const ConnectAnswerList: FC<TextAnswerListProps> = (props: TextAnswerList
             key={idx}
             className={cn(`d-flex align-items-center col-auto`,
               styles.answer,
-              props.displayDecor ? styles.selected : styles.selection)}
+              props.displayDecor ? styles.selected : styles.selection,
+              !props.showAnswer ? "cursor-pointer" : "")}
             style={{
               backgroundColor: getColorFor(idx, option),
               borderWidth: (props.borderOption && props.borderOption.has(option)) ? "4px" : "0"
@@ -77,7 +78,9 @@ export const ConnectAnswerList: FC<TextAnswerListProps> = (props: TextAnswerList
               }
             }}
           >
-            <div className={cn(styles.word, "fw-medium")} style={{color: getTextColor(option)}}>{option.answer}</div>
+            <div className={cn(styles.word, "fw-medium", {
+              "cursor-pointer":!props.showAnswer
+            })} style={{color: getTextColor(option)}}>{option.answer}</div>
           </Col>
         })
       }
