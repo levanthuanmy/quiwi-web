@@ -16,10 +16,10 @@ import useScreenSize from "../../../hooks/useScreenSize/useScreenSize";
 
 type AnswerBoardProps = {
   className?: string
-  isShowHostControl:boolean
+  isShowHostControl: boolean
 }
 
-const AnswerBoard: FC<AnswerBoardProps> = ({ className,isShowHostControl }) => {
+const AnswerBoard: FC<AnswerBoardProps> = ({className, isShowHostControl}) => {
   const {
     gameSession,
     saveGameSession,
@@ -157,14 +157,14 @@ const AnswerBoard: FC<AnswerBoardProps> = ({ className,isShowHostControl }) => {
 
   const goToNextQuestion = () => {
     if (!gameSession) return
-    const msg = { invitationCode: gameSession.invitationCode }
+    const msg = {invitationCode: gameSession.invitationCode}
     gameSocket()?.emit('next-question', msg)
     console.log(msg)
   }
 
   const viewRanking = () => {
     if (!gameSession) return
-    const msg = { invitationCode: gameSession.invitationCode }
+    const msg = {invitationCode: gameSession.invitationCode}
     gameSocket()?.emit('view-ranking', msg)
     setIsShowNext(true)
   }
@@ -181,14 +181,21 @@ const AnswerBoard: FC<AnswerBoardProps> = ({ className,isShowHostControl }) => {
     }
 
     if (answer instanceof Set) {
-      console.log('=>(AnswerBoard.tsx:174) submit selection')
+      console.log('=>(AnswerBoard.tsx:174) submit set')
       msg.answerIds = Array.from(answer)
+    } else if (answer instanceof Array) {
+      console.log('=>(AnswerBoard.tsx:174) submit array')
+      msg.answerIds = answer
     } else if (typeof answer === 'string') {
       console.log('=>(AnswerBoard.tsx:174) submit text')
       msg.answer = answer
+    } else {
+      console.log("=>(AnswerBoard.tsx:191) not supported");
+      return;
     }
     setIsSubmitted(true)
-    gameSocket()?.emit('submit-answer', msg)
+    if (msg.answer || msg.answerIds)
+      gameSocket()?.emit('submit-answer', msg)
   }
 
   const exitRoom = () => {
@@ -206,8 +213,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({ className,isShowHostControl }) => {
         isSubmitted
       )
     return answerSectionFactory.initAnswerSectionForType(
-      // currentQuestion.type,
-      "21ODMUL",
+      currentQuestion.type,
       countDown,
       currentQuestion,
       handleSubmitAnswer
@@ -216,29 +222,31 @@ const AnswerBoard: FC<AnswerBoardProps> = ({ className,isShowHostControl }) => {
 
   const renderHostControlSystem = () => {
     return (
-      <Fade in={isShowHostControl}>
-        <div className={cn(styles.hostControl)}>
-          <GameButton
-            iconClassName="bi bi-x-circle-fill"
-            className={classNames('text-white fw-medium')}
-            title="Thoát"
-            onClick={exitRoom}
-          />
-          <GameButton
-            isEnable={countDown <= 0}
-            iconClassName="bi bi-bar-chart"
-            className={classNames('text-white fw-medium')}
-            title={'Xếp hạng'}
-            onClick={viewRanking}
-          />
-          <GameButton
-            isEnable={isShowNext}
-            iconClassName="bi bi-arrow-right-circle-fill"
-            className={classNames('text-white fw-medium')}
-            title="Câu sau"
-            onClick={goToNextQuestion}
-          />
-        </div>
+      <Fade in={isShowHostControl || fromMedium}>
+        {(isShowHostControl || fromMedium) ?
+          (<div className={cn(styles.hostControl)}>
+            <GameButton
+              iconClassName="bi bi-x-circle-fill"
+              className={classNames('text-white fw-medium')}
+              title="Thoát"
+              onClick={exitRoom}
+            />
+            <GameButton
+              isEnable={countDown <= 0}
+              iconClassName="bi bi-bar-chart"
+              className={classNames('text-white fw-medium')}
+              title={'Xếp hạng'}
+              onClick={viewRanking}
+            />
+            <GameButton
+              isEnable={isShowNext}
+              iconClassName="bi bi-arrow-right-circle-fill"
+              className={classNames('text-white fw-medium')}
+              title="Câu sau"
+              onClick={goToNextQuestion}
+            />
+          </div>) : <></>
+        }
       </Fade>
     )
   }
@@ -259,7 +267,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({ className,isShowHostControl }) => {
               'shadow px-3 pt-2 bg-white mb-2 rounded-10px',
               styles.questionTitle
             )}
-            dangerouslySetInnerHTML={{ __html: currentQuestion.question }}
+            dangerouslySetInnerHTML={{__html: currentQuestion.question}}
           />
         ) : (
           <></>

@@ -2,30 +2,38 @@
     height: 40%;
     max-height: 40%;
     border-radius: 16px;
-    padding-left: 10px;
-    padding-right: 10px;
-    padding-bottom: 10px;
+    padding: 10px;
+    gap: 12px;
 }
 
 .selectedBox {
-    max-height: 50%;
-    min-height: 20%;
+    /*margin: 16px;*/
+    padding: 8px;
+    border-radius: 10px;
+    /*max-height: 50%;*/
+    height: 50%;
+    overflow-y: auto;
+}
+
+.selectedOption {
+    /*height: 100%;*/
+    /*flex-grow: 1;*/
+    /*overflow-y: scroll;*/
 }
 
 .selectionBox {
     flex-grow: 1;
+    display: flex;
+    align-items: center;
+    overflow-y: auto;
 }
 
 .availableOption {
     /*max-height: 50%;*/
-    flex-grow: 1;
-    overflow-y: scroll;
+    /*flex-grow: 1;*/
+    /*overflow-y: scroll;*/
 }
 
-.selectedOption {
 
-    flex-grow: 1;
-    overflow-y: scroll;
-}
 
 

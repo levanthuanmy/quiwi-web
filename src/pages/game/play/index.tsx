@@ -13,8 +13,9 @@ import {Collapse, Fade} from "react-bootstrap";
 const GamePage: NextPage = () => {
   const {gameSession, isHost} = useGameSession()
   const [isShowChat, setIsShowChat] = useState<boolean>(false)
-  const [isShowHostControl, setIsShowHostControl] = useState<boolean>(false)
+  const [isShowHostControl, setIsShowHostControl] = useState<boolean>(true)
   const {fromMedium} = useScreenSize()
+
   const fabs: FABAction[] = [{
     label: "Khung chat",
     icon: "bi bi-chat-dots-fill",
