@@ -4,6 +4,7 @@ import styles from "./ConnectQuestion.module.css"
 import classNames from "classnames";
 import {ConnectAnswerList} from "./ConnectAnswerList";
 import {getEmptyImage} from "react-dnd-html5-backend";
+import {func} from "prop-types";
 
 type ConnectQuestionProps = {
   className?: string
@@ -40,11 +41,15 @@ const ConnectQuestion: FC<ConnectQuestionProps> = ({
   const [displayAnswer, setDisplayAnswer] = useState<TAnswer[]>([])
   const [orderedCorrectAnswer, setOrderedCorrectAnswer] = useState<TAnswer[]>([])
 
-  function clearState() {
-
-  }
+  useEffect(() => {
+    prepareData()
+  }, []);
 
   useEffect(() => {
+    prepareData()
+  }, [question]);
+
+  function prepareData() {
     if (question?.questionAnswers) {
       //Lựa chọn để click
       setOptions([...question.questionAnswers.filter(item => item.type != "21PLHDR")])
@@ -72,7 +77,7 @@ const ConnectQuestion: FC<ConnectQuestionProps> = ({
       setCorrectAnswerSet(new Set())
       setDisplayAnswer([...displayList])
     }
-  }, [question]);
+  }
 
   useEffect(() => {
     if (!isHost && isTimeOut && !isSubmitted) {
