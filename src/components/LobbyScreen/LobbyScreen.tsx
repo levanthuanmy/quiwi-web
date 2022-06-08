@@ -105,7 +105,7 @@ const LobbyScreen: FC<LobbyScreenProps> = ({ invitationCode, isHost }) => {
 
   const copyInvitationCode = () => {
     navigator?.clipboard?.writeText(
-      `${window.location.host}/lobby/join?invitationCode=${invitationCode}`
+      `http://${window.location.host}/lobby/join?invitationCode=${invitationCode}`
     )
     console.log(
       'copyInvitationCode - ',
