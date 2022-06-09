@@ -1,7 +1,7 @@
 import { NextPage } from 'next'
 import { useRouter } from 'next/router'
-import { useState, useEffect } from 'react'
-import { Card, Col, Container, Nav, Row } from 'react-bootstrap'
+import { useEffect, useState } from 'react'
+import { Col, Container, Modal, Row } from 'react-bootstrap'
 
 import useSWR from 'swr'
 import DashboardLayout from '../../../components/DashboardLayout/DashboardLayout'
@@ -12,14 +12,11 @@ import { TApiResponse, TGameHistory } from '../../../types/types'
 import { GAME_MODE_MAPPING } from '../../../utils/constants'
 import { formatDate_HHmmDDMMMYYYY } from '../../../utils/helper'
 
-import { calculateScorePercentages } from '../../../utils/exportToExcel'
-import Pie from '../../../components/Pie/Pie'
-import _ from 'lodash'
-import MyButton from '../../../components/MyButton/MyButton'
-import MyTabBar from '../../../components/MyTabBar/MyTabBar'
-import SummaryTab from '../../../components/DetailedHistoryComponents/SummaryTab/SummaryTab'
 import PlayerTab from '../../../components/DetailedHistoryComponents/PlayerTab.tx/PlayerTab'
 import QuestionTab from '../../../components/DetailedHistoryComponents/QuestionTab/QuesionTab'
+import SummaryTab from '../../../components/DetailedHistoryComponents/SummaryTab/SummaryTab'
+import MyTabBar from '../../../components/MyTabBar/MyTabBar'
+import MyModal from '../../../components/MyModal/MyModal'
 
 const DetailedHistoryPage: NextPage = () => {
   const router = useRouter()
@@ -29,7 +26,6 @@ const DetailedHistoryPage: NextPage = () => {
       title: string
     }[]
   >([])
-  const [conrrectPercentages, setConrrectPercentages] = useState({})
   const { id } = router.query
 
   const { data, isValidating } = useSWR<TApiResponse<TGameHistory>>(
@@ -37,21 +33,27 @@ const DetailedHistoryPage: NextPage = () => {
     get
   )
 
+  const [showError, setShowError] = useState('')
+
   useEffect(() => {
-    if (data) {
-      setConrrectPercentages(calculateScorePercentages(data.response))
-      setTabs([
-        {
-          title: 'Tổng quan',
-        },
-        {
-          title: `Người chơi (${data.response?.players.length})`,
-        },
-        {
-          title: `Câu hỏi (${data.response?.quiz.questions.length})`,
-        },
-      ])
+    if (data){
+      if (data.response) {
+        setTabs([
+          {
+            title: 'Tổng quan',
+          },
+          {
+            title: `Người chơi (${data.response?.players.length})`,
+          },
+          {
+            title: `Câu hỏi (${data.response?.quiz.questions.length})`,
+          },
+        ])
+      } else  {
+        setShowError("Không tìm thấy lịch sử")
+      }
     }
+   
   }, [data])
 
   return (
@@ -111,6 +113,23 @@ const DetailedHistoryPage: NextPage = () => {
         ) : (
           <Loading />
         )}
+        <MyModal
+          onHide={() => {
+            setShowError('')
+          }}
+          show={showError.length > 0}
+          size="sm"
+          inActiveButtonTitle="Quay lại"
+          inActiveButtonCallback={() => {
+            setShowError('')
+            router.push('/history')
+          }}
+          header={
+            <Modal.Title className={'text-danger'}>Thông báo</Modal.Title>
+          }
+        >
+          <div>{showError}</div>
+        </MyModal>
       </div>
     </DashboardLayout>
   )
