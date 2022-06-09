@@ -1,33 +1,35 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import classNames from 'classnames'
 import _ from 'lodash'
-import {useRouter} from 'next/router'
-import {FC, memo, useEffect, useState} from 'react'
-import {useCommunitySocket} from '../../../hooks/useCommunitySocket/useCommunitySocket'
-import {useGameSession} from '../../../hooks/useGameSession/useGameSession'
-import {useLocalStorage} from '../../../hooks/useLocalStorage/useLocalStorage'
-import {TQuestion, TStartQuizResponse, TUser} from '../../../types/types'
-import {JsonParse} from '../../../utils/helper'
-import {
-  AnswerSectionFactory
-} from '../../GameComponents/AnswerQuestionComponent/AnswerSectionFactory/AnswerSectionFactory'
+import { useRouter } from 'next/router'
+import { FC, memo, useEffect, useRef, useState } from 'react'
+import { useCommunitySocket } from '../../../hooks/useCommunitySocket/useCommunitySocket'
+import { useGameSession } from '../../../hooks/useGameSession/useGameSession'
+import { useLocalStorage } from '../../../hooks/useLocalStorage/useLocalStorage'
+import useScreenSize from '../../../hooks/useScreenSize/useScreenSize'
+import { TQuestion, TStartQuizResponse, TUser } from '../../../types/types'
+import { JsonParse } from '../../../utils/helper'
+import { AnswerSectionFactory } from '../../GameComponents/AnswerQuestionComponent/AnswerSectionFactory/AnswerSectionFactory'
 import MoreButton from '../../GameComponents/MoreButton/MoreButton'
-import {QuestionMedia} from '../../GameComponents/QuestionMedia/QuestionMedia'
+import { QuestionMedia } from '../../GameComponents/QuestionMedia/QuestionMedia'
 import styles from './AnswerBoard.module.css'
-import {Image} from "react-bootstrap";
 
 type AnswerBoardProps = {
   className?: string
   questionId: number | 0
 }
 
-const AnswerBoard: FC<AnswerBoardProps> = ({className, questionId}) => {
-  const {gameSession, saveGameSession, clearGameSession, gameSocket} =
-    useGameSession()
-  const {socket} = useCommunitySocket()
+const AnswerBoard: FC<AnswerBoardProps> = ({ className, questionId }) => {
+  const {
+    gameSession,
+    saveGameSession,
+    clearGameSession,
+    gameSocket,
+    getQuestionWithID,
+  } = useGameSession()
+  const { socket } = useCommunitySocket()
 
   const [lsUser] = useLocalStorage('user', '')
-  const [isHost, setIsHost] = useState<boolean>(false)
   const [currentQID, setCurrentQID] = useState<number>(-1)
 
   const router = useRouter()
@@ -42,6 +44,8 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, questionId}) => {
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false)
 
   const [numSubmission, setNumSubmission] = useState<number>(0)
+  const { fromMedium } = useScreenSize()
+  const intervalRef = useRef<NodeJS.Timer | null>(null)
 
   let answerSectionFactory: AnswerSectionFactory
 
@@ -51,53 +55,30 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, questionId}) => {
 
   useEffect(() => {
     if (!gameSession) return
-    const user: TUser = JsonParse(lsUser)
-    setIsHost(user.id === gameSession.hostId)
     if (currentQID < 0) {
-      setCurrentQID(0)
-    }
-  }, [gameSession])
-
-  //  mỗi lần nhảy câu mới thì gọi
-  useEffect(() => {
-    const question = gameSession?.quiz?.questions[currentQID]
-    console.log(
-      '=>(AnswerBoard.tsx:61) gameSession?.quiz?.questions',
-      gameSession?.quiz?.questions
-    )
-    if (question) {
-      if (question.duration > 0) {
-        let endDate = new Date()
-        endDate.setSeconds(endDate.getSeconds() + question.duration)
-        let endTime = Math.round(endDate.getTime())
-        setEndTime(endTime)
-        setCurrentQuestion(question)
+      const firstQuestion = getQuestionWithID(0)
+      if (firstQuestion) {
+        setCurrentQID(0)
+        displayQuestion(firstQuestion)
       }
     }
-  }, [currentQID])
+  }, [gameSession])
 
   // nhảy mỗi lần countdown
   useEffect(() => {
     if (!currentQuestion) return
     setCountDown(currentQuestion.duration)
-    const interval = setInterval(() => {
+    intervalRef.current = setInterval(() => {
       let curr = Math.round(new Date().getTime())
       let _countDown = Math.ceil((endTime - curr) / 1000)
       setCountDown(_countDown)
 
       if (_countDown <= 0) {
-        clearInterval(interval)
+        if (intervalRef.current) clearInterval(intervalRef.current)
       }
     }, 1000)
-  }, [endTime])
-
-  useEffect(() => {
-  }, [isSubmitted])
-
-  const displayQuestionId = (questionId: number) => {
     resetGameState()
-    setCurrentQID(questionId)
-  }
+  }, [endTime])
 
   const resetGameState = () => {
     setIsSubmitted(false)
@@ -116,14 +97,18 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, questionId}) => {
     socket.on('next-question', (data) => {
       setIsShowNext(false)
 
-      // saveGameSession({
-      //   ...JsonParse(localStorage.getItem('game-session')),
-      //   players: [...rankingData],
-      // } as TStartQuizResponse)
-      // setRoomStatus('Đang trả lời câu hỏi')
+      saveGameSession({
+        ...JsonParse(localStorage.getItem('game-session')),
+      } as TStartQuizResponse)
+
       console.log('next-question', data)
-      if (currentQID != data.currentQuestionIndex) {
-        displayQuestionId(data.currentQuestionIndex)
+
+      const currentQuestionId = data.currentQuestionIndex as number
+      const newQuestion = data.question as TQuestion
+
+      if (currentQID != currentQuestionId) {
+        setCurrentQID(currentQuestionId)
+        displayQuestion(newQuestion)
       }
     })
 
@@ -140,6 +125,12 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, questionId}) => {
           _.get(data, 'gameRoundStatistic'),
         ],
       } as TStartQuizResponse)
+
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current)
+        intervalRef.current = null
+        setCountDown(0)
+      }
     })
 
     socket.off('timeout')
@@ -155,31 +146,38 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, questionId}) => {
   }
 
   const goToNextQuestion = () => {
-    if (!gameSession?.quiz?.questions) return
-    if (currentQID >= gameSession?.quiz?.questions.length - 1) {
-      return
-    }
-    setIsShowNext(false)
-    const msg = {invitationCode: gameSession.invitationCode}
+    if (!gameSession) return
+    const msg = { invitationCode: gameSession.invitationCode }
     socket?.emit('next-question', msg)
     console.log(msg)
   }
 
-  const handleSubmitAnswer = (answerSet: Set<any>) => {
+  const handleSubmitAnswer = (answer: any) => {
     if (!gameSession) return
     if (isSubmitted) return
-    if (isHost) return
-    console.log('=>(AnswerBoard.tsx:183) answerSet', Array.from(answerSet))
-    const msg = {
+    let msg = {
       invitationCode: gameSession.invitationCode,
-      answerIds: Array.from(answerSet),
       nickname: gameSession.nickName,
+      answerIds: [] as number[],
+      answer: '',
     }
 
+    if (answer instanceof Set) {
+      console.log('=>(AnswerBoard.tsx:174) submit set')
+      msg.answerIds = Array.from(answer)
+    } else if (answer instanceof Array) {
+      console.log('=>(AnswerBoard.tsx:174) submit array')
+      msg.answerIds = answer
+    } else if (typeof answer === 'string') {
+      console.log('=>(AnswerBoard.tsx:174) submit text')
+      msg.answer = answer
+    } else {
+      console.log('=>(AnswerBoard.tsx:191) not supported')
+      return
+    }
     setIsSubmitted(true)
-    socket?.emit('submit-answer', msg)
+    if (msg.answer || msg.answerIds) socket?.emit('submit-answer', msg)
   }
-
   const exitRoom = () => {
     // dùng clear game session là đủ
     clearGameSession()
@@ -200,6 +198,20 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, questionId}) => {
       currentQuestion,
       handleSubmitAnswer
     )
+  }
+
+  const displayQuestion = (question: TQuestion) => {
+    if (question) {
+      if (question.duration > 0) {
+        // chạy cái này sớm nhất có thể thui
+        setCurrentQuestion(question)
+        // rồi mới tính toán để timeout
+        let endDate = new Date()
+        endDate.setSeconds(endDate.getSeconds() + question.duration)
+        let endTime = Math.round(endDate.getTime())
+        setEndTime(endTime)
+      }
+    }
   }
 
   const renderHostControlSystem = () => {
@@ -233,25 +245,27 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, questionId}) => {
           styles.container
         )}
       >
-        <pre
-          className={classNames(
-            'fs-4 shadow-sm fw-semiBold p-2 px-3 bg-white mb-2',
-            styles.questionTitle
-          )}
-        >
-          {currentQuestion?.question}
-        </pre>
+        {currentQuestion?.question ? (
+          <div
+            className={classNames(
+              'shadow px-3 pt-2 bg-white mb-2 rounded-10px',
+              styles.questionTitle
+            )}
+            dangerouslySetInnerHTML={{ __html: currentQuestion.question }}
+          />
+        ) : (
+          <></>
+        )}
 
         <QuestionMedia
-          timeout={countDown}
+          //timeout sẽ âm để tránh 1 số lỗi, đừng sửa chỗ này
+          timeout={countDown > 0 ? countDown : 0}
           media={currentQuestion?.media ?? null}
           numSubmission={numSubmission}
           key={currentQID}
+          className={styles.questionMedia}
         />
-
         {currentQuestion?.question && renderAnswersSection()}
-
-        {/* này chắc là thêm state current tab rồi render component theo state điều kiện nha, check active tab theo state luôn  */}
       </div>
     </>
   )

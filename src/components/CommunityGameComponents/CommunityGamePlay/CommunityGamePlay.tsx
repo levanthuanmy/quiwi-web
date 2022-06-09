@@ -33,8 +33,6 @@ const CommunityGamePlay: NextPage = () => {
               questionId={Number(questionId) ?? 0}
               className="flex-grow-1"
             />
-            {/* <EmojiBar className={styles.emojiBar} />
-            <EmojiBar className={styles.emojiBar} /> */}
           </div>
         </div>
       </div>

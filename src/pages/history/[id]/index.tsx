@@ -29,7 +29,7 @@ const DetailedHistoryPage: NextPage = () => {
   const { id } = router.query
 
   const { data, isValidating } = useSWR<TApiResponse<TGameHistory>>(
-    [`/api/games/hosted-game-history/${id}`, true],
+    [`/api/games/game-history/${id}`, true],
     get
   )
 
