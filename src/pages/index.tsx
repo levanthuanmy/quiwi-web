@@ -26,7 +26,7 @@ const Home: NextPage = () => {
   const user = authContext.getUser()
   const popularParams = {
     filter: {
-      relations: ['questions', 'questions.questionAnswers', 'user'],
+      relations: ['questions', 'questions', 'user'],
 
       order: {
         numUpvotes: 'DESC',
@@ -43,7 +43,7 @@ const Home: NextPage = () => {
 
   const recentlyCreatedParams = {
     filter: {
-      relations: ['questions', 'questions.questionAnswers'],
+      relations: ['questions', 'questions.questionAnswers', 'user'],
       order: {
         createdAt: 'ASC',
       },
