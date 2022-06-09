@@ -17,6 +17,7 @@ import QuestionTab from '../../../components/DetailedHistoryComponents/QuestionT
 import SummaryTab from '../../../components/DetailedHistoryComponents/SummaryTab/SummaryTab'
 import MyTabBar from '../../../components/MyTabBar/MyTabBar'
 import MyModal from '../../../components/MyModal/MyModal'
+import Link from 'next/link'
 
 const DetailedHistoryPage: NextPage = () => {
   const router = useRouter()
@@ -36,7 +37,7 @@ const DetailedHistoryPage: NextPage = () => {
   const [showError, setShowError] = useState('')
 
   useEffect(() => {
-    if (data){
+    if (data) {
       if (data.response) {
         setTabs([
           {
@@ -49,11 +50,10 @@ const DetailedHistoryPage: NextPage = () => {
             title: `Câu hỏi (${data.response?.quiz.questions.length})`,
           },
         ])
-      } else  {
-        setShowError("Không tìm thấy lịch sử")
+      } else {
+        setShowError('Không tìm thấy lịch sử')
       }
     }
-   
   }, [data])
 
   return (
@@ -88,7 +88,11 @@ const DetailedHistoryPage: NextPage = () => {
 
                 <div className="ps-2 py-2">
                   Tổ chức bởi{' '}
-                  {data.response.host.name ?? data.response.host.username}
+                  <span className='fw-medium'>
+                    <Link href={`/users/${data.response.host.id}`}>
+                      {data.response.host.name ?? data.response.host.username}
+                    </Link>
+                  </span>
                 </div>
               </Col>
             </Row>

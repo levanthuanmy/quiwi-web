@@ -7,8 +7,7 @@ const PlayerTab: FC<{ game: TGameHistory }> = ({ game }) => {
   const getNumCorrectAnswersOfPlayer = (player: TDetailPlayer) => {
     let countCorrectAnswer = 0
     for (const gameRound of player.gameRounds) {
-      countCorrectAnswer +=
-        gameRound.score >= (gameRound.question?.score ?? 0) ? 1 : 0
+      countCorrectAnswer += gameRound.isCorrect ? 1 : 0
     }
 
     return (countCorrectAnswer / player.gameRounds.length) * 100

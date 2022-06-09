@@ -260,10 +260,7 @@ const getPlayerFinalScore = (player: TDetailPlayer, rank: number) => {
   let correctAnswer = 0
   const totalAnswers = player.gameRounds.length
   for (const gameRound of player.gameRounds) {
-    if (
-      gameRound.score >= (gameRound.question?.score ?? 0) ||
-      gameRound.score > 0
-    ) {
+    if (gameRound.isCorrect) {
       correctAnswer++
     }
   }
@@ -371,6 +368,12 @@ const getPlayerScoreForEachQuestion = (
     },
     {
       v: gameRound.score.toFixed(2),
+    },
+    {
+      v: gameRound.currentScore.toFixed(2),
+    },
+    {
+      v: gameRound.currentStreak,
     },
   ]
 
@@ -660,7 +663,7 @@ const getSheetForEachQuestion = (index: number, game: TGameHistory) => {
     { origin: 'A8' }
   )
 
-  const playersScoreForEachQuestionText = [
+  const playersScoreForEachQuestionText: any = [
     [
       {
         v: 'Kết quả trận đấu',
@@ -686,6 +689,12 @@ const getSheetForEachQuestion = (index: number, game: TGameHistory) => {
       {
         v: 'Điểm nhận được',
       },
+      {
+        v: 'Điểm hiện tại',
+      },
+      {
+        v: 'Streak hiện tại',
+      },
     ],
   ]
 
@@ -699,7 +708,6 @@ const getSheetForEachQuestion = (index: number, game: TGameHistory) => {
   XLSX.utils.sheet_add_aoa(ws, playersScoreForEachQuestionText, {
     origin: 'A13',
   })
-
   return ws
   // for (const ga)
 }

@@ -241,6 +241,10 @@ export type TGameRound = {
   answer?: string
   answerIds: number[]
   selectionAnswers: Record<string, TAnswer>
+  isCorrect: boolean
+  useItem: boolean
+  currentScore: number
+  currentStreak: number
 }
 
 export type TDetailPlayer = TPlayer & {
@@ -250,9 +254,6 @@ export type TDetailPlayer = TPlayer & {
 export type TGameHistory = {
   id: number
   nickName: string
-  gameMode: {
-    curIndexQuestion: number
-  }
   mode: string
   host: TUser
   hostId: number
@@ -265,6 +266,9 @@ export type TGameHistory = {
   gameRoundStatistics: TGameRoundStatistic[]
   createdAt: Date
   updatedAt: Date
+  endedAt: Date
+  time: number
+  isCommunityPlay: boolean
 }
 
 export type TViewResult = {
@@ -335,7 +339,6 @@ export type TUserWheelFortune = {
   userId: number
   numberSpin: number
 }
-
 
 export type TResultWheelFortune = {
   prizeNumber: number
