@@ -26,6 +26,7 @@
     "dayjs": "^1.11.2",
     "draft-js": "^0.11.7",
     "draftjs-to-html": "^0.9.1",
+    "exceljs": "^4.3.0",
     "firebase": "^9.7.0",
     "formik": "^2.2.9",
     "howler": "^2.2.3",

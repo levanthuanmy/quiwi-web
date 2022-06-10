@@ -47,6 +47,8 @@ const calculateScorePercentages = (game: TGameHistory) => {
   }
 }
 
+
+
 const generateOverviewInformation = (game: TGameHistory) => {
   const overviewWorkSheet: XLSX.WorkSheet = {}
   const merge = [

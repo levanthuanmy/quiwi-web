@@ -4,7 +4,8 @@ import { FC, useState } from 'react'
 import { Dropdown, Modal } from 'react-bootstrap'
 import { get } from '../../libs/api'
 import { TGameHistory } from '../../types/types'
-import { getExcelFile } from '../../utils/exportToExcel'
+import { getExcelFile } from '../../utils/exportToExcel2'
+import { formatDate_DDMMYYYY } from '../../utils/helper'
 import MyModal from '../MyModal/MyModal'
 import styles from './HistoryDropdownButton.module.css'
 
@@ -16,7 +17,10 @@ const HistoryDropdownButton: FC<{
   const router = useRouter()
   const deleteHistory = async () => {
     try {
-      const rs = await get(`/api/games/delete-game-lobby/${gameHistory.id}`,  true)
+      const rs = await get(
+        `/api/games/delete-game-lobby/${gameHistory.id}`,
+        true
+      )
       router.push('/history')
     } catch (error) {
       alert((error as Error).message)
@@ -52,7 +56,22 @@ const HistoryDropdownButton: FC<{
           <Dropdown.Item href={`/history`}>Xem các lịch sử khác</Dropdown.Item>
         )}
 
-        <Dropdown.Item onClick={() => getExcelFile(gameHistory)}>
+        <Dropdown.Item
+          onClick={async () => {
+            const buffer = await getExcelFile(gameHistory)
+
+            var blob = new Blob([buffer], {
+              type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            })
+            let a = document.createElement('a')
+            a.href = URL.createObjectURL(blob)
+            a.download = `${formatDate_DDMMYYYY(gameHistory.createdAt)} ${
+              gameHistory.quiz.title
+            }.xlsx`
+            a.click()
+            a.remove()
+          }}
+        >
           Tải xuống
         </Dropdown.Item>
         <Dropdown.Item onClick={() => setConfirmationModal(true)}>
@@ -70,13 +89,15 @@ const HistoryDropdownButton: FC<{
           deleteHistory()
         }}
         inActiveButtonTitle="Hủy bỏ"
-        inActiveButtonCallback={()=>{
+        inActiveButtonCallback={() => {
           setConfirmationModal(false)
         }}
         size="sm"
         header={<Modal.Title className={'text-primary'}>Xác nhận</Modal.Title>}
       >
-        <div className='text-center fw-medium'>Bạn có chắc xóa lịch sử này? </div>
+        <div className="text-center fw-medium">
+          Bạn có chắc xóa lịch sử này?{' '}
+        </div>
       </MyModal>
     </Dropdown>
   )
