@@ -83,6 +83,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, isShowHostControl}) => {
       setCountDown(_countDown)
 
       if (_countDown <= 0) {
+        console.log('client timeout')
         if (intervalRef.current) clearInterval(intervalRef.current)
       }
     }, 1000)
@@ -149,7 +150,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, isShowHostControl}) => {
     })
 
     gameSkOn('timeout', (data) => {
-      console.log('timeout', data)
+      console.log('server timeout', data)
     })
 
     gameSkOn('ranking', (data) => {
@@ -159,7 +160,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, isShowHostControl}) => {
       const user: TUser = JsonParse(lsUser)
       console.log("=>(AnswerBoard.tsx:125) rankingData", rkData);
 
-      console.log("=>(AnswerBoard.tsx:162) nickNAme", getNickName());
+      console.log("=>(AnswerBoard.tsx:162) nickName", getNickName());
       const uData = rkData.filter(player => player?.nickname == getNickName())[0]
       console.log("=>(AnswerBoard.tsx:125) uData", uData);
       if (uData) {

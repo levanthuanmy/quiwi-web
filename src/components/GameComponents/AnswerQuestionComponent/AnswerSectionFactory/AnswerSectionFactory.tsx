@@ -72,7 +72,7 @@ export class AnswerSectionFactory {
       option={question}
       showAnswer={countDown <= 0 && countDown > -100}
       isHost={this.isHost}
-      isTimeOut={countDown <= 1 && countDown > -100}
+      isTimeOut={countDown <= 0 && countDown > -100}
       isSubmitted={this.isSubmitted}
     />
   }
@@ -86,7 +86,7 @@ export class AnswerSectionFactory {
       question={question}
       showAnswer={countDown <= 0 && countDown > -100}
       isHost={this.isHost}
-      isTimeOut={countDown <= 2 && countDown > -100}
+      isTimeOut={countDown <= 0 && countDown > -100}
       isSubmitted={this.isSubmitted}
     />
   }
@@ -100,7 +100,7 @@ export class AnswerSectionFactory {
       question={question}
       showAnswer={countDown <= 0 && countDown > -100}
       isHost={this.isHost}
-      isTimeOut={countDown <= 2 && countDown > -100}
+      isTimeOut={countDown <= 0 && countDown > -100}
       isSubmitted={this.isSubmitted}
     />
   }
@@ -114,7 +114,7 @@ export class AnswerSectionFactory {
       question={question}
       showAnswer={countDown <= 0 && countDown > -100}
       isHost={this.isHost}
-      isTimeOut={countDown <= 2 && countDown > -100}
+      isTimeOut={countDown <= 0 && countDown > -100}
       isSubmitted={this.isSubmitted}
     />
   }
