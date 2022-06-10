@@ -1,3 +1,0 @@
-{
-    value: 'Tổng quan',
-    

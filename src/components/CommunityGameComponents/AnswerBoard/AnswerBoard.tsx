@@ -259,6 +259,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({ className, questionId }) => {
 
         <QuestionMedia
           //timeout sẽ âm để tránh 1 số lỗi, đừng sửa chỗ này
+          numStreak={0}
           timeout={countDown > 0 ? countDown : 0}
           media={currentQuestion?.media ?? null}
           numSubmission={numSubmission}
