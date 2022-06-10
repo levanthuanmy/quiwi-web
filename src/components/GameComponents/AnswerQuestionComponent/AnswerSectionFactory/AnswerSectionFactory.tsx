@@ -46,7 +46,7 @@ export class AnswerSectionFactory {
       case "30TEXT":
         return this.initTextAnswer(countDown, question, handleSubmitAnswer);
       case "31ESSAY":
-        return this.initTextAnswer(countDown, question, handleSubmitAnswer);
+        return this.initEssayAnswer(countDown, question, handleSubmitAnswer);
     }
   }
 
@@ -77,6 +77,20 @@ export class AnswerSectionFactory {
     />
   }
 
+  protected initConnectAnswer(countDown: number,
+                              question: TQuestion,
+                              submitAnswerHandle: (answer: any) => void): JSX.Element {
+    return <ConnectQuestion
+      socketSubmit={submitAnswerHandle}
+      className={this.answerLayout}
+      question={question}
+      showAnswer={countDown <= 0 && countDown > -100}
+      isHost={this.isHost}
+      isTimeOut={countDown <= 2 && countDown > -100}
+      isSubmitted={this.isSubmitted}
+    />
+  }
+
   protected initTextAnswer(countDown: number,
                            question: TQuestion,
                            submitAnswerHandle: (answer: any) => void): JSX.Element {
@@ -91,10 +105,10 @@ export class AnswerSectionFactory {
     />
   }
 
-  protected initConnectAnswer(countDown: number,
+  protected initEssayAnswer(countDown: number,
                            question: TQuestion,
                            submitAnswerHandle: (answer: any) => void): JSX.Element {
-    return <ConnectQuestion
+    return <TextQuestion
       socketSubmit={submitAnswerHandle}
       className={this.answerLayout}
       question={question}
@@ -104,5 +118,7 @@ export class AnswerSectionFactory {
       isSubmitted={this.isSubmitted}
     />
   }
+
+
 }
 

@@ -27,6 +27,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, isShowHostControl}) => {
     gameSocket,
     gameSkOn,
     getQuestionWithID,
+    getNickName
   } = useGameSession()
 
   const [lsUser] = useLocalStorage('user', '')
@@ -45,7 +46,9 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, isShowHostControl}) => {
   const [countDown, setCountDown] = useState<number>(-101)
 
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false)
+  const _numSubmission = useRef<number>(0)
   const [numSubmission, setNumSubmission] = useState<number>(0)
+  const [numStreak, setNumStreak] = useState<number>(0)
   const [viewResultData, setViewResultData] = useState<TViewResult>()
 
   const {fromMedium} = useScreenSize()
@@ -108,11 +111,16 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, isShowHostControl}) => {
     if (!gameSocket()) return
     gameSkOn('new-submission', (data) => {
       console.log('new-submission', data)
+
       // nhớ check mode
-      setNumSubmission(numSubmission + 1)
+      _numSubmission.current = _numSubmission.current + 1
+      setNumSubmission(_numSubmission.current)
+      console.log("=>(AnswerBoard.tsx:113) numSubmission.current", _numSubmission.current);
     })
 
     gameSkOn('next-question', (data) => {
+      _numSubmission.current = 0
+      setNumSubmission(_numSubmission.current)
       setIsShowNext(false)
       setShowRanking(false)
 
@@ -120,7 +128,6 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, isShowHostControl}) => {
         ...JsonParse(localStorage.getItem('game-session')),
         players: [...rankingData],
       } as TStartQuizResponse)
-
       const currentQuestionId = data.currentQuestionIndex as number
       const newQuestion = data.question as TQuestion
 
@@ -147,7 +154,20 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, isShowHostControl}) => {
 
     gameSkOn('ranking', (data) => {
       setShowRanking(true)
-      setRankingData(data?.playersSortedByScore)
+      const rkData: any[] = data?.playersSortedByScore
+      setRankingData(rkData)
+      const user: TUser = JsonParse(lsUser)
+      console.log("=>(AnswerBoard.tsx:125) rankingData", rkData);
+
+      console.log("=>(AnswerBoard.tsx:162) nickNAme", getNickName());
+      const uData = rkData.filter(player => player?.nickname == getNickName())[0]
+      console.log("=>(AnswerBoard.tsx:125) uData", uData);
+      if (uData) {
+        if (uData?.currentStreak)
+          setNumStreak(uData.currentStreak)
+      }
+
+
     })
 
     gameSkOn('error', (data) => {
@@ -276,6 +296,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, isShowHostControl}) => {
           //timeout sẽ âm để tránh 1 số lỗi, đừng sửa chỗ này
           timeout={countDown > 0 ? countDown : 0}
           media={currentQuestion?.media ?? null}
+          numStreak={numStreak}
           numSubmission={numSubmission}
           key={currentQID}
           className={styles.questionMedia}

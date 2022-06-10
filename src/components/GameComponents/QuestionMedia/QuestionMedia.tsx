@@ -6,9 +6,10 @@ import styles from './QuestionMedia.module.css'
 const QuestionMedia: FC<{
   timeout: number
   media: string | null
+  numStreak: number
   numSubmission: number
   className?: string
-}> = ({ timeout, media, numSubmission, className }) => {
+}> = ({ timeout, media, numSubmission,numStreak, className }) => {
   return (
     <div
       className={classNames(
@@ -42,15 +43,30 @@ const QuestionMedia: FC<{
       />
 
       {/* Số người submit */}
-      <div
-        className={classNames(
-          'bg-primary text-white fw-medium rounded-pill d-flex gap-3 align-items-center px-3',
-          styles.streakContainer
-        )}
-      >
-        <i className="bi bi-person-check-fill"></i>
-        {numSubmission}
-      </div>
+        <div className={"d-flex flex-column gap-3"}>
+          <div
+            className={classNames(
+              'bg-primary text-white fw-medium rounded-pill d-flex gap-2 align-items-center px-2',
+              styles.streakContainer
+            )}
+          >
+            <div>🔥{' '}</div>
+            {numStreak}
+          </div>
+
+          <div
+            className={classNames(
+              'bg-primary text-white fw-medium rounded-pill d-flex gap-2 align-items-center px-3',
+              styles.streakContainer
+            )}
+          >
+            <i className="bi bi-person-check-fill"></i>
+            {numSubmission}
+          </div>
+        </div>
+
+        {/**/}
+
     </div>
   )
 }

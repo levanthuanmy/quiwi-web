@@ -5,7 +5,8 @@ import {JsonParse} from '../../utils/helper'
 import {useLocalStorage} from '../useLocalStorage/useLocalStorage'
 import {SocketManager} from '../useSocket/socketManager'
 
-export const useGameSession = (): { gameSkOnce: (ev: string, listener: (...args: any[]) => void) => void; isHost: () => boolean; getQuestionWithID: (qid: number) => (TQuestion | null); gameSkOn: (ev: string, listener: (...args: any[]) => void) => void; connectGameSocket: () => void; clearGameSession: () => void; gameSocket: () => (Socket | null); disconnectGameSocket: () => void; gameSession: TStartQuizResponse | null; saveGameSession: (gameSS: TStartQuizResponse) => void } => {
+let nickName: string | null = ""
+export const useGameSession = (): { gameSkOnce: (ev: string, listener: (...args: any[]) => void) => void; isHost: () => boolean; getQuestionWithID: (qid: number) => (TQuestion | null); gameSkOn: (ev: string, listener: (...args: any[]) => void) => void; getNickName: () => (string | null); connectGameSocket: () => void; clearGameSession: () => void; gameSocket: () => (Socket | null); disconnectGameSocket: () => void; setNickName: (name: string) => void; gameSession: TStartQuizResponse | null; saveGameSession: (gameSS: TStartQuizResponse) => void } => {
   const sk = SocketManager()
 
   const [lsUser] = useLocalStorage('user', '')
@@ -77,9 +78,18 @@ export const useGameSession = (): { gameSkOnce: (ev: string, listener: (...args:
       setGameSession(null)
       localStorage.removeItem('game-session')
       localStorage.removeItem('game-session-player')
+      nickName = null
     } catch (error) {
       console.log('🎯️ ️️GameSession => Clear game lỗi', error)
     }
+  }
+
+  const setNickName = (name: string) => {
+    nickName = name
+  }
+
+  const getNickName = (): string | null => {
+    return nickName
   }
 
   const getQuestionWithID = (qid: number): (TQuestion | null) => {
@@ -108,7 +118,9 @@ export const useGameSession = (): { gameSkOnce: (ev: string, listener: (...args:
       gameSkOn,
       gameSkOnce,
       getQuestionWithID,
-      isHost
+      isHost,
+      setNickName,
+      getNickName
     }
   )
 }

@@ -21,10 +21,10 @@ const JoiningPage: NextPage = () => {
   const router = useRouter()
   const invitationCode = router.query?.invitationCode?.toString() || ''
 
-  const {saveGameSession, gameSocket, connectGameSocket, gameSkOn, gameSkOnce} = useGameSession()
+  const {saveGameSession, gameSocket, connectGameSocket, gameSkOn, gameSkOnce, setNickName} = useGameSession()
 
   const [lsPlayer, setLsPlayer] = useLocalStorage('game-session-player', '')
-  const [nickname, setNickName] = useState<string>('')
+  const [nickname, _setNickName] = useState<string>('')
   const [lsUser] = useLocalStorage('user', '')
 
   const handleOnClick = async () => {
@@ -84,6 +84,9 @@ const JoiningPage: NextPage = () => {
 
       saveGameSession(gameSession)
       setLsPlayer(JSON.stringify(data.player))
+
+      setNickName(nickname)
+
       router.push(`/lobby?quizId=${data.gameLobby.quizId}`)
     } catch (error) {
       console.log('Join quiz - error', error)
@@ -111,7 +114,7 @@ const JoiningPage: NextPage = () => {
 
         <MyInput
           onChange={(e) => {
-            setNickName(e.target.value)
+            _setNickName(e.target.value)
           }}
           onSubmit={handleOnClick}
           onKeyDown={(e) => {
