@@ -1,17 +1,21 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { NextPage } from 'next'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { Button, Col, Container, Image, Row } from 'react-bootstrap'
 import useSWR from 'swr'
 import Cookies from 'universal-cookie'
+import Loading from '../../components/Loading/Loading'
 import NavBar from '../../components/NavBar/NavBar'
 import SummaryInfo from '../../components/Profile/SummaryInfo/SummaryInfo'
 import { get, post } from '../../libs/api'
 import {
   TApiResponse,
   TFollowUsers,
+  TItemCategory,
   TPaginationResponse,
   TUser,
+  TUserItems,
   TUserProfile,
 } from '../../types/types'
 import BadgesPage from '../badges'
@@ -26,7 +30,42 @@ const ProfilePage: NextPage = () => {
     useState<TPaginationResponse<TFollowUsers>>()
   const [followerUsers, setFollowerUsers] =
     useState<TPaginationResponse<TFollowUsers>>()
+  const [itemCategoriesResponse, setItemCategoriesResponse] =
+    useState<TPaginationResponse<TItemCategory>>()
+  const [userItems, setUserItems] = useState<TUserItems[]>()
 
+  const getItemCategories = async () => {
+    try {
+      const res: TApiResponse<TPaginationResponse<TItemCategory>> = await get(
+        `/api/items/categories`,
+        true
+      )
+      if (res.response) {
+        setItemCategoriesResponse(res.response)
+        //Lấy category đầu tiên để lấy ra dữ liệu item mặc định khi vào trang Shop
+      }
+    } catch (error) {
+      alert('Có lỗi nè')
+      console.log(error)
+    }
+  }
+  const getItems = async () => {
+    try {
+      if (user) {
+        const res: TApiResponse<TUserItems[]> = await get(
+          `/api/users/user/${user?.id}/items`
+        )
+
+        if (res.response) {
+          console.log('==== ~ getItems ~ res.response', res)
+          setUserItems(res.response)
+        }
+      }
+    } catch (error) {
+      alert('Có lỗi nè')
+      console.log(error)
+    }
+  }
   const { data, isValidating } = useSWR<TApiResponse<TUserProfile>>(
     shouldFetch ? ['/api/users/profile', true] : null,
     get
@@ -50,6 +89,8 @@ const ProfilePage: NextPage = () => {
   useEffect(() => {
     getFollowingUsers()
     getFollowersUsers()
+    getItemCategories()
+    getItems()
   }, [user])
 
   const getFollowersUsers = async () => {
@@ -170,10 +211,17 @@ const ProfilePage: NextPage = () => {
                   style={{ width: 30, height: 30 }}
                   className="fs-16px bg-secondary bg-opacity-25 rounded-10px d-flex justify-content-center align-items-center"
                 >
-                  3
+                  {userItems?.length ?? <Loading />}
                 </div>
               </div>
-              <UserItemPage />
+              {itemCategoriesResponse && userItems ? (
+                <UserItemPage
+                  itemCategories={itemCategoriesResponse}
+                  userItems={userItems}
+                />
+              ) : (
+                <Loading />
+              )}
 
               <div className="text-center border-top pt-12px pb-1 text-secondary opacity-75">
                 Xem Tất Cả

@@ -51,7 +51,7 @@ const GetUserPage: NextPage = () => {
   useEffect(() => {
     if (id) {
       if (currentUser && Number(id) === currentUser.id) {
-        router.push('/profile')
+        router.replace('/profile')
       } else {
         getUser()
       }

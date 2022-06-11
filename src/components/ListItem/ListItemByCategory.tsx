@@ -1,44 +1,34 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import classNames from 'classnames'
-import React, { FC, useEffect, useState } from 'react'
+import { FC, useEffect, useState } from 'react'
 import { Col, Collapse, Row } from 'react-bootstrap'
-import { useAuth } from '../../hooks/useAuth/useAuth'
-import { get } from '../../libs/api'
-import { TApiResponse, TItem, TUserItems } from '../../types/types'
+import { TItem, TUserItems } from '../../types/types'
 import Item from '../Item/Item'
 import styles from './ListItemByCategory.module.css'
 
 type IListItem = {
   name: string
   id: number
+  userItems: TUserItems[]
 }
 
 const ListItemByCategory: FC<IListItem> = (props) => {
   const [isCollapse, setIsCollapse] = useState(false)
-  const authContext = useAuth()
   const setCollapse = () => {
     setIsCollapse(!isCollapse)
   }
-  const [itemsRes, setItemsRes] = useState<Array<TItem>>()
+  const [itemsRes, setItemsRes] = useState<Array<TUserItems>>()
 
   useEffect(() => {
-    const getItems = async () => {
+    const getItems = () => {
       try {
-        if (authContext !== undefined) {
-          let userId = authContext.getUser()?.id || null
-
-          const res: TApiResponse<TUserItems[]> = await get(
-            `/api/users/user/${userId}/items`
-          )
-
-          if (res.response) {
-            let items: Array<TItem> = []
-            res.response.forEach((element) => {
-              if (element.item != null)
-                if (element.item.itemCategoryId === props.id)
-                  items.push(element.item)
-            })
-            setItemsRes(items)
-          }
+        if (props.userItems) {
+          let items: TUserItems[] = []
+          props.userItems.forEach((element) => {
+            if (element.item != null)
+              if (element.item.itemCategoryId === props.id) items.push(element)
+          })
+          setItemsRes(items)
         }
       } catch (error) {
         alert('Có lỗi nè')
@@ -47,11 +37,11 @@ const ListItemByCategory: FC<IListItem> = (props) => {
     }
 
     getItems()
-  }, [])
+  }, [props.userItems])
 
   return (
-    <div className={classNames('', styles.listItem)}>
-      <div onClick={() => setCollapse()}>
+    <div className={classNames('cursor-pointer', styles.listItem)}>
+      <div onClick={setCollapse} aria-expanded={isCollapse}>
         <Row className="bg-primary py-2 text-white">
           <Col sm={11}>
             <div>{props.name}</div>
@@ -67,16 +57,21 @@ const ListItemByCategory: FC<IListItem> = (props) => {
       <Collapse in={isCollapse} className={classNames('', styles.content)}>
         <div className="justify-content-md-center">
           <div className={classNames('', styles.itemList)}>
-            {itemsRes?.map((item, idx) => (
-              <Item
-                key={idx}
-                name={item.name}
-                des={item.description}
-                avatar={item.avatar}
-                type={item.type}
-                price={item.price}
-              ></Item>
-            ))}
+            {itemsRes?.length === 0 ? (
+              <div>Không có vật phẩm</div>
+            ) : (
+              itemsRes?.map((item, idx) => (
+                <Item
+                  key={idx}
+                  name={item.item.name}
+                  des={item.item.description}
+                  avatar={item.item.avatar}
+                  type={item.item.type}
+                  price={item.item.price}
+                  quantity={item.quantity}
+                ></Item>
+              ))
+            )}
           </div>
         </div>
       </Collapse>
