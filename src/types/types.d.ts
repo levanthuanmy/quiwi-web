@@ -159,6 +159,7 @@ export type TItem = {
   createdAt: Date
   updatedAt: Date
   isOwn?: boolean
+  quantity: number
 }
 
 export type TJoinQuizResponse = {

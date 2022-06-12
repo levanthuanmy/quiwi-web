@@ -82,6 +82,7 @@ const UsingItemInGame: FC = () => {
                             avatar={item.avatar}
                             type={item.type}
                             price={item.price}
+                            quantity={item.quantity}
                         ></Item>
                     ))}
                 </div>
