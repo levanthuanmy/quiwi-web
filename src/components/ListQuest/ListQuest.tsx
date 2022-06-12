@@ -92,7 +92,7 @@ const ListQuest: NextPage = () => {
                     <Row
                         className={classNames("justify-content-center m-0 my-4", styles.board)}
                     >
-                        <Col xs={9} className={classNames("", styles.ListQuest)} >
+                        <Col xs={12} sm={12} md={9}  className={classNames("", styles.ListQuest)} >
                             {toggleState === 0 ? (
                                 <>
                                     {itemsResponse?.items?.map((item, idx) => (
