@@ -1,7 +1,6 @@
 import classNames from 'classnames'
 import { NextPage } from 'next'
 import React, { useEffect, useState } from 'react'
-import { Fade } from 'react-bootstrap'
 import AnswerBoard from '../../../components/GameComponents/AnswerBoard/AnswerBoard'
 import EndGameBoard from '../../../components/GameComponents/EndGameBoard/EndGameBoard'
 import { FAB, FABAction } from '../../../components/GameComponents/FAB/FAB'
@@ -11,10 +10,13 @@ import useScreenSize from '../../../hooks/useScreenSize/useScreenSize'
 import { TStartQuizResponse } from '../../../types/types'
 import styles from './GamePage.module.css'
 import router from "next/router";
+import {Collapse, Fade} from "react-bootstrap";
+import UsingItemInGame from '../../../components/UsingItemInGame/UsingItemInGame'
 
 const GamePage: NextPage = () => {
   const { gameSession, isHost, gameSkOn, saveGameSession, clearGameSession } = useGameSession()
   const [isShowChat, setIsShowChat] = useState<boolean>(false)
+  const [isShowItem, setIsShowItem] = useState<boolean>(false)
   const [isShowHostControl, setIsShowHostControl] = useState<boolean>(true)
   const { fromMedium } = useScreenSize()
   const [endGameData, setEndGameData] = useState<TStartQuizResponse>()
@@ -28,6 +30,14 @@ const GamePage: NextPage = () => {
         setIsShowChat(!isShowChat)
       },
     },
+    {
+      label: "Kho đồ",
+      icon: "bi bi-basket-fill",
+      onClick: () => {
+        resetAllFAB()
+        setIsShowItem(!isShowItem)
+      },
+    }
   ]
 
   const hostAction: FABAction = {
@@ -82,15 +92,31 @@ const GamePage: NextPage = () => {
           </div>
 
           {gameSession && (
-            <Fade in={isShowChat}>
-              {isShowChat ? (
+
+            <div>
+              <Fade
+              in={isShowChat}
+            >
+              {isShowChat ?
                 <div>
                   <GameMenuBar gameSession={gameSession} />
                 </div>
-              ) : (
+               : (
                 <></>
               )}
             </Fade>
+            
+              <Fade
+              in={isShowItem}
+            >
+              {isShowItem ?
+                <div>
+                  <UsingItemInGame
+                  />
+                </div> : <></>}
+            </Fade>
+            </div>
+            
           )}
           <FAB
             actions={[

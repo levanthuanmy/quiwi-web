@@ -1,0 +1,33 @@
+.container {
+    z-index: 999;
+    border-radius: 10px;
+    width: 270px;
+    padding: 0px 10px 10px 10px;
+}
+
+.title {
+    padding-top: 5px;
+    padding-bottom: 5px;
+    align-self: center;
+    font-size: large;
+    width: inherit;
+    text-align: center;
+    border-radius: 10px 10px 0px 0px;
+    font-weight:400;
+    color: white;
+    background-color: #009883;
+}
+
+.content {
+  height: auto;
+}
+
+.listItem {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.itemList {
+    display: flex;
+  flex-wrap: wrap;
+}
