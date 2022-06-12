@@ -5,6 +5,7 @@ import classNames from "classnames";
 import {ConnectAnswerList} from "./ConnectAnswerList";
 import {getEmptyImage} from "react-dnd-html5-backend";
 import {func} from "prop-types";
+import {timeout} from "q";
 
 type ConnectQuestionProps = {
   className?: string
@@ -15,6 +16,7 @@ type ConnectQuestionProps = {
   isHost: boolean
   isTimeOut: boolean
   isSubmitted: boolean
+  isCounting: boolean
 }
 const correctColor = "#0082BE"
 const incorrectColor = "#cccccc"
@@ -27,6 +29,7 @@ const ConnectQuestion: FC<ConnectQuestionProps> = ({
                                                      isHost,
                                                      isTimeOut,
                                                      isSubmitted,
+                                                     isCounting
                                                    }) => {
   const [isCorrect, setIsCorrect] = useState<boolean>(false)
   const [options, setOptions] = useState<TAnswer[]>([])
@@ -34,7 +37,6 @@ const ConnectQuestion: FC<ConnectQuestionProps> = ({
   const [selectedAnswerSet, setSelectedAnswerSet] = useState<Set<TAnswer>>(new Set<TAnswer>())
   const [wrongAnswerSet, setWrongAnswerSet] = useState<Set<TAnswer>>(new Set<TAnswer>())
   const [correctAnswerSet, setCorrectAnswerSet] = useState<Set<TAnswer>>(new Set<TAnswer>())
-
 
   const defaultPlaceHolder = useRef<string>("     ")
 
@@ -51,6 +53,7 @@ const ConnectQuestion: FC<ConnectQuestionProps> = ({
 
   function prepareData() {
     if (question?.questionAnswers) {
+
       //Lựa chọn để click
       setOptions([...question.questionAnswers.filter(item => item.type != "21PLHDR")])
 
@@ -76,37 +79,46 @@ const ConnectQuestion: FC<ConnectQuestionProps> = ({
       setWrongAnswerSet(new Set())
       setCorrectAnswerSet(new Set())
       setDisplayAnswer([...displayList])
+      console.log("=>(ConnectQuestion.tsx:82)preparedData: ", displayList);
     }
   }
 
   useEffect(() => {
-    if (!isHost && isTimeOut && !isSubmitted) {
-      const answerList = displayAnswer.map<number>((answer) => Number(answer.id))
-      console.log("=>(ConnectQuestion) submit answerList", answerList);
-      socketSubmit(answerList)
-    }
-    if (isTimeOut) {
-      setIsCorrect(checkAnswer())
-    }
+    if (isTimeOut) handleSubmit()
   }, [isTimeOut]);
 
+  const handleSubmit = () => {
+    if (!isHost) {
+      if (!isSubmitted && isCounting) {
+        const answerList = displayAnswer.map<number>((answer) => Number(answer.id))
+        socketSubmit(answerList)
+        console.log("=>(ConnectQuestion) Socket submit answer");
+        setIsCorrect(checkAnswer())
+      }
+    } else {
+      console.log("=>(ConnectQuestion) Display answer for host");
+      setIsCorrect(true)
+      showAnswerForHost()
+    }
+  }
+
+  const showAnswerForHost = () => {
+    setWrongAnswerSet(new Set([]))
+    setCorrectAnswerSet(new Set(orderedCorrectAnswer.filter(answer => answer.type != "21PLHDR")))
+    setSelectedAnswerSet(new Set(orderedCorrectAnswer.filter(answer => answer.type != "21PLHDR")))
+    setDisplayAnswer(orderedCorrectAnswer)
+  }
+
   const checkAnswer = (): boolean => {
+    // console.log("=>(ConnectQuestion.tsx:97) checkAnswer");
     const wrongAnswerArray: TAnswer[] = []
     const correctAnswerArray: TAnswer[] = []
 
-    if (isHost) {
-      setWrongAnswerSet(new Set([]))
-      setCorrectAnswerSet(new Set(orderedCorrectAnswer.filter(answer => answer.type != "21PLHDR")))
-      setSelectedAnswerSet(new Set(orderedCorrectAnswer.filter(answer => answer.type != "21PLHDR")))
-      setDisplayAnswer(orderedCorrectAnswer)
-      return true
-    }
-
     for (let i = 0; i < displayAnswer.length; i++) {
-      console.log("=>(ConnectQuestion.tsx:91) dp cr", displayAnswer[i].id, orderedCorrectAnswer[i].id);
+      // console.log("=>(ConnectQuestion.tsx:91) dp cr", displayAnswer[i].id, orderedCorrectAnswer[i].id);
       if ((displayAnswer[i].id == -1 || displayAnswer[i].id != orderedCorrectAnswer[i].id)
         && orderedCorrectAnswer[i].type != "21PLHDR") {
-        console.log("=>(ConnectQuestion.tsx:92) wrong", orderedCorrectAnswer[i].answer);
+        // console.log("=>(ConnectQuestion.tsx:92) wrong", orderedCorrectAnswer[i].answer);
         wrongAnswerArray.push(orderedCorrectAnswer[i])
       } else {
         correctAnswerArray.push(orderedCorrectAnswer[i])
@@ -114,7 +126,6 @@ const ConnectQuestion: FC<ConnectQuestionProps> = ({
     }
     setWrongAnswerSet(new Set(wrongAnswerArray))
     setCorrectAnswerSet(new Set(correctAnswerArray))
-    setDisplayAnswer(orderedCorrectAnswer)
 
     return (correctAnswerArray.length == orderedCorrectAnswer.length)
   }
@@ -126,8 +137,7 @@ const ConnectQuestion: FC<ConnectQuestionProps> = ({
     return correctColor
   }
 
-  function getPlaceHolderAnswer(placeHolder:string): TAnswer {
-    console.log("=>(ConnectQuestion.tsx:84) placeHolder", placeHolder,"placeHolder");
+  function getPlaceHolderAnswer(placeHolder: string): TAnswer {
     return {
       id: -1,
       answer: placeHolder
@@ -144,7 +154,6 @@ const ConnectQuestion: FC<ConnectQuestionProps> = ({
         && insertList[i].orderPosition == answer.orderPosition
         && insertList[i].type != "21PLHDR") {
         insertList[i] = getPlaceHolderAnswer(defaultPlaceHolder.current)
-        console.log("=>(ConnectQuestion.tsx:109) remove i insertAnswer[i]", i, insertList[i]);
         setSelectedAnswerSet(new Set(insertList))
         setDisplayAnswer([...insertList])
         return;
@@ -155,7 +164,6 @@ const ConnectQuestion: FC<ConnectQuestionProps> = ({
     for (let i = 0; i < insertList.length; i++) {
       if (insertList[i].id == -1 && insertList[i].type != "21PLHDR") {
         insertList[i] = answer
-        console.log("=>(ConnectQuestion.tsx:109) insert i insertAnswer[i]", i, insertList[i]);
         setSelectedAnswerSet(new Set(insertList))
         setDisplayAnswer([...insertList])
         return;
@@ -177,11 +185,13 @@ const ConnectQuestion: FC<ConnectQuestionProps> = ({
         styles.container,
       )}
     >
-      <div className={`d-flex flex-column bg-white justify-content-around w-100 customScrollbar ${styles.selectedBox}`}>
+      <div
+        className={`d-flex flex-column bg-white justify-content-around w-100 customScrollbar ${styles.selectedBox}`}>
         <ConnectAnswerList
           className={styles.selectedOption}
-          options={displayAnswer}
+          options={showAnswer ? orderedCorrectAnswer : displayAnswer}
           disabledOption={wrongAnswerSet}
+          userSelectedOptions={displayAnswer}
           displayDecor={true}
           showAnswer={isTimeOut || isSubmitted}
           didSelect={didClickWord}
@@ -197,7 +207,6 @@ const ConnectQuestion: FC<ConnectQuestionProps> = ({
           showAnswer={isTimeOut || isSubmitted}
           displayDecor={false}
           didSelect={didClickWord}
-          borderOption={correctAnswerSet}
         />
       </div>
     </div>

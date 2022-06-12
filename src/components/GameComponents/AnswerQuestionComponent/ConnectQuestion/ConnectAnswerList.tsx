@@ -9,11 +9,11 @@ import displayName = Dropdown.displayName;
 type TextAnswerListProps = {
   className?: string
   options: TAnswer[]
+  disabledOption?: Set<TAnswer>
+  userSelectedOptions?: TAnswer[]
   displayDecor: boolean
   showAnswer: boolean
   didSelect?: (answer: TAnswer) => void
-  disabledOption?: Set<TAnswer>
-  borderOption?: Set<TAnswer>
 }
 
 export const ConnectAnswerList: FC<TextAnswerListProps> = (props: TextAnswerListProps) => {
@@ -27,49 +27,48 @@ export const ConnectAnswerList: FC<TextAnswerListProps> = (props: TextAnswerList
     '#AB89A6',
   ]
 
-  function getColorFor(idx: number, option: TAnswer): string {
+  function getColorWithDecor(idx: number, option: TAnswer): string {
     if (option.type == "21PLHDR") return '#00000000'
+    let highlight = !(props.disabledOption && props.disabledOption.has(option))
+    if (props.userSelectedOptions && props.userSelectedOptions[idx] != option)
+      highlight = false
 
-    if (props.displayDecor) {
-      if (props.disabledOption && props.disabledOption.has(option))
-        return "#cccccc"
-    }
-    if (!props.displayDecor) {
-      let selected = (props.disabledOption && props.disabledOption.has(option))
-      selected = props.showAnswer ? !selected : selected
-      const alpha = (props.borderOption && props.borderOption.has(option)) ? "CC" : "66"
-      const colorPostfix = (props.showAnswer ? alpha : "")
-      const disabledColor = (props.showAnswer ? "#E0E0E0" : "#cccccc")
-      return selected ? disabledColor : colors[idx % colors.length] + colorPostfix
-    }
-    return colors[idx % colors.length]
+    return highlight ? colors[idx % colors.length] : "#E0E0E0"
+  }
+
+  function getColorWithoutDecor(idx: number, option: TAnswer): string {
+    const colorPostfix = props.showAnswer ? "66" : ""
+    let highlight = !(props.disabledOption && props.disabledOption.has(option))
+    if (props.showAnswer) highlight = !highlight
+    return highlight ? colors[idx % colors.length] + colorPostfix : "#E0E0E0"
+  }
+
+  function getColorFor(idx: number, option: TAnswer): string {
+    return props.displayDecor ? getColorWithDecor(idx, option) : getColorWithoutDecor(idx, option)
   }
 
   function getTextColor(option: TAnswer): string {
     if (option.type == "21PLHDR") return '#000000'
-    if (!props.displayDecor && props.showAnswer) return "#ffffff"
-    if (props.displayDecor) {
-      if (props.disabledOption && props.disabledOption.has(option))
-        return '#ffffff'
-      // return option.type == "21PLHDR" ? '#000000' : '#ffffff'
-    }
     return '#ffffff'
   }
 
   return (
     <div className={`d-flex flex-wrap ${styles.playerList} customScrollbar ${props.className}`}>
       {
-        // chỉ hiển thị mấy type khác placeholder
-        props.options.filter(i => (i.type != "21PLHDR") || props.displayDecor).map((option, idx) => {
+
+        props.options.map((option, idx) => {
+
+          function showLineThrough() {
+            return  props.showAnswer && props.displayDecor && props.userSelectedOptions && props.userSelectedOptions[idx] != option;
+          }
+
           return <Col
             key={idx}
             className={cn(`d-flex align-items-center col-auto`,
               styles.answer,
-              props.displayDecor ? styles.selected : styles.selection,
               !props.showAnswer ? "cursor-pointer" : "")}
             style={{
               backgroundColor: getColorFor(idx, option),
-              borderWidth: (props.borderOption && props.borderOption.has(option)) ? "4px" : "0"
             }}
             onClick={() => {
               if (option.type != "21PLHDR") {
@@ -79,8 +78,26 @@ export const ConnectAnswerList: FC<TextAnswerListProps> = (props: TextAnswerList
             }}
           >
             <div className={cn(styles.word, "fw-medium", {
-              "cursor-pointer":!props.showAnswer
-            })} style={{color: getTextColor(option)}}>{option.answer}</div>
+              "cursor-pointer": !props.showAnswer
+            })} style={{color: getTextColor(option)}}>
+              {showLineThrough() ?
+                <>
+                  {
+                    (props.userSelectedOptions
+                      && props.userSelectedOptions[idx]
+                      && (props.userSelectedOptions[idx].id ?? -1) >= 0) &&
+                      <>
+                        <span
+                            className={"text-decoration-line-through text-warning"}>{props.userSelectedOptions?.[idx].answer}</span>
+                        {" - "}
+                      </>
+                  }
+                  <span className={"text-success"}>{option.answer}</span>
+                </>
+                :
+                option.answer
+              }
+            </div>
           </Col>
         })
       }

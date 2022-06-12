@@ -14,6 +14,7 @@ type SingpleChoiceAnswerSectionProps = {
   showAnswer: boolean
   isHost: boolean
   isSubmitted: boolean
+  isTimeOut: boolean
 }
 
 const SingleChoiceAnswerSection: FC<SingpleChoiceAnswerSectionProps> = ({
@@ -23,12 +24,13 @@ const SingleChoiceAnswerSection: FC<SingpleChoiceAnswerSectionProps> = ({
                                                                           showAnswer,
                                                                           isHost,
                                                                           isSubmitted,
+                                                                          isTimeOut
                                                                         }) => {
 
   const [answerSet, setAnswerSet] = useState<Set<number>>(new Set())
   const selectAnswer = (answerId: number) => {
     if (isSubmitted) return
-    if (showAnswer) return
+    if (isTimeOut) return
     // Chọn và bỏ chọn câu hỏi
     const answers: Set<number> = answerSet
     if (answers.has(answerId)) {
@@ -41,10 +43,16 @@ const SingleChoiceAnswerSection: FC<SingpleChoiceAnswerSectionProps> = ({
     socketSubmit(answerSet)
   }
 
+  useEffect(() => {
+    if (isTimeOut && !isSubmitted) {
+      socketSubmit(answerSet)
+    }
+  }, [isTimeOut]);
+
   return (
     <div className={classNames(className, '')}>
       <OptionAnswerSection
-        handleSubmitAnswer={selectAnswer}
+        didSelectAnswerId={selectAnswer}
         option={option}
         selectedAnswers={answerSet}
         showAnswer={showAnswer}

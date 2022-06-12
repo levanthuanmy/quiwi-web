@@ -26,7 +26,8 @@ const MultipleChoiceAnswerSection: FC<MultipleChoiceAnswerSectionProps> = ({
   const [answerSet, setAnswerSet] = useState<Set<number>>(new Set())
 
   const selectAnswer = (answerId: number) => {
-    if (showAnswer) return
+    console.log("=>(MultipleChoiceAnswerSection.tsx:33) isSubmitted", isSubmitted);
+    if (isTimeOut) return
     // Chọn và bỏ chọn câu hỏi
     const answers: Set<number> = answerSet
     answers.has(answerId) ? answers.delete(answerId) : answers.add(answerId)
@@ -34,7 +35,7 @@ const MultipleChoiceAnswerSection: FC<MultipleChoiceAnswerSectionProps> = ({
   }
 
   useEffect(() => {
-    if (isTimeOut && !isSubmitted) {
+    if (isTimeOut && !isSubmitted && !isHost) {
       socketSubmit(answerSet)
     }
   }, [isTimeOut]);
@@ -42,7 +43,7 @@ const MultipleChoiceAnswerSection: FC<MultipleChoiceAnswerSectionProps> = ({
   return (
     <div className={classNames(className, '')}>
       <OptionAnswerSection
-        handleSubmitAnswer={selectAnswer}
+        didSelectAnswerId={selectAnswer}
         option={option}
         selectedAnswers={answerSet}
         showAnswer={showAnswer}

@@ -52,6 +52,11 @@ export const useGameSession = (): { gameSkOnce: (ev: string, listener: (...args:
   const connectGameSocket = () => {
     if (!gameSocket() || gameSocket()?.disconnected) {
       sk.connect("GAMES")
+      gameSocket()?.offAny()
+      gameSocket()?.onAny(function(event, data) {
+        console.log("🌎🌎 Event:",event);
+        console.log("🌎🌎 Data:",data);
+      });
     }
   }
 

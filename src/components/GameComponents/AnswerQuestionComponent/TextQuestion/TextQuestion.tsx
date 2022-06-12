@@ -15,6 +15,7 @@ type TextQuestionProps = {
   isHost: boolean
   isTimeOut: boolean
   isSubmitted: boolean
+  isCounting: boolean
 }
 const correctColor = "#0082BE"
 const incorrectColor = "#cccccc"
@@ -26,15 +27,14 @@ const TextQuestion: FC<TextQuestionProps> = ({
                                                isHost,
                                                isTimeOut,
                                                isSubmitted,
+                                               isCounting
                                              }) => {
   const [answerText, setAnswerText] = useState<string | null>(null)
   const [isCorrect, setIsCorrect] = useState<boolean>(false)
 
   useEffect(() => {
-    if (isTimeOut && !isSubmitted) {
-      if (answerText) {
-        socketSubmit(answerText)
-      }
+    if (isTimeOut && !isSubmitted && isCounting) {
+      socketSubmit(answerText ?? "")
     }
     if (isTimeOut) {
       setIsCorrect(checkAnswer())
@@ -93,12 +93,11 @@ const TextQuestion: FC<TextQuestionProps> = ({
 
   const checkAnswer = (): boolean => {
     if (isTimeOut && !isHost) {
-      console.log("=>(TextQuestion.tsx:93) question.questionAnswers", question?.questionAnswers);
       if (question && question.matcher)
         if (answerText && answerText.length > 0)
           switch (question.matcher) {
             case '10EXC':
-              console.log("=>(TextQuestion.tsx:100) exc");
+              // console.log("=>(TextQuestion.tsx:100) exc");
               for (const answer of question.questionAnswers) {
                 if (answer.answer == answerText) {
                   return true
@@ -106,7 +105,7 @@ const TextQuestion: FC<TextQuestionProps> = ({
               }
               break
             case '20CNT':
-              console.log("=>(TextQuestion.tsx:100) cnt");
+              // console.log("=>(TextQuestion.tsx:100) cnt");
               for (const answer of question.questionAnswers) {
                 if (answerText?.includes(answer.answer)) {
                   return true

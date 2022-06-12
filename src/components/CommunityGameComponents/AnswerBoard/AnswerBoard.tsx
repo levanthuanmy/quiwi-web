@@ -1,17 +1,19 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import classNames from 'classnames'
 import _ from 'lodash'
-import { useRouter } from 'next/router'
-import { FC, memo, useEffect, useRef, useState } from 'react'
-import { useCommunitySocket } from '../../../hooks/useCommunitySocket/useCommunitySocket'
-import { useGameSession } from '../../../hooks/useGameSession/useGameSession'
-import { useLocalStorage } from '../../../hooks/useLocalStorage/useLocalStorage'
+import {useRouter} from 'next/router'
+import {FC, memo, useEffect, useRef, useState} from 'react'
+import {useCommunitySocket} from '../../../hooks/useCommunitySocket/useCommunitySocket'
+import {useGameSession} from '../../../hooks/useGameSession/useGameSession'
+import {useLocalStorage} from '../../../hooks/useLocalStorage/useLocalStorage'
 import useScreenSize from '../../../hooks/useScreenSize/useScreenSize'
-import { TQuestion, TStartQuizResponse, TUser } from '../../../types/types'
-import { JsonParse } from '../../../utils/helper'
-import { AnswerSectionFactory } from '../../GameComponents/AnswerQuestionComponent/AnswerSectionFactory/AnswerSectionFactory'
+import {TQuestion, TStartQuizResponse, TUser} from '../../../types/types'
+import {JsonParse} from '../../../utils/helper'
+import {
+  AnswerSectionFactory
+} from '../../GameComponents/AnswerQuestionComponent/AnswerSectionFactory/AnswerSectionFactory'
 import MoreButton from '../../GameComponents/MoreButton/MoreButton'
-import { QuestionMedia } from '../../GameComponents/QuestionMedia/QuestionMedia'
+import {QuestionMedia} from '../../GameComponents/QuestionMedia/QuestionMedia'
 import styles from './AnswerBoard.module.css'
 
 type AnswerBoardProps = {
@@ -19,7 +21,7 @@ type AnswerBoardProps = {
   questionId: number | 0
 }
 
-const AnswerBoard: FC<AnswerBoardProps> = ({ className, questionId }) => {
+const AnswerBoard: FC<AnswerBoardProps> = ({className, questionId}) => {
   const {
     gameSession,
     saveGameSession,
@@ -27,7 +29,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({ className, questionId }) => {
     gameSocket,
     getQuestionWithID,
   } = useGameSession()
-  const { socket } = useCommunitySocket()
+  const {socket} = useCommunitySocket()
 
   const [lsUser] = useLocalStorage('user', '')
   const [currentQID, setCurrentQID] = useState<number>(-1)
@@ -44,7 +46,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({ className, questionId }) => {
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false)
 
   const [numSubmission, setNumSubmission] = useState<number>(0)
-  const { fromMedium } = useScreenSize()
+  const {fromMedium} = useScreenSize()
   const intervalRef = useRef<NodeJS.Timer | null>(null)
 
   let answerSectionFactory: AnswerSectionFactory
@@ -147,7 +149,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({ className, questionId }) => {
 
   const goToNextQuestion = () => {
     if (!gameSession) return
-    const msg = { invitationCode: gameSession.invitationCode }
+    const msg = {invitationCode: gameSession.invitationCode}
     socket?.emit('next-question', msg)
     console.log(msg)
   }
@@ -190,11 +192,13 @@ const AnswerBoard: FC<AnswerBoardProps> = ({ className, questionId }) => {
       answerSectionFactory = new AnswerSectionFactory(
         false,
         styles.answerLayout,
-        isSubmitted
+        isSubmitted,
+        true,
+        countDown
       )
     return answerSectionFactory.initAnswerSectionForType(
       currentQuestion.type,
-      countDown,
+
       currentQuestion,
       handleSubmitAnswer
     )
@@ -251,7 +255,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({ className, questionId }) => {
               'shadow px-3 pt-2 bg-white mb-2 rounded-10px',
               styles.questionTitle
             )}
-            dangerouslySetInnerHTML={{ __html: currentQuestion.question }}
+            dangerouslySetInnerHTML={{__html: currentQuestion.question}}
           />
         ) : (
           <></>

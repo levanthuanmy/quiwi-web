@@ -44,6 +44,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, isShowHostControl}) => {
 
   const [endTime, setEndTime] = useState<number>(0)
   const [countDown, setCountDown] = useState<number>(-101)
+  const [isCounting, setIsCounting] = useState<boolean>(false)
 
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false)
   const _numSubmission = useRef<number>(0)
@@ -73,6 +74,11 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, isShowHostControl}) => {
 
   const intervalRef = useRef<NodeJS.Timer | null>(null)
 
+  function _clearInterval() {
+    if (intervalRef.current) clearInterval(intervalRef.current)
+    intervalRef.current = null
+  }
+
   // nhảy mỗi lần countdown
   useEffect(() => {
     if (!currentQuestion) return
@@ -80,11 +86,11 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, isShowHostControl}) => {
     intervalRef.current = setInterval(() => {
       let curr = Math.round(new Date().getTime())
       let _countDown = Math.ceil((endTime - curr) / 1000)
+      setIsCounting(true)
       setCountDown(_countDown)
-
       if (_countDown <= 0) {
         console.log('client timeout')
-        if (intervalRef.current) clearInterval(intervalRef.current)
+        _clearInterval();
       }
     }, 1000)
     resetGameState()
@@ -110,13 +116,11 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, isShowHostControl}) => {
 
   const handleSocket = () => {
     if (!gameSocket()) return
-    gameSkOn('new-submission', (data) => {
-      console.log('new-submission', data)
 
+    gameSkOn('new-submission', (data) => {
       // nhớ check mode
       _numSubmission.current = _numSubmission.current + 1
       setNumSubmission(_numSubmission.current)
-      console.log("=>(AnswerBoard.tsx:113) numSubmission.current", _numSubmission.current);
     })
 
     gameSkOn('next-question', (data) => {
@@ -124,6 +128,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, isShowHostControl}) => {
       setNumSubmission(_numSubmission.current)
       setIsShowNext(false)
       setShowRanking(false)
+      setIsCounting(false)
 
       saveGameSession({
         ...JsonParse(localStorage.getItem('game-session')),
@@ -139,18 +144,15 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, isShowHostControl}) => {
     })
 
     gameSkOn('view-result', (data: TViewResult) => {
-      console.log('view-result', data)
       setViewResultData(data)
-      //nếu mà chưa countdown xong thì set count down
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current)
-        intervalRef.current = null
-        setCountDown(0)
-      }
     })
 
     gameSkOn('timeout', (data) => {
-      console.log('server timeout', data)
+      //nếu mà chưa countdown xong thì set count down
+      if (intervalRef.current) {
+        _clearInterval()
+        setCountDown( 0)
+      }
     })
 
     gameSkOn('ranking', (data) => {
@@ -158,11 +160,8 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, isShowHostControl}) => {
       const rkData: any[] = data?.playersSortedByScore
       setRankingData(rkData)
       const user: TUser = JsonParse(lsUser)
-      console.log("=>(AnswerBoard.tsx:125) rankingData", rkData);
-
-      console.log("=>(AnswerBoard.tsx:162) nickName", getNickName());
       const uData = rkData.filter(player => player?.nickname == getNickName())[0]
-      console.log("=>(AnswerBoard.tsx:125) uData", uData);
+      // console.log("=>(AnswerBoard.tsx:125) uData", uData);
       if (uData) {
         if (uData?.currentStreak)
           setNumStreak(uData.currentStreak)
@@ -172,7 +171,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, isShowHostControl}) => {
     })
 
     gameSkOn('error', (data) => {
-      console.log('answer board socket error', data)
+
     })
   }
 
@@ -180,7 +179,6 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, isShowHostControl}) => {
     if (!gameSession) return
     const msg = {invitationCode: gameSession.invitationCode}
     gameSocket()?.emit('next-question', msg)
-    console.log(msg)
   }
 
   const viewRanking = () => {
@@ -194,27 +192,29 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, isShowHostControl}) => {
     if (!gameSession) return
     if (isSubmitted) return
     if (isHost) return
+
     let msg = {
       invitationCode: gameSession.invitationCode,
       nickname: gameSession.nickName,
-      answerIds: {},
+      answerIds: [] as any[],
       answer: '',
     }
 
     if (answer instanceof Set) {
-      console.log('=>(AnswerBoard.tsx:174) submit set')
+      console.log('=>(AnswerBoard.tsx:174) submit set "',answer,'"')
       msg.answerIds = Array.from(answer)
     } else if (answer instanceof Array) {
-      console.log('=>(AnswerBoard.tsx:174) submit array')
+      console.log('=>(AnswerBoard.tsx:174) submit array "',answer,'"')
       msg.answerIds = answer
     } else if (typeof answer === 'string') {
-      console.log('=>(AnswerBoard.tsx:174) submit text')
+      console.log('=>(AnswerBoard.tsx:174) submit text "', answer, '"')
       msg.answer = answer
     } else {
-      console.log("=>(AnswerBoard.tsx:191) not supported");
+      console.log('=>(AnswerBoard.tsx:191) not supported "',answer,'"')
       return;
     }
     setIsSubmitted(true)
+    setIsCounting(false)
     if (msg.answer || msg.answerIds)
       gameSocket()?.emit('submit-answer', msg)
   }
@@ -222,7 +222,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, isShowHostControl}) => {
   const exitRoom = () => {
     // dùng clear game session là đủ
     clearGameSession()
-    router.push('/')
+    router.push('/my-lib')
   }
 
   const renderAnswersSection = () => {
@@ -231,11 +231,12 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, isShowHostControl}) => {
       answerSectionFactory = new AnswerSectionFactory(
         isHost,
         styles.answerLayout,
-        isSubmitted
+        isSubmitted,
+        isCounting,
+        countDown
       )
     return answerSectionFactory.initAnswerSectionForType(
       currentQuestion.type,
-      countDown,
       currentQuestion,
       handleSubmitAnswer
     )

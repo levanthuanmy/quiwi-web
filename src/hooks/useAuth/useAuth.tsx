@@ -39,7 +39,7 @@ export const AuthProvider = ({ children }: { children?: ReactNode }) => {
     setIsAuth(
       Boolean(
         userState?.token?.accessToken?.length ||
-          cookies.get('access-token')?.length
+        cookies.get('access-token')?.length
       )
     )
   }, [userState])
@@ -71,6 +71,7 @@ export const AuthProvider = ({ children }: { children?: ReactNode }) => {
   const signOut = async () => {
     cookies.remove('access-token')
     cookies.remove('refresh-token')
+    console.log("🚪=>(useAuth.tsx:80) Đăng xuất, cookies: ", cookies);
     setLsUser('')
     socketManager.disconnectAll()
     setUserState(undefined)
@@ -90,6 +91,7 @@ export const AuthProvider = ({ children }: { children?: ReactNode }) => {
       setUserState(data)
       cookies.set('access-token', data.token.accessToken)
       cookies.set('refresh-token', data.token.refreshToken)
+      console.log("🔓=>(useAuth.tsx:99) Đăng nhập, cookies: ", cookies);
       setLsUser(JSON.stringify(data))
     } catch (error) {
       console.log('setUser - error', error)

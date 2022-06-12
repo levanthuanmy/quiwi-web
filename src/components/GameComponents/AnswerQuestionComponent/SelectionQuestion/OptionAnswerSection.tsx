@@ -8,7 +8,7 @@ import {ANSWER_COLORS} from "../../../../utils/constants";
 
 type OptionAnswerSectionProps = {
   className?: string
-  handleSubmitAnswer: (answerId: number) => void
+  didSelectAnswerId: (answerId: number) => void
   option?: TQuestion
   selectedAnswers?: Set<number>
   showAnswer: boolean
@@ -22,7 +22,7 @@ const alphabet = ['A', 'B', 'C', 'D', 'E', 'F']
 
 const OptionAnswerSection: FC<OptionAnswerSectionProps> = ({
                                                              className,
-                                                             handleSubmitAnswer,
+                                                             didSelectAnswerId,
                                                              option,
                                                              selectedAnswers,
                                                              showAnswer,
@@ -102,7 +102,7 @@ const OptionAnswerSection: FC<OptionAnswerSectionProps> = ({
             }}
             key={index}
             onClick={() => {
-              if (!isHost && item.id && !showAnswer) handleSubmitAnswer(item.id)
+              if (!isHost && item.id && !showAnswer) didSelectAnswerId(item.id)
             }}
           >
 

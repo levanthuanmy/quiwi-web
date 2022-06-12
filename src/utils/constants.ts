@@ -74,7 +74,7 @@ export const SOUND_EFFECT: Record<string, string> = {
   JACKPOT_CONGRATULATION: '/sounds/congratulation.mp3'
 }
 
-export const TIMEOUT_OPTIONS = [15, 30, 60, 120, 180]
+export const TIMEOUT_OPTIONS = [1, 2, 5, 10, 15, 30, 60, 120, 180]
 
 export const RICH_TEXT_TOOLBAR = {}
 
