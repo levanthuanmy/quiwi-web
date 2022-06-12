@@ -1,0 +1,17 @@
+.ListQuest {
+    overflow-y: scroll;
+    height: 75vh;
+    padding: 20px 100px 30px 100px;
+    border-color: red;
+    border-radius: 16px;
+}
+
+.disableScroll {
+    overflow: hidden;
+}
+
+.searchBar {
+    padding: 10px 20px 10px 20px;
+    margin: 0px;
+    height: 50px;
+}

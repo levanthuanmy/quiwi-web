@@ -98,3 +98,7 @@
   border-radius: 50%;
 }
 
+.listAction {
+  display: flex;
+}
+

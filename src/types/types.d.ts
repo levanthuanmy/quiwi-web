@@ -308,6 +308,7 @@ export type TReward = {
   updatedAt: Date
   isOwn?: boolean
   coin: number
+  quantity: number
 }
 
 export type TUserQuest = {
