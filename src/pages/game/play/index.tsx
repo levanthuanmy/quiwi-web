@@ -10,9 +10,10 @@ import { useGameSession } from '../../../hooks/useGameSession/useGameSession'
 import useScreenSize from '../../../hooks/useScreenSize/useScreenSize'
 import { TStartQuizResponse } from '../../../types/types'
 import styles from './GamePage.module.css'
+import router from "next/router";
 
 const GamePage: NextPage = () => {
-  const { gameSession, isHost, gameSkOn, saveGameSession } = useGameSession()
+  const { gameSession, isHost, gameSkOn, saveGameSession, clearGameSession } = useGameSession()
   const [isShowChat, setIsShowChat] = useState<boolean>(false)
   const [isShowHostControl, setIsShowHostControl] = useState<boolean>(true)
   const { fromMedium } = useScreenSize()
@@ -95,6 +96,15 @@ const GamePage: NextPage = () => {
             actions={[
               ...fabs,
               !fromMedium ? (isHost() ? hostAction : null) : null,
+              {
+                label: 'Thoát phòng',
+                icon: 'bi bi-box-arrow-left',
+                onClick: () => {
+                  // dùng clear game session là đủ
+                  clearGameSession()
+                  router.push('/')
+                },
+              },
             ]}
           />
         </div>
