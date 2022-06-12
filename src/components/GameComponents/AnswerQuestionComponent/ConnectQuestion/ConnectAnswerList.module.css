@@ -4,7 +4,7 @@
 }
 
 .word {
-    padding: 4px 16px 4px 16px;
+    padding: 4px 8px 4px 8px;
     white-space: pre;
 }
 
@@ -18,7 +18,7 @@
 
 @media (max-width: 576px) {
     .word {
-        padding: 0px 8px 0px 8px;
+        padding: 0px 4px 0px 4px;
     }
 }
 
@@ -36,6 +36,6 @@
     }
 
     .playerList {
-        gap: 4px;
+        gap: 2px;
     }
 }

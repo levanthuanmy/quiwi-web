@@ -188,11 +188,12 @@ const QuestionCreator: FC<QuestionCreatorProps> = ({
 
       if (type === 'conjunction') {
         _newQuestion['questionAnswers'] = answers.map((answer, idx) => {
-          if (answer.isCorrect) {
-            answer.orderPosition = correctIndexes.indexOf(idx)
-          }
+          // if (answer.isCorrect) {
+          //   answer.orderPosition = correctIndexes.indexOf(idx)
+          // }
           return answer
         })
+        console.log("=>(onSaveQuestion.tsx:198) answers", answers);
       }
 
       if (type === 'essay') {
@@ -211,6 +212,9 @@ const QuestionCreator: FC<QuestionCreatorProps> = ({
       } else {
         body = { ...quiz, questions: [...quiz.questions, _newQuestion] }
       }
+
+      onHide()
+
       const res = await post<TApiResponse<TQuiz>>(
         `/api/quizzes/${quizId}`,
         {},
@@ -221,7 +225,6 @@ const QuestionCreator: FC<QuestionCreatorProps> = ({
       setQuiz(res.response)
       setNewQuestion(defaultQuestion)
 
-      onHide()
     } catch (error) {
       console.log('onSaveQuestion - error', error)
     }

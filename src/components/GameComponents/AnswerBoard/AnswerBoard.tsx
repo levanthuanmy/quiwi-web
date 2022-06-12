@@ -144,6 +144,10 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, isShowHostControl}) => {
     })
 
     gameSkOn('view-result', (data: TViewResult) => {
+      if (intervalRef.current) {
+        _clearInterval()
+        setCountDown( 0)
+      }
       setViewResultData(data)
     })
 

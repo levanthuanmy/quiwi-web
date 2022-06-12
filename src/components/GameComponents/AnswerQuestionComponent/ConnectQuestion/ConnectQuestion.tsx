@@ -97,13 +97,14 @@ const ConnectQuestion: FC<ConnectQuestionProps> = ({
       }
     } else {
       console.log("=>(ConnectQuestion) Display answer for host");
-      setIsCorrect(true)
       showAnswerForHost()
     }
   }
 
   const showAnswerForHost = () => {
-    setWrongAnswerSet(new Set([]))
+    console.log("=>(ConnectQuestion.tsx:107) orderedCorrectAnswer", orderedCorrectAnswer);
+    setWrongAnswerSet(new Set())
+    setIsCorrect(true)
     setCorrectAnswerSet(new Set(orderedCorrectAnswer.filter(answer => answer.type != "21PLHDR")))
     setSelectedAnswerSet(new Set(orderedCorrectAnswer.filter(answer => answer.type != "21PLHDR")))
     setDisplayAnswer(orderedCorrectAnswer)
@@ -193,7 +194,7 @@ const ConnectQuestion: FC<ConnectQuestionProps> = ({
           disabledOption={wrongAnswerSet}
           userSelectedOptions={displayAnswer}
           displayDecor={true}
-          showAnswer={isTimeOut || isSubmitted}
+          showAnswer={isTimeOut}
           didSelect={didClickWord}
         />
       </div>
@@ -204,7 +205,7 @@ const ConnectQuestion: FC<ConnectQuestionProps> = ({
           className={styles.availableOption}
           disabledOption={selectedAnswerSet}
           options={options}
-          showAnswer={isTimeOut || isSubmitted}
+          showAnswer={isTimeOut}
           displayDecor={false}
           didSelect={didClickWord}
         />
