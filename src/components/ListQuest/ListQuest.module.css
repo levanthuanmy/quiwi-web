@@ -1,7 +1,7 @@
 .ListQuest {
     overflow-y: scroll;
     height: 75vh;
-    padding: 20px 100px 30px 100px;
+    padding: 20px 10px 30px 10px;
     border-color: red;
     border-radius: 16px;
 }

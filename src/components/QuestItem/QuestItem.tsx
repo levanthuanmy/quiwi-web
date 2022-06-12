@@ -50,16 +50,16 @@ const QuestItem: FC<{ quest: TQuest }> = ({quest}) => {
           )}>
             <div className={classNames('quest-item ', styles.cardBody)}>
               <Row className={classNames('', styles.price)}>
-                <Col sm={7} className={classNames("card-title", styles.fontTitle)}>{quest.questTitle}
+                <Col xs={7} sm={7} md={8}  className={classNames("card-title", styles.fontTitle)}>{quest.questTitle}
                 </Col>
-                <Col sm={2} className={classNames("", styles.price)}>
+                <Col xs={4} sm={3} md={3}  className={classNames("", styles.price)}>
                   <Row>
 
                     {quest.questGoal
                       .filter(item => item.type === "00COIN")
                       .map((item, idx) => (
                         <Row key={idx} className={classNames('', styles.coin)}>
-                          <Col sm={2}>
+                          <Col xs={1} sm={1} md={1}>
                             <img alt="avatar" src="/assets/quiwi-coin.png" width="15" height="15"></img>
 
                           </Col>

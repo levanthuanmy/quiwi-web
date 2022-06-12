@@ -81,7 +81,7 @@ const ListQuest: NextPage = () => {
                         tabs={tabOptions}
                     />
                     <Row className={classNames("justify-content-center", styles.searchBar)}>
-                        <Col xs={8}>
+                        <Col xs={12} sm={12} md={8}>
                             <SearchBar
                                 pageUrl="quests"
                                 inputClassName="border border-primary"
@@ -92,7 +92,7 @@ const ListQuest: NextPage = () => {
                     <Row
                         className={classNames("justify-content-center m-0 my-4", styles.board)}
                     >
-                        <Col xs={9} className={classNames("", styles.ListQuest)} >
+                        <Col xs={12} sm={12} md={8} className={classNames("", styles.ListQuest)} >
                             {toggleState === 0 ? (
                                 <>
                                     {itemsResponse?.items?.map((item, idx) => (
