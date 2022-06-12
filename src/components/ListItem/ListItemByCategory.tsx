@@ -61,15 +61,16 @@ const ListItemByCategory: FC<IListItem> = (props) => {
               <div>Không có vật phẩm</div>
             ) : (
               itemsRes?.map((item, idx) => (
-                <Item
-                  key={idx}
-                  name={item.item.name}
-                  des={item.item.description}
-                  avatar={item.item.avatar}
-                  type={item.item.type}
-                  price={item.item.price}
-                  quantity={item.quantity}
-                ></Item>
+                <div key={idx} className="px-1">
+                  <Item
+                    name={item.item.name}
+                    des={item.item.description}
+                    avatar={item.item.avatar}
+                    type={item.item.type}
+                    price={item.item.price}
+                    quantity={item.quantity}
+                  ></Item>
+                </div>
               ))
             )}
           </div>

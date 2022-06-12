@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { Col, Container, Form, Image, Row } from 'react-bootstrap'
 import * as Yup from 'yup'
 import LeftProfileMenuBar from '../../components/LeftProfileMenuBar/LeftProfileMenuBar'
+import Loading from '../../components/Loading/Loading'
 import MyButton from '../../components/MyButton/MyButton'
 import MyInput from '../../components/MyInput/MyInput'
 import NavBar from '../../components/NavBar/NavBar'
@@ -216,7 +217,7 @@ const ChangePasswordPage: NextPage = () => {
       </Container>
     </>
   ) : (
-    <div>Loading</div>
+    <Loading />
   )
 }
 
