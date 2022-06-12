@@ -17,8 +17,6 @@ import {
   TUserProfile,
 } from '../../types/types'
 
-// const socket = io(`${API_URL}/games`, { transports: ['websocket'] })
-
 const ItemPage: NextPage = () => {
   const [showWheelFortuneModal, setShowWheelFortuneModal] = useState(false)
   const [toggleState, setToggleState] = useState<number>(0)
@@ -350,7 +348,7 @@ const ItemPage: NextPage = () => {
           <WheelFortuneModal
             onHide={() => {
               setShowWheelFortuneModal(false)
-              getUser();
+              getUser()
             }}
             userSpinningNumber={0}
             showModal={showWheelFortuneModal}

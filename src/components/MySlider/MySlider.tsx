@@ -18,7 +18,7 @@ const MySlider: FC<{ children: ReactNode }> = ({ children }) => {
     dots: true,
     infinite: false,
     speed: 500,
-    slidesToShow: 4,
+    slidesToShow: 3,
     slidesToScroll: 2,
     initialSlide: 0,
     arrows: true,
