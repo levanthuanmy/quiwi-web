@@ -19,6 +19,7 @@
     align-items: flex-start !important;
     align-content: flex-start;
     display: flex;
+    padding-right: 5px;
 }
 
 .listItem {
