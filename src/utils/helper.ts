@@ -60,7 +60,7 @@ export const resizeBase64Img = (
           canvas.height = img.height * scale
           context?.scale(scale, scale)
           context?.drawImage(img, 0, 0)
-          resolve(canvas?.toDataURL('image/jpeg', '0.8'))
+          resolve(canvas?.toDataURL('image/jpeg', '0.7'))
         }
       }
     } catch (error) {

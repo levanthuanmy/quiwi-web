@@ -34,7 +34,7 @@ export const uploadFile = async (ref: StorageReference, data: File) => {
     const reader = new FileReader()
     reader.readAsDataURL(data)
     reader.onload = async () => {
-      let newImagesSrc = await resizeBase64Img(String(reader.result), 876, 876)
+      let newImagesSrc = await resizeBase64Img(String(reader.result), 600, 600)
       await uploadString(ref, newImagesSrc, 'data_url')
     }
   } catch (error) {
