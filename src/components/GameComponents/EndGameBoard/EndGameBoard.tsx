@@ -104,10 +104,10 @@ const ItemChart: FC<{
 
   return (
     <div
-      className={classNames('d-flex flex-column text-center')}
+      className={classNames('d-flex flex-column text-center justify-content-end')}
       style={getSize()}
     >
-      <Image src={medalImage[position].image} alt="" width="80" height="90" />
+      <Image src={medalImage[position].image} alt="" width="80" height="90" className='align-self-center'/>
       <div className={styles.rankingName}>{name}</div>
       <div
         className={styles.rankingScore}
