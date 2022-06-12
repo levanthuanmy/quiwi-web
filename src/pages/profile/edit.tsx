@@ -1,15 +1,18 @@
+import classNames from 'classnames'
 import { Field, Formik, FormikHelpers } from 'formik'
 import { NextPage } from 'next'
 import { useEffect, useState } from 'react'
-import { Col, Container, Form, Image, Row } from 'react-bootstrap'
+import { Col, Container, Form, Image, Modal, Row } from 'react-bootstrap'
 import * as Yup from 'yup'
+import AvatarSelectionModal from '../../components/AvatarSelectionModal/AvatarSelectionModal'
 import LeftProfileMenuBar from '../../components/LeftProfileMenuBar/LeftProfileMenuBar'
+import Loading from '../../components/Loading/Loading'
 import MyButton from '../../components/MyButton/MyButton'
 import MyInput from '../../components/MyInput/MyInput'
+import MyModal from '../../components/MyModal/MyModal'
 import NavBar from '../../components/NavBar/NavBar'
 import { get, post } from '../../libs/api'
 import { TApiResponse, TUser, TUserProfile } from '../../types/types'
-
 type ProfileForm = {
   name: string
   phoneNumber: string
@@ -19,6 +22,9 @@ type ProfileForm = {
 
 const EditProfilePage: NextPage = () => {
   const [userResponse, setUserReponse] = useState<TUserProfile>()
+  const [showModal, setShowModal] = useState(false)
+  const [showAvatarSelectionModal, setShowAvatarSelectionModal] =
+    useState(false)
 
   useEffect(() => {
     const getUser = async () => {
@@ -44,7 +50,6 @@ const EditProfilePage: NextPage = () => {
     body: ProfileForm,
     actions: FormikHelpers<ProfileForm>
   ) => {
-    console.log('==== ~ body', body)
     try {
       const res: TApiResponse<TUser> = await post(
         '/api/users/profile',
@@ -52,10 +57,9 @@ const EditProfilePage: NextPage = () => {
         body,
         true
       )
-      console.log('==== ~ res', res)
-      alert('Cập nhật thành công')
       if (res.response) {
         userResponse && setUserReponse({ ...userResponse, user: res.response })
+        setShowModal(true)
       }
 
       // setUser(res.response)
@@ -67,6 +71,9 @@ const EditProfilePage: NextPage = () => {
     }
   }
 
+  const changeAvatar = () => {
+    setShowAvatarSelectionModal(true)
+  }
   const phoneRegExp =
     /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
 
@@ -95,19 +102,25 @@ const EditProfilePage: NextPage = () => {
             <LeftProfileMenuBar />
           </Col>
           <Col className="p-4">
-            <Row className=" justify-content-center align-items-center">
-              <Col xs={2} lg={4} className="text-lg-end">
+            <Row className="justify-content-lg-center align-items-center">
+              <Col xs={3} lg={4} className="text-lg-end">
                 <Image
                   fluid={true}
                   alt="avatar"
                   src="/assets/default-logo.png"
-                  width={40}
-                  height={40}
+                  width={48}
+                  height={48}
                   className="rounded-circle"
                 />
               </Col>
               <Col className="fs-16px fw-medium">
-                {userResponse.user.username}
+                <div>{userResponse.user.username}</div>
+                <div
+                  onClick={() => changeAvatar()}
+                  className={classNames('cursor-pointer text-primary fs-14px')}
+                >
+                  Đổi ảnh đại diện
+                </div>
               </Col>
             </Row>
 
@@ -134,7 +147,7 @@ const EditProfilePage: NextPage = () => {
               }) => (
                 <Form
                   method="POST"
-                  onSubmit={(e) => {
+                  onSubmit={(e: any) => {
                     e.preventDefault()
                     handleSubmit()
                   }}
@@ -184,7 +197,6 @@ const EditProfilePage: NextPage = () => {
                     </Col>
                     <Col>
                       <Field
-                        type="number"
                         name="phoneNumber"
                         placeholder="Số điện thoại"
                         as={MyInput}
@@ -228,10 +240,27 @@ const EditProfilePage: NextPage = () => {
             </Formik>
           </Col>
         </Row>
+        <MyModal
+          show={showModal}
+          size="sm"
+          onHide={() => setShowModal(false)}
+          activeButtonTitle="Đồng ý"
+          activeButtonCallback={() => setShowModal(false)}
+          header={<Modal.Title>Thông báo</Modal.Title>}
+        >
+          <div className="text-center">Cập nhật thông tin thành công</div>
+        </MyModal>
+
+        <AvatarSelectionModal
+          onHide={() => setShowAvatarSelectionModal(false)}
+          show={showAvatarSelectionModal}
+          key={userResponse.user.id}
+          user={userResponse.user}
+        />
       </Container>
     </>
   ) : (
-    <div>Loading</div>
+    <Loading />
   )
 }
 
