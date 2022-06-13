@@ -111,7 +111,7 @@ const ItemQuestion: FC<ItemQuestionProps> = ({
             <div className="fs-14px text-secondary">Câu hỏi</div>
             <div dangerouslySetInnerHTML={{__html: question.question}}/>
             {question.type === '21ODMUL' && (
-              <div className={"d-flex gap-1 align-items-center justify-content-center"}>
+              <div className={"d-flex gap-1 justify-content-center flex-wrap"}>
                 {question.questionAnswers.filter(answer => answer.isCorrect).sort((a, b) => {
                   return a.orderPosition - b.orderPosition
                 }).map((answer, key) => (
@@ -151,13 +151,12 @@ const ItemQuestion: FC<ItemQuestionProps> = ({
             </div>
             <Row>
               {question.questionAnswers.map((answer, key) => (
+                answer.type !== '21PLHDR' &&
                 <Col key={key} xs="6" className="d-flex align-items-center">
                   <div
                     className={cn('bi bi-circle-fill me-2', {
                       'text-danger': !answer.isCorrect,
                       'text-primary': answer.isCorrect,
-                      'text-secondary':
-                        answer.isCorrect && answer.type === '21PLHDR',
                     })}
                   />
                   <div>

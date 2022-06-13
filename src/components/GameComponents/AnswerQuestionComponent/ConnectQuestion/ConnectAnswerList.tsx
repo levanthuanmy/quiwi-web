@@ -80,9 +80,10 @@ export const ConnectAnswerList: FC<TextAnswerListProps> = (props: TextAnswerList
             }}
           >
             <div
-              className={cn(styles.word, "fw-medium",
+              className={cn(styles.word, "fw-medium user-select-none",
               {
-              "cursor-pointer": !props.showAnswer
+              "cursor-pointer": !props.showAnswer,
+                "px-2": option.type !== "21PLHDR"
             })}
                  style={{color: getTextColor(option)}}
             >

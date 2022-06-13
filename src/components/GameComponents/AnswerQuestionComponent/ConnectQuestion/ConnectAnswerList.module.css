@@ -4,7 +4,6 @@
 }
 
 .word {
-    padding: 4px 8px 4px 8px;
     white-space: pre;
 }
 
@@ -18,12 +17,12 @@
 
 @media (max-width: 576px) {
     .word {
-        padding: 0px 4px 0px 4px;
+        /*padding: 0px 4px 0px 4px;*/
     }
 }
 
 .playerList {
-    gap: 8px;
+    gap: 6px;
     align-items: center;
     justify-content: center;
     overflow-y: scroll;
@@ -35,7 +34,4 @@
         font-size: 20px;
     }
 
-    .playerList {
-        gap: 2px;
-    }
 }
