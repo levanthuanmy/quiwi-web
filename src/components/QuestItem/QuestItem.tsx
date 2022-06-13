@@ -37,6 +37,10 @@ const QuestItem: FC<{ quest: TQuest }> = ({quest}) => {
     console.log(res.message)
   }
 
+  const questGoal = quest.questRequirement[0].goal;
+  const current = quest.userQuest[0].process;
+  const process = current / questGoal * 100;
+
 
   return (
     <div>
@@ -94,9 +98,9 @@ const QuestItem: FC<{ quest: TQuest }> = ({quest}) => {
               </div>
 
               <div className={classNames("progress", styles.progessBar)} > 
-                <div className={classNames("progress-bar progress-bar-striped bg-success")} role="progressbar" style={{ width: quest.userQuest[0].process.toString() + "%" }}></div>
+                <div className={classNames("progress-bar progress-bar-striped bg-success")} role="progressbar" style={{ width: process.toString() + "%" }}></div>
               </div>
-              <p className="card-text text-end fs-16px">{quest.userQuest[0].process.toString()}%</p>
+              <p className="card-text text-end fs-16px">{current}/{questGoal}</p>
             </div>
           </div>
         </Col>
