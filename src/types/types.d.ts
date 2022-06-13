@@ -232,6 +232,10 @@ export type TUserItems = {
   itemId: number
   quantity: number
   item: TItem
+  isUsed: boolean
+  userId: number
+  createdAt: Date
+  updatedAt: Date
 }
 
 export type TGameRound = {

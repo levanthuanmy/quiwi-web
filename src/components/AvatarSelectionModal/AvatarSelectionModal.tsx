@@ -1,12 +1,14 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { FC, useEffect, useState } from 'react'
 import { Col, Modal, Row, Image } from 'react-bootstrap'
-import { get } from '../../libs/api'
+import { get, post } from '../../libs/api'
 import { TApiResponse, TItem, TUser, TUserItems } from '../../types/types'
 import Loading from '../Loading/Loading'
 import MyButton from '../MyButton/MyButton'
 import Item from '../Item/Item'
 import AvatarItem from './AvatarItem'
 import classNames from 'classnames'
+import { useAuth } from '../../hooks/useAuth/useAuth'
 
 type MyModalProps = {
   show: boolean
@@ -15,35 +17,52 @@ type MyModalProps = {
 }
 const AvatarSelectionModal: FC<MyModalProps> = ({ show, onHide, user }) => {
   const [avatarItems, setAvatarItems] = useState<TUserItems[]>()
-  const [choose, setChoose] = useState<number>()
-  useEffect(() => {
-    const getAvatarItems = async () => {
-      try {
-        if (user) {
-          const param = {
-            filter: {
-              where: { itemCategory: { name: 'Ảnh đại diện' } },
-              relations: ['itemCategory'],
-            },
-          }
-          const res = await get<TApiResponse<TUserItems[]>>(
-            `/api/users/user/${user.id}/items`,
-            true,
-            param
-          )
-          if (res.response) {
-            setAvatarItems(res.response)
-            for (const item of res.response) {
-              // if (item.itemId === user.avatar)
-            }
-          }
-        }
-      } catch (error) {
-        console.log('==== ~ getAvatarItems ~ error', error)
+  const [itemIdChosen, setChoose] = useState<number>()
 
-        alert((error as Error).message)
+  const auth = useAuth()
+  const getAvatarItems = async () => {
+    try {
+      if (user) {
+        const param = {
+          filter: {
+            where: { itemCategory: { name: 'Ảnh đại diện' } },
+            relations: ['itemCategory'],
+          },
+        }
+        const res = await get<TApiResponse<TUserItems[]>>(
+          `/api/users/user/${user.id}/items`,
+          true,
+          param
+        )
+        if (res.response) {
+          setAvatarItems(res.response)
+        }
       }
+    } catch (error) {
+      console.log('==== ~ getAvatarItems ~ error', error)
+
+      alert((error as Error).message)
     }
+  }
+  const changeAvatar = async () => {
+    try {
+      const res = await post<TApiResponse<TUser>>(
+        `/api/users/user/change-avatar/${itemIdChosen}`,
+        {},
+        {},
+        true
+      )
+      console.log('==== ~ changeAvatar ~ res', res)
+      if (res.response) {
+        auth.setUser(res.response)
+      }
+    } catch (error) {
+      console.log('==== ~ changeAvatar ~ error', error)
+      alert(JSON.stringify(error))
+    }
+  }
+
+  useEffect(() => {
     getAvatarItems()
   }, [user])
 
@@ -59,15 +78,15 @@ const AvatarSelectionModal: FC<MyModalProps> = ({ show, onHide, user }) => {
     >
       <Modal.Body className="d-flex">
         {/* Ở đây sẽ để badge các thứ như liên minh */}
-        <div className="d-flex align-items-center  border-end border-2 p-4">
+        <div className="d-flex align-items-center flex-column justify-content-center border-end border-2 p-4">
           <Image
-            fluid={true}
             alt="avatar"
-            src="/assets/default-logo.png"
+            src={user.avatar || '/assets/default-logo.png'}
             width={124}
             height={124}
             className="rounded-circle"
           />
+          <div className='pt-2 fw-medium'>{user.name || user.username}</div>
         </div>
         <div className="d-flex flex-wrap">
           {avatarItems ? (
@@ -76,7 +95,7 @@ const AvatarSelectionModal: FC<MyModalProps> = ({ show, onHide, user }) => {
                 key={idx}
                 className={classNames('cursor-pointer mx-2 p-2')}
                 onClick={() => {
-                  setChoose(item.id)
+                  setChoose(item.item.id)
                 }}
               >
                 <AvatarItem
@@ -85,7 +104,8 @@ const AvatarSelectionModal: FC<MyModalProps> = ({ show, onHide, user }) => {
                   avatar={item.item.avatar}
                   type={item.item.type}
                   price={item.item.price}
-                  choose={item.id === choose}
+                  choose={item.item.id === itemIdChosen}
+                  isUsed={item.isUsed}
                 ></AvatarItem>
               </div>
             ))
@@ -106,7 +126,7 @@ const AvatarSelectionModal: FC<MyModalProps> = ({ show, onHide, user }) => {
         </Col>
 
         <Col xs="6">
-          <MyButton className="text-white w-100" onClick={() => {}}>
+          <MyButton className="text-white w-100" onClick={changeAvatar}>
             Cập nhật
           </MyButton>
         </Col>

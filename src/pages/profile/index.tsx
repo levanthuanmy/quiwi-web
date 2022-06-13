@@ -153,9 +153,8 @@ const ProfilePage: NextPage = () => {
       <Container className="pt-80px min-vh-100 pb-3" fluid="lg">
         <div className="d-flex flex-column flex-md-row mt-3 gap-4 p-12px shadow-sm rounded-20px bg-white position-relative">
           <Image
-            fluid={true}
             alt="avatar"
-            src="/assets/default-logo.png"
+            src={user?.avatar || '/assets/default-logo.png'}
             width={160}
             height={160}
             className="rounded-14px"

@@ -9,14 +9,18 @@ type IItem = {
   type: string
   price: number
   choose: boolean
+  isUsed: boolean
 }
 
 const AvatarItem: FC<IItem> = (props) => {
   return (
     <div
       className={classNames(
-        '',
-        props.choose ? 'border border-3 border-primary' : 'p-1'
+        props.choose
+          ? 'border border-3 border-primary'
+          : props.isUsed
+          ? 'border border-2 border-warning'
+          : 'p-1'
       )}
     >
       <div className="position-relative">
