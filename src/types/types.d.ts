@@ -287,6 +287,7 @@ export type TQuest = {
   typeActionDetail: string
   userQuest: TUserQuest[]
   questGoal: TQuestGoal[]
+  questRequirement: TQuestRequirement[]
 }
 
 export type TQuestGoal = {
@@ -316,6 +317,11 @@ export type TUserQuest = {
   id: number
   process: number
   status: string
+}
+
+export type TQuestRequirement = {
+  goal: number,
+  type: string
 }
 
 export type TNotification = {
