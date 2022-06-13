@@ -11,6 +11,7 @@ import MyButton from '../../components/MyButton/MyButton'
 import MyInput from '../../components/MyInput/MyInput'
 import MyModal from '../../components/MyModal/MyModal'
 import NavBar from '../../components/NavBar/NavBar'
+import { useAuth } from '../../hooks/useAuth/useAuth'
 import { get, post } from '../../libs/api'
 import { TApiResponse, TUser, TUserProfile } from '../../types/types'
 type ProfileForm = {
@@ -26,6 +27,9 @@ const EditProfilePage: NextPage = () => {
   const [showAvatarSelectionModal, setShowAvatarSelectionModal] =
     useState(false)
 
+  const auth = useAuth()
+
+  const user = auth.getUser()
   useEffect(() => {
     const getUser = async () => {
       try {
@@ -105,9 +109,8 @@ const EditProfilePage: NextPage = () => {
             <Row className="justify-content-lg-center align-items-center">
               <Col xs={3} lg={4} className="text-lg-end">
                 <Image
-                  fluid={true}
                   alt="avatar"
-                  src="/assets/default-logo.png"
+                  src={user?.avatar || '/assets/default-logo.png'}
                   width={48}
                   height={48}
                   className="rounded-circle"
@@ -250,13 +253,14 @@ const EditProfilePage: NextPage = () => {
         >
           <div className="text-center">Cập nhật thông tin thành công</div>
         </MyModal>
-
-        <AvatarSelectionModal
-          onHide={() => setShowAvatarSelectionModal(false)}
-          show={showAvatarSelectionModal}
-          key={userResponse.user.id}
-          user={userResponse.user}
-        />
+        {user ? (
+          <AvatarSelectionModal
+            onHide={() => setShowAvatarSelectionModal(false)}
+            show={showAvatarSelectionModal}
+            key={user.id}
+            user={user}
+          />
+        ) : null}
       </Container>
     </>
   ) : (
