@@ -81,7 +81,7 @@ const AnswerEditorSection: FC<{
         )}
 
         {type === 'fill' && (
-           <div>
+          <div>
             <div className="text-center mb-4 fs-18px fw-medium">
               Đánh dấu một câu trả lời là đúng, nếu câu trả lời
             </div>
@@ -252,7 +252,8 @@ const AnswerEditorSection: FC<{
                     correctIndexes={correctIndexes}
                     setCorrectIndexes={setCorrectIndexes}
                     setConjunctionAnswers={setAnswers}
-                    onRemove={() => removeAnswerAtIndex(key)}
+                    onRemove={() => {
+                    }}
                     couldDelete={false}
                   />
                 </Col>
@@ -265,7 +266,10 @@ const AnswerEditorSection: FC<{
                     correctIndexes={correctIndexes}
                     setCorrectIndexes={setCorrectIndexes}
                     setConjunctionAnswers={setAnswers}
-                    onRemove={() => removeAnswerAtIndex(key)}
+                    onRemove={() => {
+                      let answerIndex = answers.indexOf(answer)
+                      if (answerIndex >= 0) removeAnswerAtIndex(answerIndex)
+                    }}
                     couldDelete={true}
                   />
                 </Col>

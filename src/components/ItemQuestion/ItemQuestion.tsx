@@ -1,9 +1,9 @@
-import classNames from 'classnames'
+import cn from 'classnames'
 import _ from 'lodash'
-import React, { FC, memo, useRef, useState } from 'react'
-import { Accordion, Col, Image, Row, useAccordionButton } from 'react-bootstrap'
-import { useDrag, useDrop } from 'react-dnd'
-import { TQuestion } from '../../types/types'
+import React, {FC, memo, useRef, useState} from 'react'
+import {Accordion, Col, Image, Row, useAccordionButton} from 'react-bootstrap'
+import {useDrag, useDrop} from 'react-dnd'
+import {TQuestion} from '../../types/types'
 import {
   MAPPED_QUESTION_MATCHER,
   MAPPED_QUESTION_TYPE,
@@ -27,16 +27,16 @@ type ItemQuestionProps = {
 }
 
 const ItemQuestion: FC<ItemQuestionProps> = ({
-  question,
-  onRemove,
-  onEditQuestion,
-  showActionBtn = true,
-  index,
-  move,
-}) => {
+                                               question,
+                                               onRemove,
+                                               onEditQuestion,
+                                               showActionBtn = true,
+                                               index,
+                                               move,
+                                             }) => {
   const ref = useRef<any>(null)
 
-  const [{ handlerId }, drop] = useDrop<DragItem, void, { handlerId: any }>({
+  const [{handlerId}, drop] = useDrop<DragItem, void, { handlerId: any }>({
     accept: 'card',
     collect(monitor) {
       return {
@@ -80,7 +80,7 @@ const ItemQuestion: FC<ItemQuestionProps> = ({
   const [dragVal, drag] = useDrag({
     type: 'card',
     item: () => {
-      return { index }
+      return {index}
     },
     collect: (monitor: any) => ({
       isDragging: monitor.isDragging(),
@@ -109,7 +109,24 @@ const ItemQuestion: FC<ItemQuestionProps> = ({
         <Accordion.Body>
           <div className="fw-medium mb-3">
             <div className="fs-14px text-secondary">Câu hỏi</div>
-            <div dangerouslySetInnerHTML={{ __html: question.question }} />
+            <div dangerouslySetInnerHTML={{__html: question.question}}/>
+            {question.type === '21ODMUL' && (
+              <div className={"d-flex gap-1 align-items-center justify-content-center"}>
+                {question.questionAnswers.filter(answer => answer.isCorrect).sort((a, b) => {
+                  return a.orderPosition - b.orderPosition
+                }).map((answer, key) => (
+                  <span key={key}
+                        className={cn({"fw-bolder": answer.type === "10TEXT"})}
+                        style={{
+                          color: (answer.type === "10TEXT") ? "#009883" : "black"
+                        }}
+                  >
+                   {answer.answer}
+                  </span>)
+                )
+                }
+              </div>
+            )}
             {question.media?.length ? (
               <Image
                 src={question.media}
@@ -136,7 +153,7 @@ const ItemQuestion: FC<ItemQuestionProps> = ({
               {question.questionAnswers.map((answer, key) => (
                 <Col key={key} xs="6" className="d-flex align-items-center">
                   <div
-                    className={classNames('bi bi-circle-fill me-2', {
+                    className={cn('bi bi-circle-fill me-2', {
                       'text-danger': !answer.isCorrect,
                       'text-primary': answer.isCorrect,
                       'text-secondary':
@@ -182,12 +199,12 @@ const ItemQuestion: FC<ItemQuestionProps> = ({
 export default memo(ItemQuestion)
 
 function CustomToggle({
-  eventKey,
-  question,
-  onRemove,
-  onEditQuestion,
-  showActionBtn,
-}: {
+                        eventKey,
+                        question,
+                        onRemove,
+                        onEditQuestion,
+                        showActionBtn,
+                      }: {
   eventKey: string
   question: TQuestion
   onRemove?: () => void
@@ -224,7 +241,7 @@ function CustomToggle({
           </>
         )}
         <QuestionActionButton
-          iconClassName={classNames('bi', {
+          iconClassName={cn('bi', {
             'bi-chevron-down': !isToggle,
             'bi-chevron-up': isToggle,
           })}
