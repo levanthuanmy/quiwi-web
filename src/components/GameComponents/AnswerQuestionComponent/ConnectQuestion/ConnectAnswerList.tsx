@@ -41,8 +41,8 @@ export const ConnectAnswerList: FC<TextAnswerListProps> = (props: TextAnswerList
     const colorPostfix = props.showAnswer ? "66" : ""
     let highlight = !(props.disabledOption && props.disabledOption.has(option))
     if (props.showAnswer) highlight = !highlight
-    // return highlight ? colors[idx % colors.length] + colorPostfix : "#E0E0E0"
-    return colors[idx % colors.length] + colorPostfix
+    return highlight ? colors[idx % colors.length] + colorPostfix : "#E0E0E0"
+    // return colors[idx % colors.length] + colorPostfix
   }
 
   function getColorFor(idx: number, option: TAnswer): string {

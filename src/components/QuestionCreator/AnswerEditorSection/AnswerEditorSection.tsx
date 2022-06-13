@@ -37,6 +37,7 @@ const AnswerEditorSection: FC<{
         correctIndexes,
         setCorrectIndexes,
       }) => {
+  console.log("=>(AnswerEditorSection.tsx:41) answers", answers);
   const sortedCorrectAnswers = answers.filter(answer => answer.isCorrect).sort((a, b) => {
     return a.orderPosition - b.orderPosition
   })
@@ -80,7 +81,7 @@ const AnswerEditorSection: FC<{
         )}
 
         {type === 'fill' && (
-          <div>
+           <div>
             <div className="text-center mb-4 fs-18px fw-medium">
               Đánh dấu một câu trả lời là đúng, nếu câu trả lời
             </div>
@@ -162,10 +163,9 @@ const AnswerEditorSection: FC<{
           <div>
             <div className="fw-medium fs-22px mb-4">Nhập câu hoàn chỉnh:</div>
             <Formik
-              initialValues={{sentence: answers.map(answer => answer.answer).join(" ")}}
+              initialValues={{sentence: sortedCorrectAnswers.map(answer => answer.answer).join(" ")}}
               onSubmit={(values, actions) => {
                 let wordArray = values.sentence.split(" ").filter(word => word != "")
-                console.log("=>(AnswerEditorSection.tsx:169) wordArray", wordArray);
                 if (wordArray) {
                   let _answers: TAnswer[] = wordArray.map((value, index) => ({
                     ...defaultAnswer,
@@ -174,7 +174,7 @@ const AnswerEditorSection: FC<{
                     answer: value,
                     orderPosition: index
                   } as TAnswer))
-                  setAnswers(_answers)
+                  setAnswers([..._answers, ...sortedIncorrectAnswers])
                   actions.setSubmitting(false)
                 }
               }}

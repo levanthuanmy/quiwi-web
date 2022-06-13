@@ -187,13 +187,7 @@ const QuestionCreator: FC<QuestionCreatorProps> = ({
       }
 
       if (type === 'conjunction') {
-        _newQuestion['questionAnswers'] = answers.map((answer, idx) => {
-          // if (answer.isCorrect) {
-          //   answer.orderPosition = correctIndexes.indexOf(idx)
-          // }
-          return answer
-        })
-        console.log("=>(onSaveQuestion.tsx:198) answers", answers);
+        _newQuestion['questionAnswers'] = answers.filter(answer => answer.answer.length > 0)
       }
 
       if (type === 'essay') {
