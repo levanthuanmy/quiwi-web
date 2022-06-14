@@ -2,20 +2,21 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import _ from 'lodash'
 import Head from 'next/head'
-import {useRouter} from 'next/router'
-import {FC, useEffect, useState} from 'react'
-import {Modal, Toast, ToastContainer} from 'react-bootstrap'
+import { useRouter } from 'next/router'
+import { FC, useEffect, useState } from 'react'
+import { Modal, Toast, ToastContainer } from 'react-bootstrap'
 import QRCode from 'react-qr-code'
 import Cookies from 'universal-cookie'
-import {useGameSession} from '../../hooks/useGameSession/useGameSession'
+import { useGameSession } from '../../hooks/useGameSession/useGameSession'
 import useScreenSize from '../../hooks/useScreenSize/useScreenSize'
-import {useLocalStorage} from '../../hooks/useLocalStorage/useLocalStorage'
-import {TPlayer, TStartGameRequest, TUser} from '../../types/types'
-import {JsonParse} from '../../utils/helper'
+import { useLocalStorage } from '../../hooks/useLocalStorage/useLocalStorage'
+import { TPlayer, TStartGameRequest, TUser } from '../../types/types'
+import { JsonParse } from '../../utils/helper'
 import MyButton from '../MyButton/MyButton'
 import PlayerLobbyItem from '../PlayerLobbyItem/PlayerLobbyItem'
 import PlayerLobbyList from '../PlayerLobbyList/PlayerLobbyList'
 import styles from './LobbyScreen.module.css'
+import { useToasts } from 'react-toast-notifications'
 
 type LobbyScreenProps = {
   invitationCode: string
@@ -28,7 +29,7 @@ const LobbyScreen: FC<LobbyScreenProps> = ({ invitationCode, isHost }) => {
   const router = useRouter()
   const [showToast, setShowToast] = useState<boolean>(false)
   const [showQR, setShowQR] = useState<boolean>(false)
-  const {isMobile} = useScreenSize()
+  const { isMobile } = useScreenSize()
   const {
     gameSession,
     saveGameSession,
@@ -37,29 +38,34 @@ const LobbyScreen: FC<LobbyScreenProps> = ({ invitationCode, isHost }) => {
     gameSkOn,
     gameSkOnce,
   } = useGameSession()
+  const { addToast } = useToasts()
 
   useEffect(() => {
     if (!gameSession) return
     const lsPlayers: TPlayer[] = [...gameSession.players]
     setPlayerList(lsPlayers)
 
-    gameSkOn('new-player', (data) => {
-      console.log('new-player', data)
-
+    gameSkOn('new-player', (data: { newPlayer: TPlayer }) => {
       const newPlayerList: TPlayer[] = [...lsPlayers, data.newPlayer]
       setPlayerList(newPlayerList)
       gameSession.players = newPlayerList
       saveGameSession(gameSession)
+      addToast(`${data.newPlayer.nickname} đã tham gia phòng`, {
+        appearance: 'success',
+        autoDismiss: true,
+      })
     })
 
     gameSkOn('player-left', (data) => {
-      // console.log('player-left', data)
-
       let _players = [...playerList]
       _.remove(_players, (player) => player.id === data.id)
       setPlayerList(_players)
       gameSession.players = [..._players]
       saveGameSession(gameSession)
+      addToast(`${data?.player?.nickname} đã rời phòng`, {
+        appearance: 'error',
+        autoDismiss: true,
+      })
     })
 
     gameSkOnce('host-out', () => {
