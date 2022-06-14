@@ -52,6 +52,7 @@ const PlayerTab: FC<{ game: TGameHistory }> = ({ game }) => {
               show={showDetailedPlayerModal}
               onHide={() => setShowDetailedPlayerModal(false)}
               player={player}
+              rank={idx + 1}
             />
           </div>
         )

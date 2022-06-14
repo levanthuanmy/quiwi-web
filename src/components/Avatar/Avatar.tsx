@@ -6,12 +6,12 @@ import { useAuth } from '../../hooks/useAuth/useAuth'
 const Avatar: FC = () => {
   const router = useRouter()
   const authContext = useAuth()
-
+  const user = authContext.getUser()
   return (
     <Dropdown id="avatar">
       <Dropdown.Toggle className="cursor-pointer p-1 rounded-pill">
         <Image
-          src={'/assets/default-logo.png'}
+          src={user?.avatar || '/assets/default-logo.png'}
           width={30}
           height={30}
           alt="avatar"
