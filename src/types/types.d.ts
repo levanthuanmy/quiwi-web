@@ -323,6 +323,7 @@ export type TUserQuest = {
   id: number
   process: number
   status: string
+  isReceivedReward: boolean
 }
 
 export type TQuestRequirement = {
