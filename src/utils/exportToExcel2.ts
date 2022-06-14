@@ -70,7 +70,7 @@ const getHeader = (
   }
   cell.alignment = {
     horizontal: 'center',
-    vertical: 'middle'
+    vertical: 'middle',
   }
   cell.value = title
 
@@ -252,13 +252,14 @@ const getPlayerScoreForEachQuestion = (
   }
 
   let isCorrect = ''
-  if (gameRound.score === gameRound.question?.score) {
+  if (gameRound.isCorrect) {
     isCorrect = 'Đúng'
-  } else if (!gameRound.answer && !gameRound.answerIds.length) {
+  } else if (!gameRound.answer && _.isEmpty(gameRound.answerIds)) {
     isCorrect = 'Không trả lời'
   } else {
     isCorrect = 'Sai'
   }
+  
   const playerRowSheet = [
     player.nickname,
     gameRound.answer || answers.join(', '),
