@@ -54,19 +54,19 @@ const WheelFortuneModal: FC<WheelModalProps> = ({
   return (
     <MyModal
       show={showModal}
-      onHide={isHide ? onHide : () => {setIsHide(false)}}
+      onHide={isHide ? onHide : () => { setIsHide(false) }}
       size="xl"
       header={
         <Modal.Title className="text-primary">Vòng quay may mắn</Modal.Title>
       }
     >
-      <WheelOfFortune 
-      data={wheelFortuneResponse?.wheelSetting} 
-      jackpotTotalScore={wheelFortuneResponse?.jackpotTotalScore} 
-      numberPlayerJoin = {wheelFortuneResponse?.numberPlayerJoin} 
-      userNumSpin = {userWheelFortuneResponse?.numberSpin}
-      onHide={() => setIsHide(true)}
-      onShow={() => setIsHide(false)}/>
+      <WheelOfFortune
+        data={wheelFortuneResponse?.wheelSetting}
+        jackpotTotalScore={wheelFortuneResponse?.jackpotTotalScore}
+        numberPlayerJoin={wheelFortuneResponse?.numberPlayerJoin}
+        userNumSpin={userWheelFortuneResponse?.numberSpin}
+        onHide={() => setIsHide(true)}
+        onShow={() => setIsHide(false)} />
     </MyModal>
   )
 }

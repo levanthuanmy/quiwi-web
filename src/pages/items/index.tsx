@@ -269,13 +269,13 @@ const ItemPage: NextPage = () => {
             </Col>
           </Row>
           <Row>
-            <Button
-              onClick={() => {
-                setShowWheelFortuneModal(true)
-              }}
-            >
-              Vòng quay may mắn
-            </Button>
+            <Image src="/assets/wheel.webp" onClick={() => {
+              setShowWheelFortuneModal(true)
+            }}
+            roundedCircle={true}
+            rounded={true}
+            fluid={true}
+            style={{position:'absolute', right: 1, height: '100px', width:'200px'}} />
           </Row>
           <Row className="">
             {itemsResponse?.items.map((item, idx) => (
