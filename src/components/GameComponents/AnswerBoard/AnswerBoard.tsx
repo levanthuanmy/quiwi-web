@@ -5,6 +5,7 @@ import React, { FC, memo, useEffect, useRef, useState } from 'react'
 import { useGameSession } from '../../../hooks/useGameSession/useGameSession'
 import { useLocalStorage } from '../../../hooks/useLocalStorage/useLocalStorage'
 import {
+  TPlayer,
   TQuestion,
   TStartQuizResponse,
   TUser,
@@ -15,7 +16,7 @@ import GameSessionRanking from '../GameSessionRanking/GameSessionRanking'
 import { QuestionMedia } from '../QuestionMedia/QuestionMedia'
 import styles from './AnswerBoard.module.css'
 import { AnswerSectionFactory } from '../AnswerQuestionComponent/AnswerSectionFactory/AnswerSectionFactory'
-import { Fade } from 'react-bootstrap'
+import { Fade, Image } from 'react-bootstrap'
 import GameButton from '../GameButton/GameButton'
 import useScreenSize from '../../../hooks/useScreenSize/useScreenSize'
 
@@ -39,6 +40,8 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
   } = useGameSession()
 
   const [lsUser] = useLocalStorage('user', '')
+  const [lsGameSessionPlayer] = useLocalStorage('game-session-player', '')
+  const [gameSessionPlayer, setGameSessionPlayer] = useState<TPlayer>()
   const [isHost, setIsHost] = useState<boolean>(false)
   const [currentQID, setCurrentQID] = useState<number>(-1)
 
@@ -57,7 +60,6 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false)
   const _numSubmission = useRef<number>(0)
   const [numSubmission, setNumSubmission] = useState<number>(0)
-  const [numStreak, setNumStreak] = useState<number>(0)
   const [viewResultData, setViewResultData] = useState<TViewResult>()
 
   const { fromMedium } = useScreenSize()
@@ -66,6 +68,12 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
   useEffect(() => {
     handleSocket()
   }, [])
+
+  useEffect(() => {
+    if (lsGameSessionPlayer?.length) {
+      setGameSessionPlayer(JsonParse(lsGameSessionPlayer))
+    }
+  }, [lsGameSessionPlayer])
 
   useEffect(() => {
     if (!gameSession) return
@@ -154,7 +162,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
     gameSkOn('view-result', (data: TViewResult) => {
       if (intervalRef.current) {
         _clearInterval()
-        setCountDown( 0)
+        setCountDown(0)
       }
       setViewResultData(data)
 
@@ -296,6 +304,19 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
       >
         {currentQuestion?.question ? (
           <div className="bg-dark bg-opacity-50 rounded-10px shadow mb-2">
+            <div className="pt-3 px-3 d-flex align-items-center gap-3">
+              <Image
+                src="/assets/default-logo.png"
+                width={40}
+                height={40}
+                className="rounded-circle"
+                alt=""
+              />
+              <div className="fw-medium fs-20px text-white">
+                {isHost ? gameSession?.host.name : gameSessionPlayer?.nickname}
+              </div>
+            </div>
+
             <div className="px-3 pb-3 pt-2 text-white d-flex gap-3 align-items-center justify-content-between">
               <div className="fw-medium fs-32px text-primary">
                 {currentQID + 1}/
@@ -354,7 +375,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
           //timeout sẽ âm để tránh 1 số lỗi, đừng sửa chỗ này
           timeout={countDown > 0 ? countDown : 0}
           media={currentQuestion?.media ?? null}
-          numStreak={numStreak}
+          numStreak={0}
           numSubmission={numSubmission}
           key={currentQID}
           className={styles.questionMedia}

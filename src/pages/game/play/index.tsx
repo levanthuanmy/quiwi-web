@@ -75,7 +75,7 @@ const GamePage: NextPage = () => {
         <div
           className={classNames(
             styles.gameView,
-            'd-flex flex-column justify-content-center align-items-center position-relative'
+            'd-flex flex-column align-items-center position-relative py-0 py-md-3'
           )}
         >
           <div className={classNames(styles.answerBoard)}>
