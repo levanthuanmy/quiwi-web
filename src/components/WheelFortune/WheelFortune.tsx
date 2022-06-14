@@ -123,25 +123,29 @@ const WheelOfFortune: FC<WheelProps> = ({ data, jackpotTotalScore, numberPlayerJ
         />
         <button className={styles.btnBuy} onClick={handleSpinClick}>SPIN</button>
       </div>
-      <div style={{ width: '500px' }}>
+      <div style={{ width: '500px', display: 'flex', flexDirection:'column', justifyContent:'space-evenly' }}>
+        <Image src="/assets/jackpot.png"
+          alt="avatar"
+          width="400"
+          height="170"></Image>
         <h3>Tổng số đã quay thưởng: {totalJoinSpinning}</h3>
         <h4>Số lượng điểm Jackpot</h4>
-        <div className='d-flex rounded-20px align-items-center p-2 fw-medium fs-18px' >
+        <div className='d-flex rounded-20px align-items-center p-2 fw-medium fs-18px' style={{ display: 'flex', justifyContent: 'center' }} >
           <AnimatedNumbers
             includeComma
             animateToNumber={jscore}
-            fontStyle={{ fontSize: 50 }}
+            fontStyle={{ fontSize: 80 }}
             configs={[{ "mass": 1, "tension": 140, "friction": 126 }, { "mass": 1, "tension": 130, "friction": 114 }, { "mass": 1, "tension": 150, "friction": 112 }, { "mass": 1, "tension": 130, "friction": 120 }]}
           ></AnimatedNumbers>
           <Image
             alt="avatar"
             src="/assets/quiwi-coin.png"
-            width="50"
-            height="50"
+            width="70"
+            height="70"
             style={{ marginLeft: '5px' }}
           ></Image>
         </div>
-        <div>Số lượt quay: {totalSpinning}</div>
+        <div style={{ fontSize: '20px' }}>Số lượt quay: {totalSpinning}</div>
       </div>
       <JackspotModal
         onHide={() => {
