@@ -76,8 +76,8 @@
 }
 
 .questionTitle {
-    overflow-y: scroll;
-    min-height: 80px;
+    overflow-y: auto;
+    min-height: 160px;
     max-height: 40%;
 }
 
@@ -86,11 +86,13 @@
 
 /*question title*/
 @media (max-width: 576px) {
+    .questionContainer {
+        min-height: 200px;
+    }
+
     .questionTitle {
         border-radius: 0px;
-        min-height: 80px;
-        max-height: 25%;
-        overflow-y: scroll;
+        /*max-height: 40%;*/
     }
 }
 

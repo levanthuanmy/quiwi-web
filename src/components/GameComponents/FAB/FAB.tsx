@@ -31,7 +31,7 @@ export const FAB: FC<FABProps> = (props) => {
     >
       <div
         className={classNames(
-          'fs-48px text-white-50 d-flex justify-content-center align-items-center bg-primary',
+          'fs-48px text-white-75 d-flex justify-content-center align-items-center bg-primary',
           styles.item,
           "bi bi-plus "
         )}
@@ -51,7 +51,7 @@ export const FAB: FC<FABProps> = (props) => {
       >
           <div
               className={classNames(
-                'fs-32px text-white-50 d-flex justify-content-center align-items-center bg-primary',
+                'fs-32px text-opacity-50 d-flex justify-content-center align-items-center bg-primary',
                 styles.item,
                 action.icon
               )}

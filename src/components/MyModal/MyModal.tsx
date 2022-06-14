@@ -25,7 +25,7 @@ const MyModal: FC<MyModalProps> = ({
   activeButtonCallback,
   inActiveButtonCallback,
   fullscreen = false,
-  size = 'lg',
+  size ,
   footer,
 }) => {
   return (
