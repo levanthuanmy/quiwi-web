@@ -116,3 +116,9 @@ export function timeSince(date: string | Date) {
   }
   return Math.floor(seconds) + ' giây trước'
 }
+
+export function parseQuestionHTMLToRaw(questionHTML: String) {
+  const regex = /<[^>]+>/g
+
+  return questionHTML.replaceAll(regex, '')
+}

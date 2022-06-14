@@ -20,7 +20,7 @@ const QuestionTab: FC<{ game: TGameHistory }> = ({ game }) => {
   }
   const regex = /<[^>]+>/g
   return (
-    <Container>
+    <Container fluid={true}>
       <Row className="fw-bold border-bottom  border-dark py-3  bg-light">
         <Col xs={6}>Câu hỏi</Col>
         <Col xs={4}>Loại câu hỏi</Col>

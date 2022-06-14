@@ -1,9 +1,12 @@
 import classNames from 'classnames'
-import { FC } from 'react'
+import { FC, useEffect, useState } from 'react'
 import { Col, Container, Row } from 'react-bootstrap'
 import { TDetailPlayer, TGameHistory } from '../../../types/types'
+import DetailedPlayerModal from './DetailedPlayerModal'
 import styles from './PlayerTab.module.css'
 const PlayerTab: FC<{ game: TGameHistory }> = ({ game }) => {
+  const [showDetailedPlayerModal, setShowDetailedPlayerModal] = useState(false)
+
   const getNumCorrectAnswersOfPlayer = (player: TDetailPlayer) => {
     let countCorrectAnswer = 0
     for (const gameRound of player.gameRounds) {
@@ -14,7 +17,7 @@ const PlayerTab: FC<{ game: TGameHistory }> = ({ game }) => {
   }
 
   return (
-    <Container>
+    <Container fluid={true}>
       <Row className="fw-bold border-bottom  border-dark  py-3  bg-light">
         <Col xs={4} md={2}>
           Xếp hạng
@@ -27,20 +30,30 @@ const PlayerTab: FC<{ game: TGameHistory }> = ({ game }) => {
       </Row>
       {game.players.map((player, idx) => {
         return (
-          <Row key={idx} className={classNames('py-2', styles.playerRow)}>
-            <Col xs={4} md={2}>
-              {idx + 1}
-            </Col>
-            <Col xs={8} md={4}>
-              {player.nickname}
-            </Col>
-            <Col className="text-end d-none d-md-block">
-              {getNumCorrectAnswersOfPlayer(player).toFixed(2)}
-            </Col>
-            <Col className="text-end d-none d-md-block">
-              {player.score.toFixed(2)}
-            </Col>
-          </Row>
+          <div key={idx}>
+            <Row
+              className={classNames('py-2', styles.playerRow)}
+              onClick={() => setShowDetailedPlayerModal(true)}
+            >
+              <Col xs={4} md={2}>
+                {idx + 1}
+              </Col>
+              <Col xs={8} md={4}>
+                {player.nickname}
+              </Col>
+              <Col className="text-end d-none d-md-block">
+                {getNumCorrectAnswersOfPlayer(player).toFixed(2)}
+              </Col>
+              <Col className="text-end d-none d-md-block">
+                {player.score.toFixed(2)}
+              </Col>
+            </Row>
+            <DetailedPlayerModal
+              show={showDetailedPlayerModal}
+              onHide={() => setShowDetailedPlayerModal(false)}
+              player={player}
+            />
+          </div>
         )
       })}
     </Container>
