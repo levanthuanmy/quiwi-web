@@ -44,7 +44,7 @@ const QuestionMedia: FC<{
 
       {/* Số người submit */}
         <div className={"d-flex flex-column gap-3"}>
-          <div
+          {/* <div
             className={classNames(
               'bg-primary text-white fw-medium rounded-pill d-flex gap-2 align-items-center px-2',
               styles.streakContainer
@@ -52,7 +52,7 @@ const QuestionMedia: FC<{
           >
             <div>🔥{' '}</div>
             {numStreak}
-          </div>
+          </div> */}
 
           <div
             className={classNames(

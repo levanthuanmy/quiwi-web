@@ -35,6 +35,7 @@ export type TPlayer = {
   user?: TUser
   userId?: number
   score: number
+  currentStreak?: number
 }
 
 export type TQuiz = {
@@ -281,6 +282,7 @@ export type TViewResult = {
   correctAnswers: number[]
   answersStatistic: Record<string, number>
   answerTextStatistic: Record<string, number>
+  player?: TPlayer
 }
 
 export type TQuest = {

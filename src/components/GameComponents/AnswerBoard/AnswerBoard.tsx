@@ -1,25 +1,33 @@
 import classNames from 'classnames'
 import cn from 'classnames'
-import {useRouter} from 'next/router'
-import React, {FC, memo, useEffect, useRef, useState} from 'react'
-import {useGameSession} from '../../../hooks/useGameSession/useGameSession'
-import {useLocalStorage} from '../../../hooks/useLocalStorage/useLocalStorage'
-import {TQuestion, TStartQuizResponse, TUser, TViewResult,} from '../../../types/types'
-import {JsonParse} from '../../../utils/helper'
+import { useRouter } from 'next/router'
+import React, { FC, memo, useEffect, useRef, useState } from 'react'
+import { useGameSession } from '../../../hooks/useGameSession/useGameSession'
+import { useLocalStorage } from '../../../hooks/useLocalStorage/useLocalStorage'
+import {
+  TQuestion,
+  TStartQuizResponse,
+  TUser,
+  TViewResult,
+} from '../../../types/types'
+import { JsonParse } from '../../../utils/helper'
 import GameSessionRanking from '../GameSessionRanking/GameSessionRanking'
-import {QuestionMedia} from '../QuestionMedia/QuestionMedia'
+import { QuestionMedia } from '../QuestionMedia/QuestionMedia'
 import styles from './AnswerBoard.module.css'
-import {AnswerSectionFactory} from '../AnswerQuestionComponent/AnswerSectionFactory/AnswerSectionFactory'
-import {Fade} from "react-bootstrap";
-import GameButton from "../GameButton/GameButton";
-import useScreenSize from "../../../hooks/useScreenSize/useScreenSize";
+import { AnswerSectionFactory } from '../AnswerQuestionComponent/AnswerSectionFactory/AnswerSectionFactory'
+import { Fade } from 'react-bootstrap'
+import GameButton from '../GameButton/GameButton'
+import useScreenSize from '../../../hooks/useScreenSize/useScreenSize'
 
 type AnswerBoardProps = {
   className?: string
   isShowHostControl: boolean
 }
 
-const AnswerBoard: FC<AnswerBoardProps> = ({className, isShowHostControl}) => {
+const AnswerBoard: FC<AnswerBoardProps> = ({
+  className,
+  isShowHostControl,
+}) => {
   const {
     gameSession,
     saveGameSession,
@@ -27,7 +35,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, isShowHostControl}) => {
     gameSocket,
     gameSkOn,
     getQuestionWithID,
-    getNickName
+    getNickName,
   } = useGameSession()
 
   const [lsUser] = useLocalStorage('user', '')
@@ -52,7 +60,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, isShowHostControl}) => {
   const [numStreak, setNumStreak] = useState<number>(0)
   const [viewResultData, setViewResultData] = useState<TViewResult>()
 
-  const {fromMedium} = useScreenSize()
+  const { fromMedium } = useScreenSize()
   let answerSectionFactory: AnswerSectionFactory
 
   useEffect(() => {
@@ -90,7 +98,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, isShowHostControl}) => {
       setCountDown(_countDown)
       if (_countDown <= 0) {
         console.log('client timeout')
-        _clearInterval();
+        _clearInterval()
       }
     }, 1000)
     resetGameState()
@@ -149,13 +157,20 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, isShowHostControl}) => {
         setCountDown( 0)
       }
       setViewResultData(data)
+
+      if (data?.player && !isHost && typeof window !== 'undefined') {
+        localStorage.setItem(
+          'game-session-player',
+          JSON.stringify(data?.player)
+        )
+      }
     })
 
     gameSkOn('timeout', (data) => {
       //nếu mà chưa countdown xong thì set count down
       if (intervalRef.current) {
         _clearInterval()
-        setCountDown( 0)
+        setCountDown(0)
       }
     })
 
@@ -163,31 +178,20 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, isShowHostControl}) => {
       setShowRanking(true)
       const rkData: any[] = data?.playersSortedByScore
       setRankingData(rkData)
-      const user: TUser = JsonParse(lsUser)
-      const uData = rkData.filter(player => player?.nickname == getNickName())[0]
-      // console.log("=>(AnswerBoard.tsx:125) uData", uData);
-      if (uData) {
-        if (uData?.currentStreak)
-          setNumStreak(uData.currentStreak)
-      }
-
-
     })
 
-    gameSkOn('error', (data) => {
-
-    })
+    gameSkOn('error', (data) => {})
   }
 
   const goToNextQuestion = () => {
     if (!gameSession) return
-    const msg = {invitationCode: gameSession.invitationCode}
+    const msg = { invitationCode: gameSession.invitationCode }
     gameSocket()?.emit('next-question', msg)
   }
 
   const viewRanking = () => {
     if (!gameSession) return
-    const msg = {invitationCode: gameSession.invitationCode}
+    const msg = { invitationCode: gameSession.invitationCode }
     gameSocket()?.emit('view-ranking', msg)
     setIsShowNext(true)
   }
@@ -205,22 +209,21 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, isShowHostControl}) => {
     }
 
     if (answer instanceof Set) {
-      console.log('=>(AnswerBoard.tsx:174) submit set "',answer,'"')
+      console.log('=>(AnswerBoard.tsx:174) submit set "', answer, '"')
       msg.answerIds = Array.from(answer)
     } else if (answer instanceof Array) {
-      console.log('=>(AnswerBoard.tsx:174) submit array "',answer,'"')
+      console.log('=>(AnswerBoard.tsx:174) submit array "', answer, '"')
       msg.answerIds = answer
     } else if (typeof answer === 'string') {
       console.log('=>(AnswerBoard.tsx:174) submit text "', answer, '"')
       msg.answer = answer
     } else {
-      console.log('=>(AnswerBoard.tsx:191) not supported "',answer,'"')
-      return;
+      console.log('=>(AnswerBoard.tsx:191) not supported "', answer, '"')
+      return
     }
     setIsSubmitted(true)
     setIsCounting(false)
-    if (msg.answer || msg.answerIds)
-      gameSocket()?.emit('submit-answer', msg)
+    if (msg.answer || msg.answerIds) gameSocket()?.emit('submit-answer', msg)
   }
 
   const exitRoom = () => {
@@ -249,8 +252,8 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, isShowHostControl}) => {
   const renderHostControlSystem = () => {
     return (
       <Fade in={isShowHostControl || fromMedium}>
-        {(isShowHostControl || fromMedium) ?
-          (<div className={cn(styles.hostControl)}>
+        {isShowHostControl || fromMedium ? (
+          <div className={cn(styles.hostControl)}>
             <GameButton
               iconClassName="bi bi-x-circle-fill"
               className={classNames('text-white fw-medium')}
@@ -271,15 +274,19 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, isShowHostControl}) => {
               title="Câu sau"
               onClick={goToNextQuestion}
             />
-          </div>) : <></>
-        }
+          </div>
+        ) : (
+          <></>
+        )}
       </Fade>
     )
   }
-
+  const currentPlayerRankingIndex =
+    gameSession?.players?.findIndex(
+      (item) => item.nickname === viewResultData?.player?.nickname
+    ) ?? -1
   return (
     <>
-
       <div
         className={classNames(
           'd-flex flex-column h-100',
@@ -288,13 +295,58 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, isShowHostControl}) => {
         )}
       >
         {currentQuestion?.question ? (
-          <div
-            className={classNames(
-              'shadow px-3 pt-2 bg-white mb-2 rounded-10px',
-              styles.questionTitle
-            )}
-            dangerouslySetInnerHTML={{__html: currentQuestion.question}}
-          />
+          <div className="bg-dark bg-opacity-50 rounded-10px shadow mb-2">
+            <div className="px-3 pb-3 pt-2 text-white d-flex gap-3 align-items-center justify-content-between">
+              <div className="fw-medium fs-32px text-primary">
+                {currentQID + 1}/
+                <span className="text-secondary fs-24px">
+                  {gameSession?.quiz?.questions?.length}
+                </span>
+              </div>
+
+              {isHost ? (
+                <div
+                  id="questionProgressBar"
+                  className="flex-grow-1 bg-secondary rounded-pill"
+                  style={{ height: 6 }}
+                >
+                  <div
+                    className="bg-primary h-100 rounded-pill transition-all-150ms position-relative"
+                    style={{
+                      width: `${Math.floor(
+                        ((currentQID + 1) * 100) /
+                          Number(gameSession?.quiz?.questions?.length)
+                      )}%`,
+                    }}
+                  />
+                </div>
+              ) : (
+                <>
+                  <div>
+                    <span className="me-2">🔥</span>
+                    {viewResultData?.player?.currentStreak ?? 0}
+                  </div>
+                  <div>
+                    <i className="bi bi-award fs-20px text-primary me-2" />
+                    {currentPlayerRankingIndex > -1
+                      ? currentPlayerRankingIndex + 1
+                      : '-'}
+                  </div>
+                  <div className="">
+                    <span className="text-primary me-2">Điểm</span>
+                    {Math.floor(viewResultData?.player?.score ?? 0)}
+                  </div>
+                </>
+              )}
+            </div>
+
+            <div className="shadow px-3 pt-2 bg-white rounded-10px">
+              <div
+                className={classNames('', styles.questionTitle)}
+                dangerouslySetInnerHTML={{ __html: currentQuestion.question }}
+              />
+            </div>
+          </div>
         ) : (
           <></>
         )}
@@ -312,7 +364,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, isShowHostControl}) => {
         {/*edit styles.answerLayout trong css*/}
         {currentQuestion?.question && renderAnswersSection()}
         {isHost && renderHostControlSystem()}
-        <div className={styles.blankDiv}/>
+        <div className={styles.blankDiv} />
         <GameSessionRanking
           show={showRanking}
           onHide={() => {
@@ -326,8 +378,6 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, isShowHostControl}) => {
           viewResultData={viewResultData as TViewResult}
           currentQuestion={currentQuestion as TQuestion}
         />
-
-        {/* này chắc là thêm state current tab rồi render component theo state điều kiện nha, check active tab theo state luôn  */}
       </div>
     </>
   )
