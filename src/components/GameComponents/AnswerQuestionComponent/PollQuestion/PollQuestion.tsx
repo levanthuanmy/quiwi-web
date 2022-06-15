@@ -79,27 +79,7 @@ const PollQuestion: FC<PollQuestionProps> = ({
       )}
     >
       <div className={`d-flex flex-column justify-content-around h-100 w-100 ${styles.selectionInner}`}>
-        {/*{isTimeOut &&*/}
-        {/*    <div className={`d-flex ${styles.titleGroup}`}>*/}
-        {/*        <div className={`ps-12px flex-grow-1 ${styles.questionType}`}>*/}
-        {/*          {isHost ? getQuestionTypeForHost() : (getQuestionTypeForPlayer(isCorrect))}*/}
-        {/*        </div>*/}
-        {/*      {!isHost &&*/}
-        {/*          <div className={`d-flex align-items-center`}>*/}
-        {/*              <i*/}
-        {/*                  className={`fw-bold bi */}
-        {/*                  ${isCorrect ? "bi-check-circle-fill" : "bi-x-circle-fill"} */}
-        {/*                  ${styles.icon}`}*/}
-        {/*                  style={{*/}
-        {/*                    color: isCorrect ? "#00a991" : "#e2352a",*/}
-        {/*                    transition: "all .5s ease",*/}
-        {/*                    WebkitTransition: "all .5s ease",*/}
-        {/*                    MozTransition: "all .5s ease"*/}
-        {/*                  }}></i>*/}
-        {/*          </div>}*/}
 
-        {/*    </div>*/}
-        {/*}*/}
 
         <div className={"h-100 w-100 d-flex flex-column justify-content-center"}>
           <div
@@ -117,6 +97,7 @@ const PollQuestion: FC<PollQuestionProps> = ({
                 autoFocus={true}
                 placeholder={isTimeOut ? "Bạn đã bỏ qua câu hỏi này!" : "Nhập câu trả lời của bạn"}
                 disabled={(isTimeOut || isSubmitted)}
+                maxLength={120}
                 className={classNames(
                   "w-100 text-center flex-grow-1 customScrollbar",
                   styles.answerInput,
