@@ -4,6 +4,7 @@ import SingleChoiceAnswerSection from "../SelectionQuestion/SingleChoiceAnswerSe
 import {TQuestionType, TQuestion} from "../../../../types/types";
 import TextQuestion from "../TextQuestion/TextQuestion";
 import ConnectQuestion from "../ConnectQuestion/ConnectQuestion";
+import PollQuestion from "../PollQuestion/PollQuestion";
 
 export class AnswerSectionFactory {
   isHost: boolean;
@@ -110,7 +111,8 @@ export class AnswerSectionFactory {
   protected initEssayAnswer(countDown: number,
                             question: TQuestion,
                             submitAnswerHandle: (answer: any) => void): JSX.Element {
-    return <TextQuestion
+    console.log("=>(AnswerSectionFactory.tsx:115) question poll", question);
+    return <PollQuestion
       socketSubmit={submitAnswerHandle}
       className={this.answerLayout}
       question={question}

@@ -1,6 +1,6 @@
 .answer {
-    font-size: 28px;
-    border-radius: 16px;
+    font-size: 30px;
+    border-radius: 20px;
 }
 
 .playerList {
@@ -20,8 +20,7 @@
 
 @media (max-width: 576px) {
     .answer {
-        font-size: 18px;
-        border-radius: 10px;
+        font-size: 20px;
     }
 
     .playerList {

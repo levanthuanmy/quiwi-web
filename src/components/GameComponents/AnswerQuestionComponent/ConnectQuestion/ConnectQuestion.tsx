@@ -33,6 +33,7 @@ const ConnectQuestion: FC<ConnectQuestionProps> = ({
                                                    }) => {
   const [isCorrect, setIsCorrect] = useState<boolean>(false)
   const [options, setOptions] = useState<TAnswer[]>([])
+  const [decorOptions, setDecorOptions] = useState<TAnswer[]>([])
 
   const [selectedAnswerSet, setSelectedAnswerSet] = useState<Set<TAnswer>>(new Set<TAnswer>())
   const [wrongAnswerSet, setWrongAnswerSet] = useState<Set<TAnswer>>(new Set<TAnswer>())
@@ -51,11 +52,33 @@ const ConnectQuestion: FC<ConnectQuestionProps> = ({
     prepareData()
   }, [question]);
 
+  useEffect(() => {
+    setDecorOptions(showAnswer ? orderedCorrectAnswer : displayAnswer)
+  }, [showAnswer, orderedCorrectAnswer, displayAnswer]);
+
+  function shuffle(array: TAnswer[]) {
+    let currentIndex = array.length,  randomIndex;
+
+    // While there remain elements to shuffle.
+    while (currentIndex != 0) {
+
+      // Pick a remaining element.
+      randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex--;
+
+      // And swap it with the current element.
+      [array[currentIndex], array[randomIndex]] = [
+        array[randomIndex], array[currentIndex]];
+    }
+
+    return array;
+  }
+
   function prepareData() {
     if (question?.questionAnswers) {
 
       //Lựa chọn để click
-      setOptions([...question.questionAnswers.filter(item => item.type != "21PLHDR")])
+      setOptions(shuffle([...question.questionAnswers.filter(item => item.type != "21PLHDR")]))
 
       // Danh sách hiển thị
       let orderedAnswer = question.questionAnswers.filter(item => item.isCorrect)
@@ -80,6 +103,15 @@ const ConnectQuestion: FC<ConnectQuestionProps> = ({
       setCorrectAnswerSet(new Set())
       setDisplayAnswer([...displayList])
       console.log("=>(ConnectQuestion.tsx:82)preparedData: ", displayList);
+
+      if (isHost) {
+        setWrongAnswerSet(new Set())
+        setIsCorrect(true)
+        setCorrectAnswerSet(new Set(orderedAnswer.filter(answer => answer.type != "21PLHDR")))
+        setSelectedAnswerSet(new Set(orderedAnswer.filter(answer => answer.type != "21PLHDR")))
+        // setDisplayAnswer(orderedAnswer)
+      }
+
     }
   }
 
@@ -96,8 +128,10 @@ const ConnectQuestion: FC<ConnectQuestionProps> = ({
         setIsCorrect(checkAnswer())
       }
     } else {
-      console.log("=>(ConnectQuestion) Display answer for host");
-      showAnswerForHost()
+      if (isCounting) {
+        console.log("=>(ConnectQuestion) Display answer for host");
+        showAnswerForHost()
+      }
     }
   }
 
@@ -190,7 +224,7 @@ const ConnectQuestion: FC<ConnectQuestionProps> = ({
         className={`d-flex flex-column bg-white justify-content-around w-100 customScrollbar ${styles.selectedBox}`}>
         <ConnectAnswerList
           className={styles.selectedOption}
-          options={showAnswer ? orderedCorrectAnswer : displayAnswer}
+          options={decorOptions}
           disabledOption={wrongAnswerSet}
           userSelectedOptions={displayAnswer}
           displayDecor={true}
@@ -203,7 +237,7 @@ const ConnectQuestion: FC<ConnectQuestionProps> = ({
         className={`d-flex flex-column justify-content-around w-100 customScrollbar ${styles.selectionBox}`}>
         <ConnectAnswerList
           className={styles.availableOption}
-          disabledOption={selectedAnswerSet}
+          disabledOption={(isHost && !showAnswer) ? new Set([]) :  selectedAnswerSet}
           options={options}
           showAnswer={isTimeOut}
           displayDecor={false}
