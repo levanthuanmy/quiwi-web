@@ -25,7 +25,7 @@ const GameMenuBar: FC<GameMenuBarProps> = ({ gameSession, isShow }) => {
   socket?.off('chat')
   socket?.on('chat', (data: MessageProps) => {
     receivedMessage(data)
-    addToast(`${data.name}: ${data.message}`, {
+    addToast(`${data.playerNickName}: ${data.message}`, {
       appearance: 'info',
       autoDismiss: true,
     })
