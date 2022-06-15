@@ -6,7 +6,7 @@ import DetailedPlayerModal from './DetailedPlayerModal'
 import styles from './PlayerTab.module.css'
 const PlayerTab: FC<{ game: TGameHistory }> = ({ game }) => {
   const [showDetailedPlayerModal, setShowDetailedPlayerModal] = useState(false)
-
+  const [playerIndexChosen, setPlayerIndexChosen] = useState<number>()
   const getNumCorrectAnswersOfPlayer = (player: TDetailPlayer) => {
     let countCorrectAnswer = 0
     for (const gameRound of player.gameRounds) {
@@ -15,6 +15,9 @@ const PlayerTab: FC<{ game: TGameHistory }> = ({ game }) => {
 
     return (countCorrectAnswer / player.gameRounds.length) * 100
   }
+  useEffect(() => {
+    console.log(playerIndexChosen)
+  }, [playerIndexChosen])
 
   return (
     <Container fluid={true}>
@@ -33,7 +36,10 @@ const PlayerTab: FC<{ game: TGameHistory }> = ({ game }) => {
           <div key={idx}>
             <Row
               className={classNames('py-2', styles.playerRow)}
-              onClick={() => setShowDetailedPlayerModal(true)}
+              onClick={() => {
+                setPlayerIndexChosen(idx)
+                setShowDetailedPlayerModal(true)
+              }}
             >
               <Col xs={4} md={2}>
                 {idx + 1}
@@ -48,15 +54,17 @@ const PlayerTab: FC<{ game: TGameHistory }> = ({ game }) => {
                 {player.score.toFixed(2)}
               </Col>
             </Row>
-            <DetailedPlayerModal
-              show={showDetailedPlayerModal}
-              onHide={() => setShowDetailedPlayerModal(false)}
-              player={player}
-              rank={idx + 1}
-            />
           </div>
         )
       })}
+      {playerIndexChosen != null ? (
+        <DetailedPlayerModal
+          show={showDetailedPlayerModal}
+          onHide={() => setShowDetailedPlayerModal(false)}
+          player={game.players[playerIndexChosen]}
+          rank={playerIndexChosen + 1}
+        />
+      ) : null}
     </Container>
   )
 }

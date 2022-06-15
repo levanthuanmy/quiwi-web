@@ -1,8 +1,11 @@
 .questionRow:hover {
-    background-color: #f8f9fa;
-    cursor: pointer;
-   
+  background-color: #f8f9fa;
+  cursor: pointer;
 }
-.questionRow { 
-    border: 1px solid #f8f9fa;
+.questionRow {
+  border: 1px solid #f8f9fa;
+}
+
+.playerStatisticRow {
+  border: 1px solid #f8f9fa;
 }

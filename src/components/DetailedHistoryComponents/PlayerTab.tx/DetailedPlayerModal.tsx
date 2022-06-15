@@ -1,11 +1,9 @@
-import classNames from 'classnames'
 import _ from 'lodash'
 import { FC } from 'react'
 import { Col, Modal, Row } from 'react-bootstrap'
 import { TDetailPlayer } from '../../../types/types'
 import { QUESTION_TYPE_MAPPING_TO_TEXT } from '../../../utils/constants'
 import { parseQuestionHTMLToRaw } from '../../../utils/helper'
-import MyModal from '../../MyModal/MyModal'
 import Pie from '../../Pie/Pie'
 
 const DetailedPlayerModal: FC<{
@@ -19,7 +17,6 @@ const DetailedPlayerModal: FC<{
   for (const gameRound of player.gameRounds) {
     if (gameRound.isCorrect) correctPercentages++
   }
-  console.log('==== ~ correctPercentages', correctPercentages)
   let percentage =
     Number(correctPercentages / (player.gameRounds.length || 1)) * 100
   return (
@@ -30,7 +27,7 @@ const DetailedPlayerModal: FC<{
       size="xl"
       aria-labelledby="contained-modal-title-vcenter"
       contentClassName="rounded-20px overflow-hidden"
-      fullscreen="md-down"
+      fullscreen="lg-down"
     >
       <Modal.Header closeButton className="">
         <Modal.Title className="d-flex align-items-center">
@@ -44,10 +41,10 @@ const DetailedPlayerModal: FC<{
 
       <Modal.Body className="pt-2 pb-3">
         <Row className=" ">
-          <Col xs={5} lg={4} className='text-center'>
+          <Col xs={5} lg={4} className="text-center">
             <Pie percentage={percentage} colour="#009883" />
           </Col>
-          <Col lg={6} className="py-3">
+          <Col xs={7} lg={6} className="py-3">
             <div className="ps-2 py-2 border-bottom-2 border-bottom border-secondary">
               <b>Hạng:</b> {rank}
             </div>
