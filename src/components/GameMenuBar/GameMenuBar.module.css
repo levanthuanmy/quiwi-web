@@ -1,5 +1,5 @@
 .container {
-    transition: width 200ms ease;
+    transition: visibility 0s, opacity 200ms ease;
     position: fixed;
     right: 16px;
     /*bottom: 0;*/

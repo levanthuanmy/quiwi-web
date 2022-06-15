@@ -1,21 +1,20 @@
 import classNames from 'classnames'
-import React, {FC, useState} from 'react'
-import {SocketManager} from '../../hooks/useSocket/socketManager'
-import {TStartQuizResponse, TUser} from '../../types/types'
+import React, { FC, useState } from 'react'
+import { SocketManager } from '../../hooks/useSocket/socketManager'
+import { TStartQuizResponse, TUser } from '../../types/types'
 import ChatWindow from '../GameComponents/ChatWindow/ChatWindow'
-import {MessageProps} from '../GameComponents/ChatWindow/Message'
+import { MessageProps } from '../GameComponents/ChatWindow/Message'
 import PlayerList from '../GameComponents/PlayerList/PlayerList'
 import styles from './GameMenuBar.module.css'
 
 type GameMenuBarProps = {
   gameSession: TStartQuizResponse
   user?: TUser
+  isShow: boolean
 }
-const GameMenuBar: FC<GameMenuBarProps> = ({
-                                             gameSession,
-                                           }) => {
+const GameMenuBar: FC<GameMenuBarProps> = ({ gameSession, isShow }) => {
   const [chatContent, setChatContent] = useState<MessageProps[]>([])
-  const socket = SocketManager().socketOf("GAMES")
+  const socket = SocketManager().socketOf('GAMES')
 
   const receivedMessage = (message: MessageProps) => {
     if (message) {
@@ -29,7 +28,7 @@ const GameMenuBar: FC<GameMenuBarProps> = ({
 
   const renderItems = (
     <>
-      <PlayerList playerList={gameSession.players}/>
+      <PlayerList playerList={gameSession.players} />
       <div
         className={`${styles.slider} bg-primary`}
         onMouseDown={(e) => {
@@ -62,14 +61,14 @@ const GameMenuBar: FC<GameMenuBarProps> = ({
   return (
     <div
       className={classNames(
-        'd-flex flex-column bg-white shadow-lg',
-        styles.container
+        'd-flex flex-column bg-white shadow-lg opacity-100 visible',
+        styles.container,
+        {
+          'opacity-0 invisible': !isShow,
+        }
       )}
     >
-      <div
-        className="position-relative cursor-pointer "
-        style={{height: 40}}
-      >
+      <div className="position-relative cursor-pointer " style={{ height: 40 }}>
         <i
           className={classNames(
             'position-absolute d-flex justify-content-center align-items-center ',

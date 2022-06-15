@@ -150,11 +150,7 @@ const GamePage: NextPage = () => {
 
           {gameSession && (
             <div>
-              <Fade in={isShowChat}>
-                <div>
-                  <GameMenuBar gameSession={gameSession} />
-                </div>
-              </Fade>
+              <GameMenuBar gameSession={gameSession} isShow={isShowChat} />
 
               <Fade in={isShowItem}>
                 {isShowItem ? (
