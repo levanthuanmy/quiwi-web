@@ -1,13 +1,13 @@
 import React, {FC} from 'react'
 import {Col} from "react-bootstrap";
-import styles from "./TextAnswerList.module.css"
+import styles from "./PollAnswerList.module.css"
 
-type TextAnswerListProps = {
+type PollAnswerListProps = {
   className?: string
   answers: string[]
 }
 
-const TextAnswerList: FC<TextAnswerListProps> = (props: TextAnswerListProps) => {
+const PollAnswerList: FC<PollAnswerListProps> = (props: PollAnswerListProps) => {
 
   const colors: string[] = [
     '#E86262',
@@ -27,7 +27,7 @@ const TextAnswerList: FC<TextAnswerListProps> = (props: TextAnswerListProps) => 
             className={`d-flex align-items-center col-auto ${styles.answer}`}
             style={{backgroundColor: colors[idx % colors.length]}}
           >
-            <span className="px-3 py-1 fw-medium text-white">{answer}</span>
+            <span className="px-32px py-1 fw-medium text-white">{answer}</span>
           </Col>
         })
       }
@@ -35,4 +35,4 @@ const TextAnswerList: FC<TextAnswerListProps> = (props: TextAnswerListProps) => 
   )
 }
 
-export default TextAnswerList
+export default PollAnswerList

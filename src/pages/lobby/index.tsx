@@ -31,7 +31,7 @@ const LobbyPage: NextPage = () => {
     <>
       {gameSession && (
         <LobbyScreen
-          invitationCode={invitationCode}
+          invitationCode={gameSession.invitationCode}
           isHost={false}
           // players={gameSession.players}
         />

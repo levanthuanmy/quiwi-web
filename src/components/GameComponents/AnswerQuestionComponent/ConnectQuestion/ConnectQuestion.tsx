@@ -96,8 +96,10 @@ const ConnectQuestion: FC<ConnectQuestionProps> = ({
         setIsCorrect(checkAnswer())
       }
     } else {
-      console.log("=>(ConnectQuestion) Display answer for host");
-      showAnswerForHost()
+      // if (isCounting) {
+        console.log("=>(ConnectQuestion) Display answer for host");
+        showAnswerForHost()
+      // }
     }
   }
 

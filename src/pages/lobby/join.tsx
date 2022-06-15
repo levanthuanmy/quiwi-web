@@ -21,7 +21,7 @@ const JoiningPage: NextPage = () => {
   const router = useRouter()
   const invitationCode = router.query?.invitationCode?.toString() || ''
 
-  const {saveGameSession, gameSocket, connectGameSocket, gameSkOn, gameSkOnce, setNickName} = useGameSession()
+  const {saveGameSession, gameSocket, connectGameSocket, gameSkOnce} = useGameSession()
 
   const [lsPlayer, setLsPlayer] = useLocalStorage('game-session-player', '')
   const [nickname, _setNickName] = useState<string>('')
@@ -78,14 +78,13 @@ const JoiningPage: NextPage = () => {
       )
 
       const data = response.response
+      console.log("=>(join.tsx:81) data", data);
       // lưu lại nickname của mình để dùng
       const gameSession: TStartQuizResponse = data.gameLobby
       gameSession.nickName = nickname
 
       saveGameSession(gameSession)
       setLsPlayer(JSON.stringify(data.player))
-
-      setNickName(nickname)
 
       router.push(`/lobby?quizId=${data.gameLobby.quizId}`)
     } catch (error) {
@@ -109,7 +108,7 @@ const JoiningPage: NextPage = () => {
         </div>
 
         <Form.Label className="mb-3 text-center">
-          Nhập tên hiển thị của bạn (tối đa 50 ký tự)
+          Nhập tên hiển thị của bạn (tối đa 20 ký tự)
         </Form.Label>
 
         <MyInput
@@ -122,7 +121,7 @@ const JoiningPage: NextPage = () => {
               handleOnClick()
             }
           }}
-          maxLength={50}
+          maxLength={20}
           placeholder="Nhập tên hiển thị"
         />
         <MyButton onClick={handleOnClick} className="mt-3 text-white w-100">

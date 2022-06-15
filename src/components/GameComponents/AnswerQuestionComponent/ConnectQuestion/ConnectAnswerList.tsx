@@ -37,12 +37,12 @@ export const ConnectAnswerList: FC<TextAnswerListProps> = (props: TextAnswerList
   }
 
   function getColorWithoutDecor(idx: number, option: TAnswer): string {
-    // console.log("=>(ConnectAnswerList.tsx:108) getColorWithDecor", option);
+
     const colorPostfix = props.showAnswer ? "66" : ""
     let highlight = !(props.disabledOption && props.disabledOption.has(option))
     if (props.showAnswer) highlight = !highlight
-    return highlight ? colors[idx % colors.length] + colorPostfix : "#E0E0E0"
-    // return colors[idx % colors.length] + colorPostfix
+    console.log("=>(ConnectAnswerList.tsx:108) getColorWithDecor", highlight ? colors[idx % colors.length] + colorPostfix : "#E0E0E0");
+    return highlight ? colors[idx % colors.length] : "#E0E0E0"
   }
 
   function getColorFor(idx: number, option: TAnswer): string {

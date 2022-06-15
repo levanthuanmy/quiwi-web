@@ -40,7 +40,6 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
     gameSocket,
     gameSkOn,
     getQuestionWithID,
-    getNickName,
   } = useGameSession()
   const exitContext = useContext(ExitContext)
   const [lsUser] = useLocalStorage('user', '')
@@ -276,9 +275,9 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
     gameSocket()?.emit('next-question', msg)
   }
 
-  const endGame = () => {
-    if (gameSession && gameSocket() && isHost) {
-      console.log("=>(AnswerBoard.tsx:281) gameSession", gameSession);
+  function endGame() {
+    if (gameSession && gameSocket() != null && isHost) {
+      console.log("=>(AnswerBoard.tsx:281) gameSession", gameSocket(), gameSession);
       const msg = {invitationCode: gameSession.invitationCode}
       gameSocket()?.emit('game-ended', msg)
     } else {
@@ -293,7 +292,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
         {(isShowHostControl || fromMedium) ?
           <div className={cn(styles.hostControl)}>
             <GameButton
-              isEnable={countDown <= 0}
+              isEnable={isShowNext || countDown <= 0}
               iconClassName="bi bi-bar-chart"
               className={classNames('text-white fw-medium')}
               title={'Xếp hạng'}
@@ -312,7 +311,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
             }
             {!isShowEndGame &&
                 <GameButton
-                    isEnable={isShowNext}
+                    isEnable={isShowNext || countDown <= 0}
                     iconClassName="bi bi-arrow-right-circle-fill"
                     className={classNames('text-white fw-medium')}
                     title="Câu sau"

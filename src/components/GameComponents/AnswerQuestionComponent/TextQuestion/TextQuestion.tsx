@@ -163,17 +163,20 @@ const TextQuestion: FC<TextQuestionProps> = ({
 
             </div>
         }
-        {
-          isTimeOut && <TextAnswerList
+
+        {!(isHost && !isTimeOut) &&
+            <TextAnswerList
                 className={styles.showAnswer}
-                answers={concatAnswerList()}
+                answers={isTimeOut ? concatAnswerList() : [getSuggestType()]}
             />
         }
+
 
         {
           !isHost &&
             <textarea
-                autoFocus
+                autoFocus={true}
+                placeholder={isTimeOut ? "Hết giờ, bạn đã không trả lời câu hỏi này!" : "Nhập câu trả lời của bạn"}
                 disabled={(isTimeOut || isSubmitted)}
                 className={classNames(
                   "w-100 text-center flex-grow-1 customScrollbar",
@@ -186,11 +189,10 @@ const TextQuestion: FC<TextQuestionProps> = ({
         {isHost && (isTimeOut ?
             <div></div>
             :
-            <div className={"h-100 w-100 d-flex align-items-center"}>
+            <div className={"h-100 w-100 d-flex flex-column justify-content-center"}>
               <div
                 className={classNames(
-                  "w-100 outline-none border-0 px-12px bg-transparent text-white text-center flex-grow-1 customScrollbar",
-                  styles.answerInput,
+                  "w-100 fw-bold fs-1 outline-none border-0 px-12px  text-white text-center customScrollbar",
                 )}
               >
                 {getSuggestType()}
