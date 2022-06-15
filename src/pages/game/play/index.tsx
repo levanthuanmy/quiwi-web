@@ -1,29 +1,32 @@
 import classNames from 'classnames'
-import {NextPage} from 'next'
-import React, {Dispatch, SetStateAction, useEffect, useState} from 'react'
+import { NextPage } from 'next'
+import router from 'next/router'
+import React, { Dispatch, SetStateAction, useEffect, useState } from 'react'
+import { Fade } from 'react-bootstrap'
 import AnswerBoard from '../../../components/GameComponents/AnswerBoard/AnswerBoard'
 import EndGameBoard from '../../../components/GameComponents/EndGameBoard/EndGameBoard'
-import {FAB, FABAction} from '../../../components/GameComponents/FAB/FAB'
+import { FAB, FABAction } from '../../../components/GameComponents/FAB/FAB'
 import GameMenuBar from '../../../components/GameMenuBar/GameMenuBar'
-import {useGameSession} from '../../../hooks/useGameSession/useGameSession'
-import useScreenSize from '../../../hooks/useScreenSize/useScreenSize'
-import {TStartQuizResponse} from '../../../types/types'
-import styles from './GamePage.module.css'
-import router from "next/router";
-import {Collapse, Fade} from "react-bootstrap";
+import MyModal from '../../../components/MyModal/MyModal'
 import UsingItemInGame from '../../../components/UsingItemInGame/UsingItemInGame'
-import MyModal from "../../../components/MyModal/MyModal";
-import { useIsomorphicLayoutEffect } from 'react-use'
+import { useGameSession } from '../../../hooks/useGameSession/useGameSession'
+import useScreenSize from '../../../hooks/useScreenSize/useScreenSize'
+import { TStartQuizResponse } from '../../../types/types'
+import styles from './GamePage.module.css'
 
-export const ExitContext = React.createContext<{showEndGameModal:boolean, setShowEndGameModal:Dispatch<SetStateAction<boolean>>}>({showEndGameModal: false, setShowEndGameModal: ()=>{}});
+export const ExitContext = React.createContext<{
+  showEndGameModal: boolean
+  setShowEndGameModal: Dispatch<SetStateAction<boolean>>
+}>({ showEndGameModal: false, setShowEndGameModal: () => {} })
 
 const GamePage: NextPage = () => {
-  const {gameSession, isHost, gameSkOn, saveGameSession, clearGameSession} = useGameSession()
+  const { gameSession, isHost, gameSkOn, saveGameSession, clearGameSession } =
+    useGameSession()
   const [isShowChat, setIsShowChat] = useState<boolean>(false)
   const [isShowExit, setIsShowExit] = useState<boolean>(false)
   const [isShowItem, setIsShowItem] = useState<boolean>(false)
   const [isShowHostControl, setIsShowHostControl] = useState<boolean>(true)
-  const {fromMedium} = useScreenSize()
+  const { fromMedium } = useScreenSize()
   const [endGameData, setEndGameData] = useState<TStartQuizResponse>()
 
   const fabs: FABAction[] = [
@@ -36,13 +39,13 @@ const GamePage: NextPage = () => {
       },
     },
     {
-      label: "Kho đồ",
-      icon: "bi bi-basket-fill text-white",
+      label: 'Kho đồ',
+      icon: 'bi bi-basket-fill text-white',
       onClick: () => {
         resetAllFAB()
         setIsShowItem(!isShowItem)
       },
-    }
+    },
   ]
 
   const hostAction: FABAction = {
@@ -54,7 +57,6 @@ const GamePage: NextPage = () => {
     },
   }
 
-
   const endGameAction: FABAction = {
     label: 'Kết thúc!',
     icon: 'bi bi-x-octagon-fill text-danger',
@@ -64,7 +66,7 @@ const GamePage: NextPage = () => {
   }
 
   const exitAction: FABAction = {
-    label: "Thoát phòng!",
+    label: 'Thoát phòng!',
     icon: 'bi bi-box-arrow-left text-warning',
     onClick: () => {
       setIsShowExit(true)
@@ -83,24 +85,24 @@ const GamePage: NextPage = () => {
   }
 
   function getExitModal() {
-    return <MyModal
-      show={isShowExit}
-      onHide={()=>setIsShowExit(true)}
-      activeButtonTitle="Đồng ý"
-      activeButtonCallback={exitRoom}
-      inActiveButtonCallback={() => setIsShowExit(false)}
-      inActiveButtonTitle="Huỷ"
-    >
-      <div className="text-center h3 fw-bolder">
-        Thoát phòng
-      </div>
+    return (
+      <MyModal
+        show={isShowExit}
+        onHide={() => setIsShowExit(true)}
+        activeButtonTitle="Đồng ý"
+        activeButtonCallback={exitRoom}
+        inActiveButtonCallback={() => setIsShowExit(false)}
+        inActiveButtonTitle="Huỷ"
+      >
+        <div className="text-center h3 fw-bolder">Thoát phòng</div>
 
-      <div className="text-center fw-bold">
-        <div className="text-secondary fs-24x text-warning">
-          Bạn có chắc muốn thoát phòng?
+        <div className="text-center fw-bold">
+          <div className="text-secondary fs-24x text-warning">
+            Bạn có chắc muốn thoát phòng?
+          </div>
         </div>
-      </div>
-    </MyModal>;
+      </MyModal>
+    )
   }
 
   useEffect(() => {
@@ -128,9 +130,14 @@ const GamePage: NextPage = () => {
         >
           <div className={classNames(styles.answerBoard)}>
             {endGameData ? (
-              <EndGameBoard className="flex-grow-1"/>
+              <EndGameBoard className="flex-grow-1" />
             ) : (
-              <ExitContext.Provider value={{showEndGameModal: exitModal, setShowEndGameModal: setExitModal}}>
+              <ExitContext.Provider
+                value={{
+                  showEndGameModal: exitModal,
+                  setShowEndGameModal: setExitModal,
+                }}
+              >
                 <AnswerBoard
                   className="flex-grow-1"
                   isShowHostControl={isShowHostControl}
@@ -142,37 +149,29 @@ const GamePage: NextPage = () => {
           </div>
 
           {gameSession && (
-
             <div>
-              <Fade
-                in={isShowChat}
-              >
-                {isShowChat ?
-                  <div>
-                    <GameMenuBar gameSession={gameSession}/>
-                  </div>
-                  : (
-                    <></>
-                  )}
+              <Fade in={isShowChat}>
+                <div>
+                  <GameMenuBar gameSession={gameSession} />
+                </div>
               </Fade>
 
-              <Fade
-                in={isShowItem}
-              >
-                {isShowItem ?
+              <Fade in={isShowItem}>
+                {isShowItem ? (
                   <div>
-                    <UsingItemInGame
-                    />
-                  </div> : <></>}
+                    <UsingItemInGame />
+                  </div>
+                ) : (
+                  <></>
+                )}
               </Fade>
             </div>
-
           )}
           <FAB
             actions={[
               ...fabs,
-              (!fromMedium && isHost()) ? hostAction : null,
-              (!endGameData && isHost()) ? endGameAction : exitAction
+              !fromMedium && isHost() ? hostAction : null,
+              !endGameData && isHost() ? endGameAction : exitAction,
             ]}
           />
         </div>
