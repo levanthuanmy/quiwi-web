@@ -45,7 +45,7 @@ const QuestionEditorSection: FC<{
         <Col
           xs="12"
           md="auto"
-          className="mb-3 mb-md-0 d-flex flex-column gap-2"
+          className="mb-3 mb-md-0 d-flex flex-column gap-2 flex-md-nowrap"
         >
           <QuestionConfigBtn
             prefixIcon={<IconQuestion type={type} />}
@@ -128,7 +128,7 @@ const QuestionEditorSection: FC<{
           </FloatingLabel>
         </Col>
         <Col className="ps-12px ps-md-0">
-          <Row className="flex-column-reverse flex-md-row border m-0 rounded-10px overflow-hidden">
+          <Row className="flex-column-reverse flex-md-row border m-0 rounded-10px">
             {newQuestion?.media?.length ? (
               <Col xs="12" md="6" className="p-0">
                 <Image
@@ -145,15 +145,18 @@ const QuestionEditorSection: FC<{
             <Col
               xs="12"
               md={newQuestion?.media?.length ? '6' : '12'}
-              className="p-0 bg-white position-relative"
+              className="p-0 bg-white position-relative overflow-hidden"
               style={{ height: 240 }}
             >
               <Editor
                 toolbar={RICH_TEXT_TOOLBAR}
-                toolbarClassName="position-relative"
+                toolbarClassName="position-relative overflow-auto"
                 editorState={richTextQuestion}
-                wrapperClassName="demo-wrapper w-100 bg-white h-100"
-                editorClassName="demo-editor"
+                defaultEditorState={richTextQuestion}
+                wrapperClassName="demo-wrapper bg-white p-0"
+                wrapperStyle={{height: 140}}
+                toolbarStyle={{height: 100}}
+                editorClassName="demo-editor fs-20px h-100"
                 placeholder="Nhập câu hỏi của bạn ở đây..."
                 onEditorStateChange={(editorState) => {
                   setRichTextQuestion(editorState)

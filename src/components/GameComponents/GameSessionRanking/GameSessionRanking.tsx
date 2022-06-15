@@ -95,6 +95,10 @@ const GameSessionRanking: FC<GameSessionRankingProps> = ({
       ...data,
     ]
   }, [viewResultData, currentQuestion])
+  console.log(
+    'answersSubmittedData - answersSubmittedData',
+    answersSubmittedData
+  )
 
   const options = {
     legend: 'none',
@@ -233,16 +237,26 @@ const GameSessionRanking: FC<GameSessionRankingProps> = ({
         </Table>
       </div>
       <div className="pt-5 fw-medium fs-22px">Thống kê câu trả lời</div>
-      <div className="fst-italic pb-3 text-secondary">
-        Số lượng người chọn mỗi câu trả lời
-      </div>
-      <Chart
-        chartType="ColumnChart"
-        width={'100%'}
-        // height={'400px'}
-        data={answersSubmittedData}
-        options={options}
-      />
+      {currentQuestion?.type === '31ESSAY' ? (
+        Object.keys(viewResultData.answerTextStatistic).map((key, index) => (
+          <div key={index}>
+            {index + 1}. {key}
+          </div>
+        ))
+      ) : (
+        <>
+          <div className="fst-italic pb-3 text-secondary">
+            Số lượng người chọn mỗi câu trả lời
+          </div>
+          <Chart
+            chartType="ColumnChart"
+            width={'100%'}
+            // height={'400px'}
+            data={answersSubmittedData}
+            options={options}
+          />
+        </>
+      )}
     </MyModal>
   )
 }
