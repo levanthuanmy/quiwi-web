@@ -178,6 +178,7 @@ const TextQuestion: FC<TextQuestionProps> = ({
                 autoFocus={true}
                 placeholder={isTimeOut ? "Hết giờ, bạn đã không trả lời câu hỏi này!" : "Nhập câu trả lời của bạn"}
                 disabled={(isTimeOut || isSubmitted)}
+                maxLength={120}
                 className={classNames(
                   "w-100 text-center flex-grow-1 customScrollbar",
                   styles.answerInput,

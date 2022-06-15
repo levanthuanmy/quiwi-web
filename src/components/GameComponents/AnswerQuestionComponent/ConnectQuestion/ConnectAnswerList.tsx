@@ -27,13 +27,16 @@ export const ConnectAnswerList: FC<TextAnswerListProps> = (props: TextAnswerList
     '#AB89A6',
   ]
 
-  function getColorWithDecor(idx: number, option: TAnswer): string {
+  function getColorWithDecor(idx: number, option: TAnswer, showLineThrough: boolean): string {
     if (option.type == "21PLHDR") return '#00000000'
     let highlight = !(props.disabledOption && props.disabledOption.has(option))
     if (props.userSelectedOptions && props.userSelectedOptions[idx] != option)
       highlight = false
-
-    return highlight ? colors[idx % colors.length] : "#E0E0E0"
+    if (showLineThrough && (props.userSelectedOptions
+      && props.userSelectedOptions[idx]
+      && (props.userSelectedOptions[idx].id ?? -1) >= 0))
+      return "#f4f0e7"
+    return highlight ? colors[idx % colors.length] : "#efefef"
   }
 
   function getColorWithoutDecor(idx: number, option: TAnswer): string {
@@ -41,12 +44,11 @@ export const ConnectAnswerList: FC<TextAnswerListProps> = (props: TextAnswerList
     const colorPostfix = props.showAnswer ? "66" : ""
     let highlight = !(props.disabledOption && props.disabledOption.has(option))
     if (props.showAnswer) highlight = !highlight
-    console.log("=>(ConnectAnswerList.tsx:108) getColorWithDecor", highlight ? colors[idx % colors.length] + colorPostfix : "#E0E0E0");
     return highlight ? colors[idx % colors.length] : "#E0E0E0"
   }
 
-  function getColorFor(idx: number, option: TAnswer): string {
-    return props.displayDecor ? getColorWithDecor(idx, option) : getColorWithoutDecor(idx, option)
+  function getColorFor(idx: number, option: TAnswer, showLineThrough: boolean): string {
+    return props.displayDecor ? getColorWithDecor(idx, option, showLineThrough) : getColorWithoutDecor(idx, option)
   }
 
   function getTextColor(option: TAnswer): string {
@@ -60,8 +62,8 @@ export const ConnectAnswerList: FC<TextAnswerListProps> = (props: TextAnswerList
 
         props.options.map((option, idx) => {
 
-          function showLineThrough() {
-            return  props.showAnswer && props.displayDecor && props.userSelectedOptions && props.userSelectedOptions[idx] != option;
+          function showLineThrough(): boolean {
+            return (props.showAnswer && props.displayDecor && props.userSelectedOptions && props.userSelectedOptions[idx] != option) ?? false;
           }
 
           return <Col
@@ -70,7 +72,7 @@ export const ConnectAnswerList: FC<TextAnswerListProps> = (props: TextAnswerList
               styles.answer,
               !props.showAnswer ? "cursor-pointer" : "")}
             style={{
-              backgroundColor: getColorFor(idx, option),
+              backgroundColor: getColorFor(idx, option, showLineThrough()),
             }}
             onClick={() => {
               if (option.type != "21PLHDR") {
@@ -81,11 +83,11 @@ export const ConnectAnswerList: FC<TextAnswerListProps> = (props: TextAnswerList
           >
             <div
               className={cn(styles.word, "fw-medium user-select-none",
-              {
-              "cursor-pointer": !props.showAnswer,
-                "px-2": option.type !== "21PLHDR"
-            })}
-                 style={{color: getTextColor(option)}}
+                {
+                  "cursor-pointer": !props.showAnswer,
+                  "px-2": option.type !== "21PLHDR"
+                })}
+              style={{color: getTextColor(option)}}
             >
               {showLineThrough() ?
                 <>

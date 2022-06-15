@@ -311,7 +311,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
             }
             {!isShowEndGame &&
                 <GameButton
-                    isEnable={isShowNext || countDown <= 0}
+                    isEnable={countDown <= 0}
                     iconClassName="bi bi-arrow-right-circle-fill"
                     className={classNames('text-white fw-medium')}
                     title="Câu sau"
