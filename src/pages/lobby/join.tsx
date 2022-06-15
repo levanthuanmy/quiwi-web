@@ -1,15 +1,20 @@
-import {NextPage} from 'next'
-import {useRouter} from 'next/router'
-import {useState} from 'react'
-import {Form, Image} from 'react-bootstrap'
+import { NextPage } from 'next'
+import { useRouter } from 'next/router'
+import { useState } from 'react'
+import { Form, Image } from 'react-bootstrap'
 import Cookies from 'universal-cookie'
 import MyButton from '../../components/MyButton/MyButton'
 import MyInput from '../../components/MyInput/MyInput'
-import {useLocalStorage} from '../../hooks/useLocalStorage/useLocalStorage'
-import {post} from '../../libs/api'
-import {TApiResponse, TGamePlayBodyRequest, TJoinQuizResponse, TStartQuizResponse,} from '../../types/types'
-import {JsonParse} from '../../utils/helper'
-import {useGameSession} from "../../hooks/useGameSession/useGameSession";
+import { useLocalStorage } from '../../hooks/useLocalStorage/useLocalStorage'
+import { post } from '../../libs/api'
+import {
+  TApiResponse,
+  TGamePlayBodyRequest,
+  TJoinQuizResponse,
+  TStartQuizResponse,
+} from '../../types/types'
+import { JsonParse } from '../../utils/helper'
+import { useGameSession } from '../../hooks/useGameSession/useGameSession'
 
 type TJoinQuizRequest = {
   userId?: number
@@ -35,19 +40,18 @@ const JoiningPage: NextPage = () => {
     if (!gameSocket()) {
       connectGameSocket()
       // đợi socket có rồi mới join room
-      gameSkOnce("connect", () => {
+      gameSkOnce('connect', () => {
         joinRoom()
-      });
+      })
 
-      gameSkOnce("error", (data) => {
-        console.log("Lobby/join.tsx socket error", data);
-      });
+      gameSkOnce('error', (data) => {
+        console.log('Lobby/join.tsx socket error', data)
+      })
     } else {
       // host đã kết nối socket rồi => join luôn
       joinRoom()
     }
   }
-
 
   const joinRoom = async () => {
     const cookies = new Cookies()
@@ -68,7 +72,7 @@ const JoiningPage: NextPage = () => {
       joinRoomRequest.userId = JsonParse(lsUser)['id']
     }
 
-    console.log("Join quiz - body", body);
+    console.log('Join quiz - body', body)
     try {
       const response: TApiResponse<TJoinQuizResponse> = await post(
         'api/games/join-room',
@@ -93,10 +97,8 @@ const JoiningPage: NextPage = () => {
     }
   }
 
-
   return (
-    <div
-      className="bg-secondary fw-medium bg-opacity-25 min-vh-100 d-flex flex-column justify-content-center align-items-center">
+    <div className="bg-secondary fw-medium bg-opacity-25 min-vh-100 d-flex flex-column justify-content-center align-items-center">
       <div className="bg-white px-3 py-5 rounded-20px shadow-sm">
         <div className="mb-5 text-center">
           <Image
@@ -108,7 +110,7 @@ const JoiningPage: NextPage = () => {
         </div>
 
         <Form.Label className="mb-3 text-center">
-          Nhập tên hiển thị của bạn (tối đa 20 ký tự)
+          Nhập tên hiển thị của bạn (tối đa 16 ký tự)
         </Form.Label>
 
         <MyInput
@@ -121,7 +123,7 @@ const JoiningPage: NextPage = () => {
               handleOnClick()
             }
           }}
-          maxLength={20}
+          maxLength={16}
           placeholder="Nhập tên hiển thị"
         />
         <MyButton onClick={handleOnClick} className="mt-3 text-white w-100">
