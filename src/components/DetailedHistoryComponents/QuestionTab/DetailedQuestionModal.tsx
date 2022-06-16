@@ -5,7 +5,7 @@ import { TGameHistory } from '../../../types/types'
 import { parseQuestionHTMLToRaw } from '../../../utils/helper'
 import styles from './QuestionTab.module.css'
 import { QUESTION_TYPE_MAPPING_TO_TEXT } from '../../../utils/constants'
-import QuestionAnswer from './QuestionAnswer'
+import QuestionAnswerStatistic from './QuestionAnswer'
 import _ from 'lodash'
 
 const DetailedQuestionModal: FC<{
@@ -97,7 +97,7 @@ const DetailedQuestionModal: FC<{
             </Col>
             {/* Thông tin các câu trả lời theo hàng */}
             <Col>
-              <QuestionAnswer question={question} />
+              <QuestionAnswerStatistic question={question} />
             </Col>
           </Row>
 
