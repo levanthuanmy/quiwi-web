@@ -369,3 +369,9 @@ export type TResultWheelFortune = {
   score: number
   numberJoinSpinning: number
 }
+
+export type TQuizCategory = {
+  id: number
+  name: string
+  keyword: string
+}

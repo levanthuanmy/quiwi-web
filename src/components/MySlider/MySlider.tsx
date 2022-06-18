@@ -1,29 +1,18 @@
-import classNames from 'classnames'
 import { FC, ReactNode } from 'react'
 import Slider from 'react-slick'
 
-function SampleNextArrow(props: any) {
-  const { className, style, onClick } = props
-  return (
-    <div
-      className={classNames(className, 'text-primary d-block')}
-      style={{ ...style }}
-      onClick={onClick}
-    ></div>
-  )
-}
-
-const MySlider: FC<{ children: ReactNode }> = ({ children }) => {
+const MySlider: FC<{ children: ReactNode; showDots?: boolean }> = ({
+  children,
+  showDots = true,
+}) => {
   const settings = {
-    dots: true,
+    dots: showDots,
     infinite: false,
     speed: 500,
     slidesToShow: 3,
     slidesToScroll: 2,
     initialSlide: 0,
     arrows: true,
-    nextArrow: <SampleNextArrow />,
-    prevArrow: <SampleNextArrow />,
     responsive: [
       {
         breakpoint: 1200,

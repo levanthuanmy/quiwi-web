@@ -29,9 +29,9 @@ const MyInput: FC<MyInputProps> = (props: MyInputProps) => {
         {iconClassName && (
           <div
             className={classNames(
-              'align-self-center fs-24px pe-12px',
               styles.icon,
-              iconClassName
+              iconClassName,
+              'align-self-center fs-24px pe-12px'
             )}
             onClick={handleIconClick}
           />

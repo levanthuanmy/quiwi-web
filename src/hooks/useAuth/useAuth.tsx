@@ -1,6 +1,8 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useRouter } from 'next/router'
 import React, { ReactNode, useEffect, useState } from 'react'
 import Cookies from 'universal-cookie'
+import { get } from '../../libs/api'
 import { TUser } from '../../types/types'
 import { JsonParse } from '../../utils/helper'
 import { useLocalStorage } from '../useLocalStorage/useLocalStorage'
@@ -39,7 +41,7 @@ export const AuthProvider = ({ children }: { children?: ReactNode }) => {
     setIsAuth(
       Boolean(
         userState?.token?.accessToken?.length ||
-        cookies.get('access-token')?.length
+          cookies.get('access-token')?.length
       )
     )
   }, [userState])
@@ -47,9 +49,19 @@ export const AuthProvider = ({ children }: { children?: ReactNode }) => {
   useEffect(() => {
     const _lsUser = JsonParse(lsUser) as TUser
     if (_lsUser?.token?.accessToken.length) {
-      setUserState(_lsUser)
+      const getUser = async () => {
+        try {
+          const res = await get<any>('/api/users/profile', true)
+          setUserState({ ..._lsUser, ...res?.response?.user })
+        } catch (error) {
+          console.log('getUser - error', error)
+        }
+      }
+
       cookies.set('access-token', _lsUser.token.accessToken)
       cookies.set('refresh-token', _lsUser.token.refreshToken)
+
+      getUser()
     }
   }, [lsUser, cookies.get('access-token')])
 
@@ -71,7 +83,7 @@ export const AuthProvider = ({ children }: { children?: ReactNode }) => {
   const signOut = async () => {
     cookies.remove('access-token')
     cookies.remove('refresh-token')
-    console.log("🚪=>(useAuth.tsx:80) Đăng xuất, cookies: ", cookies);
+    console.log('🚪=>(useAuth.tsx:80) Đăng xuất, cookies: ', cookies)
     setLsUser('')
     socketManager.disconnectAll()
     setUserState(undefined)
@@ -91,7 +103,7 @@ export const AuthProvider = ({ children }: { children?: ReactNode }) => {
       setUserState(data)
       cookies.set('access-token', data.token.accessToken)
       cookies.set('refresh-token', data.token.refreshToken)
-      console.log("🔓=>(useAuth.tsx:99) Đăng nhập, cookies: ", cookies);
+      console.log('🔓=>(useAuth.tsx:99) Đăng nhập, cookies: ', cookies)
       setLsUser(JSON.stringify(data))
     } catch (error) {
       console.log('setUser - error', error)
