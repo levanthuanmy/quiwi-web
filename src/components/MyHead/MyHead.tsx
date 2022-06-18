@@ -21,6 +21,9 @@ const MyHead: FC = () => {
       <link rel="preconnect" href={API_URL} />
       <link rel="dns-prefetch" href={API_URL} />
       <title>Quiwi Game</title>
+      <meta name="description" content="Quiwi là một trang web cho phép bạn tham gia quiz hoặc tạo quiz của chính mình"/>
+      <link rel="canonical" href="https://web.quiwi.games/"/>
+      <meta name="keywords" content="quiwi, Quiwi, game, games, quiz, quizzes"></meta>
     </Head>
   )
 }
