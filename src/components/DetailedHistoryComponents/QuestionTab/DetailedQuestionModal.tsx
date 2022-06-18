@@ -1,12 +1,11 @@
-import classNames from 'classnames'
 import { FC } from 'react'
 import { Col, Modal, Row } from 'react-bootstrap'
 import { TGameHistory } from '../../../types/types'
-import { parseQuestionHTMLToRaw } from '../../../utils/helper'
-import styles from './QuestionTab.module.css'
 import { QUESTION_TYPE_MAPPING_TO_TEXT } from '../../../utils/constants'
+import { parseQuestionHTMLToRaw } from '../../../utils/helper'
+import { getNumCorrectAnswersOfPlayer } from '../../../utils/statistic-calculation'
+import { PlayerStatisticList } from './PlayerStatisticList'
 import QuestionAnswerStatistic from './QuestionAnswer'
-import _ from 'lodash'
 
 const DetailedQuestionModal: FC<{
   gameHistory: TGameHistory
@@ -19,20 +18,6 @@ const DetailedQuestionModal: FC<{
   const gameRoundStatistic = gameHistory.gameRoundStatistics.find(
     (g) => g.roundNumber === question.orderPosition
   )!
-
-  const getNumCorrectAnswersOfPlayer = () => {
-    let countCorrectAnswer = 0
-    for (const player of gameHistory.players)
-      for (const gameRound of player.gameRounds) {
-        if (gameRound.question?.id === question.id) {
-          countCorrectAnswer += gameRound.isCorrect ? 1 : 0
-        }
-      }
-
-    return (countCorrectAnswer / gameHistory.players.length) * 100
-  }
-
-  const questionAnswers = question.questionAnswers
 
   return (
     <Modal
@@ -74,7 +59,11 @@ const DetailedQuestionModal: FC<{
               </div>
               <div className="d-flex border-bottom border-secondary py-2">
                 <div>
-                  {getNumCorrectAnswersOfPlayer().toFixed(2)}% trả lời đúng
+                  {getNumCorrectAnswersOfPlayer(
+                    gameRoundStatistic,
+                    gameHistory.players.length
+                  ).toFixed(2)}
+                  % trả lời đúng
                 </div>
               </div>
             </Col>
@@ -111,45 +100,10 @@ const DetailedQuestionModal: FC<{
 
               <Col className="text-end d-none d-md-block">Điểm nhận được</Col>
             </Row>
-            {gameHistory.players.map((player) => {
-              const gameRound = player.gameRounds.find(
-                (gameRound) => gameRound.question?.id === question.id
-              )
-              if (!gameRound) return null
-              const answers = []
-
-              if (!_.isEmpty(gameRound.selectionAnswers)) {
-                for (const index in gameRound.selectionAnswers) {
-                  answers.push(gameRound.selectionAnswers[index].answer)
-                }
-              } else if (gameRound.answer) {
-                answers.push(gameRound.answer)
-              }
-              let isCorrect = ''
-              if (gameRound.isCorrect) {
-                isCorrect = 'Đúng'
-              } else if (!gameRound.answer && _.isEmpty(gameRound.answerIds)) {
-                isCorrect = 'Không trả lời'
-              } else {
-                isCorrect = 'Sai'
-              }
-              return (
-                <Row
-                  key={player.nickname}
-                  className={classNames('py-2', styles.playerStatisticRow)}
-                >
-                  <Col xs={6} md={3}>
-                    {player.nickname}
-                  </Col>
-                  <Col className=" ">{isCorrect}</Col>
-                  <Col className="d-none d-md-block ">{answers.join(', ')}</Col>
-
-                  <Col className="text-end d-none d-md-block">
-                    {gameRound.score.toFixed(2)}
-                  </Col>
-                </Row>
-              )
-            })}
+            <PlayerStatisticList
+              gameHistory={gameHistory}
+              questionId={question.id ?? 0}
+            />
           </Row>
         </div>
       </Modal.Body>

@@ -21,7 +21,7 @@ const QuestionTab: FC<{ game: TGameHistory }> = ({ game }) => {
         }
       }
 
-    return (countCorrectAnswer / game.players.length) * 100
+    return (countCorrectAnswer / (game.players.length || 1)) * 100
   }
   return (
     <Container fluid={true}>

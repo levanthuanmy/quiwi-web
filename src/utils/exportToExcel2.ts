@@ -5,6 +5,7 @@ import { TDetailPlayer, TGameHistory } from '../types/types'
 import { QUESTION_TYPE_MAPPING_TO_TEXT } from './constants'
 import { formatDate_DDMMMMYYYY, formatDate_DDMMYYYY } from './helper'
 import ExcelJS from 'exceljs'
+import { getAnswerResultText } from './statistic-calculation'
 const alignCenterSetting = {
   alignment: {
     vertical: 'center',
@@ -242,27 +243,21 @@ const getPlayerScoreForEachQuestion = (
   player: TDetailPlayer
 ) => {
   const gameRound = player.gameRounds[index]
+  if (!gameRound) return []
 
   const answers = []
 
-  if (gameRound.selectionAnswers) {
+  if (gameRound?.selectionAnswers) {
     for (const index in gameRound.selectionAnswers) {
       answers.push(gameRound.selectionAnswers[index].answer)
     }
   }
 
-  let isCorrect = ''
-  if (gameRound.isCorrect) {
-    isCorrect = 'Đúng'
-  } else if (!gameRound.answer && _.isEmpty(gameRound.answerIds)) {
-    isCorrect = 'Không trả lời'
-  } else {
-    isCorrect = 'Sai'
-  }
-  
+  const isCorrect = getAnswerResultText(gameRound)
+
   const playerRowSheet = [
     player.nickname,
-    gameRound.answer || answers.join(', '),
+    gameRound?.answer || answers?.join(', ') || '',
     isCorrect,
     gameRound.score.toFixed(2),
     gameRound.currentScore.toFixed(2),
@@ -304,14 +299,18 @@ const generateSheetForEachQuestion = (
 
   const answersStatistics = []
 
+  /**
+   * Lấy các câu trả lời trong question để đếm số người chọn câu đó
+   */
   const answerTextStatistic: Record<string, number> =
-    gameRoundStatistic.answerTextStatistic ?? {}
+    gameRoundStatistic?.answerTextStatistic ?? {}
+
   for (const questionAnswer of question.questionAnswers) {
     if (questionAnswer.isCorrect) {
       answers.push(questionAnswer.answer)
     }
     // Convert from quesitionAnswerId to questionAnswer as text
-    if (question.type !== '30TEXT') {
+    if (question.type !== '30TEXT' && question.type !== '31ESSAY') {
       answersStatistics.push({
         answer: questionAnswer.answer,
         isCorrect: questionAnswer.isCorrect,
@@ -324,7 +323,9 @@ const generateSheetForEachQuestion = (
     }
   }
   const correctAnswersPercentage =
-    (gameRoundStatistic?.numberOfCorrectAnswers / game.players.length) * 100
+    ((gameRoundStatistic?.numberOfCorrectAnswers ?? 0) /
+      (game.players.length || 1)) *
+    100
 
   getTitle(sheet, game.quiz.title)
 
@@ -348,7 +349,10 @@ const generateSheetForEachQuestion = (
   const correctText = ['Đây là câu trả lời đúng?', '', '', '']
 
   const numChoiceText = ['Số người chơi lựa chọn câu này', '', '', '']
-  if (question.type == '30TEXT') {
+
+  // Render Đây là câu trả lời đúng và Số người chơi lựa chọn câu này
+  // Nếu là 31ESSAY thì k hiện câu trả lời
+  if (question.type === '30TEXT') {
     for (const answer in answerTextStatistic) {
       answerText.push(answer)
       // correctText.push({
@@ -356,7 +360,7 @@ const generateSheetForEachQuestion = (
       // })
       numChoiceText.push(answerTextStatistic[answer].toString())
     }
-  } else {
+  } else if (question.type !== '31ESSAY') {
     for (const answer of answersStatistics) {
       answerText.push(answer.answer)
       correctText.push(answer.isCorrect ? 'Đúng' : 'Sai')
@@ -377,7 +381,7 @@ const generateSheetForEachQuestion = (
   sheet.mergeCells('A13:H13')
   getHeader(sheet, 'A13', 'Kết quả trận đấu')
 
-  const playersScoreForEachQuestionText: any = []
+  const playersScoreForEachQuestionText: (string | number)[][] = []
 
   for (let i = 0; i < game.players.length; i++) {
     const player = game.players[i]

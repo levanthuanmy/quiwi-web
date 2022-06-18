@@ -53,7 +53,7 @@ const QuestionAnswerStatistic: FC<{
         </div>
       </>
     )
-  } else {
+  } else if (question.type !== '31ESSAY') {
     return (
       <>
         <div>
@@ -68,6 +68,8 @@ const QuestionAnswerStatistic: FC<{
         </div>
       </>
     )
+  } else {
+    return null
   }
 }
 

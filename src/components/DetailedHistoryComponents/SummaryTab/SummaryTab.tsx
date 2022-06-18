@@ -2,6 +2,7 @@ import _ from 'lodash'
 import router from 'next/router'
 import { FC } from 'react'
 import { Card, Col, Row } from 'react-bootstrap'
+import { useAuth } from '../../../hooks/useAuth/useAuth'
 import { TGameHistory } from '../../../types/types'
 import { calculateScorePercentages } from '../../../utils/exportToExcel'
 import MyButton from '../../MyButton/MyButton'
@@ -9,9 +10,10 @@ import Pie from '../../Pie/Pie'
 
 const SummaryTab: FC<{ game: TGameHistory }> = ({ game }) => {
   const correctPercentages = calculateScorePercentages(game)
-
+  const auth = useAuth()
+  const user = auth.getUser()
   return (
-    <Row >
+    <Row>
       <Col>
         <Card>
           <Card.Body>
@@ -28,14 +30,16 @@ const SummaryTab: FC<{ game: TGameHistory }> = ({ game }) => {
               <Col className="text-center text-md-start pt-3 pt-md-0">
                 <h2>Có công mài sắt có ngày nên kim!</h2>
                 <p>Tiếp tục luyện tập để đạt được những thành tích tốt hơn</p>
-                <MyButton
-                  className="text-white px-3"
-                  onClick={() => {
-                    router.push(`/quiz/${game.quiz.id}/play`)
-                  }}
-                >
-                  Chơi lại
-                </MyButton>
+                {user?.id === game.hostId ? (
+                  <MyButton
+                    className="text-white px-3"
+                    onClick={() => {
+                      router.push(`/quiz/${game.quiz.id}/play`)
+                    }}
+                  >
+                    Chơi lại
+                  </MyButton>
+                ) : null}
               </Col>
             </Row>
           </Card.Body>
