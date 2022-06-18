@@ -198,7 +198,13 @@ export type TQuizBodyRequest = {
   questions: TQuestion[]
 }
 
-export type TQuestionType = '10SG' | '20MUL' | '21ODMUL' | '30TEXT' | '31ESSAY'
+export type TQuestionType =
+  | '10SG'
+  | '20MUL'
+  | '21ODMUL'
+  | '22POLL'
+  | '30TEXT'
+  | '31ESSAY'
 export type TMatcher = '10EXC' | '20CNT'
 
 export type TQuestion = {
@@ -327,7 +333,7 @@ export type TUserQuest = {
 }
 
 export type TQuestRequirement = {
-  goal: number,
+  goal: number
   type: string
 }
 

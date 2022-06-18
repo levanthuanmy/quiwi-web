@@ -45,6 +45,7 @@ export const MAPPED_QUESTION_TYPE: Record<TQuestionType, QuestionType> = {
   '30TEXT': 'fill',
   '21ODMUL': 'conjunction',
   '31ESSAY': 'essay',
+  '22POLL': 'poll',
 }
 
 export const QUESTION_TYPE_MAPPING_TO_TEXT: Record<TQuestionType, string> = {
@@ -53,6 +54,7 @@ export const QUESTION_TYPE_MAPPING_TO_TEXT: Record<TQuestionType, string> = {
   '30TEXT': 'Trả lời câu hỏi chữ',
   '21ODMUL': 'Nối từ',
   '31ESSAY': 'Trả lời tự do',
+  '22POLL': 'Bình chọn ý kiến',
 }
 
 export const MAPPED_QUESTION_MATCHER: Record<string, string> = {
@@ -61,17 +63,13 @@ export const MAPPED_QUESTION_MATCHER: Record<string, string> = {
 }
 
 export const SOUND_EFFECT: Record<string, string> = {
-  SIDE_BAR_SOUND_CLICK:
-    '/sounds/juice-button.mp3',
-  BUY_BUTTON_SOUND_CLICK:
-    '/sounds/juice-button.mp3',
-  INCREASE_QUANTITY_BUTTON_SOUND_CLICK:
-    '/sounds/juice-button.mp3',
-  CONFIRM_BUY_BUTTON_SOUND_CLICK:
-    '/sounds/bought.mp3',
+  SIDE_BAR_SOUND_CLICK: '/sounds/juice-button.mp3',
+  BUY_BUTTON_SOUND_CLICK: '/sounds/juice-button.mp3',
+  INCREASE_QUANTITY_BUTTON_SOUND_CLICK: '/sounds/juice-button.mp3',
+  CONFIRM_BUY_BUTTON_SOUND_CLICK: '/sounds/bought.mp3',
   SPIN_BUTTON: 'https://thumbs.dreamstime.com/audiothumb_14723/147239759.mp3',
   NOTIFICATION: '/sounds/messenger_tone.mp3',
-  JACKPOT_CONGRATULATION: '/sounds/congratulation.mp3'
+  JACKPOT_CONGRATULATION: '/sounds/congratulation.mp3',
 }
 
 export const TIMEOUT_OPTIONS = [1, 2, 5, 10, 15, 30, 60, 120, 180]

@@ -1,17 +1,17 @@
-import {Formik, Field, Form as FormikForm} from 'formik'
+import { Formik, Field, Form as FormikForm } from 'formik'
 import _ from 'lodash'
-import {FC, memo, useState} from 'react'
-import {Row, Col, Form} from 'react-bootstrap'
-import {TAnswer, TQuestion, TMatcherQuestion} from '../../../types/types'
-import {QuestionType} from '../../IconQuestion/IconQuestion'
+import { FC, memo, useState } from 'react'
+import { Row, Col, Form } from 'react-bootstrap'
+import { TAnswer, TQuestion, TMatcherQuestion } from '../../../types/types'
+import { QuestionType } from '../../IconQuestion/IconQuestion'
 import ItemMultipleAnswer from '../ItemMultipleAnswer/ItemMultipleAnswer'
 import MyButton from '../../MyButton/MyButton'
 import MyInput from '../../MyInput/MyInput'
-import {defaultAnswer} from '../QuestionCreator.constants'
+import { defaultAnswer } from '../QuestionCreator.constants'
 import ItemConjunctionAnswer from '../ItemConjunctionAnswer/ItemConjunctionAnswer'
-import {ANSWER_COLORS} from '../../../utils/constants'
+import { ANSWER_COLORS } from '../../../utils/constants'
 import classNames from 'classnames'
-import {width} from "dom-helpers";
+import { width } from 'dom-helpers'
 
 const AnswerEditorSection: FC<{
   type: QuestionType
@@ -26,30 +26,33 @@ const AnswerEditorSection: FC<{
   setCorrectIndexes: React.Dispatch<React.SetStateAction<number[]>>
   // eslint-disable-next-line react/display-name
 }> = ({
-        type,
-        answers,
-        setAnswers,
-        removeAnswerAtIndex,
-        setNewQuestion,
-        newQuestion,
-        fillAnswers,
-        setFillAnswers,
-        correctIndexes,
-        setCorrectIndexes,
-      }) => {
-  console.log("=>(AnswerEditorSection.tsx:41) answers", answers);
-  const sortedCorrectAnswers = answers.filter(answer => answer.isCorrect).sort((a, b) => {
-    return a.orderPosition - b.orderPosition
-  })
+  type,
+  answers,
+  setAnswers,
+  removeAnswerAtIndex,
+  setNewQuestion,
+  newQuestion,
+  fillAnswers,
+  setFillAnswers,
+  correctIndexes,
+  setCorrectIndexes,
+}) => {
+  const sortedCorrectAnswers = answers
+    .filter((answer) => answer.isCorrect)
+    .sort((a, b) => {
+      return a.orderPosition - b.orderPosition
+    })
 
-  const sortedIncorrectAnswers = answers.filter(answer => (!answer.isCorrect && answer.type === "10TEXT")).sort((a, b) => {
-    return a.orderPosition - b.orderPosition
-  })
+  const sortedIncorrectAnswers = answers
+    .filter((answer) => !answer.isCorrect && answer.type === '10TEXT')
+    .sort((a, b) => {
+      return a.orderPosition - b.orderPosition
+    })
 
   return (
     <>
       <div className="bg-white p-3">
-        {(type === 'multiple' || type === 'single') && (
+        {(type === 'multiple' || type === 'single' || type === 'poll') && (
           <Row>
             {answers.map((_, key) => (
               <Col key={key} xs="12" sm="6" lg="4" xl="3" className="mb-3">
@@ -70,11 +73,11 @@ const AnswerEditorSection: FC<{
                 onClick={() =>
                   setAnswers((prev) => [
                     ...prev,
-                    {...defaultAnswer, orderPosition: prev.length},
+                    { ...defaultAnswer, orderPosition: prev.length },
                   ])
                 }
               >
-                <div className="bi bi-plus-circle-fill fs-1 mb-0 text-primary cursor-pointer"/>
+                <div className="bi bi-plus-circle-fill fs-1 mb-0 text-primary cursor-pointer" />
               </Col>
             )}
           </Row>
@@ -90,7 +93,7 @@ const AnswerEditorSection: FC<{
               <Col xs="12" sm="auto" className="mb-3 mb-sm-0">
                 <Form.Select
                   className="rounded-10px shadow-none"
-                  style={{height: 50}}
+                  style={{ height: 50 }}
                   defaultValue={_.get(newQuestion, 'matcher', '10EXC')}
                   onChange={(e) => {
                     setNewQuestion((prev) => ({
@@ -118,13 +121,13 @@ const AnswerEditorSection: FC<{
                         setFillAnswers(currentAns)
                       }}
                     >
-                      <i className="bi bi-trash"/>
+                      <i className="bi bi-trash" />
                     </MyButton>
                   </div>
                 ))}
 
                 <Formik
-                  initialValues={{newAnswer: ''}}
+                  initialValues={{ newAnswer: '' }}
                   onSubmit={(values, actions) => {
                     if (values.newAnswer.length) {
                       setFillAnswers([...fillAnswers, values.newAnswer])
@@ -133,7 +136,7 @@ const AnswerEditorSection: FC<{
                     actions.resetForm()
                   }}
                 >
-                  {({isSubmitting}) => (
+                  {({ isSubmitting }) => (
                     <FormikForm className="d-flex w-100">
                       <Field
                         maxLength={100}
@@ -149,7 +152,7 @@ const AnswerEditorSection: FC<{
                         type="submit"
                         disabled={isSubmitting}
                       >
-                        <i className="bi bi-plus-lg"/>
+                        <i className="bi bi-plus-lg" />
                       </MyButton>
                     </FormikForm>
                   )}
@@ -163,23 +166,32 @@ const AnswerEditorSection: FC<{
           <div>
             <div className="fw-medium fs-22px mb-4">Nhập câu hoàn chỉnh:</div>
             <Formik
-              initialValues={{sentence: sortedCorrectAnswers.map(answer => answer.answer).join(" ")}}
+              initialValues={{
+                sentence: sortedCorrectAnswers
+                  .map((answer) => answer.answer)
+                  .join(' '),
+              }}
               onSubmit={(values, actions) => {
-                let wordArray = values.sentence.split(" ").filter(word => word != "")
+                let wordArray = values.sentence
+                  .split(' ')
+                  .filter((word) => word != '')
                 if (wordArray) {
-                  let _answers: TAnswer[] = wordArray.map((value, index) => ({
-                    ...defaultAnswer,
-                    isCorrect: true,
-                    type: '21PLHDR',
-                    answer: value,
-                    orderPosition: index
-                  } as TAnswer))
+                  let _answers: TAnswer[] = wordArray.map(
+                    (value, index) =>
+                      ({
+                        ...defaultAnswer,
+                        isCorrect: true,
+                        type: '21PLHDR',
+                        answer: value,
+                        orderPosition: index,
+                      } as TAnswer)
+                  )
                   setAnswers([..._answers, ...sortedIncorrectAnswers])
                   actions.setSubmitting(false)
                 }
               }}
             >
-              {({isSubmitting}) => (
+              {({ isSubmitting }) => (
                 <FormikForm className="d-flex w-100">
                   <Field
                     maxLength={1000}
@@ -195,69 +207,81 @@ const AnswerEditorSection: FC<{
                     type="submit"
                     disabled={isSubmitting}
                   >
-                    {"Cập nhập"}
+                    {'Cập nhập'}
                   </MyButton>
                 </FormikForm>
               )}
             </Formik>
-            <div className="fw-medium fs-22px mb-4">Chọn từ cần điền <span className={"fw-light text-secondary"}>(bấm để chọn)</span>:
+            <div className="fw-medium fs-22px mb-4">
+              Chọn từ cần điền{' '}
+              <span className={'fw-light text-secondary'}>(bấm để chọn)</span>:
             </div>
             <Row className="fs-18px gx-2">
               {sortedCorrectAnswers.map((answer, key) => (
-                <Col key={key}
-                     xs="auto"
-                     className="mb-2 position-relative"
-                     onClick={() => {
-                       answer.type = answer.type === '21PLHDR' ? '10TEXT' : '21PLHDR'
-                       setAnswers([...answers])
-                     }}>
+                <Col
+                  key={key}
+                  xs="auto"
+                  className="mb-2 position-relative"
+                  onClick={() => {
+                    answer.type =
+                      answer.type === '21PLHDR' ? '10TEXT' : '21PLHDR'
+                    setAnswers([...answers])
+                  }}
+                >
                   <div
-                    className={classNames('rounded-10px px-2 py-8px text-black user-select-none ', {
-                      "text-white": answer.type === '10TEXT'
-                    })}
+                    className={classNames(
+                      'rounded-10px px-2 py-8px text-black user-select-none ',
+                      {
+                        'text-white': answer.type === '10TEXT',
+                      }
+                    )}
                     style={{
                       backgroundColor:
-                        answer.type === '21PLHDR'
-                          ? '#ECECE466'
-                          : "#2E765E",
+                        answer.type === '21PLHDR' ? '#ECECE466' : '#2E765E',
                     }}
                   >
                     <pre>{answer?.answer}</pre>
                   </div>
-                  {
-                    answer.type === '10TEXT' &&
-                      <div className={"position-absolute"}
-                           style={{
-                             top: "-12px",
-                             right: "-4px",
-                           }}>
-                          <i className={"bi bi-check-circle-fill text-success"} style={{fontSize: 16}}></i>
-                      </div>
-                  }
+                  {answer.type === '10TEXT' && (
+                    <div
+                      className={'position-absolute'}
+                      style={{
+                        top: '-12px',
+                        right: '-4px',
+                      }}
+                    >
+                      <i
+                        className={'bi bi-check-circle-fill text-success'}
+                        style={{ fontSize: 16 }}
+                      ></i>
+                    </div>
+                  )}
                 </Col>
               ))}
             </Row>
             <div className="fw-medium fs-22px mb-4">Thêm từ gây nhiễu:</div>
             <Row
-              className={"customScrollbar"}
+              className={'customScrollbar'}
               style={{
-                maxHeight: "40vh",
-                overflowY: "auto"
-              }}>
-              {sortedCorrectAnswers.filter(a => a.type == "10TEXT").map((answer, key) => (
-                <Col key={key} xs="auto" className="mb-3">
-                  <ItemConjunctionAnswer
-                    currentIndex={key}
-                    answer={answer}
-                    correctIndexes={correctIndexes}
-                    setCorrectIndexes={setCorrectIndexes}
-                    setConjunctionAnswers={setAnswers}
-                    onRemove={() => {
-                    }}
-                    couldDelete={false}
-                  />
-                </Col>
-              ))}
+                maxHeight: '40vh',
+                overflowY: 'auto',
+              }}
+            >
+              {sortedCorrectAnswers
+                .filter((a) => a.type == '10TEXT')
+                .map((answer, key) => (
+                  <Col key={key} xs="auto" className="mb-3">
+                    <ItemConjunctionAnswer
+                      currentIndex={key}
+                      answer={answer}
+                      correctIndexes={correctIndexes}
+                      setCorrectIndexes={setCorrectIndexes}
+                      setConjunctionAnswers={setAnswers}
+                      onRemove={() => {}}
+                      couldDelete={false}
+                    />
+                  </Col>
+                ))}
               {sortedIncorrectAnswers.map((answer, key) => (
                 <Col key={key} xs="auto" className="mb-3">
                   <ItemConjunctionAnswer
@@ -285,8 +309,8 @@ const AnswerEditorSection: FC<{
                           ...defaultAnswer,
                           isCorrect: false,
                           orderPosition: prev.length,
-                          answer: "",
-                          type: "10TEXT"
+                          answer: '',
+                          type: '10TEXT',
                         } as TAnswer,
                       ])
                     }

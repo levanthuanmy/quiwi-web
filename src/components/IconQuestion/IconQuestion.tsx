@@ -7,8 +7,8 @@ export type QuestionType =
   | 'multiple'
   | 'fill'
   | 'conjunction'
-  // | 'modernFill'
   | 'essay'
+  | 'poll'
 
 export const questionTypeStyles: Record<
   QuestionType,
@@ -34,11 +34,11 @@ export const questionTypeStyles: Record<
     colorClassName: 'bg-success',
     title: 'Nối từ',
   },
-  // modernFill: {
-  //   icon: 'bi bi-grid-3x2-gap',
-  //   colorClassName: 'bg-danger',
-  //   title: 'Điền từ kiểu mới',
-  // },
+  poll: {
+    icon: 'bi bi-file-earmark-bar-graph',
+    colorClassName: 'bg-danger',
+    title: 'Bình chọn ý kiến',
+  },
   essay: {
     icon: 'bi bi-justify-left',
     colorClassName: 'bg-secondary',

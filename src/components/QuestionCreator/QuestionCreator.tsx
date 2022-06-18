@@ -148,6 +148,7 @@ const QuestionCreator: FC<QuestionCreatorProps> = ({
       if (
         type !== 'fill' &&
         type !== 'essay' &&
+        type !== 'poll' &&
         getCurrentTrueAnswer(answers) < 1
       ) {
         alert('Bạn cần có ít nhất 1 câu trả lời là đúng')
@@ -187,11 +188,23 @@ const QuestionCreator: FC<QuestionCreatorProps> = ({
       }
 
       if (type === 'conjunction') {
-        _newQuestion['questionAnswers'] = answers.filter(answer => answer.answer.length > 0)
+        _newQuestion['questionAnswers'] = answers.filter(
+          (answer) => answer.answer.length > 0
+        )
       }
 
       if (type === 'essay') {
         _newQuestion.questionAnswers = []
+      }
+
+      if (type === 'poll') {
+        _newQuestion.questionAnswers = _newQuestion.questionAnswers.map(
+          (ans) => {
+            let _ans = { ...ans }
+            _ans.isCorrect = true
+            return _ans
+          }
+        )
       }
 
       let body = {}
@@ -218,7 +231,6 @@ const QuestionCreator: FC<QuestionCreatorProps> = ({
 
       setQuiz(res.response)
       setNewQuestion(defaultQuestion)
-
     } catch (error) {
       console.log('onSaveQuestion - error', error)
     }

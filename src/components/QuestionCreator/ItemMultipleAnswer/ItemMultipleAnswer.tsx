@@ -1,5 +1,4 @@
 import classNames from 'classnames'
-import { useRouter } from 'next/router'
 import React, { FC, memo, useEffect, useState } from 'react'
 import { Form, Image } from 'react-bootstrap'
 import { TAnswer } from '../../../types/types'
@@ -10,7 +9,6 @@ import {
   uploadFile,
 } from '../../../utils/firebaseConfig'
 import { getCurrentTrueAnswer } from '../../../utils/helper'
-import { QuestionType } from '../../IconQuestion/IconQuestion'
 import QuestionActionButton from '../../QuestionActionButton/QuestionActionButton'
 
 type ItemMultipleAnswerProps = {
@@ -18,7 +16,7 @@ type ItemMultipleAnswerProps = {
   setAnswers: React.Dispatch<React.SetStateAction<TAnswer[]>>
   index: number
   onRemove: () => void
-  type: 'single' | 'multiple'
+  type: 'single' | 'multiple' | 'poll'
 }
 const ItemMultipleAnswer: FC<ItemMultipleAnswerProps> = ({
   answers,
@@ -104,14 +102,16 @@ const ItemMultipleAnswer: FC<ItemMultipleAnswerProps> = ({
   return (
     <div className="rounded-10px border bg-secondary bg-opacity-10 overflow-hidden h-100">
       <div className="d-flex p-12px">
-        <QuestionActionButton
-          iconClassName="bi bi-check-lg"
-          className={classNames('me-2', {
-            'bg-primary text-white': isCorrectAns,
-            'bg-white text-black': !isCorrectAns,
-          })}
-          onClick={handleMarkTrueAnswer}
-        />
+        {type !== 'poll' && (
+          <QuestionActionButton
+            iconClassName="bi bi-check-lg"
+            className={classNames('me-2', {
+              'bg-primary text-white': isCorrectAns,
+              'bg-white text-black': !isCorrectAns,
+            })}
+            onClick={handleMarkTrueAnswer}
+          />
+        )}
         <div className="position-relative">
           <input
             type="file"
