@@ -1,10 +1,9 @@
 require('dayjs/locale/vi')
-import _, { over } from 'lodash'
-import * as XLSX from 'sheetjs-style'
+import ExcelJS from 'exceljs'
+import _ from 'lodash'
 import { TDetailPlayer, TGameHistory } from '../types/types'
 import { QUESTION_TYPE_MAPPING_TO_TEXT } from './constants'
-import { formatDate_DDMMMMYYYY, formatDate_DDMMYYYY } from './helper'
-import ExcelJS from 'exceljs'
+import { formatDate_DDMMMMYYYY } from './helper'
 import { getAnswerResultText } from './statistic-calculation'
 const alignCenterSetting = {
   alignment: {
@@ -175,6 +174,12 @@ const generateOverviewInformation = (
   getHeader(sheet, 'A11', 'Chuyển sang các Sheet sau để xem kết quả từng câu')
 }
 
+/**
+ * Lấy dữ liệu tổng kết của user để báo cáo overall ở table sheet thứ 1
+ * @param player player
+ * @param rank rank
+ * @returns string[] là một row trong excel
+ */
 const getPlayerFinalScore = (player: TDetailPlayer, rank: number) => {
   const rs = []
 
@@ -295,21 +300,27 @@ const generateSheetForEachQuestion = (
   sheet.mergeCells('A7:H7')
   sheet.mergeCells('A8:H8')
 
+  /**
+   * Lấy trả lời đúng hiển thị trên hàng
+   */
   const answers: string[] = []
-
+  
+  /**
+   * Thông số người chọn các câu choices
+   */
   const answersStatistics = []
 
   /**
-   * Lấy các câu trả lời trong question để đếm số người chọn câu đó
+   * Thông số người chọn các câu text, gán bởi gameRoundStatistic
    */
   const answerTextStatistic: Record<string, number> =
     gameRoundStatistic?.answerTextStatistic ?? {}
-
+  // Lấy các câu trả lời trong question để đếm số người chọn câu đó và hiển thị các câu trả lời đúng
   for (const questionAnswer of question.questionAnswers) {
     if (questionAnswer.isCorrect) {
       answers.push(questionAnswer.answer)
     }
-    // Convert from quesitionAnswerId to questionAnswer as text
+    // For choices question -> Convert from quesitionAnswerId to questionAnswer as text
     if (question.type !== '30TEXT' && question.type !== '31ESSAY') {
       answersStatistics.push({
         answer: questionAnswer.answer,
