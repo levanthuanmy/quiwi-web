@@ -43,6 +43,8 @@ export class AnswerSectionFactory {
         return this.initMultipleAnswer(this.countDown, question, handleSubmitAnswer);
       case "21ODMUL":
         return this.initConnectAnswer(this.countDown, question, handleSubmitAnswer);
+      case "22POLL":
+        return this.initMultipleAnswer(this.countDown, question, handleSubmitAnswer);
       case "30TEXT":
         return this.initTextAnswer(this.countDown, question, handleSubmitAnswer);
       case "31ESSAY":
