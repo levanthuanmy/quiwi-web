@@ -9,7 +9,7 @@ import { get } from '../../libs/api'
 import { TApiResponse, TPaginationResponse, TQuiz } from '../../types/types'
 
 const MyLibPage: NextPage = () => {
-  const pageSize = 2
+  const pageSize = 9
   const [pageIndex, setPageIndex] = useState(1)
   const params = {
     filter: {
