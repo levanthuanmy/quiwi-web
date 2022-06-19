@@ -15,12 +15,12 @@ const RankingBoard: FC<{ rankingList: TRankingItem[] }> = ({ rankingList }) => {
           <td>Tên</td>
           <td>Số lượng đạt được</td>
         </tr>
-        {rankingList?.map((item) => (
+        {rankingList?.map((user) => (
           <tr
-            key={item.id}
+            key={user.id}
             className={classNames('cursor-pointer')}
             onClick={() => {
-              router.push(item?.isHighlight ? `/profile` : `/users/${item?.id}`)
+              router.push(user?.isHighlight ? `/profile` : `/users/${user?.id}`)
             }}
           >
             <td className="pb-1 px-0">
@@ -28,41 +28,41 @@ const RankingBoard: FC<{ rankingList: TRankingItem[] }> = ({ rankingList }) => {
                 className={classNames(
                   'text-center py-3 fw-medium rounded-start-14px',
                   {
-                    'text-white bg-primary': item?.isHighlight,
-                    'bg-light': !item?.isHighlight,
+                    'text-white bg-primary': user?.isHighlight,
+                    'bg-light': !user?.isHighlight,
                   }
                 )}
               >
-                {item?.rank}
+                {user?.rank}
               </div>
             </td>
             <td className="pb-1 px-0">
               <div
                 className={classNames('py-3 ps-2 text-nowrap', {
-                  'text-white bg-primary': item?.isHighlight,
-                  'bg-light': !item?.isHighlight,
+                  'text-white bg-primary': user?.isHighlight,
+                  'bg-light': !user?.isHighlight,
                 })}
               >
                 <Image
-                  src={'/assets/default-logo.png'}
+                  src={user.avatar || '/assets/default-logo.png'}
                   width={20}
                   height={20}
                   alt="avatar"
                   className="rounded-circle"
                 />
                 <span className={classNames('ps-2 pe-1 fw-medium')}>
-                  {item?.username}
+                  {user?.username}
                 </span>
               </div>
             </td>
             <td className="pb-1 px-0">
               <div
                 className={classNames('py-3 ps-2 rounded-end-14px', {
-                  'text-white bg-primary': item?.isHighlight,
-                  'bg-light': !item?.isHighlight,
+                  'text-white bg-primary': user?.isHighlight,
+                  'bg-light': !user?.isHighlight,
                 })}
               >
-                {item?.quantity.toLocaleString()}
+                {user?.quantity}
               </div>
             </td>
           </tr>

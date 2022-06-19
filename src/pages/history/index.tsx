@@ -2,10 +2,13 @@ import classNames from 'classnames'
 import { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
-import { Col, Container, Pagination, Row, Table } from 'react-bootstrap'
+import { Col, Container, Row, Table } from 'react-bootstrap'
+import ReactPaginate from 'react-paginate'
 import useSWR from 'swr'
 import DashboardLayout from '../../components/DashboardLayout/DashboardLayout'
 import { HistoryGameRow } from '../../components/HistoryGameRow/HistoryGameRow'
+import Loading from '../../components/Loading/Loading'
+import { MyPagination } from '../../components/MyPagination/MyPagination'
 import MyTabBar from '../../components/MyTabBar/MyTabBar'
 import SearchBar from '../../components/SearchBar/SearchBar'
 import { get } from '../../libs/api'
@@ -28,21 +31,16 @@ const tabs = [
 const HistoryPage: NextPage = () => {
   const router = useRouter()
 
-  const { q } = router.query
+  const { q, pageIndex } = router.query
 
   const pageSize = 8
-  const maxPaginationList = 5
   const [currentTab, setCurrentTab] = useState<number>(0)
-  const [pageIndex, setPageIndex] = useState(1)
+  // const [pageIndex, setPageIndex] = useState(1)
   const params: Record<string, any> = {
-    filter: {
-      order: {
-        createdAt: 'DESC',
-      },
-    },
-    pageIndex: pageIndex,
+    filter: {},
+    pageIndex: pageIndex ?? 1,
     pageSize: pageSize,
-    // q
+    q,
   }
   const { data, isValidating } = useSWR<
     TApiResponse<TPaginationResponse<TGameHistory>>
@@ -57,120 +55,29 @@ const HistoryPage: NextPage = () => {
     get
   )
 
+  const [pageCount, setPageCount] = useState(0)
+
   useEffect(() => {
-    getItems(1)
+    // setPageIndex(1)
+    setPageCount(0)
+    router.replace(`/history?pageIndex=1${q ? `&q=${q}` : ''}`)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [currentTab])
 
-  const [currentListPagination, setCurrentListPagination] = useState<number[]>()
-  const [currentPagination, setCurrentPagination] = useState<number>(1)
-  const getFirst = (totalPages: number) => {
-    setCurrentPagination(1)
-    let arr = []
-    for (let i = 1; i <= totalPages; i++) {
-      arr.push(i)
-      if (i === maxPaginationList) break
+  useEffect(() => {
+    if (data?.response) {
+      setPageCount(data.response.totalPages)
     }
-    return arr
+  }, [data])
+
+  // Invoke when user click to request another page.
+  const handlePageClick = (selected: { selected: number }) => {
+    // setPageIndex(Number(selected.selected) + 1)
+    router.replace(
+      `/history?pageIndex=${Number(selected.selected) + 1}&${q ? `q=${q}` : ''}`
+    )
   }
 
-  const getLast = (totalPages: number) => {
-    setCurrentPagination(totalPages)
-    let arr = []
-    let count = 0
-    for (let i = totalPages; i >= 1; i--) {
-      arr.unshift(i)
-      count++
-      if (count === maxPaginationList) break
-    }
-    return arr
-  }
-  //Gọi hàm để set lại danh sách mảng số Pagination
-  const getPagination = (totalPages: number, pageCur: number) => {
-    if (pageCur > totalPages || pageCur < 1)
-      return currentListPagination ? [...currentListPagination] : []
-    setCurrentPagination(pageCur)
-    if (totalPages === 0 || totalPages === 1 || !totalPages) return [1]
-    let arr: any = []
-    //Nếu nút pagination được chọn khác với pagination hiện tại
-    if (
-      pageCur !== currentPagination &&
-      currentListPagination &&
-      currentListPagination.indexOf(pageCur) > maxPaginationList / 2 &&
-      currentListPagination.length === maxPaginationList
-    ) {
-      //Ở vị trí lớn hơn nút giữa nhưng không phải nút cuối
-      if (currentListPagination.indexOf(pageCur) < maxPaginationList - 1) {
-        arr = [...currentListPagination]
-        let lastPag = arr[maxPaginationList - 1]
-        //Nếu phần tử cuối có giá trị lớn hơn số trang hoặc bằng thì sẽ giữ nguyên
-        if (lastPag >= totalPages) return arr
-        //Shift mảng lên 1 vị trí
-        arr.push(lastPag + 1)
-        arr.splice(0, 1)
-      } else {
-        //Shift mảng lên 2 vị trí
-        arr = [...currentListPagination]
-        let lastPag = arr[maxPaginationList - 1]
-        if (lastPag >= totalPages) return arr
-        for (let k = 0; k < 2; k++) {
-          lastPag = lastPag + 1
-          arr.push(lastPag)
-          arr.splice(0, 1)
-          if (lastPag === totalPages) break
-        }
-      }
-    } else if (
-      pageCur !== currentPagination &&
-      currentListPagination &&
-      currentListPagination.indexOf(pageCur) < maxPaginationList / 2 &&
-      currentListPagination.length === maxPaginationList
-    ) {
-      //Ở vị trí nhỏ hơn nút giữa nhưng không phải nút cuối
-      if (currentListPagination.indexOf(pageCur) < maxPaginationList - 1) {
-        arr = [...currentListPagination]
-        let firstPag = arr[0]
-        //Nếu phần tử đầu có giá trị 1 (đầu trang) thì sẽ giữ nguyên
-        if (firstPag === 1) return arr
-        //Shift mảng về 1 vị trí
-        arr.unshift(firstPag - 1)
-        arr.splice(arr.length - 1, 1)
-      } else {
-        //Shift mảng về 2 vị trí
-        arr = [...currentListPagination]
-        let firstPag = arr[maxPaginationList - 1]
-        if (firstPag === 1) return arr
-        for (let k = 0; k < 2; k++) {
-          firstPag = firstPag - 1
-          arr.unshift(firstPag)
-          arr.splice(arr.length - 1, 1)
-          if (firstPag === 1) break
-        }
-      }
-    }
-    return arr
-  }
-
-  const getItems = async (pageIndex: number) => {
-    if (
-      data &&
-      data.response.totalPages > 0 &&
-      (pageIndex > data?.response.totalPages || pageIndex < 1)
-    ) {
-      return
-    }
-
-    setPageIndex(pageIndex)
-    if (pageIndex === 1) {
-      setCurrentListPagination(getFirst(data?.response?.totalPages ?? 1))
-    } else if (pageIndex === data?.response?.totalPages) {
-      setCurrentListPagination(getLast(data?.response.totalPages))
-    } else {
-      setCurrentListPagination(
-        getPagination(data?.response?.totalPages ?? 1, pageIndex)
-      )
-    }
-  }
   return (
     <DashboardLayout>
       <div className="w-100 bg-white bg-opacity-10 min-vh-100">
@@ -213,49 +120,10 @@ const HistoryPage: NextPage = () => {
             </Table>
             <Row className="mt-3">
               <Col style={{ display: 'flex', justifyContent: 'center' }}>
-                {data?.response ? (
-                  <Pagination>
-                    <Pagination.First
-                      onClick={() => {
-                        getItems(1)
-                      }}
-                    />
-                    <Pagination.Prev
-                      onClick={() => {
-                        getItems(currentPagination - 1)
-                      }}
-                    />
-                    {currentListPagination?.map((item, idx) =>
-                      item === currentPagination ? (
-                        <Pagination.Item key={idx} active>
-                          {item}
-                        </Pagination.Item>
-                      ) : (
-                        <Pagination.Item
-                          key={idx}
-                          onClick={() => {
-                            getItems(data.response.totalPages)
-                          }}
-                        >
-                          {item}
-                        </Pagination.Item>
-                      )
-                    )}
-
-                    <Pagination.Next
-                      onClick={() => {
-                        getItems(currentPagination + 1)
-                      }}
-                    />
-                    <Pagination.Last
-                      onClick={() => {
-                        getItems(data.response.totalPages)
-                      }}
-                    />
-                  </Pagination>
-                ) : (
-                  <div></div>
-                )}
+                <MyPagination
+                  handlePageClick={handlePageClick}
+                  totalPages={pageCount}
+                />
               </Col>
             </Row>
           </div>
