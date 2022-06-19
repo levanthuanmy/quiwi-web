@@ -1,98 +1,75 @@
 .gameBackground {
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHhtbG5zOnhsaW5rPSdodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rJyB3aWR0aD0nNjAwJyBoZWlnaHQ9JzYwMCcgdmlld0JveD0nMCAwIDE1MCAxNTAnPgo8ZmlsdGVyIGlkPSdpJyB4PScwJyB5PScwJz4KCTxmZUNvbG9yTWF0cml4IHR5cGU9J21hdHJpeCcgdmFsdWVzPScxIDAgMCAwIDAgIDAgMSAwIDAgMCAgMCAwIDEgMCAwICAwIDAgMCAwIDAnIC8+CjwvZmlsdGVyPgo8ZmlsdGVyIGlkPSduJyB4PScwJyB5PScwJz4KCTxmZVR1cmJ1bGVuY2UgdHlwZT0ndHVyYnVsZW5jZScgYmFzZUZyZXF1ZW5jeT0nLjcnIHJlc3VsdD0nZnV6eicgbnVtT2N0YXZlcz0nMicgc3RpdGNoVGlsZXM9J3N0aXRjaCcvPgoJPGZlQ29tcG9zaXRlIGluPSdTb3VyY2VHcmFwaGljJyBpbjI9J2Z1enonIG9wZXJhdG9yPSdhcml0aG1ldGljJyBrMT0nMCcgazI9JzEnIGszPSctNzMnIGs0PScuMDEnIC8+CjwvZmlsdGVyPgo8cmVjdCB3aWR0aD0nMTAyJScgaGVpZ2h0PScxMDIlJyBmaWxsPScjMDMwMzFhJy8+CjxyZWN0IHg9Jy0xJScgeT0nLTElJyB3aWR0aD0nMTAyJScgaGVpZ2h0PScxMDIlJyBmaWxsPScjZmZmZmZmJyBmaWx0ZXI9J3VybCgjbiknIG9wYWNpdHk9JzEnLz4KPHJlY3QgeD0nLTElJyB5PSctMSUnIHdpZHRoPScxMDIlJyBoZWlnaHQ9JzEwMiUnIGZpbGw9JyMwMzAzMWEnIGZpbHRlcj0ndXJsKCNpKScgb3BhY2l0eT0nMScvPgo8L3N2Zz4=');
-  overflow-y: auto;
-  /*min-height: 500px;*/
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHhtbG5zOnhsaW5rPSdodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rJyB3aWR0aD0nNjAwJyBoZWlnaHQ9JzYwMCcgdmlld0JveD0nMCAwIDE1MCAxNTAnPgo8ZmlsdGVyIGlkPSdpJyB4PScwJyB5PScwJz4KCTxmZUNvbG9yTWF0cml4IHR5cGU9J21hdHJpeCcgdmFsdWVzPScxIDAgMCAwIDAgIDAgMSAwIDAgMCAgMCAwIDEgMCAwICAwIDAgMCAwIDAnIC8+CjwvZmlsdGVyPgo8ZmlsdGVyIGlkPSduJyB4PScwJyB5PScwJz4KCTxmZVR1cmJ1bGVuY2UgdHlwZT0ndHVyYnVsZW5jZScgYmFzZUZyZXF1ZW5jeT0nLjcnIHJlc3VsdD0nZnV6eicgbnVtT2N0YXZlcz0nMicgc3RpdGNoVGlsZXM9J3N0aXRjaCcvPgoJPGZlQ29tcG9zaXRlIGluPSdTb3VyY2VHcmFwaGljJyBpbjI9J2Z1enonIG9wZXJhdG9yPSdhcml0aG1ldGljJyBrMT0nMCcgazI9JzEnIGszPSctNzMnIGs0PScuMDEnIC8+CjwvZmlsdGVyPgo8cmVjdCB3aWR0aD0nMTAyJScgaGVpZ2h0PScxMDIlJyBmaWxsPScjMDMwMzFhJy8+CjxyZWN0IHg9Jy0xJScgeT0nLTElJyB3aWR0aD0nMTAyJScgaGVpZ2h0PScxMDIlJyBmaWxsPScjZmZmZmZmJyBmaWx0ZXI9J3VybCgjbiknIG9wYWNpdHk9JzEnLz4KPHJlY3QgeD0nLTElJyB5PSctMSUnIHdpZHRoPScxMDIlJyBoZWlnaHQ9JzEwMiUnIGZpbGw9JyMwMzAzMWEnIGZpbHRlcj0ndXJsKCNpKScgb3BhY2l0eT0nMScvPgo8L3N2Zz4=');
+
 }
 
 .nextButton {
-  width: fit-content;
-  align-self: flex-end;
+    width: fit-content;
+    align-self: flex-end;
 }
 
 .answerBoard {
-  height: 80%;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    margin: auto;
 }
 
 .gameView {
-  /* padding-top: 8px; */
-  height: 100%;
+    height: 100%;
+    width: 100%;
+    overflow-y: auto;
 }
 
 .gameCol {
-  width: 100%;
+    width: 100%;
 }
 
 /* // Small devices (landscape phones, 576px and up) */
 @media (max-width: 576px) {
-  .hiddenNav {
-    display: none;
-    visibility: hidden;
-  }
+    .hiddenNav {
+        display: none;
+        visibility: hidden;
+    }
 
-  .answerBoard {
-    height: 100%;
-    width: 100%;
-  }
+    .answerBoard {
+        /*height: fit-content;*/
+        width: 100%;
+    }
 
-  .emojiBar {
-    display: none;
-    visibility: hidden;
-  }
+    .emojiBar {
+        display: none;
+        visibility: hidden;
+    }
 
-  .gameBackground {
-    height: 100vh;
-    /*padding-top: 0px;*/
-    /*overflow: scroll;*/
-  }
 
-  .gameView {
-    padding-top: 0px;
-  }
+    .chatView {
+        display: none;
+    }
 
-  .chatView {
-    display: none;
-  }
-
-  .playerList {
-    display: none;
-  }
+    .playerList {
+        display: none;
+    }
 }
 
 @media (min-width: 576px) {
+    .answerBoard {
+        width: 80%;
+    }
+}
+
+@media (max-width: 576px) {
   .answerBoard {
-    width: 80%;
+    margin-top: 0;
   }
-}
-
-/* // Medium devices (tablets, 768px and up) */
-@media (min-width: 768px) {
-}
-
-/* // Large devices (desktops, 992px and up) */
-@media (min-width: 992px) {
-  /*.answerBoard {*/
-  /*  width: 956px;*/
-  /*}*/
 }
 
 /* // Extra large devices (large desktops, 1200px and up) */
 @media (min-width: 1200px) {
-  .answerBoard {
-    width: 956px;
-  }
+    .answerBoard {
+        width: 956px;
+    }
 
-  /* màn bự mới có 2 cái padding 2 bên cho đều */
-  .gameBackground {
-    padding-left: 64px;
-    padding-right: 64px;
-  }
 }

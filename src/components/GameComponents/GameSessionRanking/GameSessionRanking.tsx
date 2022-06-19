@@ -95,10 +95,10 @@ const GameSessionRanking: FC<GameSessionRankingProps> = ({
       ...data,
     ]
   }, [viewResultData, currentQuestion])
-  console.log(
-    'answersSubmittedData - answersSubmittedData',
-    answersSubmittedData
-  )
+  // console.log(
+  //   'answersSubmittedData - answersSubmittedData',
+  //   answersSubmittedData
+  // )
 
   const options = {
     legend: 'none',

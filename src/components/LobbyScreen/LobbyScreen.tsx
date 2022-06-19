@@ -72,7 +72,7 @@ const LobbyScreen: FC<LobbyScreenProps> = ({ invitationCode, isHost }) => {
       router.push('/')
     })
 
-    gameSkOnce('game-started', (data) => {
+    gameSkOnce('loading', (data) => {
       // console.log('game started', data)
       router.push(`/game/play`)
     })

@@ -202,7 +202,7 @@ const QuizCreatorPage: NextPage = () => {
           router.replace(`/quiz/creator/${quizId}`, undefined, {
             scroll: false,
           })
-          addQuestionRef.current?.scrollIntoView()
+          // addQuestionRef.current?.scrollIntoView()
         }}
         quiz={quiz}
         setQuiz={setQuiz}

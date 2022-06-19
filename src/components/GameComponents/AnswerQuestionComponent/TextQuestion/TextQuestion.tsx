@@ -16,6 +16,7 @@ type TextQuestionProps = {
   isTimeOut: boolean
   isSubmitted: boolean
   isCounting: boolean
+  isShowSkeleton:boolean
 }
 const correctColor = "#0082BE"
 const incorrectColor = "#cccccc"
@@ -27,19 +28,18 @@ const TextQuestion: FC<TextQuestionProps> = ({
                                                isHost,
                                                isTimeOut,
                                                isSubmitted,
-                                               isCounting
+                                               isCounting,
+                                               isShowSkeleton
                                              }) => {
   const [answerText, setAnswerText] = useState<string | null>(null)
   const [isCorrect, setIsCorrect] = useState<boolean>(false)
 
   useEffect(() => {
-    if (isTimeOut && !isSubmitted && isCounting) {
+    if (!isCounting && !isSubmitted && !isHost) {
       socketSubmit(answerText ?? "")
-    }
-    if (isTimeOut) {
       setIsCorrect(checkAnswer())
     }
-  }, [isTimeOut]);
+  }, [isCounting]);
 
   const concatAnswerList = (): string[] => {
     if (!question) return []
@@ -122,7 +122,7 @@ const TextQuestion: FC<TextQuestionProps> = ({
   }
 
   const getBackgroundColorForAnswer = (): string => {
-    if (isTimeOut && !isHost) {
+    if (showAnswer && !isHost) {
       return isCorrect ? correctColor : incorrectColor
     }
     return correctColor
@@ -142,7 +142,7 @@ const TextQuestion: FC<TextQuestionProps> = ({
       )}
     >
       <div className={`d-flex flex-column justify-content-around h-100 w-100 ${styles.selectionInner}`}>
-        {isTimeOut &&
+        {showAnswer &&
             <div className={`d-flex ${styles.titleGroup}`}>
                 <div className={`ps-12px flex-grow-1 ${styles.questionType}`}>
                   {isHost ? getQuestionTypeForHost() : (getQuestionTypeForPlayer(isCorrect))}
@@ -164,10 +164,10 @@ const TextQuestion: FC<TextQuestionProps> = ({
             </div>
         }
 
-        {!(isHost && !isTimeOut) &&
+        {!(isHost && !showAnswer) &&
             <TextAnswerList
                 className={styles.showAnswer}
-                answers={isTimeOut ? concatAnswerList() : [getSuggestType()]}
+                answers={showAnswer ? concatAnswerList() : [getSuggestType()]}
             />
         }
 
@@ -176,7 +176,7 @@ const TextQuestion: FC<TextQuestionProps> = ({
           !isHost &&
             <textarea
                 autoFocus={true}
-                placeholder={isTimeOut ? "Hết giờ, bạn đã không trả lời câu hỏi này!" : "Nhập câu trả lời của bạn"}
+                placeholder={showAnswer ? "Hết giờ, bạn đã không trả lời câu hỏi này!" : "Nhập câu trả lời của bạn"}
                 disabled={(isTimeOut || isSubmitted)}
                 maxLength={120}
                 className={classNames(
@@ -187,7 +187,7 @@ const TextQuestion: FC<TextQuestionProps> = ({
             />
         }
 
-        {isHost && (isTimeOut ?
+        {isHost && (showAnswer ?
             <div></div>
             :
             <div className={"h-100 w-100 d-flex flex-column justify-content-center"}>

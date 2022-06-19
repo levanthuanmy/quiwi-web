@@ -192,9 +192,6 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, questionId}) => {
       answerSectionFactory = new AnswerSectionFactory(
         false,
         styles.answerLayout,
-        isSubmitted,
-        true,
-        countDown
       )
     return answerSectionFactory.initAnswerSectionForType(
       currentQuestion.type,

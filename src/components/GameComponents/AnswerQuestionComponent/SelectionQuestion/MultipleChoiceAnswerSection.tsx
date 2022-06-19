@@ -12,6 +12,8 @@ type MultipleChoiceAnswerSectionProps = {
   isHost: boolean
   isTimeOut: boolean
   isSubmitted: boolean
+  isCounting: boolean
+  isShowSkeleton: boolean
 }
 
 const MultipleChoiceAnswerSection: FC<MultipleChoiceAnswerSectionProps> = ({
@@ -22,6 +24,8 @@ const MultipleChoiceAnswerSection: FC<MultipleChoiceAnswerSectionProps> = ({
                                                                              isHost,
                                                                              isTimeOut,
                                                                              isSubmitted,
+                                                                             isCounting,
+                                                                             isShowSkeleton
                                                                            }) => {
   const [answerSet, setAnswerSet] = useState<Set<number>>(new Set())
 
@@ -35,10 +39,12 @@ const MultipleChoiceAnswerSection: FC<MultipleChoiceAnswerSectionProps> = ({
   }
 
   useEffect(() => {
-    if (isTimeOut && !isSubmitted && !isHost) {
+    console.log("=>(MultipleChoiceAnswerSection.tsx:41) thien thien");
+    if (!isCounting && !isSubmitted && !isHost) {
+      console.log("=>(MultipleChoiceAnswerSection.tsx:41) thien thien 2 2 ");
       socketSubmit(answerSet)
     }
-  }, [isTimeOut]);
+  }, [isCounting]);
 
   return (
     <div className={classNames(className, '')}>
@@ -47,6 +53,7 @@ const MultipleChoiceAnswerSection: FC<MultipleChoiceAnswerSectionProps> = ({
         option={option}
         selectedAnswers={answerSet}
         showAnswer={showAnswer}
+        isShowSkeleton={isShowSkeleton}
         isHost={isHost}
         baseIcon="square">
       </OptionAnswerSection>

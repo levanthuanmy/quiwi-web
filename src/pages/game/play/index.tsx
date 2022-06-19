@@ -1,33 +1,122 @@
 import classNames from 'classnames'
-import { NextPage } from 'next'
+import {NextPage} from 'next'
 import router from 'next/router'
-import React, { Dispatch, SetStateAction, useEffect, useState } from 'react'
-import { Fade } from 'react-bootstrap'
+import React, {Dispatch, SetStateAction, useEffect, useRef, useState} from 'react'
+import {Fade} from 'react-bootstrap'
 import AnswerBoard from '../../../components/GameComponents/AnswerBoard/AnswerBoard'
 import EndGameBoard from '../../../components/GameComponents/EndGameBoard/EndGameBoard'
-import { FAB, FABAction } from '../../../components/GameComponents/FAB/FAB'
+import {FAB, FABAction} from '../../../components/GameComponents/FAB/FAB'
 import GameMenuBar from '../../../components/GameMenuBar/GameMenuBar'
 import MyModal from '../../../components/MyModal/MyModal'
 import UsingItemInGame from '../../../components/UsingItemInGame/UsingItemInGame'
-import { useGameSession } from '../../../hooks/useGameSession/useGameSession'
+import {useGameSession} from '../../../hooks/useGameSession/useGameSession'
 import useScreenSize from '../../../hooks/useScreenSize/useScreenSize'
-import { TStartQuizResponse } from '../../../types/types'
+import {TStartQuizResponse} from '../../../types/types'
 import styles from './GamePage.module.css'
+import {JsonParse} from "../../../utils/helper";
+import {useEffectOnce} from "react-use";
 
 export const ExitContext = React.createContext<{
   showEndGameModal: boolean
   setShowEndGameModal: Dispatch<SetStateAction<boolean>>
-}>({ showEndGameModal: false, setShowEndGameModal: () => {} })
+}>({
+  showEndGameModal: false, setShowEndGameModal: () => {
+  }
+})
+
+export const TimerContext = React.createContext <{
+  isCounting: boolean;
+  isSubmittable: boolean;
+  isShowSkeleton: boolean;
+  setIsSubmittable: Dispatch<SetStateAction<boolean>>;
+  setIsShowSkeleton: Dispatch<SetStateAction<boolean>>;
+  countDown: number;
+  setDefaultCountDown: (duration: number) => void;
+  stopCounting: (xxx: boolean) => void;
+  startCounting: (duration: number) => void;
+}>({
+  isCounting: false,
+  isSubmittable: false,
+  isShowSkeleton: false,
+  setIsSubmittable: () => {
+  },
+  setIsShowSkeleton: () => {
+  },
+  countDown: 0,
+  setDefaultCountDown: (duration: number) => {
+  },
+  stopCounting: (xxx: boolean) => {
+  },
+  startCounting: (duration: number) => {
+  },
+})
 
 const GamePage: NextPage = () => {
-  const { gameSession, isHost, gameSkOn, saveGameSession, clearGameSession } =
+  const {gameSession, isHost, gameSkOn, saveGameSession, clearGameSession} =
     useGameSession()
   const [isShowChat, setIsShowChat] = useState<boolean>(false)
   const [isShowExit, setIsShowExit] = useState<boolean>(false)
   const [isShowItem, setIsShowItem] = useState<boolean>(false)
+  const [isShowSkeleton, setIsShowSkeleton] = useState<boolean>(false)
+
   const [isShowHostControl, setIsShowHostControl] = useState<boolean>(true)
-  const { fromMedium } = useScreenSize()
+  const {fromMedium} = useScreenSize()
   const [endGameData, setEndGameData] = useState<TStartQuizResponse>()
+
+  const [isTimeOut, setIsTimeOut] = useState<boolean>(false)
+  const [isCounting, setIsCounting] = useState<boolean>(false)
+  const [isSubmittable, setIsSubmittable] = useState<boolean>(false)
+  const [countDown, setCountDown] = useState<number>(0)
+  const [endTime, setEndTime] = useState<number>(0)
+  const intervalRef = useRef<NodeJS.Timer | null>(null)
+
+  // useEffect(() => {
+  //   gameSkOn('view-result', (data) => {
+  //     if (isCounting) {
+  //       stopCounting(true)
+  //     }
+  //   })
+  // }, [])
+
+  const stopCounting = (xxx: boolean) => {
+    if (intervalRef && intervalRef.current) {
+      clearInterval(intervalRef.current)
+      intervalRef.current = null
+      setIsCounting(false)
+      setTimeout(() => {
+        console.log("=>(index.tsx:89) delaySubmit 2");
+        setIsSubmittable(false)
+      }, 500)
+    }
+  }
+
+  const startCounting = (duration: number) => {
+    console.log("=>(index.tsx:71) duration", duration);
+    if (duration > 0) {
+      let endDate = new Date()
+      endDate.setSeconds(endDate.getSeconds() + duration)
+      let endTime = Math.round(endDate.getTime())
+      setEndTime(endTime)
+      setCountDown(duration)
+
+      setTimeout(() => {
+        console.log("=>(index.tsx:89) delaySubmit 1");
+        setIsSubmittable(true)
+      }, 500)
+
+      intervalRef.current = setInterval(() => {
+        let curr = Math.round(new Date().getTime())
+        let _countDown = Math.ceil((endTime - curr) / 1000)
+        setIsCounting(true)
+        setIsShowSkeleton(false)
+        setCountDown(_countDown)
+        if (_countDown <= 0) {
+          stopCounting(true)
+        }
+      }, 100)
+    }
+
+  }
 
   const fabs: FABAction[] = [
     {
@@ -125,37 +214,52 @@ const GamePage: NextPage = () => {
         <div
           className={classNames(
             styles.gameView,
-            'd-flex flex-column align-items-center position-relative py-0 py-md-3'
+            'd-flex flex-column customScrollbar'
           )}
         >
-          <div className={classNames(styles.answerBoard)}>
+          {/*<div className={classNames("")}>*/}
+          <div className={classNames(styles.answerBoard, "")}>
             {endGameData ? (
-              <EndGameBoard className="flex-grow-1" />
+              <EndGameBoard className="flex-grow-1"/>
             ) : (
-              <ExitContext.Provider
+              <TimerContext.Provider
                 value={{
-                  showEndGameModal: exitModal,
-                  setShowEndGameModal: setExitModal,
-                }}
-              >
-                <AnswerBoard
-                  className="flex-grow-1"
-                  isShowHostControl={isShowHostControl}
-                />
-              </ExitContext.Provider>
+                  isCounting,
+                  isSubmittable,
+                  isShowSkeleton,
+                  setIsSubmittable,
+                  setIsShowSkeleton,
+                  countDown,
+                  setDefaultCountDown: setCountDown,
+                  stopCounting,
+                  startCounting
+                }}>
+                <ExitContext.Provider
+                  value={{
+                    showEndGameModal: exitModal,
+                    setShowEndGameModal: setExitModal,
+                  }}
+                >
+                  <AnswerBoard
+                    className="flex-grow-1"
+                    isShowHostControl={isShowHostControl}
+                  />
+                </ExitContext.Provider>
+              </TimerContext.Provider>
             )}
             {/* <EmojiBar className={styles.emojiBar} /> */}
             {/* <EmojiBar className={styles.emojiBar} /> */}
           </div>
+          {/*</div>*/}
 
           {gameSession && (
             <div>
-              <GameMenuBar gameSession={gameSession} isShow={isShowChat} />
+              <GameMenuBar gameSession={gameSession} isShow={isShowChat}/>
 
               <Fade in={isShowItem}>
                 {isShowItem ? (
                   <div>
-                    <UsingItemInGame />
+                    <UsingItemInGame/>
                   </div>
                 ) : (
                   <></>
@@ -163,14 +267,14 @@ const GamePage: NextPage = () => {
               </Fade>
             </div>
           )}
-          <FAB
-            actions={[
-              ...fabs,
-              !fromMedium && isHost() ? hostAction : null,
-              !endGameData && isHost() ? endGameAction : exitAction,
-            ]}
-          />
         </div>
+        <FAB
+          actions={[
+            ...fabs,
+            !fromMedium && isHost() ? hostAction : null,
+            !endGameData && isHost() ? endGameAction : exitAction,
+          ]}
+        />
       </div>
       {getExitModal()}
     </>

@@ -71,6 +71,7 @@ export const useGameSession = (): { gameSkOnce: (ev: string, listener: (...args:
   }
 
   const gameSkOnce = (ev: string, listener: (...args: any[]) => void) => {
+    gameSocket()?.off(ev)
     gameSocket()?.once(ev, listener)
   }
 

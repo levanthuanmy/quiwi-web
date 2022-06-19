@@ -17,6 +17,7 @@ type ConnectQuestionProps = {
   isTimeOut: boolean
   isSubmitted: boolean
   isCounting: boolean
+  isShowSkeleton: boolean
 }
 const correctColor = "#0082BE"
 const incorrectColor = "#cccccc"
@@ -29,10 +30,12 @@ const ConnectQuestion: FC<ConnectQuestionProps> = ({
                                                      isHost,
                                                      isTimeOut,
                                                      isSubmitted,
-                                                     isCounting
+                                                     isCounting,
+                                                     isShowSkeleton
                                                    }) => {
   const [isCorrect, setIsCorrect] = useState<boolean>(false)
   const [options, setOptions] = useState<TAnswer[]>([])
+  const [skeletonOptions, setSkeletonOptions] = useState<TAnswer[]>([])
   const [decorOptions, setDecorOptions] = useState<TAnswer[]>([])
 
   const [selectedAnswerSet, setSelectedAnswerSet] = useState<Set<TAnswer>>(new Set<TAnswer>())
@@ -57,7 +60,7 @@ const ConnectQuestion: FC<ConnectQuestionProps> = ({
   }, [showAnswer, orderedCorrectAnswer, displayAnswer]);
 
   function shuffle(array: TAnswer[]) {
-    let currentIndex = array.length,  randomIndex;
+    let currentIndex = array.length, randomIndex;
 
     // While there remain elements to shuffle.
     while (currentIndex != 0) {
@@ -78,8 +81,9 @@ const ConnectQuestion: FC<ConnectQuestionProps> = ({
     if (question?.questionAnswers) {
 
       //Lựa chọn để click
-      setOptions(shuffle([...question.questionAnswers.filter(item => item.type != "21PLHDR")]))
-
+      const _options = shuffle([...question.questionAnswers.filter(item => item.type != "21PLHDR")])
+      setOptions(_options)
+      setSkeletonOptions(_options.map(option => getPlaceHolderAnswer(Array(option.answer.length).fill("_").join(""))))
       // Danh sách hiển thị
       let orderedAnswer = question.questionAnswers.filter(item => item.isCorrect)
         .sort(function (a, b) {
@@ -116,22 +120,20 @@ const ConnectQuestion: FC<ConnectQuestionProps> = ({
   }
 
   useEffect(() => {
-    if (isTimeOut) handleSubmit()
-  }, [isTimeOut]);
+    console.log("=>(ConnectQuestion.tsx:120) handleSubmit", isCounting, isSubmitted);
+    if (!isCounting && !isSubmitted) handleSubmit()
+  }, [isCounting]);
 
   const handleSubmit = () => {
+    console.log("=>(ConnectQuestion.tsx:124) handleSubmit");
     if (!isHost) {
-      if (!isSubmitted && isCounting) {
-        const answerList = displayAnswer.map<number>((answer) => Number(answer.id))
-        socketSubmit(answerList)
-        console.log("=>(ConnectQuestion) Socket submit answer");
-        setIsCorrect(checkAnswer())
-      }
+      const answerList = displayAnswer.map<number>((answer) => Number(answer.id))
+      socketSubmit(answerList)
+      console.log("=>(ConnectQuestion) Socket submit answer");
+      setIsCorrect(checkAnswer())
     } else {
-      if (isCounting) {
-        console.log("=>(ConnectQuestion) Display answer for host");
-        showAnswerForHost()
-      }
+      console.log("=>(ConnectQuestion) Display answer for host");
+      showAnswerForHost()
     }
   }
 
@@ -166,7 +168,7 @@ const ConnectQuestion: FC<ConnectQuestionProps> = ({
   }
 
   const getBackgroundColorForAnswer = (): string => {
-    if (isTimeOut && !isHost) {
+    if (showAnswer && !isHost) {
       return isCorrect ? correctColor : incorrectColor
     }
     return correctColor
@@ -228,7 +230,7 @@ const ConnectQuestion: FC<ConnectQuestionProps> = ({
           disabledOption={wrongAnswerSet}
           userSelectedOptions={displayAnswer}
           displayDecor={true}
-          showAnswer={isTimeOut}
+          showAnswer={showAnswer}
           didSelect={didClickWord}
         />
       </div>
@@ -237,9 +239,9 @@ const ConnectQuestion: FC<ConnectQuestionProps> = ({
         className={`d-flex flex-column justify-content-around w-100 customScrollbar ${styles.selectionBox}`}>
         <ConnectAnswerList
           className={styles.availableOption}
-          disabledOption={(isHost && !showAnswer) ? new Set([]) :  selectedAnswerSet}
-          options={options}
-          showAnswer={isTimeOut}
+          disabledOption={(isHost && !showAnswer) ? new Set([]) : selectedAnswerSet}
+          options={isShowSkeleton ? skeletonOptions : options}
+          showAnswer={showAnswer}
           displayDecor={false}
           didSelect={didClickWord}
         />

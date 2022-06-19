@@ -16,6 +16,7 @@ type PollQuestionProps = {
   isTimeOut: boolean
   isSubmitted: boolean
   isCounting: boolean
+  isShowSkeleton: boolean
 }
 const correctColor = "#0082BE"
 const incorrectColor = "#cccccc"
@@ -33,13 +34,13 @@ const PollQuestion: FC<PollQuestionProps> = ({
   const [isCorrect, setIsCorrect] = useState<boolean>(false)
 
   useEffect(() => {
-    if (isTimeOut && !isSubmitted && isCounting) {
+    if (!isCounting && !isSubmitted && !isHost) {
       socketSubmit(answerText ?? "")
     }
     if (isTimeOut) {
       setIsCorrect(checkAnswer())
     }
-  }, [isTimeOut]);
+  }, [isCounting]);
 
   const getSuggestType = (): string => {
     return isCorrect && !isHost ? "Câu hỏi của bạn đã được ghi nhận": "Câu hỏi tự do"
@@ -59,7 +60,7 @@ const PollQuestion: FC<PollQuestionProps> = ({
   }
 
   const getBackgroundColorForAnswer = (): string => {
-    if (isTimeOut && !isHost) {
+    if (showAnswer && !isHost) {
       return isCorrect ? correctColor : incorrectColor
     }
     return correctColor
@@ -95,7 +96,7 @@ const PollQuestion: FC<PollQuestionProps> = ({
           !isHost &&
             <textarea
                 autoFocus={true}
-                placeholder={isTimeOut ? "Bạn đã bỏ qua câu hỏi này!" : "Nhập câu trả lời của bạn"}
+                placeholder={showAnswer ? "Bạn đã bỏ qua câu hỏi này!" : "Nhập câu trả lời của bạn"}
                 disabled={(isTimeOut || isSubmitted)}
                 maxLength={120}
                 className={classNames(

@@ -1,35 +1,25 @@
-import React from "react";
+import React, {useContext} from "react";
 import MultipleChoiceAnswerSection from "../SelectionQuestion/MultipleChoiceAnswerSection";
 import SingleChoiceAnswerSection from "../SelectionQuestion/SingleChoiceAnswerSection";
 import {TQuestionType, TQuestion} from "../../../../types/types";
 import TextQuestion from "../TextQuestion/TextQuestion";
 import ConnectQuestion from "../ConnectQuestion/ConnectQuestion";
 import PollQuestion from "../PollQuestion/PollQuestion";
+import {TimerContext} from "../../../../pages/game/play";
 
 export class AnswerSectionFactory {
   isHost: boolean;
-  // countDown: number;
   answerLayout: string;
-  // question: TQuestion;
-  isSubmitted: boolean;
+  timerContext = useContext(TimerContext)
 
-  isCounting: boolean;
-
-  countDown: number;
 
   constructor(
     isHost: boolean,
-    // countDown: number,
+    //  
     answerLayout: string,
-    isSubmitted: boolean,
-    isCounting: boolean,
-    countDown: number,
   ) {
     this.isHost = isHost
-    this.countDown = countDown;
-    this.answerLayout = answerLayout;
-    this.isCounting = isCounting;
-    this.isSubmitted = isSubmitted;
+    this.answerLayout = answerLayout
   }
 
   public initAnswerSectionForType(questionType: TQuestionType,
@@ -38,94 +28,134 @@ export class AnswerSectionFactory {
                                   handleSubmitAnswer: (answer: any) => void): JSX.Element {
     switch (questionType) {
       case "10SG":
-        return this.initSingleAnswer(this.countDown, question, handleSubmitAnswer);
+        return this.initSingleAnswer(question, handleSubmitAnswer);
       case "20MUL":
-        return this.initMultipleAnswer(this.countDown, question, handleSubmitAnswer);
+        return this.initMultipleAnswer(question, handleSubmitAnswer);
       case "21ODMUL":
-        return this.initConnectAnswer(this.countDown, question, handleSubmitAnswer);
+        return this.initConnectAnswer(question, handleSubmitAnswer);
       case "22POLL":
-        return this.initMultipleAnswer(this.countDown, question, handleSubmitAnswer);
+        return this.initMultipleAnswer(question, handleSubmitAnswer);
       case "30TEXT":
-        return this.initTextAnswer(this.countDown, question, handleSubmitAnswer);
+        return this.initTextAnswer(question, handleSubmitAnswer);
       case "31ESSAY":
-        return this.initEssayAnswer(this.countDown, question, handleSubmitAnswer);
+        return this.initEssayAnswer(question, handleSubmitAnswer);
     }
   }
 
-  protected initSingleAnswer(countDown: number,
-                             question: TQuestion,
-                             handleSubmitAnswer: (answer: any) => void): JSX.Element {
+  protected initSingleAnswer(
+    question: TQuestion,
+    handleSubmitAnswer: (answer: any) => void): JSX.Element {
     return <SingleChoiceAnswerSection
       socketSubmit={handleSubmitAnswer}
       className={this.answerLayout}
       option={question}
-      showAnswer={countDown <= 0 && countDown > -100}
-      isTimeOut={countDown <= 0 && countDown > -100}
       isHost={this.isHost}
-      isSubmitted={this.isSubmitted}
+      isSubmitted={!this.timerContext.isSubmittable}
+
+      isShowSkeleton={this.timerContext.isShowSkeleton}
+      isCounting={this.timerContext.isCounting}
+      isTimeOut={!this.timerContext.isCounting}
+      showAnswer={!(this.timerContext.isCounting || this.timerContext.isShowSkeleton)}
     />
   }
 
-  protected initMultipleAnswer(countDown: number,
-                               question: TQuestion,
+  protected initMultipleAnswer(question: TQuestion,
                                submitAnswerHandle: (answer: any) => void): JSX.Element {
     return <MultipleChoiceAnswerSection
       socketSubmit={submitAnswerHandle}
       className={this.answerLayout}
       option={question}
-      showAnswer={countDown <= 0 && countDown > -100}
       isHost={this.isHost}
-      isTimeOut={countDown <= 0 && countDown > -100}
-      isSubmitted={this.isSubmitted}
+      isSubmitted={!this.timerContext.isSubmittable}
+
+      isShowSkeleton={this.timerContext.isShowSkeleton}
+      isCounting={this.timerContext.isCounting}
+      isTimeOut={!this.timerContext.isCounting}
+      showAnswer={!(this.timerContext.isCounting || this.timerContext.isShowSkeleton)}
     />
   }
 
-  protected initConnectAnswer(countDown: number,
-                              question: TQuestion,
+  protected initConnectAnswer(question: TQuestion,
                               submitAnswerHandle: (answer: any) => void): JSX.Element {
     return <ConnectQuestion
       socketSubmit={submitAnswerHandle}
       className={this.answerLayout}
       question={question}
-      showAnswer={countDown <= 0 && countDown > -100}
       isHost={this.isHost}
-      isTimeOut={countDown <= 0 && countDown > -100}
-      isCounting={this.isCounting}
-      isSubmitted={this.isSubmitted}
+      isSubmitted={!this.timerContext.isSubmittable}
+
+
+      isShowSkeleton={this.timerContext.isShowSkeleton}
+      isCounting={this.timerContext.isCounting}
+      isTimeOut={!this.timerContext.isCounting}
+      showAnswer={!(this.timerContext.isCounting || this.timerContext.isShowSkeleton)}
     />
   }
 
-  protected initTextAnswer(countDown: number,
-                           question: TQuestion,
+  protected initTextAnswer(question: TQuestion,
                            submitAnswerHandle: (answer: any) => void): JSX.Element {
     return <TextQuestion
       socketSubmit={submitAnswerHandle}
       className={this.answerLayout}
       question={question}
-      showAnswer={countDown <= 0 && countDown > -100}
       isHost={this.isHost}
-      isTimeOut={countDown <= 0 && countDown > -100}
-      isCounting={this.isCounting}
-      isSubmitted={this.isSubmitted}
+      isSubmitted={!this.timerContext.isSubmittable}
+
+      isShowSkeleton={this.timerContext.isShowSkeleton}
+      isCounting={this.timerContext.isCounting}
+      isTimeOut={!this.timerContext.isCounting}
+      showAnswer={!(this.timerContext.isCounting || this.timerContext.isShowSkeleton)}
     />
   }
 
-  protected initEssayAnswer(countDown: number,
-                            question: TQuestion,
+  protected initEssayAnswer(question: TQuestion,
                             submitAnswerHandle: (answer: any) => void): JSX.Element {
-    console.log("=>(AnswerSectionFactory.tsx:115) question poll", question);
     return <PollQuestion
       socketSubmit={submitAnswerHandle}
       className={this.answerLayout}
       question={question}
-      showAnswer={countDown <= 0 && countDown > -100}
       isHost={this.isHost}
-      isTimeOut={countDown <= 0 && countDown > -100}
-      isCounting={this.isCounting}
-      isSubmitted={this.isSubmitted}
+      isSubmitted={!this.timerContext.isSubmittable}
+
+      isShowSkeleton={this.timerContext.isShowSkeleton}
+      isCounting={this.timerContext.isCounting}
+      isTimeOut={!this.timerContext.isCounting}
+      showAnswer={!(this.timerContext.isCounting || this.timerContext.isShowSkeleton)}
     />
   }
+}
 
-
+export const QuestionTypeDescription: Record<TQuestionType,
+  { icon: string; colorClassName: string; title: string }> = {
+  "10SG": {
+    icon: 'bi bi-check2',
+    colorClassName: 'bg-primary',
+    title: 'Một đáp án đúng',
+  },
+  "20MUL": {
+    icon: 'bi bi-check2-all',
+    colorClassName: 'bg-info',
+    title: 'Nhiều đáp án đúng',
+  },
+  "21ODMUL": {
+    icon: 'bi bi-pencil-square',
+    colorClassName: 'bg-warning',
+    title: 'Hoàn tất câu sau',
+  },
+  "22POLL": {
+    icon: 'bi bi-file-earmark-bar-graph',
+    colorClassName: 'bg-danger',
+    title: 'Bình chọn ý kiến',
+  },
+  "30TEXT": {
+    icon: 'bi bi-reception-1',
+    colorClassName: 'bg-success',
+    title: 'Điền đáp án đúng',
+  },
+  "31ESSAY": {
+    icon: 'bi bi-reception-1',
+    colorClassName: 'bg-success',
+    title: 'Câu trả lời tự do',
+  }
 }
 

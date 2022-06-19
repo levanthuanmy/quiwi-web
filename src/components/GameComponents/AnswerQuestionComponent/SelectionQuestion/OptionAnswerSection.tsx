@@ -14,6 +14,7 @@ type OptionAnswerSectionProps = {
   showAnswer: boolean
   isHost: boolean
   baseIcon: string
+  isShowSkeleton:boolean
 }
 
 const incorrectColor = "#cccccc"
@@ -27,7 +28,8 @@ const OptionAnswerSection: FC<OptionAnswerSectionProps> = ({
                                                              selectedAnswers,
                                                              showAnswer,
                                                              isHost,
-                                                             baseIcon
+                                                             baseIcon,
+                                                             isShowSkeleton
                                                            }) => {
   const {fromMedium} = useScreenSize()
 
@@ -141,9 +143,9 @@ const OptionAnswerSection: FC<OptionAnswerSectionProps> = ({
                 }`}
               >
                 <div className={"flex-grow-1"}>
-                  {item.answer}
+                  {isShowSkeleton ? "" : item.answer}
                 </div>
-                {item.media?.length > 0 && (
+                {item.media?.length > 0 && !isShowSkeleton && (
                   <div
                     className="h-100 flex-grow-1 d-flex justify-content-center align-items-center overflow-hidden"
                   >

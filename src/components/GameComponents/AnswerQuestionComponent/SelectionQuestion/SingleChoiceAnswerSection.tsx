@@ -15,6 +15,8 @@ type SingpleChoiceAnswerSectionProps = {
   isHost: boolean
   isSubmitted: boolean
   isTimeOut: boolean
+  isCounting: boolean
+  isShowSkeleton: boolean
 }
 
 const SingleChoiceAnswerSection: FC<SingpleChoiceAnswerSectionProps> = ({
@@ -24,7 +26,9 @@ const SingleChoiceAnswerSection: FC<SingpleChoiceAnswerSectionProps> = ({
                                                                           showAnswer,
                                                                           isHost,
                                                                           isSubmitted,
-                                                                          isTimeOut
+                                                                          isTimeOut,
+                                                                          isCounting,
+                                                                          isShowSkeleton
                                                                         }) => {
 
   const [answerSet, setAnswerSet] = useState<Set<number>>(new Set())
@@ -44,10 +48,10 @@ const SingleChoiceAnswerSection: FC<SingpleChoiceAnswerSectionProps> = ({
   }
 
   useEffect(() => {
-    if (isTimeOut && !isSubmitted) {
+    if (!isSubmitted && !isHost && isCounting) {
       socketSubmit(answerSet)
     }
-  }, [isTimeOut]);
+  }, [isCounting]);
 
   return (
     <div className={classNames(className, '')}>
@@ -57,6 +61,7 @@ const SingleChoiceAnswerSection: FC<SingpleChoiceAnswerSectionProps> = ({
         selectedAnswers={answerSet}
         showAnswer={showAnswer}
         isHost={isHost}
+        isShowSkeleton={isShowSkeleton}
         baseIcon="circle">
       </OptionAnswerSection>
     </div>

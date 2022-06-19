@@ -249,6 +249,7 @@ const QuestionCreator: FC<QuestionCreatorProps> = ({
 
       const path = `/images/${data.name}`
       const ref = storageRef(storage, path)
+      console.log("=>(QuestionCreator.tsx:241) ref", storage, ref);
       await uploadFile(ref, data)
       const url = await getUrl(ref)
 
