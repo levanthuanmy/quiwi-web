@@ -13,7 +13,7 @@ import {
   TApiResponse,
   TPaginationResponse,
   TQuiz,
-  TQuizCategory
+  TQuizCategory,
 } from '../../types/types'
 
 const ExplorePage: NextPage = () => {
@@ -40,6 +40,9 @@ const ExplorePage: NextPage = () => {
             createdAt: 'DESC',
           },
         },
+        quizFilter: currentCategoryId
+          ? { quizCategoryIds: [currentCategoryId] }
+          : undefined,
         q,
       },
     ],

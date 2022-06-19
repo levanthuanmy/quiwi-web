@@ -56,7 +56,8 @@ const QuizCreatorPage: NextPage = () => {
         setIsValidating(true)
         const res = await get<TApiResponse<TQuiz>>(
           `/api/quizzes/my-quizzes/${quizId}`,
-          true
+          true,
+          { filter: { relations: ['quizCategories'] } }
         )
 
         if (res.response === null) {

@@ -1,6 +1,5 @@
 import { NextPage } from 'next'
 import { useRouter } from 'next/router'
-import React from 'react'
 import { Col, Container, Row } from 'react-bootstrap'
 import useSWR from 'swr'
 import CardQuizInfo from '../../../components/CardQuizInfo/CardQuizInfo'
@@ -18,7 +17,11 @@ const QuizDetailPage: NextPage = () => {
 
   const { data, isValidating } = useSWR<TApiResponse<TQuiz>>(
     id
-      ? [`/api/quizzes/quiz/${id}`, false, { filter: { relations: ['user'] } }]
+      ? [
+          `/api/quizzes/quiz/${id}`,
+          false,
+          { filter: { relations: ['user', 'quizCategories'] } },
+        ]
       : null,
     get,
     {

@@ -52,6 +52,7 @@ export type TQuiz = {
   questions: TQuestion[]
   gameLobby: GameLobby[]
   banner: string
+  quizCategories?: TQuizCategory[]
 }
 
 export type TGameModeEnum = '10CLASSIC' | '20MRT'

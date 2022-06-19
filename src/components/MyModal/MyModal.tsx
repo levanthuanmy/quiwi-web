@@ -34,7 +34,7 @@ const MyModal: FC<MyModalProps> = ({
       onHide={onHide}
       aria-labelledby="contained-modal-title-vcenter"
       centered
-      contentClassName="rounded-20px overflow-hidden"
+      contentClassName="rounded-20px"
       fullscreen={fullscreen ? 'lg-down' : undefined}
       size={size}
     >

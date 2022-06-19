@@ -1,9 +1,17 @@
 import { Field, Form, Formik } from 'formik'
+import _ from 'lodash'
 import { useRouter } from 'next/router'
-import React, { FC, useEffect, useState } from 'react'
+import React, { FC, useEffect, useMemo, useState } from 'react'
 import { Col, FormCheck, Image, Placeholder, Row } from 'react-bootstrap'
-import { post } from '../../libs/api'
-import { TApiResponse, TQuiz } from '../../types/types'
+import Select from 'react-select'
+import useSWR from 'swr'
+import { get, post } from '../../libs/api'
+import {
+  TApiResponse,
+  TPaginationResponse,
+  TQuiz,
+  TQuizCategory,
+} from '../../types/types'
 import {
   getUrl,
   storage,
@@ -53,6 +61,22 @@ const CardQuizInfo: FC<CardQuizInfoProps> = ({
     }
   }
 
+  const { data: categoryResponse } = useSWR<
+    TApiResponse<TPaginationResponse<TQuizCategory>>
+  >([`/api/quiz-categories`, false], get, { revalidateOnFocus: false })
+
+  const categoryOptions: { value: number; label: string }[] = useMemo(() => {
+    if (categoryResponse) {
+      return categoryResponse.response.items.map((item) => ({
+        value: item.id,
+        label: item.name,
+      }))
+    }
+    return []
+  }, [categoryResponse])
+
+  const [selectedCategories, setSelectedCategories] = useState<number[]>()
+
   return (
     <div className="rounded-10px border bg-white p-12px">
       <div
@@ -101,6 +125,25 @@ const CardQuizInfo: FC<CardQuizInfoProps> = ({
             ) : (
               <></>
             )}
+            <div className="d-flex flex-wrap gap-2 align-items-center">
+              <i className="bi bi-journal-bookmark-fill fs-16px" />
+              {categoryOptions
+                ?.filter(
+                  (item) =>
+                    _.findIndex(quiz?.quizCategories || [], [
+                      'id',
+                      item.value,
+                    ]) > -1
+                )
+                .map((cate, key) => (
+                  <div
+                    key={key}
+                    className="bg-primary bg-opacity-25 text-primary px-2 py-1 rounded"
+                  >
+                    {cate.label}
+                  </div>
+                ))}
+            </div>
             <div>
               <i className="bi bi-eye-fill me-2 fs-16px" />
               <TextSkeletonLoading
@@ -146,7 +189,12 @@ const CardQuizInfo: FC<CardQuizInfoProps> = ({
               try {
                 if (!quiz) return
 
-                const body = { ...quiz, ...value, banner: bannerUrl }
+                const body = {
+                  ...quiz,
+                  ...value,
+                  banner: bannerUrl,
+                  quizCategoryIds: selectedCategories,
+                }
                 const res = await post<TApiResponse<TQuiz>>(
                   `/api/quizzes/${quizId}`,
                   {},
@@ -155,11 +203,11 @@ const CardQuizInfo: FC<CardQuizInfoProps> = ({
                 )
 
                 setQuiz(res.response)
-                setShowModal(false)
               } catch (error) {
                 console.log('onSaveQuestion - error', error)
               } finally {
                 actions.setSubmitting(false)
+                setShowModal(false)
               }
             }}
           >
@@ -221,6 +269,28 @@ const CardQuizInfo: FC<CardQuizInfoProps> = ({
                       name="description"
                       placeholder="Mô tả"
                       as={MyInput}
+                    />
+                  </Col>
+                </Row>
+
+                <Row className="justify-content-center align-items-center py-2 position-relative">
+                  <Col xs={12} lg={4} className="text-lg-end fw-medium">
+                    Thể loại
+                  </Col>
+                  <Col className="position-relative">
+                    <Select
+                      isMulti
+                      defaultValue={categoryOptions.filter(
+                        (item) =>
+                          _.findIndex(quiz?.quizCategories || [], [
+                            'id',
+                            item.value,
+                          ]) > -1
+                      )}
+                      options={categoryOptions}
+                      onChange={(options) =>
+                        setSelectedCategories(options.map((item) => item.value))
+                      }
                     />
                   </Col>
                 </Row>
