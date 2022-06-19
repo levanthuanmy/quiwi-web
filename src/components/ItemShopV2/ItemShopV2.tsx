@@ -5,8 +5,8 @@ import { TItem } from '../../types/types'
 import { ItemPurchaseModal } from '../ItemPurchaseModal/ItemPurchaseModal'
 import MyModal from '../MyModal/MyModal'
 import styles from './ItemShopV2.module.css'
-import {playSound} from '../../utils/helper'
-import {SOUND_EFFECT} from '../../utils/constants'
+import { playSound } from '../../utils/helper'
+import { SOUND_EFFECT } from '../../utils/constants'
 
 type ItemShopProps = {
   item: TItem
@@ -19,7 +19,7 @@ const ItemShopV2: FC<ItemShopProps> = ({ item, userBuyItem }) => {
   const [error, setError] = useState('')
   const [quantity, setQuantity] = useState(1)
   const buyItem = async () => {
-    playSound(SOUND_EFFECT['CONFIRM_BUY_BUTTON_SOUND_CLICK']);
+    playSound(SOUND_EFFECT['CONFIRM_BUY_BUTTON_SOUND_CLICK'])
     setShowConfirmationModal(false)
     try {
       const params = {
@@ -38,12 +38,6 @@ const ItemShopV2: FC<ItemShopProps> = ({ item, userBuyItem }) => {
       <Card.Header className={styles.card__thumb}>
         <Image alt="item-avatar" src={item.avatar} />
       </Card.Header>
-      {/* <div className="card__date">
-                <span className="card__date__day">11</span>
-                <br />
-                <span className="card__date__month">Jun</span>
-            </div> */}
-
       <div className={styles.card__body}>
         <div className={styles.card__category}>{item.itemCategory.name}</div>
         <h2 className={styles.card__title}>{item.name}</h2>
@@ -66,7 +60,7 @@ const ItemShopV2: FC<ItemShopProps> = ({ item, userBuyItem }) => {
           <Button
             className={styles.btnBuy}
             onClick={() => {
-              playSound(SOUND_EFFECT['BUY_BUTTON_SOUND_CLICK']);
+              playSound(SOUND_EFFECT['BUY_BUTTON_SOUND_CLICK'])
               setShowConfirmationModal(true)
             }}
           >
