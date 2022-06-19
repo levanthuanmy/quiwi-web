@@ -7,22 +7,27 @@ import useSWR from 'swr'
 import DashboardLayout from '../../components/DashboardLayout/DashboardLayout'
 import ItemQuiz from '../../components/ItemQuiz/ItemQuiz'
 import MyInput from '../../components/MyInput/MyInput'
+import { MyPagination } from '../../components/MyPagination/MyPagination'
 import SearchBar from '../../components/SearchBar/SearchBar'
 import { get } from '../../libs/api'
 import {
   TApiResponse,
   TPaginationResponse,
   TQuiz,
-  TQuizCategory
+  TQuizCategory,
 } from '../../types/types'
 
 const ExplorePage: NextPage = () => {
   const router = useRouter()
+  const pageSize = 9
+  const [pageIndex, setPageIndex] = useState(1)
   const { q } = router.query
 
   const [showCategories, setShowCategories] = useState<boolean>(false)
   const [currentCategoryId, setCurrentCategoryId] = useState<number>()
-
+  const handlePageClick = (selected: { selected: number }) => {
+    setPageIndex(Number(selected.selected) + 1)
+  }
   const { data: quizResponse, isValidating } = useSWR<
     TApiResponse<TPaginationResponse<TQuiz>>
   >(
@@ -123,6 +128,14 @@ const ExplorePage: NextPage = () => {
                 <ItemQuiz quiz={quiz} exploreMode />
               </Col>
             ))}
+          </Row>
+          <Row className="mt-3">
+            <Col style={{ display: 'flex', justifyContent: 'center' }}>
+              <MyPagination
+                handlePageClick={handlePageClick}
+                totalPages={quizResponse?.response.totalPages ?? 0}
+              />
+            </Col>
           </Row>
         </Container>
       </div>
