@@ -87,11 +87,6 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
     if (!gameSession) return
     const user: TUser = JsonParse(lsUser)
     setIsHost(user.id === gameSession.hostId)
-    timerContext.setIsShowSkeleton(true)
-    setIsShowNext(false)
-    setShowRanking(false)
-    setIsNextEmitted(true)
-    setLoading("Chuẩn bị!")
     if (currentQID < 0) {
       const firstQuestion = getQuestionWithID(0)
       if (firstQuestion) {
@@ -110,18 +105,22 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
     setIsShowEndGame((currentQID == quizLength - 1) && !timerContext.isCounting)
   }, [currentQID, quizLength]);
 
-
   const displayQuestion = (question: TQuestion) => {
-    if (question) {
-      if (question.duration > 0) {
-        setCurrentQuestion(question)
-      }
-    }
+    if (question && question.duration > 0)
+      setCurrentQuestion(question)
+  }
+
+  function resetState() {
+    setLoading("Chuẩn bị!")
+    setIsNextEmitted(true)
+    timerContext.setIsShowSkeleton(true)
+    setIsShowNext(false)
+    setShowRanking(false)
   }
 
   const handleSocket = () => {
     if (!gameSocket()) return
-
+    resetState()
     gameSkOnce('game-started', (data) => {
       _numSubmission.current = 0
       setNumSubmission(_numSubmission.current)
