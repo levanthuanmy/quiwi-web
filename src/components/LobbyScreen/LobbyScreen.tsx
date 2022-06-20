@@ -17,6 +17,8 @@ import PlayerLobbyItem from '../PlayerLobbyItem/PlayerLobbyItem'
 import PlayerLobbyList from '../PlayerLobbyList/PlayerLobbyList'
 import styles from './LobbyScreen.module.css'
 import { useToasts } from 'react-toast-notifications'
+import * as gtag from '../../libs/gtag'
+
 
 type LobbyScreenProps = {
   invitationCode: string
@@ -104,6 +106,10 @@ const LobbyScreen: FC<LobbyScreenProps> = ({ invitationCode, isHost }) => {
           token: accessToken,
         }
         gameSkEmit('start-game', msg)
+        gtag.event({
+          action: '[start game]',
+          params: { quizId: gameSession?.quizId, invitationCode: gameSession?.invitationCode},
+        })
       }
     } catch (error) {
       console.log('handleStartGame - error', error)

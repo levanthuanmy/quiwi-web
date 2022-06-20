@@ -201,11 +201,16 @@ const GamePage: NextPage = () => {
       setEndGameData(data)
       saveGameSession(data)
       setIsGameEnded(true)
+
+      gtag.event({
+        action: '[game ended]',
+        params: { quizId: gameSession?.quizId, invitationCode: gameSession?.invitationCode},
+      })
     })
 
     gtag.event({
-      action: 'access quiz',
-      params: { quizId: gameSession?.quizId },
+      action: '[access playing quiz page]',
+      params: { quizId: gameSession?.quizId, invitationCode: gameSession?.invitationCode},
     })
   }, [])
 

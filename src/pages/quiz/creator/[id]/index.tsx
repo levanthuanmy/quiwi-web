@@ -76,7 +76,7 @@ const QuizCreatorPage: NextPage = () => {
 
     quizId && getQuiz()
 
-    gtag.event({ action: 'access quiz creator', params: { quizId } })
+    gtag.event({ action: '[access quiz creator]', params: { quizId } })
   }, [quizId])
 
   const onRemoveQuestion = (questionId: number) => {
