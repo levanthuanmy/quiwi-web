@@ -73,21 +73,14 @@ const GamePage: NextPage = () => {
   const [endTime, setEndTime] = useState<number>(0)
   const intervalRef = useRef<NodeJS.Timer | null>(null)
 
-  // useEffect(() => {
-  //   gameSkOn('view-result', (data) => {
-  //     if (isCounting) {
-  //       stopCounting(true)
-  //     }
-  //   })
-  // }, [])
-
-  const stopCounting = (xxx: boolean) => {
+  const stopCounting = (stopUI: boolean) => {
     if (intervalRef && intervalRef.current) {
-      clearInterval(intervalRef.current)
-      intervalRef.current = null
+      if (stopUI) {
+        clearInterval(intervalRef.current)
+        intervalRef.current = null
+      }
       setIsCounting(false)
       setTimeout(() => {
-        console.log('=>(index.tsx:89) delaySubmit 2')
         setIsSubmittable(false)
       }, 500)
     }
@@ -103,15 +96,17 @@ const GamePage: NextPage = () => {
       setCountDown(duration)
 
       setTimeout(() => {
-        console.log('=>(index.tsx:89) delaySubmit 1')
+        setIsShowSkeleton(false)
+        setIsCounting(true)
+      },100)
+
+      setTimeout(() => {
         setIsSubmittable(true)
       }, 500)
 
       intervalRef.current = setInterval(() => {
         let curr = Math.round(new Date().getTime())
         let _countDown = Math.ceil((endTime - curr) / 1000)
-        setIsCounting(true)
-        setIsShowSkeleton(false)
         setCountDown(_countDown)
         if (_countDown <= 0) {
           stopCounting(true)
