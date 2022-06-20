@@ -30,7 +30,6 @@ const MultipleChoiceAnswerSection: FC<MultipleChoiceAnswerSectionProps> = ({
   const [answerSet, setAnswerSet] = useState<Set<number>>(new Set())
 
   const selectAnswer = (answerId: number) => {
-    console.log("=>(MultipleChoiceAnswerSection.tsx:33) isSubmitted", isSubmitted);
     if (isTimeOut) return
     // Chọn và bỏ chọn câu hỏi
     const answers: Set<number> = answerSet
@@ -39,9 +38,7 @@ const MultipleChoiceAnswerSection: FC<MultipleChoiceAnswerSectionProps> = ({
   }
 
   useEffect(() => {
-    console.log("=>(MultipleChoiceAnswerSection.tsx:41) thien thien");
     if (!isCounting && !isSubmitted && !isHost) {
-      console.log("=>(MultipleChoiceAnswerSection.tsx:41) thien thien 2 2 ");
       socketSubmit(answerSet)
     }
   }, [isCounting]);

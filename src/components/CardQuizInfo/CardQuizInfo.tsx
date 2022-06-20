@@ -52,6 +52,7 @@ const CardQuizInfo: FC<CardQuizInfoProps> = ({
 
       const path = `/images/${data.name}`
       const ref = storageRef(storage, path)
+      console.log('handleUploadImage - chuân bị up ảnh')
       await uploadFile(ref, data)
       const url = await getUrl(ref)
 

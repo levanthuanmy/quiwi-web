@@ -7,7 +7,7 @@ import {
   getDownloadURL,
   StorageReference,
   UploadResult,
-  uploadString,
+  uploadString, uploadBytesResumable,
 } from 'firebase/storage'
 import { resizeBase64Img } from './helper'
 // TODO: Add SDKs for Firebase products that you want to use
@@ -29,14 +29,19 @@ const firebaseConfig = {
 export const app = initializeApp(firebaseConfig)
 export const storage = getStorage(app)
 export const storageRef = ref
-export const uploadFile = async (ref: StorageReference, data: File) => {
+export const uploadFile = async (fileRef: StorageReference, data: File) => {
   try {
+    console.log("=>(firebaseConfig.ts:35) up anhr", fileRef);
     const reader = new FileReader()
-    reader.readAsDataURL(data)
     reader.onload = async () => {
       let newImagesSrc = await resizeBase64Img(String(reader.result), 600, 600)
-      await uploadString(ref, newImagesSrc, 'data_url')
+      await uploadString(fileRef, newImagesSrc, 'data_url')
+      console.log("=>(firebaseConfig.ts:40) uploadFile hoan tat");
     }
+    reader.readAsDataURL(data)
+
+    // const uploadTask = uploadBytesResumable(fileRef, data);
+
   } catch (error) {
     console.log('uploadFile - error', error)
   }

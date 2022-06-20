@@ -27,6 +27,8 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, questionId}) => {
     saveGameSession,
     clearGameSession,
     gameSocket,
+    gameSkOn,
+    gameSkEmit,
     getQuestionWithID,
   } = useGameSession()
   const {socket} = useCommunitySocket()
@@ -88,15 +90,13 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, questionId}) => {
 
   const handleSocket = () => {
     if (!socket) return
-    socket.off('new-submission')
-    socket.on('new-submission', (data) => {
+    gameSkOn('new-submission', (data) => {
       console.log('new-submission', data)
       // nhớ check mode
       setNumSubmission(numSubmission + 1)
     })
 
-    socket.off('next-question')
-    socket.on('next-question', (data) => {
+    gameSkOn('next-question', (data) => {
       setIsShowNext(false)
 
       saveGameSession({
@@ -114,8 +114,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, questionId}) => {
       }
     })
 
-    socket.off('view-result')
-    socket.on('view-result', (data) => {
+    gameSkOn('view-result', (data) => {
       console.log('view', data)
       // setRoomStatus('Xem xếp hạng')
       setIsShowNext(true)
@@ -135,22 +134,17 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, questionId}) => {
       }
     })
 
-    socket.off('timeout')
-    socket.on('timeout', (data) => {
+    gameSkOn('timeout', (data) => {
       console.log('timeout', data)
       setIsShowNext(true)
     })
 
-    socket.off('error')
-    socket.on('error', (data) => {
-      console.log('answer board socket error', data)
-    })
   }
 
   const goToNextQuestion = () => {
     if (!gameSession) return
     const msg = {invitationCode: gameSession.invitationCode}
-    socket?.emit('next-question', msg)
+    gameSkEmit('next-question', msg)
     console.log(msg)
   }
 
@@ -178,7 +172,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, questionId}) => {
       return
     }
     setIsSubmitted(true)
-    if (msg.answer || msg.answerIds) socket?.emit('submit-answer', msg)
+    if (msg.answer || msg.answerIds) gameSkEmit('submit-answer', msg)
   }
   const exitRoom = () => {
     // dùng clear game session là đủ

@@ -12,6 +12,14 @@
     border-radius: 10px;
 }
 
+.playerSystem {
+    margin-top: 12px;
+    display: flex;
+    justify-content: end;
+    align-items: flex-end;
+    border-radius: 10px;
+}
+
 @media (max-width: 768px) {
     .container {
         /*padding-bottom: 60px;*/

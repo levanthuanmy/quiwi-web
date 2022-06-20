@@ -37,10 +37,11 @@ const PollQuestion: FC<PollQuestionProps> = ({
     if (!isCounting && !isSubmitted && !isHost) {
       socketSubmit(answerText ?? "")
     }
-    if (isTimeOut) {
-      setIsCorrect(checkAnswer())
-    }
   }, [isCounting]);
+
+  useEffect(() => {
+    if (showAnswer) setIsCorrect(checkAnswer())
+  }, [showAnswer]);
 
   const getSuggestType = (): string => {
     return isCorrect && !isHost ? "Câu hỏi của bạn đã được ghi nhận": "Câu hỏi tự do"
@@ -55,7 +56,6 @@ const PollQuestion: FC<PollQuestionProps> = ({
       setIsCorrect(false)
       return false
     }
-    // setIsCorrect(true)
     return true
   }
 
@@ -106,7 +106,6 @@ const PollQuestion: FC<PollQuestionProps> = ({
                 onChange={(t) => setAnswerText(t.target.value)}
             />
         }
-
 
       </div>
     </div>

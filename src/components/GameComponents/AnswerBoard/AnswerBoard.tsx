@@ -41,6 +41,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
     clearGameSession,
     gameSocket,
     gameSkOn,
+    gameSkEmit,
     gameSkOnce,
     getQuestionWithID,
   } = useGameSession()
@@ -112,7 +113,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
   }
 
   function resetState() {
-    setLoading("Chuẩn bị!")
+      setLoading("Chuẩn bị!")
     setIsNextEmitted(true)
     timerContext.setIsShowSkeleton(true)
     setIsShowNext(false)
@@ -126,7 +127,6 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
       setNumSubmission(_numSubmission.current)
       setIsNextEmitted(false)
       timerContext.startCounting(data.question.duration ?? 0)
-      console.log("=>(AnswerBoard.tsx:130) loading", loading);
       setLoading(null)
     })
 
@@ -164,7 +164,6 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
 
     gameSkOn('loading', (data) => {
       if (data?.question?.question) {
-        console.log("=>(AnswerBoard.tsx:174) data.question.question", data.question.question);
         timerContext.setIsShowSkeleton(true)
         setIsShowNext(false)
         setShowRanking(false)
@@ -186,7 +185,6 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
         setLoading("Chuẩn bị!")
       }
       if (data?.loading) {
-        console.log("=>(AnswerBoard.tsx:174) data.loading", data.loading);
         setLoading(data.loading)
       }
     })
@@ -195,12 +193,11 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
   const viewRanking = () => {
     if (!gameSession) return
     const msg = {invitationCode: gameSession.invitationCode}
-    gameSocket()?.emit('view-ranking', msg)
+    gameSkEmit('view-ranking', msg)
     setIsShowNext(true)
   }
 
   const handleSubmitAnswer = (answer: any) => {
-    console.log("=>(AnswerBoard.tsx:175) isSubmittable", timerContext.isSubmittable);
     if (!gameSession) return
     if (!timerContext.isSubmittable) return
     if (isHost) return
@@ -226,7 +223,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
       return
     }
     timerContext.setIsSubmittable(false)
-    if (msg.answer || msg.answerIds) gameSocket()?.emit('submit-answer', msg)
+    if (msg.answer || msg.answerIds) gameSkEmit('submit-answer', msg)
   }
 
   const exitRoom = () => {
@@ -255,17 +252,31 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
   const goToNextQuestion = () => {
     if (!gameSession) return
     const msg = {invitationCode: gameSession.invitationCode}
-    gameSocket()?.emit('next-question', msg)
+    gameSkEmit('next-question', msg)
   }
 
   function endGame() {
     if (gameSession && gameSocket() != null && isHost) {
       const msg = {invitationCode: gameSession.invitationCode}
-      gameSocket()?.emit('game-ended', msg)
+      gameSkEmit('game-ended', msg)
     } else {
       clearGameSession()
       router.push('/my-lib')
     }
+  }
+
+  const renderPlayerSystem = () => {
+    return (
+      <div className={cn(styles.playerSystem, "bg-opacity-50 bg-dark px-2 py-2")}>
+        <GameButton
+          isEnable={timerContext.isSubmittable}
+          iconClassName="bi bi-check-circle-fill"
+          className={classNames('text-white fw-medium')}
+          title={'Trả lời'}
+          onClick={() => {timerContext.stopCounting(false)}}
+        />
+      </div>
+    )
   }
 
   const renderHostControlSystem = () => {
@@ -459,7 +470,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
         {/*height min của question view là 300*/}
         {/*edit styles.answerLayout trong css*/}
         {currentQuestion?.question && renderAnswersSection()}
-        {isHost && renderHostControlSystem()}
+        {isHost ? renderHostControlSystem() : renderPlayerSystem()}
         <div className={styles.blankDiv}></div>
         <GameSessionRanking
           show={showRanking}

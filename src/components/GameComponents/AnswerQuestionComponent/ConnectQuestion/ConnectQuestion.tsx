@@ -106,7 +106,6 @@ const ConnectQuestion: FC<ConnectQuestionProps> = ({
       setWrongAnswerSet(new Set())
       setCorrectAnswerSet(new Set())
       setDisplayAnswer([...displayList])
-      console.log("=>(ConnectQuestion.tsx:82)preparedData: ", displayList);
 
       if (isHost) {
         setWrongAnswerSet(new Set())
@@ -120,25 +119,18 @@ const ConnectQuestion: FC<ConnectQuestionProps> = ({
   }
 
   useEffect(() => {
-    console.log("=>(ConnectQuestion.tsx:120) handleSubmit", isCounting, isSubmitted);
-    if (!isCounting && !isSubmitted) handleSubmit()
-  }, [isCounting]);
-
-  const handleSubmit = () => {
-    console.log("=>(ConnectQuestion.tsx:124) handleSubmit");
-    if (!isHost) {
+    if (!isCounting && !isSubmitted && !isHost) {
       const answerList = displayAnswer.map<number>((answer) => Number(answer.id))
       socketSubmit(answerList)
-      console.log("=>(ConnectQuestion) Socket submit answer");
-      setIsCorrect(checkAnswer())
-    } else {
-      console.log("=>(ConnectQuestion) Display answer for host");
-      showAnswerForHost()
     }
-  }
+  }, [isCounting]);
+
+  useEffect(() => {
+    if (showAnswer)
+      isHost ? showAnswerForHost() : setIsCorrect(checkAnswer())
+  }, [showAnswer]);
 
   const showAnswerForHost = () => {
-    console.log("=>(ConnectQuestion.tsx:107) orderedCorrectAnswer", orderedCorrectAnswer);
     setWrongAnswerSet(new Set())
     setIsCorrect(true)
     setCorrectAnswerSet(new Set(orderedCorrectAnswer.filter(answer => answer.type != "21PLHDR")))
