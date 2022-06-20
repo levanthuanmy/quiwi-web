@@ -1,3 +1,9 @@
 .countingLabel {
     font-size: 120px;
 }
+
+@media (max-width: 576px) {
+    .countingLabel {
+        font-size: 60px;
+    }
+}

@@ -25,6 +25,8 @@ import useScreenSize from '../../../hooks/useScreenSize/useScreenSize'
 import MyModal from "../../MyModal/MyModal";
 import {ExitContext, TimerContext} from "../../../pages/game/play";
 import LoadingBoard from "../LoadingBoard/LoadingBoard";
+import {useToasts} from "react-toast-notifications";
+import _ from "lodash";
 
 type AnswerBoardProps = {
   className?: string
@@ -71,6 +73,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
   const [numSubmission, setNumSubmission] = useState<number>(0)
   const [viewResultData, setViewResultData] = useState<TViewResult>()
 
+  const { addToast } = useToasts()
   const {fromMedium} = useScreenSize()
   let answerSectionFactory: AnswerSectionFactory
 
@@ -113,10 +116,14 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
   }
 
   function resetState() {
+    if (!gameSession)
       setLoading("Chuẩn bị!")
+    else
+      setLoading(null)
     setIsNextEmitted(true)
     timerContext.setIsShowSkeleton(true)
     setIsShowNext(false)
+    setIsNextEmitted(false)
     setShowRanking(false)
   }
 
@@ -131,9 +138,22 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
     })
 
     gameSkOn('new-submission', (data) => {
-      // nhớ check mode
-      _numSubmission.current = _numSubmission.current + 1
-      setNumSubmission(_numSubmission.current)
+      if (data.playersWithAnswer) {
+        _numSubmission.current = data.playersWithAnswer.length
+        setNumSubmission(_numSubmission.current)
+
+        const lastSubmit = data.playersWithAnswer[data.playersWithAnswer.length -1]
+        if (lastSubmit) {
+          addToast(<div><span className={"fw-bolder"}>{lastSubmit.nickname}</span> đã nộp</div>,
+            {
+              placement: 'bottom-left',
+              appearance: 'success',
+              newestOnTop: true,
+              autoDismiss: true,
+            })
+        }
+
+      }
     })
 
     gameSkOn('next-question', (data) => {
@@ -145,6 +165,10 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
     })
 
     gameSkOn('view-result', (data: TViewResult) => {
+      timerContext.countDown >= 0 ? setLoading("Tất cả đã trả lời!") : setLoading("Hết giờ!")
+      setTimeout(() => {
+        setLoading(null)
+      }, 1000)
       timerContext.stopCounting(true)
       setViewResultData(data)
       setIsShowNext(true)

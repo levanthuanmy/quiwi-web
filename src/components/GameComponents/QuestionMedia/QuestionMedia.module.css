@@ -47,6 +47,17 @@
   }
 }
 
+.timeoutTitle {
+  font-size: 18px;
+  font-weight: bolder;
+}
+
+@media (max-width: 576px) {
+  .timeoutTitle {
+    font-size: 16px;
+  }
+}
+
 @media (max-width: 576px) {
   .timeoutContainer {
     border-radius: 100vh;

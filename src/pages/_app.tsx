@@ -84,7 +84,8 @@ function MyApp({ Component, pageProps }: AppProps) {
       <DndProvider backend={HTML5Backend}>
         <CommunityGameSocketProvider>
           <AuthProvider>
-            <ToastProvider>
+            <ToastProvider autoDismiss newestOnTop
+                           autoDismissTimeout={4000}>
               <MyHead />
               <Component {...pageProps} />
               <FullScreenLoader isLoading={shouldLoad} />
