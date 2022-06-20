@@ -33,8 +33,8 @@ const SingleChoiceAnswerSection: FC<SingpleChoiceAnswerSectionProps> = ({
 
   const [answerSet, setAnswerSet] = useState<Set<number>>(new Set())
   const selectAnswer = (answerId: number) => {
-    if (isSubmitted) return
-    if (isTimeOut) return
+    if (isHost) return
+    if (isSubmitted || !isCounting) return
     // Chọn và bỏ chọn câu hỏi
     const answers: Set<number> = answerSet
     if (answers.has(answerId)) {
@@ -44,11 +44,10 @@ const SingleChoiceAnswerSection: FC<SingpleChoiceAnswerSectionProps> = ({
       answers.add(answerId)
     }
     setAnswerSet(new Set(answers))
-    socketSubmit(answerSet)
   }
 
   useEffect(() => {
-    if (!isSubmitted && !isHost && isCounting) {
+    if (!isCounting && !isSubmitted && !isHost) {
       socketSubmit(answerSet)
     }
   }, [isCounting]);

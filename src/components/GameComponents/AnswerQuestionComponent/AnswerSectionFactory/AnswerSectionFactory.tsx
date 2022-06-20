@@ -55,7 +55,7 @@ export class AnswerSectionFactory {
       isShowSkeleton={this.timerContext.isShowSkeleton}
       isCounting={this.timerContext.isCounting}
       isTimeOut={!this.timerContext.isCounting}
-      showAnswer={!(this.timerContext.isCounting || this.timerContext.isShowSkeleton)}
+      showAnswer={this.timerContext.isShowAnswer && !this.timerContext.isShowSkeleton}
     />
   }
 
@@ -71,7 +71,7 @@ export class AnswerSectionFactory {
       isShowSkeleton={this.timerContext.isShowSkeleton}
       isCounting={this.timerContext.isCounting}
       isTimeOut={!this.timerContext.isCounting}
-      showAnswer={!(this.timerContext.isCounting || this.timerContext.isShowSkeleton)}
+      showAnswer={this.timerContext.isShowAnswer && !this.timerContext.isShowSkeleton}
     />
   }
 
@@ -88,7 +88,7 @@ export class AnswerSectionFactory {
       isShowSkeleton={this.timerContext.isShowSkeleton}
       isCounting={this.timerContext.isCounting}
       isTimeOut={!this.timerContext.isCounting}
-      showAnswer={!(this.timerContext.isCounting || this.timerContext.isShowSkeleton)}
+      showAnswer={this.timerContext.isShowAnswer && !this.timerContext.isShowSkeleton}
     />
   }
 
@@ -104,7 +104,7 @@ export class AnswerSectionFactory {
       isShowSkeleton={this.timerContext.isShowSkeleton}
       isCounting={this.timerContext.isCounting}
       isTimeOut={!this.timerContext.isCounting}
-      showAnswer={!(this.timerContext.isCounting || this.timerContext.isShowSkeleton)}
+      showAnswer={this.timerContext.isShowAnswer && !this.timerContext.isShowSkeleton}
     />
   }
 
@@ -120,7 +120,7 @@ export class AnswerSectionFactory {
       isShowSkeleton={this.timerContext.isShowSkeleton}
       isCounting={this.timerContext.isCounting}
       isTimeOut={!this.timerContext.isCounting}
-      showAnswer={!(this.timerContext.isCounting || this.timerContext.isShowSkeleton)}
+      showAnswer={this.timerContext.isShowAnswer && !this.timerContext.isShowSkeleton}
     />
   }
 }
