@@ -41,6 +41,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
     clearGameSession,
     gameSocket,
     gameSkOn,
+    gameSkEmit,
     gameSkOnce,
     getQuestionWithID,
   } = useGameSession()
@@ -195,7 +196,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
   const viewRanking = () => {
     if (!gameSession) return
     const msg = {invitationCode: gameSession.invitationCode}
-    gameSocket()?.emit('view-ranking', msg)
+    gameSkEmit('view-ranking', msg)
     setIsShowNext(true)
   }
 
@@ -226,7 +227,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
       return
     }
     timerContext.setIsSubmittable(false)
-    if (msg.answer || msg.answerIds) gameSocket()?.emit('submit-answer', msg)
+    if (msg.answer || msg.answerIds) gameSkEmit('submit-answer', msg)
   }
 
   const exitRoom = () => {
@@ -255,13 +256,13 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
   const goToNextQuestion = () => {
     if (!gameSession) return
     const msg = {invitationCode: gameSession.invitationCode}
-    gameSocket()?.emit('next-question', msg)
+    gameSkEmit('next-question', msg)
   }
 
   function endGame() {
     if (gameSession && gameSocket() != null && isHost) {
       const msg = {invitationCode: gameSession.invitationCode}
-      gameSocket()?.emit('game-ended', msg)
+      gameSkEmit('game-ended', msg)
     } else {
       clearGameSession()
       router.push('/my-lib')

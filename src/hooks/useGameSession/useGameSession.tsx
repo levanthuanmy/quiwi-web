@@ -5,7 +5,7 @@ import {JsonParse} from '../../utils/helper'
 import {useLocalStorage} from '../useLocalStorage/useLocalStorage'
 import {SocketManager} from '../useSocket/socketManager'
 
-export const useGameSession = (): { gameSkOnce: (ev: string, listener: (...args: any[]) => void) => void; isHost: () => boolean; getQuestionWithID: (qid: number) => (TQuestion | null); gameSkOn: (ev: string, listener: (...args: any[]) => void) => void; connectGameSocket: () => void; clearGameSession: () => void; gameSocket: () => (Socket | null); disconnectGameSocket: () => void; gameSession: TStartQuizResponse | null; saveGameSession: (gameSS: TStartQuizResponse) => void } => {
+export const useGameSession = (): { gameSkOnce: (ev: string, listener: (...args: any[]) => void) => void; isHost: () => boolean; getQuestionWithID: (qid: number) => (TQuestion | null); gameSkOn: (ev: string, listener: (...args: any[]) => void) => void; connectGameSocket: () => void; clearGameSession: () => void; gameSocket: () => (Socket | null); disconnectGameSocket: () => void; gameSkEmit: (ev: string, msg: any) => void; gameSession: TStartQuizResponse | null; saveGameSession: (gameSS: TStartQuizResponse) => void } => {
   const sk = SocketManager()
 
   const [lsUser] = useLocalStorage('user', '')
@@ -65,6 +65,12 @@ export const useGameSession = (): { gameSkOnce: (ev: string, listener: (...args:
     }
   }
 
+  const gameSkEmit = (ev: string, msg: any) => {
+    console.log("📨📨 Event:", ev);
+    console.log("📨📨 Message:", msg);
+    gameSocket()?.emit(ev, msg)
+  }
+
   const gameSkOn = (ev: string, listener: (...args: any[]) => void) => {
     gameSocket()?.off(ev)
     gameSocket()?.on(ev, listener)
@@ -112,6 +118,7 @@ export const useGameSession = (): { gameSkOnce: (ev: string, listener: (...args:
       disconnectGameSocket,
       gameSocket,
       gameSkOn,
+      gameSkEmit,
       gameSkOnce,
       getQuestionWithID,
       isHost,

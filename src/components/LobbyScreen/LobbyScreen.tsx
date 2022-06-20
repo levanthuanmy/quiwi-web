@@ -36,6 +36,7 @@ const LobbyScreen: FC<LobbyScreenProps> = ({ invitationCode, isHost }) => {
     clearGameSession,
     gameSocket,
     gameSkOn,
+    gameSkEmit,
     gameSkOnce,
   } = useGameSession()
   const { addToast } = useToasts()
@@ -102,7 +103,7 @@ const LobbyScreen: FC<LobbyScreenProps> = ({ invitationCode, isHost }) => {
           invitationCode: invitationCode,
           token: accessToken,
         }
-        gameSocket()?.emit('start-game', msg)
+        gameSkEmit('start-game', msg)
       }
     } catch (error) {
       console.log('handleStartGame - error', error)
