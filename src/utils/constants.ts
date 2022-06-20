@@ -2,6 +2,7 @@ import { QuestionType } from '../components/IconQuestion/IconQuestion'
 import { TQuestionType } from '../types/types'
 
 export const API_URL = process.env.NEXT_PUBLIC_API_URL
+export const GOOGLE_ANALYTICS = process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS || ""
 
 export const HOME_MENU_OPTIONS = [
   { title: 'Trang chủ', url: '/', iconClassName: 'bi bi-house' },

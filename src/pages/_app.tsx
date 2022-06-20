@@ -21,11 +21,13 @@ import { HTML5Backend } from 'react-dnd-html5-backend'
 import { useGameSession } from '../hooks/useGameSession/useGameSession'
 import { CommunityGameSocketProvider } from '../hooks/useCommunitySocket/useCommunitySocket'
 import { ToastProvider } from 'react-toast-notifications'
+import * as gtag from '../libs/gtag'
 
 function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter()
   const [shouldLoad, setShouldLoad] = useState<boolean>(false)
   const { disconnectGameSocket, clearGameSession } = useGameSession()
+
   useEffect(() => {
     const handleRouteChangeStart = () => {
       setShouldLoad(true)
@@ -46,6 +48,19 @@ function MyApp({ Component, pageProps }: AppProps) {
       router.events.off('routeChangeError', handleRouteChangeError)
     }
   }, [])
+
+  useEffect(() => {
+    const handleRouteChange = (url: string) => {
+      gtag.pageview(url)
+    }
+    
+    router.events.on('routeChangeComplete', handleRouteChange)
+    router.events.on('hashChangeComplete', handleRouteChange)
+    return () => {
+      router.events.off('routeChangeComplete', handleRouteChange)
+      router.events.off('hashChangeComplete', handleRouteChange)
+    }
+  }, [router.events])
 
   const gamePageSet = new Set([
     '/game',

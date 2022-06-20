@@ -14,6 +14,7 @@ import { useAuth } from '../../../../hooks/useAuth/useAuth'
 import { get, post } from '../../../../libs/api'
 import { TApiResponse, TQuestion, TQuiz } from '../../../../types/types'
 import { indexingQuestionsOrderPosition } from '../../../../utils/helper'
+import * as gtag from '../../../../libs/gtag'
 
 export type TEditQuestion = {
   isEdit: boolean
@@ -74,6 +75,8 @@ const QuizCreatorPage: NextPage = () => {
     }
 
     quizId && getQuiz()
+
+    gtag.event({ action: 'access quiz creator', params: { quizId } })
   }, [quizId])
 
   const onRemoveQuestion = (questionId: number) => {

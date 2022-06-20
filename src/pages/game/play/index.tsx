@@ -1,58 +1,60 @@
 import classNames from 'classnames'
-import {NextPage} from 'next'
+import { NextPage } from 'next'
 import router from 'next/router'
-import React, {Dispatch, SetStateAction, useEffect, useRef, useState} from 'react'
-import {Fade} from 'react-bootstrap'
+import React, {
+  Dispatch,
+  SetStateAction,
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
+import { Fade } from 'react-bootstrap'
 import AnswerBoard from '../../../components/GameComponents/AnswerBoard/AnswerBoard'
 import EndGameBoard from '../../../components/GameComponents/EndGameBoard/EndGameBoard'
-import {FAB, FABAction} from '../../../components/GameComponents/FAB/FAB'
+import { FAB, FABAction } from '../../../components/GameComponents/FAB/FAB'
 import GameMenuBar from '../../../components/GameMenuBar/GameMenuBar'
 import MyModal from '../../../components/MyModal/MyModal'
 import UsingItemInGame from '../../../components/UsingItemInGame/UsingItemInGame'
-import {useGameSession} from '../../../hooks/useGameSession/useGameSession'
+import { useGameSession } from '../../../hooks/useGameSession/useGameSession'
 import useScreenSize from '../../../hooks/useScreenSize/useScreenSize'
-import {TStartQuizResponse} from '../../../types/types'
+import { TStartQuizResponse } from '../../../types/types'
 import styles from './GamePage.module.css'
-import {JsonParse} from "../../../utils/helper";
-import {useEffectOnce} from "react-use";
+import { JsonParse } from '../../../utils/helper'
+import { useEffectOnce } from 'react-use'
+import * as gtag from '../../../libs/gtag'
 
 export const ExitContext = React.createContext<{
   showEndGameModal: boolean
   setShowEndGameModal: Dispatch<SetStateAction<boolean>>
 }>({
-  showEndGameModal: false, setShowEndGameModal: () => {
-  }
+  showEndGameModal: false,
+  setShowEndGameModal: () => {},
 })
 
-export const TimerContext = React.createContext <{
-  isCounting: boolean;
-  isSubmittable: boolean;
-  isShowSkeleton: boolean;
-  setIsSubmittable: Dispatch<SetStateAction<boolean>>;
-  setIsShowSkeleton: Dispatch<SetStateAction<boolean>>;
-  countDown: number;
-  setDefaultCountDown: (duration: number) => void;
-  stopCounting: (xxx: boolean) => void;
-  startCounting: (duration: number) => void;
+export const TimerContext = React.createContext<{
+  isCounting: boolean
+  isSubmittable: boolean
+  isShowSkeleton: boolean
+  setIsSubmittable: Dispatch<SetStateAction<boolean>>
+  setIsShowSkeleton: Dispatch<SetStateAction<boolean>>
+  countDown: number
+  setDefaultCountDown: (duration: number) => void
+  stopCounting: (xxx: boolean) => void
+  startCounting: (duration: number) => void
 }>({
   isCounting: false,
   isSubmittable: false,
   isShowSkeleton: false,
-  setIsSubmittable: () => {
-  },
-  setIsShowSkeleton: () => {
-  },
+  setIsSubmittable: () => {},
+  setIsShowSkeleton: () => {},
   countDown: 0,
-  setDefaultCountDown: (duration: number) => {
-  },
-  stopCounting: (xxx: boolean) => {
-  },
-  startCounting: (duration: number) => {
-  },
+  setDefaultCountDown: (duration: number) => {},
+  stopCounting: (xxx: boolean) => {},
+  startCounting: (duration: number) => {},
 })
 
 const GamePage: NextPage = () => {
-  const {gameSession, isHost, gameSkOn, saveGameSession, clearGameSession} =
+  const { gameSession, isHost, gameSkOn, saveGameSession, clearGameSession } =
     useGameSession()
   const [isShowChat, setIsShowChat] = useState<boolean>(false)
   const [isShowExit, setIsShowExit] = useState<boolean>(false)
@@ -60,7 +62,7 @@ const GamePage: NextPage = () => {
   const [isShowSkeleton, setIsShowSkeleton] = useState<boolean>(false)
 
   const [isShowHostControl, setIsShowHostControl] = useState<boolean>(true)
-  const {fromMedium} = useScreenSize()
+  const { fromMedium } = useScreenSize()
   const [endGameData, setEndGameData] = useState<TStartQuizResponse>()
 
   const [isTimeOut, setIsTimeOut] = useState<boolean>(false)
@@ -84,14 +86,14 @@ const GamePage: NextPage = () => {
       intervalRef.current = null
       setIsCounting(false)
       setTimeout(() => {
-        console.log("=>(index.tsx:89) delaySubmit 2");
+        console.log('=>(index.tsx:89) delaySubmit 2')
         setIsSubmittable(false)
       }, 500)
     }
   }
 
   const startCounting = (duration: number) => {
-    console.log("=>(index.tsx:71) duration", duration);
+    console.log('=>(index.tsx:71) duration', duration)
     if (duration > 0) {
       let endDate = new Date()
       endDate.setSeconds(endDate.getSeconds() + duration)
@@ -100,7 +102,7 @@ const GamePage: NextPage = () => {
       setCountDown(duration)
 
       setTimeout(() => {
-        console.log("=>(index.tsx:89) delaySubmit 1");
+        console.log('=>(index.tsx:89) delaySubmit 1')
         setIsSubmittable(true)
       }, 500)
 
@@ -115,7 +117,6 @@ const GamePage: NextPage = () => {
         }
       }, 100)
     }
-
   }
 
   const fabs: FABAction[] = [
@@ -200,6 +201,11 @@ const GamePage: NextPage = () => {
       saveGameSession(data)
       console.log('gameSkOn - data', data)
     })
+
+    gtag.event({
+      action: 'access quiz',
+      params: { quizId: gameSession?.quizId },
+    })
   }, [])
 
   const [exitModal, setExitModal] = useState(false)
@@ -218,9 +224,9 @@ const GamePage: NextPage = () => {
           )}
         >
           {/*<div className={classNames("")}>*/}
-          <div className={classNames(styles.answerBoard, "")}>
+          <div className={classNames(styles.answerBoard, '')}>
             {endGameData ? (
-              <EndGameBoard className="flex-grow-1"/>
+              <EndGameBoard className="flex-grow-1" />
             ) : (
               <TimerContext.Provider
                 value={{
@@ -232,8 +238,9 @@ const GamePage: NextPage = () => {
                   countDown,
                   setDefaultCountDown: setCountDown,
                   stopCounting,
-                  startCounting
-                }}>
+                  startCounting,
+                }}
+              >
                 <ExitContext.Provider
                   value={{
                     showEndGameModal: exitModal,
@@ -254,12 +261,12 @@ const GamePage: NextPage = () => {
 
           {gameSession && (
             <div>
-              <GameMenuBar gameSession={gameSession} isShow={isShowChat}/>
+              <GameMenuBar gameSession={gameSession} isShow={isShowChat} />
 
               <Fade in={isShowItem}>
                 {isShowItem ? (
                   <div>
-                    <UsingItemInGame/>
+                    <UsingItemInGame />
                   </div>
                 ) : (
                   <></>
