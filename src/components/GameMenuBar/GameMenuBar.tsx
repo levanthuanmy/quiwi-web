@@ -6,14 +6,20 @@ import ChatWindow from '../GameComponents/ChatWindow/ChatWindow'
 import { MessageProps } from '../GameComponents/ChatWindow/Message'
 import PlayerList from '../GameComponents/PlayerList/PlayerList'
 import styles from './GameMenuBar.module.css'
-import {useToasts} from "react-toast-notifications";
+import { useToasts } from 'react-toast-notifications'
+import _ from 'lodash'
 
 type GameMenuBarProps = {
   gameSession: TStartQuizResponse
   user?: TUser
   isShow: boolean
+  isGameEnded: boolean
 }
-const GameMenuBar: FC<GameMenuBarProps> = ({ gameSession, isShow }) => {
+const GameMenuBar: FC<GameMenuBarProps> = ({
+  gameSession,
+  isShow,
+  isGameEnded,
+}) => {
   const [chatContent, setChatContent] = useState<MessageProps[]>([])
   const socket = SocketManager().socketOf('GAMES')
   const { addToast } = useToasts()
@@ -25,10 +31,15 @@ const GameMenuBar: FC<GameMenuBarProps> = ({ gameSession, isShow }) => {
   socket?.off('chat')
   socket?.on('chat', (data: MessageProps) => {
     receivedMessage(data)
-    addToast(`${data.playerNickName}: ${data.message}`, {
-      appearance: 'info',
-      autoDismiss: true,
-    })
+    addToast(
+      `${
+        _.get(data, 'player.nickname') || _.get(data, 'user.name') || 'Ẩn danh'
+      }: ${data.message}`,
+      {
+        appearance: 'info',
+        autoDismiss: true,
+      }
+    )
   })
 
   const renderItems = (
@@ -59,6 +70,7 @@ const GameMenuBar: FC<GameMenuBarProps> = ({ gameSession, isShow }) => {
         gameSession={gameSession}
         chatContent={chatContent}
         setChatContent={setChatContent}
+        isDisabled={isGameEnded}
       />
     </>
   )
@@ -73,15 +85,7 @@ const GameMenuBar: FC<GameMenuBarProps> = ({ gameSession, isShow }) => {
         }
       )}
     >
-      <div className="position-relative cursor-pointer " style={{ height: 40 }}>
-        <i
-          className={classNames(
-            'position-absolute d-flex justify-content-center align-items-center ',
-            styles.button,
-            'bi bi-chevron-double-right'
-          )}
-        />
-      </div>
+      <div className="position-relative  " style={{ height: 8 }}></div>
       {renderItems}
     </div>
   )
