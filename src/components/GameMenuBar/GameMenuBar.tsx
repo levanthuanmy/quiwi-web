@@ -12,8 +12,9 @@ type GameMenuBarProps = {
   gameSession: TStartQuizResponse
   user?: TUser
   isShow: boolean
+  isGameEnded:boolean
 }
-const GameMenuBar: FC<GameMenuBarProps> = ({ gameSession, isShow }) => {
+const GameMenuBar: FC<GameMenuBarProps> = ({ gameSession, isShow , isGameEnded}) => {
   const [chatContent, setChatContent] = useState<MessageProps[]>([])
   const socket = SocketManager().socketOf('GAMES')
   const { addToast } = useToasts()
@@ -59,6 +60,7 @@ const GameMenuBar: FC<GameMenuBarProps> = ({ gameSession, isShow }) => {
         gameSession={gameSession}
         chatContent={chatContent}
         setChatContent={setChatContent}
+        isDisabled={isGameEnded}
       />
     </>
   )

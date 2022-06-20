@@ -55,6 +55,7 @@ const GamePage: NextPage = () => {
   const {gameSession, isHost, gameSkOn, saveGameSession, clearGameSession} =
     useGameSession()
   const [isShowChat, setIsShowChat] = useState<boolean>(false)
+  const [isGameEnded, setIsGameEnded] = useState<boolean>(false)
   const [isShowExit, setIsShowExit] = useState<boolean>(false)
   const [isShowItem, setIsShowItem] = useState<boolean>(false)
   const [isShowSkeleton, setIsShowSkeleton] = useState<boolean>(false)
@@ -91,7 +92,6 @@ const GamePage: NextPage = () => {
   }
 
   const startCounting = (duration: number) => {
-    console.log("=>(index.tsx:71) duration", duration);
     if (duration > 0) {
       let endDate = new Date()
       endDate.setSeconds(endDate.getSeconds() + duration)
@@ -198,7 +198,7 @@ const GamePage: NextPage = () => {
     gameSkOn('game-ended', (data) => {
       setEndGameData(data)
       saveGameSession(data)
-      console.log('gameSkOn - data', data)
+      setIsGameEnded(true)
     })
   }, [])
 
@@ -254,8 +254,7 @@ const GamePage: NextPage = () => {
 
           {gameSession && (
             <div>
-              <GameMenuBar gameSession={gameSession} isShow={isShowChat}/>
-
+              <GameMenuBar gameSession={gameSession} isShow={isShowChat} isGameEnded={isGameEnded}/>
               <Fade in={isShowItem}>
                 {isShowItem ? (
                   <div>

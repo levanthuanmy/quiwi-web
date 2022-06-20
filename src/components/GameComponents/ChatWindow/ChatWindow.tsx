@@ -9,12 +9,14 @@ import {JsonParse} from '../../../utils/helper'
 import MyInput from '../../MyInput/MyInput'
 import styles from './ChatWindow.module.css'
 import {Message, MessageProps, SendMessageProps} from './Message'
+import cn from "classnames";
 
 const ChatWindow: FC<{
   gameSession: TStartQuizResponse
   chatContent: MessageProps[]
   setChatContent: Function
-}> = ({gameSession, chatContent, setChatContent}) => {
+  isDisabled: boolean
+}> = ({gameSession, chatContent, setChatContent, isDisabled}) => {
   const [chatValue, setChatValue] = useState<string>('')
   const socket = SocketManager().socketOf("GAMES")
   const [lsPlayer, setLsPlayer] = useLocalStorage('game-session-player', '')
@@ -101,6 +103,8 @@ const ChatWindow: FC<{
       </div>
       <div className={styles.chatInput}>
         <MyInput
+          disabled={isDisabled}
+          className={cn({"opacity-25" : isDisabled})}
           placeholder="Nhập để chat"
           iconClassName="bi bi-send-fill"
           onChange={(e) => setChatValue(e.target.value)}

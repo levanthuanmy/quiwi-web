@@ -75,6 +75,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
 
   useEffect(() => {
     handleSocket()
+    resetState()
   }, [])
 
   useEffect(() => {
@@ -120,7 +121,6 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
 
   const handleSocket = () => {
     if (!gameSocket()) return
-    resetState()
     gameSkOnce('game-started', (data) => {
       _numSubmission.current = 0
       setNumSubmission(_numSubmission.current)
@@ -141,7 +141,6 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
       setNumSubmission(_numSubmission.current)
       setIsNextEmitted(false)
       timerContext.startCounting(data.question.duration ?? 0)
-      console.log("=>(AnswerBoard.tsx:130) loading", loading);
       setLoading(null)
     })
 
@@ -161,10 +160,6 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
       setShowRanking(true)
       const rkData: any[] = data?.playersSortedByScore
       setRankingData(rkData)
-    })
-
-    gameSkOn('error', (data) => {
-
     })
 
     gameSkOn('loading', (data) => {
@@ -265,7 +260,6 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
 
   function endGame() {
     if (gameSession && gameSocket() != null && isHost) {
-      console.log("=>(AnswerBoard.tsx:281) gameSession", gameSocket(), gameSession);
       const msg = {invitationCode: gameSession.invitationCode}
       gameSocket()?.emit('game-ended', msg)
     } else {
