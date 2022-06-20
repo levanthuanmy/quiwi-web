@@ -1,40 +1,58 @@
-
-import React, { FC, useState } from "react"
-import { Col, Container, Row, Image, Card, Modal, CloseButton } from "react-bootstrap"
-import styles from './ModalBadge.module.css'
 import classNames from 'classnames'
-import MyButton from "../MyButton/MyButton"
-import CardBadge from "../CardBadge/CardBadge"
-import { alignPropType } from "react-bootstrap/esm/types"
+import { FC } from 'react'
+import { Card, CloseButton, Image } from 'react-bootstrap'
+import { TUserBadge } from '../../types/types'
+import styles from './ModalBadge.module.css'
 
 type IModalBadge = {
-    onClose: any,
+  onClose: any
+  userBadge: TUserBadge
 }
 
 const ModalBadge: FC<IModalBadge> = (props) => {
-    return (
-        <div >
-            <Card className={classNames('', styles.cardStyle)}>
-            <CloseButton onClick={props.onClose} className={classNames('', styles.closeButtonStyle)}/>
-                <div className={classNames('', styles.layoutImage)}>
-                    <Image
-                        src=
-                        "https://freepikpsd.com/file/2019/10/cartoon-diamond-png-3-Transparent-Images.png"
-                        roundedCircle
-                        width={50}
-                        height={50}
-                        alt="coin"
-                    ></Image>
-                </div>
-                <div className={classNames('fs-22px',styles.badgeTitle)}>Thánh kim cương</div>
-                <div className={classNames('fs-18px',styles.badgeDes)}>Đạt được 1000 viên kim cương</div>
-                <div className={classNames("progress", styles.progress)}>
-                    <div className={classNames("progress-bar bg-success")} role="progressbar" style={{ width: "30%" }}></div>
-                </div>
-                <div className={classNames("fs-20px", styles.badgeCount)}>100/1000</div>
-            </Card>
+  const badge = props.userBadge.badge
+  const goal =
+    (props.userBadge?.badge?.badgeRequirements?.reduce(
+      (previousValue, currentValue) => previousValue + currentValue.goal,
+      0
+    ) ??
+      0) ||
+    1
+  return (
+    <div>
+      <Card className={classNames('', styles.cardStyle)}>
+        <CloseButton
+          onClick={props.onClose}
+          className={classNames('', styles.closeButtonStyle)}
+        />
+        <div className={classNames('', styles.layoutImage)}>
+          <Image
+            src={badge.picture || ''}
+            roundedCircle
+            width={64}
+            height={64}
+            alt="badge"
+          ></Image>
         </div>
-    )
+        <div className={classNames('fs-22px', styles.badgeTitle)}>
+          {badge.title}
+        </div>
+        <div className={classNames('fs-18px', styles.badgeDes)}>
+          {badge.description}
+        </div>
+        <div className={classNames('progress', styles.progress)}>
+          <div
+            className={classNames('progress-bar bg-success')}
+            role="progressbar"
+            style={{ width: props.userBadge.process / goal + '%' }}
+          ></div>
+        </div>
+        <div className={classNames('fs-20px', styles.badgeCount)}>
+          {props.userBadge.process} / {goal}
+        </div>
+      </Card>
+    </div>
+  )
 }
 
 export default ModalBadge

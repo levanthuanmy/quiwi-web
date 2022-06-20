@@ -130,9 +130,17 @@ export type TPaginationResponse<T> = {
 
 export type TUserProfile = {
   user: TUser
-  badges: TBadge[]
+  badges: TUserBadge[]
   currentBadge: TBadge | null
   isFollowing?: boolean
+}
+
+export type TUserBadge = {
+  id: number
+  badge: TBadge
+  process: number
+  isCurrent: boolean
+  status: string
 }
 
 export type TBadge = {
@@ -140,8 +148,15 @@ export type TBadge = {
   title: string
   description: string
   picture: string
+  badgeRequirements?: TBadgeRequirent[]
 }
 
+export type TBadgeRequirent = {
+  code: string
+  badgeId: number
+  goal: number
+  type: string
+}
 export type TItemCategory = {
   id: number
   name: string

@@ -26,7 +26,7 @@ const CardBadge: FC<IBadgeItem> = (props) => {
           roundedCircle
           width={70}
           height={70}
-          alt="coin"
+          alt="badge"
           className="shadow-sm"
         />
       </div>

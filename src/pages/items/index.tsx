@@ -101,7 +101,6 @@ const ItemPage: NextPage = () => {
           }
         }
       } catch (error) {
-        alert('Có lỗi nè')
         console.log(error)
       }
     }
@@ -114,6 +113,7 @@ const ItemPage: NextPage = () => {
 
   const userBuyItem = () => {
     getUser()
+    getItems(getCategoryIdByToggleState(toggleState))
   }
 
   const getCategoryIdByToggleState = (toggleState: number) => {

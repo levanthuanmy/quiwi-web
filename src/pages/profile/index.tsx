@@ -5,9 +5,11 @@ import { useEffect, useState } from 'react'
 import { Button, Col, Container, Image, Row } from 'react-bootstrap'
 import useSWR from 'swr'
 import Cookies from 'universal-cookie'
+import UserItemSelectionModal from '../../components/ItemSelectionModal/ItemSelectionModal'
 import Loading from '../../components/Loading/Loading'
 import NavBar from '../../components/NavBar/NavBar'
 import SummaryInfo from '../../components/Profile/SummaryInfo/SummaryInfo'
+import { useAuth } from '../../hooks/useAuth/useAuth'
 import { get, post } from '../../libs/api'
 import {
   TApiResponse,
@@ -33,7 +35,11 @@ const ProfilePage: NextPage = () => {
   const [itemCategoriesResponse, setItemCategoriesResponse] =
     useState<TPaginationResponse<TItemCategory>>()
   const [userItems, setUserItems] = useState<TUserItems[]>()
+  const [showAvatarSelectionModal, setShowAvatarSelectionModal] =
+    useState(false)
 
+  const auth = useAuth()
+  const authUser = auth.getUser()
   const getItemCategories = async () => {
     try {
       const res: TApiResponse<TPaginationResponse<TItemCategory>> = await get(
@@ -157,7 +163,8 @@ const ProfilePage: NextPage = () => {
             src={user?.avatar || '/assets/default-logo.png'}
             width={160}
             height={160}
-            className="rounded-14px"
+            className="rounded-14px cursor-pointer"
+            onClick={() => setShowAvatarSelectionModal(true)}
           />
 
           <div className="w-100 d-flex flex-column">
@@ -189,13 +196,13 @@ const ProfilePage: NextPage = () => {
               <div className="fs-24px fw-medium d-flex gap-3 align-items-center">
                 Thành Tựu
                 <div
-                  style={{ width: 30, height: 30 }}
+                  style={{ width: 32, height: 32 }}
                   className="fs-16px bg-secondary bg-opacity-25 rounded-10px d-flex justify-content-center align-items-center"
                 >
-                  3
+                  {userResponse?.badges.length}
                 </div>
               </div>
-              <BadgesPage />
+              <BadgesPage userBadges={userResponse?.badges} />
 
               <div className="text-center border-top pt-12px pb-1 text-secondary opacity-75">
                 Xem Tất Cả
@@ -228,6 +235,14 @@ const ProfilePage: NextPage = () => {
             </div>
           </Col>
         </Row>
+        {authUser ? (
+          <UserItemSelectionModal
+            onHide={() => setShowAvatarSelectionModal(false)}
+            show={showAvatarSelectionModal}
+            key={authUser.id}
+            user={authUser}
+          />
+        ) : null}
       </Container>
     </div>
   ) : null

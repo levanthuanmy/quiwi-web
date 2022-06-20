@@ -4,7 +4,7 @@ import { NextPage } from 'next'
 import { useEffect, useState } from 'react'
 import { Col, Container, Form, Image, Modal, Row } from 'react-bootstrap'
 import * as Yup from 'yup'
-import AvatarSelectionModal from '../../components/AvatarSelectionModal/AvatarSelectionModal'
+import UserItemSelectionModal from '../../components/ItemSelectionModal/ItemSelectionModal'
 import LeftProfileMenuBar from '../../components/LeftProfileMenuBar/LeftProfileMenuBar'
 import Loading from '../../components/Loading/Loading'
 import MyButton from '../../components/MyButton/MyButton'
@@ -254,7 +254,7 @@ const EditProfilePage: NextPage = () => {
           <div className="text-center">Cập nhật thông tin thành công</div>
         </MyModal>
         {user ? (
-          <AvatarSelectionModal
+          <UserItemSelectionModal
             onHide={() => setShowAvatarSelectionModal(false)}
             show={showAvatarSelectionModal}
             key={user.id}
