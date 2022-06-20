@@ -37,9 +37,12 @@ const TextQuestion: FC<TextQuestionProps> = ({
   useEffect(() => {
     if (!isCounting && !isSubmitted && !isHost) {
       socketSubmit(answerText ?? "")
-      setIsCorrect(checkAnswer())
     }
   }, [isCounting]);
+
+  useEffect(() => {
+    if (showAnswer) setIsCorrect(checkAnswer())
+  }, [showAnswer]);
 
   const concatAnswerList = (): string[] => {
     if (!question) return []
@@ -92,7 +95,7 @@ const TextQuestion: FC<TextQuestionProps> = ({
   }
 
   const checkAnswer = (): boolean => {
-    if (isTimeOut && !isHost) {
+    if (!isHost) {
       if (question && question.matcher)
         if (answerText && answerText.length > 0)
           switch (question.matcher) {

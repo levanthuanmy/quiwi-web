@@ -35,8 +35,10 @@ export const TimerContext = React.createContext<{
   isCounting: boolean
   isSubmittable: boolean
   isShowSkeleton: boolean
+  isShowAnswer: boolean
   setIsSubmittable: Dispatch<SetStateAction<boolean>>
   setIsShowSkeleton: Dispatch<SetStateAction<boolean>>
+  setIsShowAnswer: Dispatch<SetStateAction<boolean>>
   countDown: number
   setDefaultCountDown: (duration: number) => void
   stopCounting: (xxx: boolean) => void
@@ -45,8 +47,10 @@ export const TimerContext = React.createContext<{
   isCounting: false,
   isSubmittable: false,
   isShowSkeleton: false,
+  isShowAnswer:false,
   setIsSubmittable: () => {},
   setIsShowSkeleton: () => {},
+  setIsShowAnswer: () => {},
   countDown: 0,
   setDefaultCountDown: (duration: number) => {},
   stopCounting: (xxx: boolean) => {},
@@ -68,6 +72,7 @@ const GamePage: NextPage = () => {
 
   const [isTimeOut, setIsTimeOut] = useState<boolean>(false)
   const [isCounting, setIsCounting] = useState<boolean>(false)
+  const [isShowAnswer, setIsShowAnswer] = useState<boolean>(false)
   const [isSubmittable, setIsSubmittable] = useState<boolean>(false)
   const [countDown, setCountDown] = useState<number>(0)
   const [endTime, setEndTime] = useState<number>(0)
@@ -78,6 +83,7 @@ const GamePage: NextPage = () => {
       if (stopUI) {
         clearInterval(intervalRef.current)
         intervalRef.current = null
+        setIsShowAnswer(true)
       }
       setIsCounting(false)
       setTimeout(() => {
@@ -96,8 +102,9 @@ const GamePage: NextPage = () => {
       setCountDown(duration)
 
       setTimeout(() => {
-        setIsShowSkeleton(false)
         setIsCounting(true)
+        setIsShowSkeleton(false)
+        setIsShowAnswer(false)
       },100)
 
       setTimeout(() => {
@@ -234,8 +241,10 @@ const GamePage: NextPage = () => {
                   isCounting,
                   isSubmittable,
                   isShowSkeleton,
+                  isShowAnswer,
                   setIsSubmittable,
                   setIsShowSkeleton,
+                  setIsShowAnswer,
                   countDown,
                   setDefaultCountDown: setCountDown,
                   stopCounting,

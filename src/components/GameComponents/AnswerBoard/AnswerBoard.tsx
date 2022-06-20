@@ -113,7 +113,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
   }
 
   function resetState() {
-    setLoading("Chuẩn bị!")
+      setLoading("Chuẩn bị!")
     setIsNextEmitted(true)
     timerContext.setIsShowSkeleton(true)
     setIsShowNext(false)
@@ -127,7 +127,6 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
       setNumSubmission(_numSubmission.current)
       setIsNextEmitted(false)
       timerContext.startCounting(data.question.duration ?? 0)
-      console.log("=>(AnswerBoard.tsx:130) loading", loading);
       setLoading(null)
     })
 
@@ -165,7 +164,6 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
 
     gameSkOn('loading', (data) => {
       if (data?.question?.question) {
-        console.log("=>(AnswerBoard.tsx:174) data.question.question", data.question.question);
         timerContext.setIsShowSkeleton(true)
         setIsShowNext(false)
         setShowRanking(false)
@@ -187,7 +185,6 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
         setLoading("Chuẩn bị!")
       }
       if (data?.loading) {
-        console.log("=>(AnswerBoard.tsx:174) data.loading", data.loading);
         setLoading(data.loading)
       }
     })
@@ -201,7 +198,6 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
   }
 
   const handleSubmitAnswer = (answer: any) => {
-    console.log("=>(AnswerBoard.tsx:175) isSubmittable", timerContext.isSubmittable);
     if (!gameSession) return
     if (!timerContext.isSubmittable) return
     if (isHost) return
