@@ -269,6 +269,20 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
     }
   }
 
+  const renderPlayerSystem = () => {
+    return (
+      <div className={cn(styles.playerSystem, "bg-opacity-50 bg-dark px-2 py-2")}>
+        <GameButton
+          isEnable={timerContext.isSubmittable}
+          iconClassName="bi bi-check-circle-fill"
+          className={classNames('text-white fw-medium')}
+          title={'Trả lời'}
+          onClick={() => {timerContext.stopCounting(false)}}
+        />
+      </div>
+    )
+  }
+
   const renderHostControlSystem = () => {
     return (
       <Fade in={isShowHostControl || fromMedium}>
@@ -460,7 +474,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
         {/*height min của question view là 300*/}
         {/*edit styles.answerLayout trong css*/}
         {currentQuestion?.question && renderAnswersSection()}
-        {isHost && renderHostControlSystem()}
+        {isHost ? renderHostControlSystem() : renderPlayerSystem()}
         <div className={styles.blankDiv}></div>
         <GameSessionRanking
           show={showRanking}
