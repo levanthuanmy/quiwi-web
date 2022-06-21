@@ -40,6 +40,7 @@ export const TimerContext = React.createContext<{
   setIsShowSkeleton: Dispatch<SetStateAction<boolean>>
   setIsShowAnswer: Dispatch<SetStateAction<boolean>>
   countDown: number
+  duration:number
   setDefaultCountDown: (duration: number) => void
   stopCounting: (xxx: boolean) => void
   startCounting: (duration: number) => void
@@ -52,6 +53,7 @@ export const TimerContext = React.createContext<{
   setIsShowSkeleton: () => {},
   setIsShowAnswer: () => {},
   countDown: 0,
+  duration: 0,
   setDefaultCountDown: (duration: number) => {},
   stopCounting: (xxx: boolean) => {},
   startCounting: (duration: number) => {},
@@ -72,13 +74,15 @@ const GamePage: NextPage = () => {
 
   const [isTimeOut, setIsTimeOut] = useState<boolean>(false)
   const [isCounting, setIsCounting] = useState<boolean>(false)
-  const [isShowAnswer, setIsShowAnswer] = useState<boolean>(false)
+  const [isShowAnswer, setIsShowAnswer] = useState<boolean>(true)
   const [isSubmittable, setIsSubmittable] = useState<boolean>(false)
   const [countDown, setCountDown] = useState<number>(0)
+  const [duration, setDuration] = useState<number>(0)
   const [endTime, setEndTime] = useState<number>(0)
   const intervalRef = useRef<NodeJS.Timer | null>(null)
 
   const stopCounting = (stopUI: boolean) => {
+    console.log("=>(index.tsx:127) stopCounting");
     if (intervalRef && intervalRef.current) {
       if (stopUI) {
         clearInterval(intervalRef.current)
@@ -86,6 +90,7 @@ const GamePage: NextPage = () => {
         setIsShowAnswer(true)
       }
       setIsCounting(false)
+
       setTimeout(() => {
         setIsSubmittable(false)
       }, 500)
@@ -93,14 +98,14 @@ const GamePage: NextPage = () => {
   }
 
   const startCounting = (duration: number) => {
-    console.log('=>(index.tsx:71) duration', duration)
+    console.log("=>(index.tsx:127) duration", duration);
     if (duration > 0) {
       let endDate = new Date()
       endDate.setSeconds(endDate.getSeconds() + duration)
       let endTime = Math.round(endDate.getTime())
       setEndTime(endTime)
+      setDuration(duration)
       setCountDown(duration)
-
       setTimeout(() => {
         setIsCounting(true)
         setIsShowSkeleton(false)
@@ -121,6 +126,7 @@ const GamePage: NextPage = () => {
       }, 100)
     }
   }
+
 
   const fabs: FABAction[] = [
     {
@@ -246,7 +252,8 @@ const GamePage: NextPage = () => {
                   setIsShowSkeleton,
                   setIsShowAnswer,
                   countDown,
-                  setDefaultCountDown: setCountDown,
+                  duration,
+                  setDefaultCountDown: setDuration,
                   stopCounting,
                   startCounting,
                 }}
@@ -257,6 +264,7 @@ const GamePage: NextPage = () => {
                     setShowEndGameModal: setExitModal,
                   }}
                 >
+                  <div className={"bg-white w-100 h -100"}></div>
                   <AnswerBoard
                     className="flex-grow-1"
                     isShowHostControl={isShowHostControl}

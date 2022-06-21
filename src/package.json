@@ -1,7 +1,7 @@
 {
   "name": "quiwi-web",
   "version": "0.1.0",
-  "private": true, 
+  "private": true,
   "scripts": {
     "dev": "next dev",
     "postbuild": "next-sitemap",
@@ -75,6 +75,7 @@
     "eslint-config-next": "12.1.4",
     "eslint-config-prettier": "^8.5.0",
     "prettier": "2.6.2",
+    "react-countdown-circle-timer": "^3.0.9",
     "slick-carousel": "^1.8.1",
     "typescript": "4.6.3"
   }
