@@ -70,49 +70,57 @@ const QuestionCreator: FC<QuestionCreatorProps> = ({
   const [correctIndexes, setCorrectIndexes] = useState<number[]>([]) // 21ODMUL
 
   useEffect(() => {
-    if (isEditQuestion.isEdit) {
-      const _ques = quiz?.questions.find(
-        (question) => question.id === isEditQuestion.questionId
-      ) as TQuestion
-      const _ans = _ques?.questionAnswers
+    const handleEditQuestion = () => {
+      try {
+        if (isEditQuestion.isEdit) {
+          const _ques = quiz?.questions.find(
+            (question) => question.id === isEditQuestion.questionId
+          ) as TQuestion
+          const _ans = _ques?.questionAnswers
 
-      setNewQuestion(_ques)
-      setAnswers(_ans)
+          setNewQuestion(_ques)
+          setAnswers(_ans)
 
-      setRichTextQuestion(
-        EditorState.createWithContent(
-          ContentState.createFromBlockArray(
-            htmlToDraft(_ques?.question).contentBlocks
+          setRichTextQuestion(
+            EditorState.createWithContent(
+              ContentState.createFromBlockArray(
+                htmlToDraft(_ques?.question).contentBlocks
+              )
+            )
           )
-        )
-      )
 
-      if (_ques?.type === '30TEXT') {
-        setFillAnswers(_ans?.map((an) => an.answer))
-      }
-
-      if (_ques?.type === '21ODMUL') {
-        const countCorrect = _ques.questionAnswers.filter(
-          (ans) => ans.isCorrect === true
-        ).length
-        let _correctIndexes = Array<number>(countCorrect).fill(0)
-        for (let i = 0; i < _ques.questionAnswers.length; i++) {
-          if (_ques.questionAnswers[i].isCorrect) {
-            _correctIndexes[_ques.questionAnswers[i].orderPosition] = i
+          if (_ques?.type === '30TEXT') {
+            setFillAnswers(_ans?.map((an) => an.answer))
           }
+
+          if (_ques?.type === '21ODMUL') {
+            const countCorrect = _ques.questionAnswers.filter(
+              (ans) => ans.isCorrect === true
+            ).length
+            let _correctIndexes = Array<number>(countCorrect).fill(0)
+            for (let i = 0; i < _ques.questionAnswers.length; i++) {
+              if (_ques.questionAnswers[i].isCorrect) {
+                _correctIndexes[_ques.questionAnswers[i].orderPosition] = i
+              }
+            }
+            setCorrectIndexes(_correctIndexes)
+          }
+        } else {
+          setNewQuestion(defaultQuestion)
         }
-        setCorrectIndexes(_correctIndexes)
+      } catch (error) {
+        console.log('handleEditQuestion - error', error)
       }
-    } else {
-      setNewQuestion(defaultQuestion)
     }
+
+    handleEditQuestion()
   }, [isEditQuestion, quiz?.questions])
 
   const resetStates = () => {
     setAnswers([
       { ...defaultAnswer, orderPosition: 0 },
-      { ...defaultAnswer, orderPosition: 1 },
-      { ...defaultAnswer, orderPosition: 2 },
+      // { ...defaultAnswer, orderPosition: 1 },
+      // { ...defaultAnswer, orderPosition: 2 },
     ])
     setFillAnswers([])
     setRichTextQuestion(EditorState.createEmpty())
@@ -248,8 +256,8 @@ const QuestionCreator: FC<QuestionCreatorProps> = ({
       const data: File = evt.target.files[0]
 
       const path = `/images/${data.name}`
-      const ref = storageRef(storage, path)
-      console.log("=>(QuestionCreator.tsx:241) ref", storage, ref);
+      const ref = await storageRef(storage, path)
+      console.log('=>(QuestionCreator.tsx:241) ref', storage, ref)
       await uploadFile(ref, data)
       const url = await getUrl(ref)
 
@@ -275,7 +283,7 @@ const QuestionCreator: FC<QuestionCreatorProps> = ({
   return (
     <Modal
       show={show}
-      onHide={onHide}
+      onHide={() => onHide()}
       centered
       contentClassName="rounded-10px border-0 shadow overflow-hidden"
       backdrop="static"
@@ -313,12 +321,12 @@ const QuestionCreator: FC<QuestionCreatorProps> = ({
 
       <Modal.Footer>
         <MyButton
-          className="bg-danger shadow-none border-danger text-white"
-          onClick={onHide}
+          className="bg-danger shadow-none border-danger text-white flex-fill"
+          onClick={() => onHide()}
         >
           Huỷ
         </MyButton>
-        <MyButton className="text-white" onClick={onSaveQuestion}>
+        <MyButton className="text-white flex-fill" onClick={() => onSaveQuestion()}>
           Lưu
         </MyButton>
       </Modal.Footer>

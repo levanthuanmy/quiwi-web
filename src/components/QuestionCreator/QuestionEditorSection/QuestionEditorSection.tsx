@@ -47,6 +47,8 @@ const QuestionEditorSection: FC<{
           md="auto"
           className="mb-3 mb-md-0 d-flex flex-column gap-2 flex-md-nowrap"
         >
+          <div className="fw-medium fs-22px">Cài đặt</div>
+
           <QuestionConfigBtn
             prefixIcon={<IconQuestion type={type} />}
             title={
@@ -128,6 +130,8 @@ const QuestionEditorSection: FC<{
           </FloatingLabel>
         </Col>
         <Col className="ps-12px ps-md-0">
+          <div className="fw-medium fs-22px mb-2">Soạn câu hỏi</div>
+
           <Row className="flex-column-reverse flex-md-row border m-0 rounded-10px">
             {newQuestion?.media?.length ? (
               <Col xs="12" md="6" className="p-0">
@@ -154,8 +158,8 @@ const QuestionEditorSection: FC<{
                 editorState={richTextQuestion}
                 defaultEditorState={richTextQuestion}
                 wrapperClassName="demo-wrapper bg-white p-0"
-                wrapperStyle={{height: 140}}
-                toolbarStyle={{height: 100}}
+                wrapperStyle={{ height: 140 }}
+                toolbarStyle={{ height: 100 }}
                 editorClassName="demo-editor fs-20px h-100"
                 placeholder="Nhập câu hỏi của bạn ở đây..."
                 onEditorStateChange={(editorState) => {

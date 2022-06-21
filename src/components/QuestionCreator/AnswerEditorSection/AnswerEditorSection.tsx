@@ -1,17 +1,15 @@
-import { Formik, Field, Form as FormikForm } from 'formik'
+import classNames from 'classnames'
+import { Field, Form as FormikForm, Formik } from 'formik'
 import _ from 'lodash'
-import { FC, memo, useState } from 'react'
-import { Row, Col, Form } from 'react-bootstrap'
-import { TAnswer, TQuestion, TMatcherQuestion } from '../../../types/types'
+import { FC, memo } from 'react'
+import { Col, Form, Row } from 'react-bootstrap'
+import { TAnswer, TMatcherQuestion, TQuestion } from '../../../types/types'
 import { QuestionType } from '../../IconQuestion/IconQuestion'
-import ItemMultipleAnswer from '../ItemMultipleAnswer/ItemMultipleAnswer'
 import MyButton from '../../MyButton/MyButton'
 import MyInput from '../../MyInput/MyInput'
-import { defaultAnswer } from '../QuestionCreator.constants'
 import ItemConjunctionAnswer from '../ItemConjunctionAnswer/ItemConjunctionAnswer'
-import { ANSWER_COLORS } from '../../../utils/constants'
-import classNames from 'classnames'
-import { width } from 'dom-helpers'
+import ItemMultipleAnswer from '../ItemMultipleAnswer/ItemMultipleAnswer'
+import { defaultAnswer } from '../QuestionCreator.constants'
 
 const AnswerEditorSection: FC<{
   type: QuestionType
@@ -37,21 +35,25 @@ const AnswerEditorSection: FC<{
   correctIndexes,
   setCorrectIndexes,
 }) => {
-  const sortedCorrectAnswers = answers
-    .filter((answer) => answer.isCorrect)
-    .sort((a, b) => {
-      return a.orderPosition - b.orderPosition
-    })
+  const sortedCorrectAnswers =
+    answers
+      ?.filter((answer) => answer.isCorrect)
+      ?.sort((a, b) => {
+        return a.orderPosition - b.orderPosition
+      }) || []
 
-  const sortedIncorrectAnswers = answers
-    .filter((answer) => !answer.isCorrect && answer.type === '10TEXT')
-    .sort((a, b) => {
-      return a.orderPosition - b.orderPosition
-    })
+  const sortedIncorrectAnswers =
+    answers
+      ?.filter((answer) => !answer.isCorrect && answer.type === '10TEXT')
+      ?.sort((a, b) => {
+        return a.orderPosition - b.orderPosition
+      }) || []
 
   return (
     <>
       <div className="bg-white p-3">
+        <div className="fw-medium fs-22px mb-4">Soạn câu trả lời</div>
+
         {(type === 'multiple' || type === 'single' || type === 'poll') && (
           <Row>
             {answers.map((_, key) => (
@@ -172,22 +174,26 @@ const AnswerEditorSection: FC<{
                   .join(' '),
               }}
               onSubmit={(values, actions) => {
-                let wordArray = values.sentence
-                  .split(' ')
-                  .filter((word) => word != '')
-                if (wordArray) {
-                  let _answers: TAnswer[] = wordArray.map(
-                    (value, index) =>
-                      ({
-                        ...defaultAnswer,
-                        isCorrect: true,
-                        type: '21PLHDR',
-                        answer: value,
-                        orderPosition: index,
-                      } as TAnswer)
-                  )
-                  setAnswers([..._answers, ...sortedIncorrectAnswers])
-                  actions.setSubmitting(false)
+                try {
+                  let wordArray = values.sentence
+                    .split(' ')
+                    .filter((word) => word != '')
+                  if (wordArray) {
+                    let _answers: TAnswer[] = wordArray.map(
+                      (value, index) =>
+                        ({
+                          ...defaultAnswer,
+                          isCorrect: true,
+                          type: '21PLHDR',
+                          answer: value,
+                          orderPosition: index,
+                        } as TAnswer)
+                    )
+                    setAnswers([..._answers, ...sortedIncorrectAnswers])
+                    actions.setSubmitting(false)
+                  }
+                } catch (error) {
+                  console.log('error', error)
                 }
               }}
             >
