@@ -19,7 +19,6 @@ import styles from './LobbyScreen.module.css'
 import { useToasts } from 'react-toast-notifications'
 import * as gtag from '../../libs/gtag'
 
-
 type LobbyScreenProps = {
   invitationCode: string
   isHost: boolean
@@ -96,6 +95,13 @@ const LobbyScreen: FC<LobbyScreenProps> = ({ invitationCode, isHost }) => {
 
   const handleStartGame = () => {
     try {
+      if (!gameSession?.players?.length) {
+        addToast(`Cần có ít nhất 1 người tham gia để có thể bắt đầu`, {
+          appearance: 'error',
+          autoDismiss: true,
+        })
+        return
+      }
       const cookies = new Cookies()
       const accessToken = cookies.get('access-token')
 
@@ -108,7 +114,10 @@ const LobbyScreen: FC<LobbyScreenProps> = ({ invitationCode, isHost }) => {
         gameSkEmit('start-game', msg)
         gtag.event({
           action: '[start game]',
-          params: { quizId: gameSession?.quizId, invitationCode: gameSession?.invitationCode},
+          params: {
+            quizId: gameSession?.quizId,
+            invitationCode: gameSession?.invitationCode,
+          },
         })
       }
     } catch (error) {
