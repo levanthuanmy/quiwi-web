@@ -26,7 +26,6 @@ import MyModal from "../../MyModal/MyModal";
 import {ExitContext, TimerContext} from "../../../pages/game/play";
 import LoadingBoard from "../LoadingBoard/LoadingBoard";
 import {useToasts} from "react-toast-notifications";
-import _ from "lodash";
 
 type AnswerBoardProps = {
   className?: string
@@ -116,7 +115,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
   }
 
   function resetState() {
-    if (!gameSession)
+    if (!gameSession && isNextEmitted)
       setLoading("Chuẩn bị!")
     else
       setLoading(null)
