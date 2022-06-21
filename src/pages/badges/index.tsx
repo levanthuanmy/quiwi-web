@@ -15,53 +15,57 @@ const BadgesPage: FC<{
   const [indexChosen, setIndexChosen] = useState<number>(0)
 
   return (
-    <>
-      <div className="w-100">
-        <Row>
-          {userBadges?.slice(0, 4).map((userBadge, idx) => {
-            const progress =
-              userBadge.process /
-                (userBadge?.badge?.badgeRequirements?.reduce(
+    userBadges && (
+      <>
+        <div className="w-100">
+          <Row>
+            {userBadges?.map((userBadge, idx) => {
+              const goals =
+                userBadge?.badge?.badgeRequirements?.reduce(
                   (previousValue, currentValue) =>
                     previousValue + currentValue.goal,
                   0
-                ) ?? 0) || 1
-            return (
-              <Col
-                key={idx}
-                xs="12"
-                sm="6"
-                md="4"
-                lg="6"
-                xl="4"
-                className="pb-4"
-              >
-                <CardBadge
-                  onClick={() => handleShow(idx)}
-                  image={userBadge.badge.picture || ''}
-                  title={userBadge.badge.title}
-                  description={userBadge.badge.description}
-                  progress={progress.toFixed(2)}
-                />
-              </Col>
-            )
-          })}
-        </Row>
-      </div>
+                ) || 1
+              const progress = userBadge.process / goals
+              console.log('==== ~ {userBadges?.map ~ progress', progress)
 
-      <Modal
-        show={show}
-        size="sm"
-        centered
-        onShow={() => setShow(true)}
-        onHide={() => setShow(false)}
-      >
-        <ModalBadge
-          userBadge={userBadges[indexChosen]}
-          onClose={() => setShow(false)}
-        ></ModalBadge>
-      </Modal>
-    </>
+              return (
+                <Col
+                  key={idx}
+                  xs="12"
+                  sm="6"
+                  md="4"
+                  lg="6"
+                  xl="4"
+                  className="pb-4"
+                >
+                  <CardBadge
+                    onClick={() => handleShow(idx)}
+                    image={userBadge.badge.picture || ''}
+                    title={userBadge.badge.title}
+                    description={userBadge.badge.description}
+                    progress={progress.toFixed(2)}
+                  />
+                </Col>
+              )
+            })}
+          </Row>
+        </div>
+
+        <Modal
+          show={show}
+          size="sm"
+          centered
+          onShow={() => setShow(true)}
+          onHide={() => setShow(false)}
+        >
+          <ModalBadge
+            userBadge={userBadges[indexChosen]}
+            onClose={() => setShow(false)}
+          ></ModalBadge>
+        </Modal>
+      </>
+    )
   )
 }
 
