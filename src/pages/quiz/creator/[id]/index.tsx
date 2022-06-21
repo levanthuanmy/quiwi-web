@@ -225,7 +225,7 @@ const QuizCreatorPage: NextPage = () => {
         show={showModalAlert.show}
         onHide={() => setShowModalAlert({ show: false, questionId: null })}
         activeButtonTitle="Đồng ý"
-        activeButtonCallback={onAcceptRemoveAlert}
+        activeButtonCallback={() => onAcceptRemoveAlert()}
         inActiveButtonCallback={() =>
           setShowModalAlert({ show: false, questionId: null })
         }
@@ -243,7 +243,7 @@ const QuizCreatorPage: NextPage = () => {
         show={showQuizModalAlert}
         onHide={() => setShowQuizModalAlert(false)}
         activeButtonTitle="Đồng ý"
-        activeButtonCallback={onAcceptRemoveQuizAlert}
+        activeButtonCallback={() => onAcceptRemoveQuizAlert()}
         inActiveButtonCallback={() => setShowQuizModalAlert(false)}
         inActiveButtonTitle="Huỷ"
       >
