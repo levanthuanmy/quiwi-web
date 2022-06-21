@@ -1,17 +1,37 @@
 .ListQuest {
-    overflow-y: scroll;
-    height: 75vh;
-    padding: 20px 10px 30px 10px;
-    border-color: red;
-    border-radius: 16px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  height: 75vh;
+  border-radius: 16px;
+}
+
+.ListQuest::-webkit-scrollbar {
+  width: 8px;
+}
+
+/* Track */
+.ListQuest::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 5px rgba(255, 255, 255, 0);
+  border-radius: 8px;
+}
+
+/* Handle */
+.ListQuest::-webkit-scrollbar-thumb {
+  background: #00988469;
+  border-radius: 8px;
+}
+
+/* Handle on hover */
+.ListQuest::-webkit-scrollbar-thumb:hover {
+  background: #00655878;
 }
 
 .disableScroll {
-    overflow: hidden;
+  overflow: hidden;
 }
 
 .searchBar {
-    padding: 10px 20px 10px 20px;
-    margin: 0px;
-    height: 50px;
+  padding: 10px 20px 10px 20px;
+  margin: 0px;
+  height: 50px;
 }
