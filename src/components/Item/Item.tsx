@@ -1,6 +1,7 @@
 import classNames from 'classnames'
 import { FC, useState } from 'react'
-import { Image } from 'react-bootstrap'
+import { Image, OverlayTrigger, Tooltip } from 'react-bootstrap'
+import ItemDetail from '../ItemDetail/ItemDetail'
 import ItemToolTip from '../ItemToolTip/ItemToolTip'
 import styles from './Item.module.css'
 
@@ -15,40 +16,41 @@ type IItem = {
 
 const Item: FC<IItem> = (props) => {
   const [isCollapse, setIsCollapse] = useState(false)
-  const setCollapse = () => {
-    setIsCollapse(!isCollapse)
-  }
-  const [show, setShow] = useState(false)
-  const handleShow = () => setShow(true)
+
   return (
-    <div>
-      <div className={classNames('', styles.layoutImage)}>
-        <ItemToolTip props={props}>
-          <div className="position-relative">
-            <Image
-              className={classNames(
-                '',
-                props.type === 'RARE'
-                  ? styles.imageTypeRare
-                  : props.type === 'EPIC'
-                  ? styles.imageTypeEpic
-                  : props.type === 'LEGENDARY'
-                  ? styles.imageTypeLegendary
-                  : styles.imageTypeNormal
-              )}
-              src={props.avatar}
-              width={50}
-              height={50}
-              alt="coin"
-            ></Image>
-            <div className={styles.itemQuantity}>
-              <div className={styles.overlay}>
-                {props.quantity > 0 ? props.quantity : 1}
-              </div>
+    <div className={classNames('', styles.layoutImage)}>
+      <OverlayTrigger
+        placement="right"
+        overlay={
+          <Tooltip>
+            <ItemDetail props={props}></ItemDetail>
+          </Tooltip>
+        }
+      >
+        <div className="position-relative">
+          <Image
+            className={classNames(
+              '',
+              props.type === 'RARE'
+                ? styles.imageTypeRare
+                : props.type === 'EPIC'
+                ? styles.imageTypeEpic
+                : props.type === 'LEGENDARY'
+                ? styles.imageTypeLegendary
+                : styles.imageTypeNormal
+            )}
+            src={props.avatar}
+            width={50}
+            height={50}
+            alt="coin"
+          ></Image>
+          <div className={styles.itemQuantity}>
+            <div className={styles.overlay}>
+              {props.quantity > 0 ? props.quantity : null}
             </div>
           </div>
-        </ItemToolTip>
-      </div>
+        </div>
+      </OverlayTrigger>
     </div>
   )
 }
