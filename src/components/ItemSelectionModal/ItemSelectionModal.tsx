@@ -99,9 +99,13 @@ const UserItemSelectionModal: FC<MyModalProps> = ({
       fullscreen={true}
     >
       <Modal.Body>
-        <Row className='h-100'>
+        <Row className="h-100">
           {/* Ở đây sẽ để badge các thứ như liên minh */}
-          <Col xs={4} lg={2} className="d-flex align-items-center flex-column justify-content-center border-end border-2 p-4">
+          <Col
+            xs={5}
+            lg={2}
+            className="d-flex align-items-center flex-column justify-content-center border-end border-2 p-4"
+          >
             <Image
               alt="avatar"
               src={user.avatar || '/assets/default-logo.png'}
@@ -117,7 +121,7 @@ const UserItemSelectionModal: FC<MyModalProps> = ({
               setCurrentTab={setCurrentTab}
               tabs={tabs.map((tab) => tab.showType)}
             />
-            <div className="d-flex flex-wrap">
+            <div className="d-flex flex-wrap justify-content-center justify-content-md-start">
               {currentTab === 0 ? (
                 <AvatarList
                   avatarItems={avatarItems}
@@ -137,7 +141,7 @@ const UserItemSelectionModal: FC<MyModalProps> = ({
         </Row>
       </Modal.Body>
       <Row className="justify-content-center p-3">
-        <Col xs="2">
+        <Col xs="12" md={4} lg={3}>
           <MyButton className="text-white w-100" onClick={onHide}>
             Đóng
           </MyButton>

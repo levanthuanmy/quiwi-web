@@ -125,7 +125,7 @@ const ItemPage: NextPage = () => {
       <div className="w-100 ">
         <Container fluid="lg">
           <Row className="my-3 justify-content-between">
-            <Col xs={2} className="fs-22px fw-medium">
+            <Col xs={12} md={2} className="fs-22px fw-medium">
               Cửa hàng
             </Col>
             <Col>
@@ -134,7 +134,7 @@ const ItemPage: NextPage = () => {
                 inputClassName="border border-primary"
               />
             </Col>
-            <Col xs={4} md={3} lg={2}>
+            <Col xs={12} md={3} lg={2}>
               <div className="d-flex rounded-20px align-items-center p-2 fw-medium fs-18px border border-primary bg-primary bg-opacity-10">
                 <Image
                   alt="avatar"
@@ -181,7 +181,7 @@ const ItemPage: NextPage = () => {
           </Row>
           <Row className="">
             {itemsResponse?.items.map((item, idx) => (
-              <Col key={idx} className="p-3" xs={6} xl={3}>
+              <Col key={idx} className="p-3" xs={12} md={6} xl={3}>
                 <ItemShopV2 item={item} userBuyItem={userBuyItem} />
               </Col>
             ))}
