@@ -259,6 +259,7 @@ const EditProfilePage: NextPage = () => {
             show={showAvatarSelectionModal}
             key={user.id}
             user={user}
+            userProfile={userResponse}
           />
         ) : null}
       </Container>

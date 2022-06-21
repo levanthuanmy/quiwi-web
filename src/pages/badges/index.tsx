@@ -27,7 +27,6 @@ const BadgesPage: FC<{
                   0
                 ) || 1
               const progress = userBadge.process / goals
-              console.log('==== ~ {userBadges?.map ~ progress', progress)
 
               return (
                 <Col

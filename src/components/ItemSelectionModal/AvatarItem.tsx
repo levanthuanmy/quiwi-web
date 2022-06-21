@@ -19,7 +19,7 @@ const AvatarItem: FC<IItem> = (props) => {
         props.choose
           ? 'border border-3 border-primary'
           : props.isUsed
-          ? 'border border-2 border-warning'
+          ? 'border border-3 border-primary'
           : 'p-1'
       )}
     >
@@ -27,8 +27,8 @@ const AvatarItem: FC<IItem> = (props) => {
         <Image
           className={classNames('')}
           src={props.avatar}
-          width={64}
-          height={64}
+          width={124}
+          height={124}
           alt="coin"
         ></Image>
       </div>

@@ -54,13 +54,15 @@ const MenuBar: FC<MenuBarProps> = ({
             authContext.isAuth ? authContext.navigate('/profile') : null
           }
         >
-          <Image
-            src={user?.avatar || '/assets/default-logo.png'}
-            width={isExpand ? 90 : 48}
-            height={isExpand ? 90 : 48}
-            alt="avatar"
-            className="rounded-circle transition-all-150ms"
-          />
+          {authContext.isAuth ? (
+            <Image
+              src={user?.avatar || '/assets/default-logo.png'}
+              width={isExpand ? 90 : 48}
+              height={isExpand ? 90 : 48}
+              alt="avatar"
+              className="rounded-circle transition-all-150ms"
+            />
+          ) : null}
           <div
             className={classNames(
               'text-black fw-medium fs-24px transition-all-150ms',

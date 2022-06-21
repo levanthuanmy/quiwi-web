@@ -1,7 +1,7 @@
 import classNames from 'classnames'
 import React, { FC } from 'react'
 import { Image } from 'react-bootstrap'
-import styles from './CardBadge.module.css'
+import styles from './AvatarSelection.module.css'
 
 type IBadgeItem = {
   onClick: any
@@ -11,7 +11,7 @@ type IBadgeItem = {
   progress: string
 }
 
-const CardBadge: FC<IBadgeItem> = (props) => {
+const BadgeItem: FC<IBadgeItem> = (props) => {
   return (
     <div
       onClick={props.onClick}
@@ -47,4 +47,4 @@ const CardBadge: FC<IBadgeItem> = (props) => {
   )
 }
 
-export default CardBadge
+export default BadgeItem

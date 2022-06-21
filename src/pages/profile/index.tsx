@@ -241,6 +241,7 @@ const ProfilePage: NextPage = () => {
             show={showAvatarSelectionModal}
             key={authUser.id}
             user={authUser}
+            userProfile={userResponse}
           />
         ) : null}
       </Container>

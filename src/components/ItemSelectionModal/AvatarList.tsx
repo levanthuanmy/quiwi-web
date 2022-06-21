@@ -21,13 +21,11 @@ export const AvatarList: FC<{
         {},
         true
       )
-      console.log('==== ~ changeAvatar ~ res', res)
       if (res.response) {
         auth.setUser(res.response)
       }
     } catch (error) {
       console.log('==== ~ changeAvatar ~ error', error)
-      alert(JSON.stringify(error))
     }
   }
 
