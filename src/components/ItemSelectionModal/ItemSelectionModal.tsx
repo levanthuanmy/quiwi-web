@@ -8,12 +8,14 @@ import {
   TUserItems,
   TUserProfile,
   TUserBadge,
+  TBadge,
 } from '../../types/types'
 import MyButton from '../MyButton/MyButton'
 import MyTabBar from '../MyTabBar/MyTabBar'
 import { AvatarList } from './AvatarList'
 import { BackgroundList } from './BackgroundList'
 import { BadgeList } from './BadgeList'
+import { LeftProfileDisplay } from './LeftProfileDisplay'
 type MyModalProps = {
   show: boolean
   onHide: () => void
@@ -41,6 +43,7 @@ const UserItemSelectionModal: FC<MyModalProps> = ({
   const [avatarItems, setAvatarItems] = useState<TUserItems[]>()
   const [backgroundItems, setBackgroundItems] = useState<TUserItems[]>()
   const [badges, setBadges] = useState<TUserBadge[]>()
+  const [currentBadge, setCurrentBadge] = useState<TBadge>()
 
   const [itemIdChosen, setChoose] = useState<number>()
   const [currentTab, setCurrentTab] = useState<number>(0)
@@ -86,28 +89,59 @@ const UserItemSelectionModal: FC<MyModalProps> = ({
     }
   }
 
-  useEffect(() => {
-    const getBadges = async () => {
-      try {
-        const res = await get<TApiResponse<TUserBadge[]>>(
-          '/api/users/badges',
-          true,
-          {}
-        )
+  const getBadges = async () => {
+    try {
+      const res = await get<TApiResponse<TUserBadge[]>>(
+        '/api/users/badges',
+        true,
+        {}
+      )
 
-        if (res?.response) {
-          setBadges(res.response)
-        }
-      } catch (error) {
-        console.log('==== ~ getBadges ~ error', error)
+      if (res?.response) {
+        setBadges(res.response)
       }
+    } catch (error) {
+      console.log('==== ~ getBadges ~ error', error)
     }
-    getBadges()
-  }, [])
+  }
+
+  const getCurrentBadge = async () => {
+    try {
+      const res = await get<TApiResponse<TBadge>>(
+        '/api/users/current-badge',
+        true,
+        {}
+      )
+
+      if (res?.response) {
+        setCurrentBadge(res.response)
+      }
+    } catch (error) {
+      console.log('==== ~ getBadges ~ error', error)
+    }
+  }
+
+  const setNewCurrentBadge = async (userBadge: TUserBadge) => {
+    try {
+      if (userBadge.status === 'INPROGRESS') {
+        alert('Chưa hoàn thành')
+        return
+      }
+      if (userBadge.isCurrent) {
+        return
+      }
+      const res = await get(`/api/users/set-badge/${userBadge.badge.id}`, true)
+      console.log('==== ~ setCurrentBadge ~ res', res)
+    } catch (error) {
+      console.log('==== ~ setCurrentBadge ~ error', error)
+    }
+  }
 
   useEffect(() => {
     getAvatarItems()
     getBackgroundItems()
+    getBadges()
+    getCurrentBadge()
   }, [user])
 
   return (
@@ -125,17 +159,16 @@ const UserItemSelectionModal: FC<MyModalProps> = ({
           {/* Ở đây sẽ để badge các thứ như liên minh */}
           <Col
             xs={5}
-            lg={2}
+            sm={4}
+            lg={3}
+            xl={2}
             className="d-flex align-items-center flex-column justify-content-center border-end border-2 p-4"
           >
-            <Image
-              alt="avatar"
-              src={user.avatar || '/assets/default-logo.png'}
-              width={124}
-              height={124}
-              className="rounded-circle"
+            <LeftProfileDisplay
+              avatar={user.avatar}
+              currentBadge={currentBadge}
+              displayName={user.name || user.username}
             />
-            <div className="pt-2 fw-medium">{user.name || user.username}</div>
           </Col>
           <Col className="w-100">
             <MyTabBar
@@ -151,7 +184,10 @@ const UserItemSelectionModal: FC<MyModalProps> = ({
                   setChoose={setChoose}
                 />
               ) : currentTab === 1 ? (
-                <BadgeList userBadges={badges} />
+                <BadgeList
+                  userBadges={badges}
+                  setCurrentBadge={setNewCurrentBadge}
+                />
               ) : currentTab === 2 ? (
                 <BackgroundList
                   backgroundItems={backgroundItems}

@@ -72,10 +72,25 @@ const ProfilePage: NextPage = () => {
       console.log(error)
     }
   }
-  const { data, isValidating } = useSWR<TApiResponse<TUserProfile>>(
-    shouldFetch ? ['/api/users/profile', true] : null,
-    get
-  )
+
+  const getUserProfile = async () => {
+    try {
+      const res = await get<TApiResponse<TUserProfile>>(
+        '/api/users/profile',
+        true
+      )
+      if (res.response) {
+        setUser(res.response.user)
+        setUserResponse(res.response)
+      }
+    } catch (error) {
+      console.log('==== ~ getUserProfile ~ error', error)
+    }
+  }
+
+  useEffect(() => {
+    getUserProfile()
+  }, [])
 
   useEffect(() => {
     const accessToken = String(cookies.get('access-token'))
@@ -84,13 +99,6 @@ const ProfilePage: NextPage = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cookies.get('access-token')])
-
-  useEffect(() => {
-    if (data) {
-      setUser(data.response.user)
-      setUserResponse(data.response)
-    }
-  }, [data, isValidating])
 
   useEffect(() => {
     getFollowingUsers()
@@ -153,14 +161,31 @@ const ProfilePage: NextPage = () => {
     }
   }
 
-  return userResponse ? (
+  const setCurrentBadge = async (badgeId: number) => {
+    try {
+      const res = await get<TApiResponse<null>>(
+        `/api/users/set-badge/${badgeId}`,
+        true
+      )
+      console.log('==== ~ setCurrentBadge ~ res', res)
+      if (res.code === 200) {
+        getUserProfile()
+      } else {
+        console.log(res)
+      }
+    } catch (error) {
+      console.log('==== ~ setCurrentBadge ~ error', error)
+    }
+  }
+
+  return userResponse && authUser ? (
     <div className="bg-light">
       <NavBar showMenuBtn={false} isExpand={false} setIsExpand={() => null} />
       <Container className="pt-80px min-vh-100 pb-3" fluid="lg">
         <div className="d-flex flex-column flex-md-row mt-3 gap-4 p-12px shadow-sm rounded-20px bg-white position-relative">
           <Image
             alt="avatar"
-            src={user?.avatar || '/assets/default-logo.png'}
+            src={authUser?.avatar || '/assets/default-logo.png'}
             width={160}
             height={160}
             className="rounded-14px cursor-pointer"
@@ -246,7 +271,9 @@ const ProfilePage: NextPage = () => {
         ) : null}
       </Container>
     </div>
-  ) : null
+  ) : (
+    <Loading />
+  )
 }
 
 export default ProfilePage

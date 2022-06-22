@@ -5,7 +5,8 @@ import BadgeItem from './BadgeItem'
 
 export const BadgeList: FC<{
   userBadges?: TUserBadge[]
-}> = ({ userBadges }) => {
+  setCurrentBadge: (userBadge: TUserBadge) => void
+}> = ({ userBadges, setCurrentBadge }) => {
   return (
     <>
       {userBadges?.map((userBadge, idx) => {
@@ -18,7 +19,9 @@ export const BadgeList: FC<{
         return (
           <div key={idx} className={classNames(' mx-2 p-2')}>
             <BadgeItem
-              onClick={() => {}}
+              onClick={() => {
+                setCurrentBadge(userBadge)
+              }}
               image={userBadge.badge.picture || ''}
               title={userBadge.badge.title}
               description={userBadge.badge.description}

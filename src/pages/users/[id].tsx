@@ -1,12 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { NextPage } from 'next'
-import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { Button, Col, Container, Image, Row } from 'react-bootstrap'
-import Cookies from 'universal-cookie'
-import FollowerUser from '../../components/FollowerUser/FollowerUser'
-import FollowingUser from '../../components/FollowingUser/FollowingUser'
 import Loading from '../../components/Loading/Loading'
 import NavBar from '../../components/NavBar/NavBar'
 import SummaryInfo from '../../components/Profile/SummaryInfo/SummaryInfo'
