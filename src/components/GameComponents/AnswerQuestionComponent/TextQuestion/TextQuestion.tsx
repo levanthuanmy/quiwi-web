@@ -35,6 +35,12 @@ const TextQuestion: FC<TextQuestionProps> = ({
   const [isCorrect, setIsCorrect] = useState<boolean>(false)
 
   useEffect(() => {
+    if (question && isSubmitted) {
+      setAnswerText(null)
+    }
+  }, [question]);
+
+  useEffect(() => {
     if (!isCounting && !isSubmitted && !isHost) {
       socketSubmit(answerText ?? "")
     }
@@ -187,6 +193,7 @@ const TextQuestion: FC<TextQuestionProps> = ({
                   styles.answerInput,
                 )}
                 onChange={(t) => setAnswerText(t.target.value)}
+                value={answerText ?? ""}
             />
         }
 

@@ -5,6 +5,7 @@ import React, {FC, memo, useContext, useEffect, useRef, useState} from 'react'
 import {useGameSession} from '../../../hooks/useGameSession/useGameSession'
 import {useLocalStorage} from '../../../hooks/useLocalStorage/useLocalStorage'
 import {
+  TDetailPlayer,
   TPlayer,
   TQuestion,
   TStartQuizResponse,
@@ -65,7 +66,8 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
 
   const [showRanking, setShowRanking] = useState<boolean>(false)
   const [rankingData, setRankingData] = useState<any[]>([])
-
+  const [answersStatistic, setAnswersStatistic] = useState<Record<string, number>>({})
+  
   const [loading, setLoading] = useState<string | null>(null)
 
   const _numSubmission = useRef<number>(0)
@@ -111,6 +113,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
   }, [currentQID, quizLength]);
 
   const displayQuestion = (question: TQuestion) => {
+    console.log("=>(AnswerBoard.tsx:116) Display question", question);
     if (question && question.duration > 0)
       setCurrentQuestion(question)
   }
@@ -152,7 +155,6 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
               autoDismiss: true,
             })
         }
-
       }
     })
 
@@ -171,6 +173,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
       }, 1000)
       timerContext.stopCounting(true)
       setViewResultData(data)
+      setAnswersStatistic(data.answersStatistic)
       setIsShowNext(true)
       if (data?.player && !isHost && typeof window !== 'undefined') {
         localStorage.setItem(
@@ -268,7 +271,8 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
     return answerSectionFactory.initAnswerSectionForType(
       currentQuestion.type,
       currentQuestion,
-      handleSubmitAnswer
+      handleSubmitAnswer,
+      answersStatistic
     )
   }
 
@@ -497,7 +501,8 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
         {/*edit styles.answerLayout trong css*/}
         {currentQuestion?.question && renderAnswersSection()}
         {isHost && renderHostControlSystem()}
-        {!isHost && currentQuestion && currentQuestion.type != "22POLL" && renderPlayerSystem()}
+        {/*&& currentQuestion.type != "22POLL"*/}
+        {!isHost && currentQuestion && renderPlayerSystem()}
         <div className={styles.blankDiv}></div>
         <GameSessionRanking
           show={showRanking}

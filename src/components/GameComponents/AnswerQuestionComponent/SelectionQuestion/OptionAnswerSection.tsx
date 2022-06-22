@@ -135,7 +135,7 @@ const OptionAnswerSection: FC<OptionAnswerSectionProps> = ({
                   color: getBackgroundColorForAnswer(item, index),
                 }}
               >
-                <div className={styles.alphaBetText}>{numOfVote ? numOfVote[index] : alphabet[index]}</div>
+                <div className={styles.alphaBetText}>{numOfVote ? numOfVote[index] ?? 0: alphabet[index]}</div>
               </div>
               <div
                 className={`text-white d-flex gap-3 align-items-center justify-content-center flex-grow-1 h-100 fw-semiBold ${

@@ -40,6 +40,7 @@ const GameModeScreen: FC<GameModeScreenProps> = ({setGameMode}) => {
 
   const selectGameMode = (idx: number) => {
     const mode = modes[idx]
+    if (mode.mode != '10CLASSIC') return;
     setGameMode(mode.mode)
   }
 

@@ -14,6 +14,7 @@ type PollAnswerSectionProps = {
   isSubmitted: boolean
   isCounting: boolean
   isShowSkeleton: boolean
+  answersStatistic?: Record<string, number>
 }
 
 const PollAnswerSection: FC<PollAnswerSectionProps> = ({
@@ -25,10 +26,11 @@ const PollAnswerSection: FC<PollAnswerSectionProps> = ({
                                                                              isTimeOut,
                                                                              isSubmitted,
                                                                              isCounting,
-                                                                             isShowSkeleton
+                                                                             isShowSkeleton,
+                                                         answersStatistic
                                                                            }) => {
   const [answerSet, setAnswerSet] = useState<Set<number>>(new Set())
-
+  const [numOfVote, setNumOfVote] = useState<number[]>([])
   const selectAnswer = (answerId: number) => {
     if (isTimeOut) return
     // Chọn và bỏ chọn câu hỏi
@@ -36,6 +38,17 @@ const PollAnswerSection: FC<PollAnswerSectionProps> = ({
     answers.has(answerId) ? answers.delete(answerId) : answers.add(answerId)
     setAnswerSet(new Set(answers))
   }
+
+  function getIndexFor(answerId: number): number {
+    return answersStatistic ? answersStatistic[answerId] : 0
+  }
+
+  useEffect(() => {
+    if (option) {
+      let answerIds = option.questionAnswers.map(answer => answer.id ? getIndexFor(answer.id) : 0)
+      setNumOfVote(answerIds)
+    }
+  }, [answersStatistic]);
 
   useEffect(() => {
     if (!isCounting && !isSubmitted && !isHost) {
@@ -52,7 +65,7 @@ const PollAnswerSection: FC<PollAnswerSectionProps> = ({
         showAnswer={showAnswer}
         isShowSkeleton={isShowSkeleton}
         isHost={isHost}
-        numOfVote={Array(option ? option.questionAnswers.length : 0 ).fill(0)}
+        numOfVote={numOfVote.length > 0 ? numOfVote : Array(option ? option.questionAnswers.length : 0 ).fill(0)}
         baseIcon="square">
       </OptionAnswerSection>
     </div>

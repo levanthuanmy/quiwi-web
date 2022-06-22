@@ -26,7 +26,8 @@ export class AnswerSectionFactory {
   public initAnswerSectionForType(questionType: TQuestionType,
                                   question: TQuestion,
                                   // isSubmitted: boolean,
-                                  handleSubmitAnswer: (answer: any) => void): JSX.Element {
+                                  handleSubmitAnswer: (answer: any) => void,
+                                  answersStatistic?: Record<string, number>): JSX.Element {
     switch (questionType) {
       case "10SG":
         return this.initSingleAnswer(question, handleSubmitAnswer);
@@ -35,7 +36,7 @@ export class AnswerSectionFactory {
       case "21ODMUL":
         return this.initConnectAnswer(question, handleSubmitAnswer);
       case "22POLL":
-        return this.initPollAnswer(question, handleSubmitAnswer);
+        return this.initPollAnswer(question, handleSubmitAnswer, answersStatistic);
       case "30TEXT":
         return this.initTextAnswer(question, handleSubmitAnswer);
       case "31ESSAY":
@@ -77,13 +78,15 @@ export class AnswerSectionFactory {
   }
 
   protected initPollAnswer(question: TQuestion,
-                               submitAnswerHandle: (answer: any) => void): JSX.Element {
+                               submitAnswerHandle: (answer: any) => void,
+                           answersStatistic?: Record<string, number>): JSX.Element {
     return <PollAnswerSection
       socketSubmit={submitAnswerHandle}
       className={this.answerLayout}
       option={question}
       isHost={this.isHost}
       isSubmitted={!this.timerContext.isSubmittable}
+      answersStatistic={answersStatistic}
 
       isShowSkeleton={this.timerContext.isShowSkeleton}
       isCounting={this.timerContext.isCounting}
