@@ -9,6 +9,7 @@ type IBadgeItem = {
   title: string
   description: string
   progress: string
+  status: string
 }
 
 const BadgeItem: FC<IBadgeItem> = (props) => {
@@ -16,33 +17,43 @@ const BadgeItem: FC<IBadgeItem> = (props) => {
     <div
       onClick={props.onClick}
       className={classNames(
-        'rounded-14px h-100 cursor-pointer p-12px',
+        'rounded-14px h-100 cursor-pointer p-12px d-flex flex-column justify-content-between border',
         styles.container
       )}
     >
-      <div className="p-12px text-center">
+      <div
+        className={classNames(
+          'p-12px text-center',
+          props.status === 'INPROGRESS' ? ' opacity-25 ' : ''
+        )}
+      >
         <Image
           src={props.image}
           roundedCircle
-          width={70}
-          height={70}
+          width={80}
+          height={80}
           alt="badge"
           fluid={true}
           className="shadow-sm"
         />
+        <div className="text-center fw-medium">{props.title}</div>
+
       </div>
-      <div className="text-center fw-medium">{props.title}</div>
-      {/* <div className={classNames('fs-14px', styles.badgeDes)}>
-        {props.description}
+      <div>
+        <div className={classNames('fs-14px', styles.badgeDes)}>
+          {props.description}
+        </div>
+        <div className={classNames('progress', styles.progress)}>
+          <div
+            className={classNames('progress-bar bg-success')}
+            role="progressbar"
+            style={{ width: props.progress + '%' }}
+          ></div>
+        </div>
+        <div className={classNames('fs-16px', styles.badgeCount)}>
+          {props.progress}
+        </div>
       </div>
-      <div className={classNames('progress', styles.progress)}>
-        <div
-          className={classNames('progress-bar bg-success')}
-          role="progressbar"
-          style={{ width: props.progress + '%' }}
-        ></div>
-      </div>
-      <div className={classNames('fs-16px', styles.badgeCount)}>100/1000</div> */}
     </div>
   )
 }

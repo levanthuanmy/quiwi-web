@@ -7,6 +7,7 @@ import {
   TUser,
   TUserItems,
   TUserProfile,
+  TUserBadge,
 } from '../../types/types'
 import MyButton from '../MyButton/MyButton'
 import MyTabBar from '../MyTabBar/MyTabBar'
@@ -39,6 +40,8 @@ const UserItemSelectionModal: FC<MyModalProps> = ({
 }) => {
   const [avatarItems, setAvatarItems] = useState<TUserItems[]>()
   const [backgroundItems, setBackgroundItems] = useState<TUserItems[]>()
+  const [badges, setBadges] = useState<TUserBadge[]>()
+
   const [itemIdChosen, setChoose] = useState<number>()
   const [currentTab, setCurrentTab] = useState<number>(0)
   const getAvatarItems = async () => {
@@ -82,6 +85,25 @@ const UserItemSelectionModal: FC<MyModalProps> = ({
       alert((error as Error).message)
     }
   }
+
+  useEffect(() => {
+    const getBadges = async () => {
+      try {
+        const res = await get<TApiResponse<TUserBadge[]>>(
+          '/api/users/badges',
+          true,
+          {}
+        )
+
+        if (res?.response) {
+          setBadges(res.response)
+        }
+      } catch (error) {
+        console.log('==== ~ getBadges ~ error', error)
+      }
+    }
+    getBadges()
+  }, [])
 
   useEffect(() => {
     getAvatarItems()
@@ -129,7 +151,7 @@ const UserItemSelectionModal: FC<MyModalProps> = ({
                   setChoose={setChoose}
                 />
               ) : currentTab === 1 ? (
-                <BadgeList userBadges={userProfile.badges} />
+                <BadgeList userBadges={badges} />
               ) : currentTab === 2 ? (
                 <BackgroundList
                   backgroundItems={backgroundItems}

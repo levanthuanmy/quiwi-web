@@ -1,11 +1,15 @@
 .container:hover {
   transition: all ease-in-out 150ms;
-  box-shadow: 0px 0px 0px 1px rgba(214, 214, 214, 0.5);
+  box-shadow: #009883 0px 0px 0px 3px;
 }
 
 .container {
   width: 180px;
   height: 256px;
+}
+
+.avatarItem:hover {
+  box-shadow: #009883 0px 0px 0px 3px;
 }
 
 @media (max-width: 768px) {
@@ -15,6 +19,6 @@
   }
 
   .container image {
-    width: 64px; 
+    width: 64px;
   }
 }

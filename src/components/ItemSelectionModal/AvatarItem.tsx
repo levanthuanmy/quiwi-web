@@ -1,7 +1,7 @@
 import classNames from 'classnames'
 import { FC } from 'react'
 import { Image } from 'react-bootstrap'
-
+import styles from './AvatarSelection.module.css'
 type IItem = {
   name: string
   des: string
@@ -14,15 +14,7 @@ type IItem = {
 
 const AvatarItem: FC<IItem> = (props) => {
   return (
-    <div
-      className={classNames(
-        props.choose
-          ? 'border border-3 border-primary'
-          : props.isUsed
-          ? 'border border-3 border-primary'
-          : 'p-1'
-      )}
-    >
+    <div className={classNames(styles.avatarItem)}>
       <div className="position-relative">
         <Image
           className={classNames('')}
