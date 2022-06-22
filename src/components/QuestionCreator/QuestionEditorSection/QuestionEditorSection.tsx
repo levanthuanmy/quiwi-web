@@ -161,10 +161,14 @@ const QuestionEditorSection: FC<{
                 wrapperStyle={{ height: 140 }}
                 toolbarStyle={{ height: 100 }}
                 editorClassName="demo-editor fs-32px h-100"
-                textAlignment={"center"}
+                textAlignment={'center'}
                 placeholder="Nhập câu hỏi của bạn ở đây..."
                 onEditorStateChange={(editorState) => {
-                  setRichTextQuestion(editorState)
+                  try {
+                    setRichTextQuestion(editorState)
+                  } catch (error) {
+                    console.log('WYSIWYG error', error)
+                  }
                 }}
               ></Editor>
             </Col>
