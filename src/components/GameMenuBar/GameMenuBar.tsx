@@ -47,7 +47,7 @@ const GameMenuBar: FC<GameMenuBarProps> = ({
     <>
       <PlayerList playerList={gameSession.players} />
       <div
-        className={`${styles.slider} bg-primary`}
+        className={`${styles.slider} bg-secondary`}
         onMouseDown={(e) => {
           let block = document.getElementById('playerList') as HTMLDivElement
           let dragX = e.clientY
@@ -65,7 +65,7 @@ const GameMenuBar: FC<GameMenuBarProps> = ({
             (document.onmousemove = document.onmouseup = null)
         }}
       >
-        <i className="text-white bi bi-grip-horizontal bg-primary"></i>
+        <i className="text-white bi bi-grip-horizontal "></i>
       </div>
       <ChatWindow
         gameSession={gameSession}

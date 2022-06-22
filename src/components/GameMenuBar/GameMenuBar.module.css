@@ -29,6 +29,9 @@
 }
 
 .slider {
+    margin-top:10px;
+    margin:10px;
+    border-radius: 10px;
     cursor: s-resize;
     user-select: none; /* disable selection */
     text-align: center;
