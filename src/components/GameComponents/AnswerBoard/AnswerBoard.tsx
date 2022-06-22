@@ -97,6 +97,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
         setCurrentQID(0)
         displayQuestion(firstQuestion)
         timerContext.setDefaultCountDown(firstQuestion.duration)
+        setNumSubmission(0)
       }
       const quizLength = gameSession.quiz.questions.length
       if (quizLength) {
@@ -205,6 +206,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
           displayQuestion(newQuestion)
         }
         timerContext.setDefaultCountDown(newQuestion.duration)
+        setNumSubmission(0)
         setLoading("Chuẩn bị!")
       }
       if (data?.loading) {

@@ -160,7 +160,8 @@ const QuestionEditorSection: FC<{
                 wrapperClassName="demo-wrapper bg-white p-0"
                 wrapperStyle={{ height: 140 }}
                 toolbarStyle={{ height: 100 }}
-                editorClassName="demo-editor fs-20px h-100"
+                editorClassName="demo-editor fs-32px h-100"
+                textAlignment={"center"}
                 placeholder="Nhập câu hỏi của bạn ở đây..."
                 onEditorStateChange={(editorState) => {
                   setRichTextQuestion(editorState)
