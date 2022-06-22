@@ -90,86 +90,85 @@ const Message: FC<MessageProps> = (props) => {
   const vote = props.vote
   const voteColor = vote === 0 ? 'text-secondary' : vote === 1 ? 'text-primary' : 'text-danger'
   return (
-    <div className={cn("d-flex", {"flex-row-reverse" : props.isCurrentUser})}>
+    <div className={cn("d-flex", {"flex-row-reverse": props.isCurrentUser})}>
       <div className={`d-flex flex-grow-1 ${styles.messageContainer}`}>
         <div className={`d-flex flex-column flex-grow-1 ${styles.message}`}>
           {!props.isSameAsPrev &&
-          <div className={cn("d-flex align-items-center ", {"flex-row-reverse" : props.isCurrentUser})}>
-            <div
-              className={cn('d-flex ' + ' ' + styles.nameBox,{"flex-row-reverse" : props.isCurrentUser})}
-              style={{backgroundColor: getColorForString(hash(nickname))}}
-            >
-              <div className={styles.avatarContainer}>
-                <Image
-                  src={avatar}
-                  width={28}
-                  height={28}
-                  alt="avatar"
-                  className={styles.avatarImage}
-                />
-              </div>
-
-              <span className="text-white fw-medium pe-1 my-auto text-start">
-                {nickname}
-              </span>
-            </div>
-            <div className="ms-3">
-              {props.voteFromHost === 1 ? (
-                <MyTooltip title="Được xác thực bởi chủ phòng">
-                  <Image
-                    src="/assets/upvoted-chat.svg"
-                    alt="host-upvoted"
-                  ></Image>
-                </MyTooltip>
-              ) : props.voteFromHost === -1 ? (
-                <MyTooltip title="Kém tin cậy">
-                  <Image
-                    src="/assets/downvoted-chat.svg"
-                    alt="host-downvoted"
-                  ></Image>
-                </MyTooltip>
-              ) : null}
-            </div>
-          </div>}
+              <div className={cn("d-flex align-items-center ", {"flex-row-reverse": props.isCurrentUser})}>
+                  <div
+                      className={cn('d-flex ' + ' ' + styles.nameBox, {"flex-row-reverse": props.isCurrentUser})}
+                      style={{backgroundColor: getColorForString(hash(nickname))}}
+                  >
+                      <div className={styles.avatarContainer}>
+                          <Image
+                              src={avatar}
+                              width={28}
+                              height={28}
+                              alt="avatar"
+                              className={styles.avatarImage}
+                          />
+                      </div>
+                      <span className="text-white fw-medium pe-1 my-auto text-start">{nickname}</span>
+                  </div>
+              </div>}
 
           {/* nội dung chat */}
-          <div className={cn("d-flex ", {"flex-row-reverse" : props.isCurrentUser})}>
-          <div
-            className={
-              `text-white text-start flex-grow-0 ` +
-              styles.chatContent
-            }
-            style={{backgroundColor: getColorForString(hash(nickname))}}
-          >
-            {props.message ?? `Tin nhắn lỗi!`}
-          </div>
+          <div className={cn("d-flex ", {"flex-row-reverse": props.isCurrentUser})}>
+            <div
+              className={
+                `text-white text-start flex-grow-0 ` +
+                styles.chatContent
+              }
+              style={{backgroundColor: getColorForString(hash(nickname))}}
+            >
+              {props.message ?? `Tin nhắn lỗi!`}
+            </div>
+            <div className="m-2 d-flex flex-column align-items-center justify-content-center">
+              <div className={"h-100 d-flex flex-column align-items-center justify-content-center"}>
+                {props.voteFromHost === 1 ? (
+                  <MyTooltip title="Được xác thực bởi chủ phòng">
+                    <Image
+                      src="/assets/upvoted-chat.svg"
+                      alt="host-upvoted"
+                    ></Image>
+                  </MyTooltip>
+                ) : props.voteFromHost === -1 ? (
+                  <MyTooltip title="Kém tin cậy">
+                    <Image
+                      src="/assets/downvoted-chat.svg"
+                      alt="host-downvoted"
+                    ></Image>
+                  </MyTooltip>
+                ) : null}
+              </div>
+            </div>
+
+            <div className={cn(`d-flex gap-1 ${styles.vote}`, {"flex-row-reverse": !props.isCurrentUser})}>
+              {/*{!props.isCurrentUser &&*/}
+              <i
+                className={`bi ${
+                  upvote === 1
+                    ? 'bi-emoji-heart-eyes-fill  text-primary'
+                    : 'bi-emoji-heart-eyes'
+                } fs-4 ${styles.voteIcon} ${styles.upvote}`}
+                onClick={() => handleVote(1)}
+              />
+              {/*}*/}
+              <div className={`fw-bolder ${styles.scoreLabel} ${voteColor}`}>{props.vote}</div>
+              {/*{!props.isCurrentUser &&*/}
+              <i
+                className={`bi ${
+                  upvote === -1
+                    ? 'bi-emoji-frown-fill  text-danger'
+                    : 'bi-emoji-frown'
+                } fs-4 ${styles.voteIcon} ${styles.upvote}`}
+                // ${styles.rotate}
+                onClick={() => handleVote(-1)}
+              />
+              {/*}*/}
+            </div>
           </div>
         </div>
-      </div>
-
-      <div className={cn(`d-flex gap-1 ${styles.vote}`, {"flex-row-reverse" : !props.isCurrentUser})}>
-        {/*{!props.isCurrentUser &&*/}
-            <i
-            className={`bi ${
-              upvote === 1
-                ? 'bi-emoji-heart-eyes-fill  text-primary'
-                : 'bi-emoji-heart-eyes'
-            } fs-4 ${styles.voteIcon} ${styles.upvote}`}
-            onClick={() => handleVote(1)}
-        />
-        {/*}*/}
-        <div className={`fw-bolder ${styles.scoreLabel} ${voteColor}`}>{props.vote}</div>
-        {/*{!props.isCurrentUser &&*/}
-            <i
-            className={`bi ${
-              upvote === -1
-                ? 'bi-emoji-frown-fill  text-danger'
-                : 'bi-emoji-frown'
-            } fs-4 ${styles.voteIcon} ${styles.upvote}`}
-            // ${styles.rotate}
-            onClick={() => handleVote(-1)}
-        />
-        {/*}*/}
       </div>
     </div>
   )
