@@ -115,7 +115,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
   }
 
   function resetState() {
-    if (!gameSession && isNextEmitted)
+    if (!gameSession && !isNextEmitted)
       setLoading("Chuẩn bị!")
     else
       setLoading(null)
@@ -362,8 +362,8 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
 
       <div className="text-center fw-bold">
         <div className="text-secondary fs-24x">
-          {currentQID + 1 ==
-          gameSession?.quiz?.questions?.length ?
+          {currentQID + 1 <
+          (gameSession?.quiz?.questions?.length ?? 0) ?
             <>
               {"Quiz mới hoàn thành "}
               <span className="fw-bolder fs-24x  text-primary">
@@ -495,7 +495,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
         {/*edit styles.answerLayout trong css*/}
         {currentQuestion?.question && renderAnswersSection()}
         {isHost && renderHostControlSystem()}
-        {isHost && currentQuestion && currentQuestion.type != "22POLL" && renderPlayerSystem()}
+        {!isHost && currentQuestion && currentQuestion.type != "22POLL" && renderPlayerSystem()}
         <div className={styles.blankDiv}></div>
         <GameSessionRanking
           show={showRanking}
