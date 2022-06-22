@@ -6,7 +6,7 @@ import {Set} from "immutable";
 import PollAnswerList from "./PollAnswerList";
 import {bool} from "yup";
 
-type PollQuestionProps = {
+type EssayQuestionProps = {
   className?: string
   // gửi socket khi đã chọn kết quả cuối cùng
   socketSubmit: (answer: any) => void
@@ -20,7 +20,7 @@ type PollQuestionProps = {
 }
 const correctColor = "#0082BE"
 const incorrectColor = "#cccccc"
-const PollQuestion: FC<PollQuestionProps> = ({
+const EssayQuestion: FC<EssayQuestionProps> = ({
                                                className,
                                                socketSubmit,
                                                question,
@@ -112,4 +112,4 @@ const PollQuestion: FC<PollQuestionProps> = ({
   )
 }
 
-export default PollQuestion
+export default EssayQuestion

@@ -3,6 +3,7 @@ import { Image } from 'react-bootstrap'
 import styles from './PlayerList.module.css'
 import classNames from 'classnames'
 import { TPlayer } from '../../../types/types'
+import PlayerLobbyList from "../../PlayerLobbyList/PlayerLobbyList";
 
 type PlayerListProps = {
   className?: string
@@ -20,27 +21,29 @@ const PlayerList: FC<PlayerListProps> = (props) => {
     >
       <div className="text-center fs-16px fw-bold text-primary">Danh sách người chơi</div>
       <div className={`${styles.scrollListContainer}`}>
-        <div className={`${styles.scrollList}`}>
+        {/*<div className={`${styles.scrollList} d-flex flex-wrap`}>*/}
+          <div className={`${styles.scrollList}`}>
           <div className={styles.blank} />
-          {props.playerList &&
-            props.playerList.map((item, index) => {
-              return (
-                <div className={'d-flex w-100 ' + styles.name} key={index}>
-                  <div className={styles.avatarContainer}>
-                    <Image
-                      src={item.user?.avatar ?? '/assets/default-user.png'}
-                      width={28}
-                      height={28}
-                      alt="avatar"
-                      className={styles.avatarImage}
-                    />
-                  </div>
-                  <span className="text-white pe-1 fw-medium fs-6 my-auto text-start">
-                    {item.nickname ?? 'Anonymous'}
-                  </span>
-                </div>
-              )
-            })}
+          {props.playerList && <PlayerLobbyList players={props.playerList} />}
+          {/*{props.playerList &&*/}
+          {/*  props.playerList.map((item, index) => {*/}
+          {/*    return (*/}
+          {/*      <div className={'d-flex w-100 ' + styles.name} key={index}>*/}
+          {/*        <div className={styles.avatarContainer}>*/}
+          {/*          <Image*/}
+          {/*            src={item.user?.avatar ?? '/assets/default-user.png'}*/}
+          {/*            width={28}*/}
+          {/*            height={28}*/}
+          {/*            alt="avatar"*/}
+          {/*            className={styles.avatarImage}*/}
+          {/*          />*/}
+          {/*        </div>*/}
+          {/*        <span className="text-white pe-1 fw-medium fs-6 my-auto text-start">*/}
+          {/*          {item.nickname ?? 'Anonymous'}*/}
+          {/*        </span>*/}
+          {/*      </div>*/}
+          {/*    )*/}
+          {/*  })}*/}
           <div className={styles.blank} />
         </div>
       </div>

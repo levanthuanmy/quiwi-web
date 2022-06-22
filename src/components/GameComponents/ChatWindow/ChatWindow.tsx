@@ -82,7 +82,7 @@ const ChatWindow: FC<{
   return (
     <div className={classNames(styles.chatWindow)}>
       <div className={styles.chatBox}>
-        <div className={`d-flex flex-column gap-2 ${styles.chatList} `}>
+        <div className={`d-flex flex-column gap-1 ${styles.chatList} `}>
           {chatContent.map((item, index) => (
             <Message
               key={index}
@@ -92,6 +92,9 @@ const ChatWindow: FC<{
                 (user?.id && item.player?.userId === user?.id) ||
                 (_.get(item, 'playerNickName.length', 0) > 0 &&
                   item.playerNickName === player?.nickname)
+              }
+              isSameAsPrev={
+                index > 0 && item.userId === chatContent[index-1]?.userId
               }
               onVoteUpdated={(voteChange: number) => {
                 updateVoteForMessage(voteChange, index)

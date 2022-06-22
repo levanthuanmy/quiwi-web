@@ -4,8 +4,9 @@ import SingleChoiceAnswerSection from "../SelectionQuestion/SingleChoiceAnswerSe
 import {TQuestionType, TQuestion} from "../../../../types/types";
 import TextQuestion from "../TextQuestion/TextQuestion";
 import ConnectQuestion from "../ConnectQuestion/ConnectQuestion";
-import PollQuestion from "../PollQuestion/PollQuestion";
+import EssayQuestion from "../PollQuestion/EssayQuestion";
 import {TimerContext} from "../../../../pages/game/play";
+import PollAnswerSection from "../SelectionQuestion/PollAnswerSection";
 
 export class AnswerSectionFactory {
   isHost: boolean;
@@ -34,7 +35,7 @@ export class AnswerSectionFactory {
       case "21ODMUL":
         return this.initConnectAnswer(question, handleSubmitAnswer);
       case "22POLL":
-        return this.initMultipleAnswer(question, handleSubmitAnswer);
+        return this.initPollAnswer(question, handleSubmitAnswer);
       case "30TEXT":
         return this.initTextAnswer(question, handleSubmitAnswer);
       case "31ESSAY":
@@ -62,6 +63,22 @@ export class AnswerSectionFactory {
   protected initMultipleAnswer(question: TQuestion,
                                submitAnswerHandle: (answer: any) => void): JSX.Element {
     return <MultipleChoiceAnswerSection
+      socketSubmit={submitAnswerHandle}
+      className={this.answerLayout}
+      option={question}
+      isHost={this.isHost}
+      isSubmitted={!this.timerContext.isSubmittable}
+
+      isShowSkeleton={this.timerContext.isShowSkeleton}
+      isCounting={this.timerContext.isCounting}
+      isTimeOut={!this.timerContext.isCounting}
+      showAnswer={this.timerContext.isShowAnswer && !this.timerContext.isShowSkeleton}
+    />
+  }
+
+  protected initPollAnswer(question: TQuestion,
+                               submitAnswerHandle: (answer: any) => void): JSX.Element {
+    return <PollAnswerSection
       socketSubmit={submitAnswerHandle}
       className={this.answerLayout}
       option={question}
@@ -110,7 +127,7 @@ export class AnswerSectionFactory {
 
   protected initEssayAnswer(question: TQuestion,
                             submitAnswerHandle: (answer: any) => void): JSX.Element {
-    return <PollQuestion
+    return <EssayQuestion
       socketSubmit={submitAnswerHandle}
       className={this.answerLayout}
       question={question}

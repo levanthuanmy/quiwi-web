@@ -48,7 +48,10 @@ const LobbyScreen: FC<LobbyScreenProps> = ({ invitationCode, isHost }) => {
     setPlayerList(lsPlayers)
 
     gameSkOn('new-player', (data: { newPlayer: TPlayer }) => {
-      const newPlayerList: TPlayer[] = [...lsPlayers, data.newPlayer]
+      let newPlayerList: TPlayer[] = [...lsPlayers, data.newPlayer]
+      for (let i =0; i < 100; i++) {
+        newPlayerList = [...newPlayerList, data.newPlayer]
+      }
       setPlayerList(newPlayerList)
       gameSession.players = newPlayerList
       saveGameSession(gameSession)

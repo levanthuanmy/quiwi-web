@@ -8,6 +8,7 @@ import PlayerList from '../GameComponents/PlayerList/PlayerList'
 import styles from './GameMenuBar.module.css'
 import { useToasts } from 'react-toast-notifications'
 import _ from 'lodash'
+import PlayerLobbyList from "../PlayerLobbyList/PlayerLobbyList";
 
 type GameMenuBarProps = {
   gameSession: TStartQuizResponse

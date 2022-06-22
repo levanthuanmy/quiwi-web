@@ -25,7 +25,7 @@ const QuestionMedia: FC<{
     return (
       <div className={styles.timer}>
         {
-          timerContext.isCounting || timerContext.isShowSkeleton ?
+          !timerContext.isShowAnswer || timerContext.isShowSkeleton ?
           <>
             <div className={styles.text}>Còn lại</div>
 
@@ -59,7 +59,6 @@ const QuestionMedia: FC<{
     )
   }
 
-  console.log("=>(QuestionMedia.tsx:57) timerContext.isShowAnswer", timerContext.isShowAnswer)
   return (
     <div
       className={classNames(

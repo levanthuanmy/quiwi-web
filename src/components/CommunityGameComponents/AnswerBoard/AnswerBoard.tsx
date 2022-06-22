@@ -150,7 +150,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, questionId}) => {
 
   const handleSubmitAnswer = (answer: any) => {
     if (!gameSession) return
-    if (isSubmitted) return
+    if (isSubmitted && currentQuestion && currentQuestion.type != "22POLL") return
     let msg = {
       invitationCode: gameSession.invitationCode,
       nickname: gameSession.nickName,
@@ -171,7 +171,9 @@ const AnswerBoard: FC<AnswerBoardProps> = ({className, questionId}) => {
       console.log('=>(AnswerBoard.tsx:191) not supported')
       return
     }
-    setIsSubmitted(true)
+
+    if (currentQuestion && currentQuestion.type != "22POLL")
+      setIsSubmitted(true)
     if (msg.answer || msg.answerIds) gameSkEmit('submit-answer', msg)
   }
   const exitRoom = () => {

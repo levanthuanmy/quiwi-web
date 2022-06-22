@@ -5,6 +5,7 @@ import {SocketManager} from '../../../hooks/useSocket/socketManager'
 import {TPlayer, TUser} from '../../../types/types'
 import {MyTooltip} from '../../MyToolTip/MyTooltip'
 import styles from './Message.module.css'
+import cn from "classnames";
 
 export type SendMessageProps = {
   message: string
@@ -26,7 +27,19 @@ export type MessageProps = {
 
   onVoteUpdated?: (voteChange: number) => void
   isCurrentUser: boolean
+  isSameAsPrev: boolean
 }
+
+const colors: string[] = [
+  '#009883',
+  '#E86262',
+  // '#22B139',
+  '#EF154A',
+  '#EF6415',
+  '#A9C77E',
+  '#B89A61',
+  '#AB89A6',
+]
 
 const Message: FC<MessageProps> = (props) => {
   const avatar =
@@ -47,6 +60,24 @@ const Message: FC<MessageProps> = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props])
 
+  const getColorForString = (id: number) => {
+    return colors[id % colors.length]
+  }
+
+  function hash(str: string) {
+//set variable hash as 0
+    let hash = 0;
+// if the length of the string is 0, return 0
+    if (str.length == 0) return hash;
+    for (let i = 0; i < str.length; i++) {
+      let ch = str.charCodeAt(i);
+      hash = ((hash << 5) - hash) + ch;
+      hash = hash & hash;
+    }
+    return Math.abs(hash);
+  }
+
+
   const handleVote = (vote: number) => {
     let newUpVote = vote
     if (upvote === vote) {
@@ -59,11 +90,15 @@ const Message: FC<MessageProps> = (props) => {
   const vote = props.vote
   const voteColor = vote === 0 ? 'text-secondary' : vote === 1 ? 'text-primary' : 'text-danger'
   return (
-    <div className="d-flex">
+    <div className={cn("d-flex", {"flex-row-reverse" : props.isCurrentUser})}>
       <div className={`d-flex flex-grow-1 ${styles.messageContainer}`}>
         <div className={`d-flex flex-column flex-grow-1 ${styles.message}`}>
-          <div className="d-flex align-items-center ">
-            <div className={'d-flex' + ' ' + styles.nameBox}>
+          {!props.isSameAsPrev &&
+          <div className={cn("d-flex align-items-center ", {"flex-row-reverse" : props.isCurrentUser})}>
+            <div
+              className={cn('d-flex ' + ' ' + styles.nameBox,{"flex-row-reverse" : props.isCurrentUser})}
+              style={{backgroundColor: getColorForString(hash(nickname))}}
+            >
               <div className={styles.avatarContainer}>
                 <Image
                   src={avatar}
@@ -75,7 +110,7 @@ const Message: FC<MessageProps> = (props) => {
               </div>
 
               <span className="text-white fw-medium pe-1 my-auto text-start">
-                {nickname} {props.isCurrentUser ? '(Bạn)' : null}
+                {nickname}
               </span>
             </div>
             <div className="ms-3">
@@ -95,38 +130,46 @@ const Message: FC<MessageProps> = (props) => {
                 </MyTooltip>
               ) : null}
             </div>
-          </div>
+          </div>}
 
           {/* nội dung chat */}
+          <div className={cn("d-flex ", {"flex-row-reverse" : props.isCurrentUser})}>
           <div
             className={
-              `text-white w-100 text-start ` +
+              `text-white text-start flex-grow-0 ` +
               styles.chatContent
             }
+            style={{backgroundColor: getColorForString(hash(nickname))}}
           >
             {props.message ?? `Tin nhắn lỗi!`}
+          </div>
           </div>
         </div>
       </div>
 
-      <div className={`d-flex flex-column ${styles.vote}`}>
-        <i
-          className={`bi ${
-            upvote === 1
-              ? 'bi-hand-thumbs-up-fill  text-primary'
-              : 'bi-hand-thumbs-up'
-          } fs-4 ${styles.voteIcon} ${styles.upvote}`}
-          onClick={() => handleVote(1)}
+      <div className={cn(`d-flex gap-1 ${styles.vote}`, {"flex-row-reverse" : !props.isCurrentUser})}>
+        {/*{!props.isCurrentUser &&*/}
+            <i
+            className={`bi ${
+              upvote === 1
+                ? 'bi-emoji-heart-eyes-fill  text-primary'
+                : 'bi-emoji-heart-eyes'
+            } fs-4 ${styles.voteIcon} ${styles.upvote}`}
+            onClick={() => handleVote(1)}
         />
-        <span className={`fw-semiBold ${styles.scoreLabel} ${voteColor}`}>{props.vote}</span>
-        <i
-          className={`bi ${
-            upvote === -1
-              ? 'bi-hand-thumbs-up-fill  text-danger'
-              : 'bi-hand-thumbs-up'
-          } fs-4 ${styles.voteIcon} ${styles.rotate}`}
-          onClick={() => handleVote(-1)}
+        {/*}*/}
+        <div className={`fw-bolder ${styles.scoreLabel} ${voteColor}`}>{props.vote}</div>
+        {/*{!props.isCurrentUser &&*/}
+            <i
+            className={`bi ${
+              upvote === -1
+                ? 'bi-emoji-frown-fill  text-danger'
+                : 'bi-emoji-frown'
+            } fs-4 ${styles.voteIcon} ${styles.upvote}`}
+            // ${styles.rotate}
+            onClick={() => handleVote(-1)}
         />
+        {/*}*/}
       </div>
     </div>
   )

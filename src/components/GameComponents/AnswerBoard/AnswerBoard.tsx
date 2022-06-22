@@ -245,7 +245,8 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
       console.log('=>(AnswerBoard.tsx:191) not supported "', answer, '"')
       return
     }
-    timerContext.setIsSubmittable(false)
+    if (currentQuestion && currentQuestion.type != "22POLL")
+      timerContext.setIsSubmittable(false)
     if (msg.answer || msg.answerIds) gameSkEmit('submit-answer', msg)
   }
 
@@ -493,7 +494,8 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
         {/*height min của question view là 300*/}
         {/*edit styles.answerLayout trong css*/}
         {currentQuestion?.question && renderAnswersSection()}
-        {isHost ? renderHostControlSystem() : renderPlayerSystem()}
+        {isHost && renderHostControlSystem()}
+        {isHost && currentQuestion && currentQuestion.type != "22POLL" && renderPlayerSystem()}
         <div className={styles.blankDiv}></div>
         <GameSessionRanking
           show={showRanking}

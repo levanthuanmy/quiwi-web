@@ -82,7 +82,7 @@ const GamePage: NextPage = () => {
   const intervalRef = useRef<NodeJS.Timer | null>(null)
 
   const stopCounting = (stopUI: boolean) => {
-    console.log("=>(index.tsx:127) stopCounting");
+    console.log("=>(index.tsx:127) stopCounting stopUI", stopUI);
     if (intervalRef && intervalRef.current) {
       if (stopUI) {
         clearInterval(intervalRef.current)
