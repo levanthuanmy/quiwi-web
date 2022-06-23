@@ -33,13 +33,17 @@ const GameSessionRanking: FC<GameSessionRankingProps> = ({
   useEffect(() => {
     if (rankingData) {
       const findCurrentPlayerRanking = () => {
-        const nickname: string = JsonParse(
-          localStorage.getItem('game-session-player')
-        )?.nickname
+        try {
+          const nickname: string = JsonParse(
+            localStorage.getItem('game-session-player')
+          )?.nickname
 
-        setCurrentPlayerRankingIndex(
-          rankingData?.findIndex((item) => item?.nickname === nickname)
-        )
+          setCurrentPlayerRankingIndex(
+            rankingData?.findIndex((item) => item?.nickname === nickname)
+          )
+        } catch (error) {
+          console.log('findCurrentPlayerRanking - error', error)
+        }
       }
 
       findCurrentPlayerRanking()
@@ -47,44 +51,52 @@ const GameSessionRanking: FC<GameSessionRankingProps> = ({
   }, [rankingData])
 
   const diffPositionPrevRound = (nickname: string, index: number) => {
-    const gameSession = JsonParse(
-      localStorage.getItem('game-session')
-    ) as TStartQuizResponse
+    try {
+      const gameSession = JsonParse(
+        localStorage.getItem('game-session')
+      ) as TStartQuizResponse
 
-    if (!gameSession?.players || !gameSession?.players.length) return 0
+      if (!gameSession?.players || !gameSession?.players.length) return 0
 
-    return (
-      gameSession.players.findIndex((item) => item.nickname === nickname) -
-      index
-    )
+      return (
+        gameSession.players.findIndex((item) => item.nickname === nickname) -
+        index
+      )
+    } catch (error) {
+      console.log('diffPositionPrevRound - error', error)
+      return 0
+    }
   }
 
   const answersSubmittedData = useMemo(() => {
     let data: (string | number)[][] = []
-    if (viewResultData && currentQuestion) {
-      if (!_.isEmpty(viewResultData.answersStatistic)) {
-        data = Object.keys(viewResultData?.answersStatistic).map(
-          (key, index) => [
-            currentQuestion.questionAnswers.find(
-              (ans) => ans.id === Number(key)
-            )?.answer || key,
-            viewResultData?.answersStatistic[key],
-            ANSWER_COLORS[index % ANSWER_COLORS.length] || ANSWER_COLORS[0],
-            viewResultData?.answersStatistic[key],
-          ]
-        )
-      } else {
-        data = Object.keys(viewResultData?.answerTextStatistic).map(
-          (key, index) => [
-            key,
-            viewResultData?.answerTextStatistic[key],
-            ANSWER_COLORS[index % ANSWER_COLORS.length] || ANSWER_COLORS[0],
-            viewResultData?.answerTextStatistic[key],
-          ]
-        )
+    try {
+      if (viewResultData && currentQuestion) {
+        if (!_.isEmpty(viewResultData.answersStatistic)) {
+          data = Object.keys(viewResultData?.answersStatistic).map(
+            (key, index) => [
+              currentQuestion.questionAnswers.find(
+                (ans) => ans.id === Number(key)
+              )?.answer || key,
+              viewResultData?.answersStatistic[key],
+              ANSWER_COLORS[index % ANSWER_COLORS.length] || ANSWER_COLORS[0],
+              viewResultData?.answersStatistic[key],
+            ]
+          )
+        } else {
+          data = Object.keys(viewResultData?.answerTextStatistic).map(
+            (key, index) => [
+              key,
+              viewResultData?.answerTextStatistic[key],
+              ANSWER_COLORS[index % ANSWER_COLORS.length] || ANSWER_COLORS[0],
+              viewResultData?.answerTextStatistic[key],
+            ]
+          )
+        }
       }
+    } catch (error) {
+      console.log('answersSubmittedData - error', error)
     }
-
     return [
       [
         'Câu trả lời',
@@ -238,11 +250,13 @@ const GameSessionRanking: FC<GameSessionRankingProps> = ({
       </div>
       <div className="pt-5 fw-medium fs-22px">Thống kê câu trả lời</div>
       {currentQuestion?.type === '31ESSAY' ? (
-        Object.keys(viewResultData.answerTextStatistic).map((key, index) => (
-          <div key={index}>
-            {index + 1}. {key}
-          </div>
-        ))
+        Object.keys(viewResultData?.answerTextStatistic || {}).map(
+          (key, index) => (
+            <div key={index}>
+              {index + 1}. {key}
+            </div>
+          )
+        )
       ) : (
         <>
           <div className="fst-italic pb-3 text-secondary">

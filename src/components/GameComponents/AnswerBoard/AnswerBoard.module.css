@@ -15,7 +15,7 @@
 .playerSystem {
     margin-top: 12px;
     display: flex;
-    justify-content: end;
+    justify-content: flex-end;
     align-items: flex-end;
     border-radius: 10px;
 }
