@@ -18,6 +18,8 @@ import {
   storageRef,
   uploadFile,
 } from '../../utils/firebaseConfig'
+import FullScreenLoader from '../FullScreenLoader/FullScreenLoader'
+import Loading from '../Loading/Loading'
 import MyButton from '../MyButton/MyButton'
 import MyInput from '../MyInput/MyInput'
 import MyModal from '../MyModal/MyModal'
@@ -38,6 +40,7 @@ const CardQuizInfo: FC<CardQuizInfoProps> = ({
   const [showModal, setShowModal] = useState<boolean>(false)
   const router = useRouter()
   const quizId = Number(router.query.id)
+  const [isLoading, setIsLoading] = useState<boolean>(false)
 
   useEffect(() => {
     if (quiz) {
@@ -48,6 +51,8 @@ const CardQuizInfo: FC<CardQuizInfoProps> = ({
   const handleUploadImage = async (evt: any) => {
     console.log('handleUploadImage - evt', evt)
     try {
+      setIsLoading(true)
+
       const data: File = evt.target.files[0]
 
       const path = `/images/${data.name}`
@@ -55,10 +60,11 @@ const CardQuizInfo: FC<CardQuizInfoProps> = ({
       console.log('handleUploadImage - chuân bị up ảnh')
       await uploadFile(ref, data)
       const url = await getUrl(ref)
-
       setBannerUrl(url)
     } catch (error) {
       console.log('handleUploadImage - error', error)
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -67,24 +73,41 @@ const CardQuizInfo: FC<CardQuizInfoProps> = ({
   >([`/api/quiz-categories`, false], get, { revalidateOnFocus: false })
 
   const categoryOptions: { value: number; label: string }[] = useMemo(() => {
-    if (categoryResponse) {
-      return categoryResponse.response.items.map((item) => ({
-        value: item.id,
-        label: item.name,
-      }))
+    try {
+      if (categoryResponse) {
+        return categoryResponse?.response?.items?.map((item) => ({
+          value: item?.id,
+          label: item?.name,
+        }))
+      }
+    } catch (error) {
+      console.log('categoryOptions useMemo - error', error)
     }
     return []
   }, [categoryResponse])
 
   const [selectedCategories, setSelectedCategories] = useState<number[]>()
 
+  const handleRandomImage = async () => {
+    try {
+      setIsLoading(true)
+      const res = await fetch('https://picsum.photos/600/400')
+      setBannerUrl(res?.url)
+      await fetch(res?.url)
+    } catch (error) {
+      console.log('onClick={async - error', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   return (
     <div className="rounded-10px border bg-white p-12px">
       <div
         className="border rounded-10px overflow-hidden"
-        style={{ height: 120 }}
+        style={{ height: 180 }}
       >
-        {quiz?.banner && quiz?.banner.length ? (
+        {quiz?.banner && quiz?.banner?.length ? (
           <Image
             src={quiz?.banner}
             alt=""
@@ -220,10 +243,16 @@ const CardQuizInfo: FC<CardQuizInfoProps> = ({
                   handleSubmit()
                 }}
               >
+                <div className="fw-medium">Bấm để chọn ảnh mới</div>
                 <div
                   className="border rounded-10px position-relative overflow-hidden"
-                  style={{ height: 120 }}
+                  style={{ height: 180 }}
                 >
+                  {isLoading && (
+                    <div className="position-absolute w-100 h-100 bg-black bg-opacity-75 d-flex justify-content-center align-items-center">
+                      <Loading />
+                    </div>
+                  )}
                   {bannerUrl && bannerUrl.length ? (
                     <Image
                       src={bannerUrl}
@@ -231,6 +260,7 @@ const CardQuizInfo: FC<CardQuizInfoProps> = ({
                       width="100%"
                       height="100%"
                       className="object-fit-cover"
+                      loading="eager"
                     />
                   ) : (
                     <div className="py-4 text-center fs-14px text-secondary">
@@ -246,8 +276,18 @@ const CardQuizInfo: FC<CardQuizInfoProps> = ({
                     style={{ left: 0 }}
                   />
                 </div>
+                <div className="d-flex align-items-center gap-2 mt-2">
+                  <MyButton
+                    variant="outline-secondary"
+                    className="bi bi-arrow-clockwise fs-24px"
+                    onClick={() => handleRandomImage()}
+                    disabled={isLoading}
+                  />
+                  <div>Tự động chọn ảnh ngẫu nhiên</div>
+                </div>
+
                 <Row className="justify-content-center align-items-center py-2">
-                  <Col xs={12} lg={4} className="text-lg-end fw-medium">
+                  <Col xs={12} className="fw-medium">
                     Tên
                   </Col>
                   <Col>
@@ -261,7 +301,7 @@ const CardQuizInfo: FC<CardQuizInfoProps> = ({
                 </Row>
 
                 <Row className="justify-content-center align-items-center py-2">
-                  <Col xs={12} lg={4} className="text-lg-end fw-medium">
+                  <Col xs={12} className="fw-medium">
                     Mô tả
                   </Col>
                   <Col>
@@ -275,7 +315,7 @@ const CardQuizInfo: FC<CardQuizInfoProps> = ({
                 </Row>
 
                 <Row className="justify-content-center align-items-center py-2 position-relative">
-                  <Col xs={12} lg={4} className="text-lg-end fw-medium">
+                  <Col xs={12} className="fw-medium">
                     Thể loại
                   </Col>
                   <Col className="position-relative">
@@ -297,13 +337,14 @@ const CardQuizInfo: FC<CardQuizInfoProps> = ({
                 </Row>
 
                 <Row className="justify-content-center align-items-center py-2">
-                  <Col xs={12} lg={4} className="text-lg-end fw-medium">
+                  <Col xs={12} className="fw-medium">
                     Công khai
                   </Col>
                   <Col>
                     <Field
                       type="switch"
                       name="isPublic"
+                      defaultChecked={quiz?.isPublic ?? false}
                       placeholder="Công khai"
                       as={FormCheck}
                     />

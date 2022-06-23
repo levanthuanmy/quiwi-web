@@ -20,15 +20,23 @@ const MyHead: FC = () => {
 
       <link rel="preconnect" href={API_URL} />
       <link rel="dns-prefetch" href={API_URL} />
+
+      <link rel="preconnect" href="https://i.picsum.photos" />
+      <link rel="dns-prefetch" href="https://i.picsum.photos" />
+
+      <link rel="preconnect" href="https://picsum.photos/600/400" />
+      <link rel="dns-prefetch" href="https://picsum.photos/600/400" />
+
       <title>Quiwi Game</title>
       <meta
         name="description"
         content="Quiwi là một trang web cho phép bạn tham gia quiz hoặc tạo quiz của chính mình"
       />
       <link rel="canonical" href="https://web.quiwi.games/" />
+
       <meta
         name="keywords"
-        content="quiwi, Quiwi, game, games, quiz, quizzes"
+        content="quiwi,Quiwi,game,games,quiz,quizzes,qiwi,kiwi,quiqui,wiwi,web"
       ></meta>
 
       {/* google analytics */}
