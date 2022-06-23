@@ -36,7 +36,7 @@ const ItemMultipleAnswer: FC<ItemMultipleAnswerProps> = ({
       const data: File = evt.target.files[0]
 
       const path = `/images/${data.name}`
-      const ref = storageRef(storage, path)
+      const ref = await storageRef(storage, path)
       await uploadFile(ref, data)
       const url = await getUrl(ref)
 
