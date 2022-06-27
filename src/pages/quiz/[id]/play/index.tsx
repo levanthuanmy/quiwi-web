@@ -1,16 +1,14 @@
-import { get } from 'lodash'
-import { NextPage } from 'next'
-import { useRouter } from 'next/router'
-import { useEffect, useState } from 'react'
-import { Modal } from 'react-bootstrap'
+import {get} from 'lodash'
+import {NextPage} from 'next'
+import {useRouter} from 'next/router'
+import {useEffect, useState} from 'react'
+import {Modal} from 'react-bootstrap'
 import useSWR from 'swr'
 import CommunityGamePlay from '../../../../components/CommunityGameComponents/CommunityGamePlay/CommunityGamePlay'
 import GameModeScreen from '../../../../components/GameModeScreen/GameModeScreen'
 import MyModal from '../../../../components/MyModal/MyModal'
-import { useCommunitySocket } from '../../../../hooks/useCommunitySocket/useCommunitySocket'
-import { useGameSession } from '../../../../hooks/useGameSession/useGameSession'
-import { useLocalStorage } from '../../../../hooks/useLocalStorage/useLocalStorage'
-import { post } from '../../../../libs/api'
+import {useLocalStorage} from '../../../../hooks/useLocalStorage/useLocalStorage'
+import {post} from '../../../../libs/api'
 import {
   TApiResponse,
   TGameModeEnum,
@@ -20,19 +18,19 @@ import {
   TStartQuizResponse,
   TUser
 } from '../../../../types/types'
-import { JsonParse } from '../../../../utils/helper'
+import {JsonParse} from '../../../../utils/helper'
+import {usePracticeGameSession} from "../../../../hooks/usePracticeGameSession/usePracticeGameSession";
 
 const PlayCommunityQuizScreen: NextPage = () => {
   const router = useRouter()
-  const { id } = router.query
+  const {id} = router.query
   const [lsUser] = useLocalStorage('user', '')
-  const { gameSession, saveGameSession, clearGameSession } = useGameSession()
+  const {gameSession, gameSocket, saveGameSession, connectGameSocket} = usePracticeGameSession()
   const [isShowGameModeScreen, setIsShowGameModeScreen] =
     useState<boolean>(true)
   const [invitationCode, setInvitationCode] = useState<string>()
   const [gameModeEnum, setGameModeEnum] = useState<TGameModeEnum>()
   const [isFetchingSocket, setIsFetchingSocket] = useState<boolean>(false)
-  const { socket } = useCommunitySocket()
   const [error, setError] = useState('')
 
   const {
@@ -42,51 +40,59 @@ const PlayCommunityQuizScreen: NextPage = () => {
   } = useSWR<TApiResponse<TQuiz>>(id ? `/api/quizzes/quiz/${id}` : null, get)
 
   useEffect(() => {
-    if (socket && socket.disconnected) socket.connect()
-  }, [socket])
+    connectGameSocket()
+    // setGameModeEnum("10CLASSIC")
+  }, [])
+
 
   useEffect(() => {
     if (gameModeEnum && isShowGameModeScreen) {
       const user: TUser = JsonParse(lsUser)
       handleStartQuiz(Number(id), gameModeEnum, user.id)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gameModeEnum, isShowGameModeScreen])
 
-  useEffect(() => {
-    if (gameSession) {
-      setIsShowGameModeScreen(false)
-    }
-  }, [gameSession])
+
+  // useEffect(() => {
+  //   if (gameSession) {
+  //     setIsShowGameModeScreen(false)
+  //   }
+  // }, [gameSession])
 
   const handleStartQuiz = async (
     quizId: number,
     mode: TGameModeEnum,
     userId: number
   ) => {
+    console.log("=>(index.tsx:68) userId", userId);
     setIsFetchingSocket(true)
     try {
-      if (!socket) return
+      if (!gameSocket()) return
       const msg: TStartQuizRequest = {
         quizId: quizId,
-        userId,
         mode,
       }
+      if (userId) {
+        msg.userId = userId
+      }
+      console.log("=>(index.tsx:79) msg", msg);
 
       const body: TGamePlayBodyRequest<TStartQuizRequest> = {
-        socketId: socket.id,
+        socketId: gameSocket()!.id,
         data: msg,
       }
+
       const response: TApiResponse<TStartQuizResponse> = await post(
         'api/games/start-community-quiz',
         {},
         body,
         true
       )
-      console.log('==== ~ response', response)
+      console.log("=>(api/games/start-community-quiz) response", response);
 
       if (response.response) {
         saveGameSession(response.response)
+        setIsShowGameModeScreen(false)
       }
     } catch (error) {
       setError((error as Error).message)
@@ -114,17 +120,14 @@ const PlayCommunityQuizScreen: NextPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gameSession])
 
+  useEffect(() => {
+    console.log("=>(index.tsx:125) isShowGameModeScreen", isShowGameModeScreen);
+  },[isShowGameModeScreen])
+
   return (
     <>
-      {isShowGameModeScreen && <GameModeScreen setGameMode={setGameModeEnum} />}
-      {gameSession && invitationCode && (
-        // <LobbyScreen
-        //   invitationCode={invitationCode}
-        //   isHost
-        //   // players={gameSession.players}
-        // />
-        <CommunityGamePlay />
-      )}
+      {isShowGameModeScreen && <GameModeScreen setGameMode={setGameModeEnum}/>}
+      {!isShowGameModeScreen && <CommunityGamePlay/>}
       <MyModal
         show={error.length > 0}
         onHide={() => setError('')}

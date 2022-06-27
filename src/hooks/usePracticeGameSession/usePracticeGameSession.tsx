@@ -5,7 +5,7 @@ import {JsonParse} from '../../utils/helper'
 import {useLocalStorage} from '../useLocalStorage/useLocalStorage'
 import {SocketManager} from '../useSocket/socketManager'
 
-export const useGameSession = (): {
+export const usePracticeGameSession = (): {
   gameSkOnce: (ev: string, listener: (...args: any[]) => void) => void;
   isHost: () => boolean;
   getQuestionWithID: (qid: number) => (TQuestion | null);
@@ -37,10 +37,10 @@ export const useGameSession = (): {
         lsGameSession
       ) as TStartQuizResponse
       setGameSession(gs)
-      console.log('🎯️ GameSession => 💸')
+      console.log('🎯️ PracticeGameSession => 💸')
     } else {
       if (deleteCount <= 0) {
-        console.log('🎯️ ️GameSession => 🚮')
+        console.log('🎯️ PracticeGameSession => 🚮')
       }
       deleteCount += 1
       setGameSession(null)
@@ -48,7 +48,7 @@ export const useGameSession = (): {
   }, [lsGameSession])
 
   const saveGameSession = (gameSS: TStartQuizResponse) => {
-    console.log('🎯️ ️️GameSession => saveGameSession')
+    console.log('🎯️ PracticeGameSession => saveGameSession')
     setLsGameSession(JSON.stringify(gameSS))
     setGameSession(gameSS)
   }
@@ -57,23 +57,23 @@ export const useGameSession = (): {
   const gameSocket = (): (Socket | null) => {
     // test xem có cần thiết connect lại trong này ko
     // sk.connect("GAMES")
-    return sk.socketOf("GAMES")
+    return sk.socketOf("COMMUNITY-GAMES")
   }
 
   const connectGameSocket = () => {
     if (!gameSocket() || gameSocket()?.disconnected) {
-      sk.connect("GAMES")
+      sk.connect("COMMUNITY-GAMES")
       gameSocket()?.offAny()
       gameSocket()?.onAny(function (event, data) {
-        console.log("🌎🌎 Event:", event);
-        console.log("🌎🌎 Data:", data);
+        console.log("🌝🌝 Event:", event);
+        console.log("🌝🌝 Data:", data);
       });
     }
   }
 
   const disconnectGameSocket = () => {
     if (gameSocket()?.connected) {
-      sk.disconnect("GAMES")
+      sk.disconnect("COMMUNITY-GAMES")
     }
   }
 
@@ -96,7 +96,7 @@ export const useGameSession = (): {
   const clearGameSession = () => {
     try {
       if (deleteCount <= 0)
-        console.log('🎯️ ️️GameSession :: Clear')
+        console.log('🎯️ PracticeGameSession :: Clear')
       setLsGameSession('')
       setGameSession(null)
       localStorage.removeItem('game-session')

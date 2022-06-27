@@ -5,19 +5,17 @@ import styles from './QuestionMedia.module.css'
 import cn from "classnames";
 import {ColorHex, CountdownCircleTimer} from 'react-countdown-circle-timer'
 import useScreenSize from "../../../hooks/useScreenSize/useScreenSize";
-import {TimerContext} from "../../../pages/game/play";
+import {useTimer} from "../../../hooks/useTimer/useTimer";
 
 const timerColor: { 0: ColorHex } & { 1: ColorHex } & ColorHex[] = ['#009883', '#dc3545', '#ffc107', '#dc3545', '#ffc107', '#dc3545', '#ffc107', '#dc3545', '#ffc107', '#dc3545', '#ffc107', '#dc3545', '#A30000']
 const QuestionMedia: FC<{
-  timeout: number
   media: string | null
   numStreak: number
   numSubmission: number
   className?: string
-}> = ({timeout, media, numSubmission, numStreak, className}) => {
+}> = ({media, numSubmission, numStreak, className}) => {
   const {fromMedium} = useScreenSize()
-
-  const timerContext = useContext(TimerContext)
+  const timerContext = useTimer()
   const formatTime = (remainingTime: number) => {
     const minutes = Math.floor(remainingTime / 60)
     const seconds = remainingTime % 60
@@ -74,7 +72,7 @@ const QuestionMedia: FC<{
               className={classNames('text-white fw-medium', styles.timeoutContainer)}
               style={{
                 backgroundColor:
-                  timeout <= 0 ? '#e2352a' : timeout % 2 == 0 ? '#007f6d' : '#7f955f',
+                  timerContext.countDown <= 0 ? '#e2352a' : timerContext.countDown % 2 == 0 ? '#007f6d' : '#7f955f',
                 transition: 'all .8s ease',
                 WebkitTransition: 'all .8s ease',
                 MozTransition: 'all .8s ease',
@@ -83,7 +81,7 @@ const QuestionMedia: FC<{
 
               <i className="bi bi-stopwatch"></i>
               <div className={classNames(styles.timeout)}>
-                {Math.floor(timeout / 60)} : {Math.ceil(timeout % 60)}
+                {Math.floor(timerContext.countDown / 60)} : {Math.ceil(timerContext.countDown % 60)}
               </div>
           </div>
       </div>

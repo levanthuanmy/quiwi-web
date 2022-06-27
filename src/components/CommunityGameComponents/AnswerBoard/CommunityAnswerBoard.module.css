@@ -6,15 +6,25 @@
 .hostControl {
   background-color: white;
   margin-top: 12px;
-  margin-bottom: 12px;
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
   border-radius: 10px;
-  padding: 16px;
+}
+
+.playerSystem {
+  margin-top: 12px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
+  border-radius: 10px;
 }
 
 @media (max-width: 768px) {
+  .container {
+    /*padding-bottom: 60px;*/
+  }
+
   .hostControl {
     padding: 0;
     background-color: #00000000;
@@ -47,10 +57,12 @@
 .answerLayout {
   flex-grow: 1;
   position: relative;
-  min-height: 400px;
+  min-height: 300px;
   /*// thiennc*/
   /*background-color: #15e2ef;*/
 }
+
+
 
 @media (min-width: 1200px) {
   .container {
@@ -72,20 +84,28 @@
 }
 
 .questionTitle {
-  overflow-y: scroll;
-  min-height: 80px;
+  overflow-y: auto;
+  min-height: 140px;
   max-height: 40%;
+}
+
+.submitButton {
+  border-radius:10px;
 }
 
 /*question title*/
 @media (max-width: 576px) {
+  .questionContainer {
+    min-height: 200px;
+  }
+
   .questionTitle {
     border-radius: 0px;
-    min-height: 80px;
-    max-height: 25%;
-    overflow-y: scroll;
+    /*max-height: 40%;*/
   }
 }
+
+
 
 .questionTitle::-webkit-scrollbar {
   width: 8px;
@@ -108,8 +128,10 @@
   background: #00655878;
 }
 
+
 @media (max-width: 576px) {
   .blankDiv {
-    height: 10%;
+    height: 20vh;
   }
+
 }

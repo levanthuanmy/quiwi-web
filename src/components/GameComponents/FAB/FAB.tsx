@@ -17,7 +17,7 @@ type FABProps = {
 }
 
 export const FAB: FC<FABProps> = (props) => {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(true);
 
   const renderDefault = () => {
     return <div

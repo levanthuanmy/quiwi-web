@@ -1,19 +1,29 @@
-import { NextPage } from 'next'
-import { useRouter } from 'next/router'
-import { Col, Container, Row } from 'react-bootstrap'
+import {NextPage} from 'next'
+import {useRouter} from 'next/router'
+import {Col, Container, Row} from 'react-bootstrap'
 import useSWR from 'swr'
 import CardQuizInfo from '../../../components/CardQuizInfo/CardQuizInfo'
 import ItemQuestion from '../../../components/ItemQuestion/ItemQuestion'
 import MyButton from '../../../components/MyButton/MyButton'
 import NavBar from '../../../components/NavBar/NavBar'
-import { get } from '../../../libs/api'
-import { TApiResponse, TQuiz } from '../../../types/types'
+import {get} from '../../../libs/api'
+import {TApiResponse, TQuiz, TUser} from '../../../types/types'
+import {useEffect, useState} from "react";
+import {JsonParse} from "../../../utils/helper";
+import {useLocalStorage} from "../../../hooks/useLocalStorage/useLocalStorage";
+import {usePracticeGameSession} from "../../../hooks/usePracticeGameSession/usePracticeGameSession";
 
 const QuizDetailPage: NextPage = () => {
   const router = useRouter()
   const query = router.query
-
+  const {
+    gameSession,
+    gameSkOn,
+    gameSkOnce,
+  } = usePracticeGameSession()
   const { id } = query
+  const [lsUser] = useLocalStorage('user', '')
+  const [user, setUser] = useState<TUser>()
 
   const { data, isValidating } = useSWR<TApiResponse<TQuiz>>(
     id
@@ -28,6 +38,55 @@ const QuizDetailPage: NextPage = () => {
       revalidateOnFocus: false,
     }
   )
+
+  useEffect(() => {
+    if (!gameSession) return
+
+    gameSkOnce('loading', (data) => {
+      // console.log('game started', data)
+      router.push(`/game/play`)
+    })
+
+    gameSkOn('error', (data) => {
+      console.log('LobbyScreen.tsx - error', data)
+    })
+
+  }, [gameSession])
+
+  // const handleLeaveRoom = () => {
+  //   clearGameSession()
+  //   router.back()
+  // }
+
+  useEffect(() => {
+    if (lsUser) setUser(JsonParse(lsUser) as TUser)
+    gameSkOn('loading', (data) => {})
+  }, [])
+
+  // const handleStartGame = () => {
+  //   try {
+  //     const cookies = new Cookies()
+  //     const accessToken = cookies.get('access-token')
+  //
+  //     if (user) {
+  //       const msg: TStartGameRequest = {
+  //         userId: user.id,
+  //         invitationCode: invitationCode,
+  //         token: accessToken,
+  //       }
+  //       gameSkEmit('start-game', msg)
+  //       gtag.event({
+  //         action: '[start game]',
+  //         params: {
+  //           quizId: gameSession?.quizId,
+  //           invitationCode: gameSession?.invitationCode,
+  //         },
+  //       })
+  //     }
+  //   } catch (error) {
+  //     console.log('handleStartGame - error', error)
+  //   }
+  // }
 
   const quiz = data?.response
 

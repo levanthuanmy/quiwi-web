@@ -60,7 +60,7 @@ export type TGameModeEnum = '10CLASSIC' | '20MRT'
 export type TGameStatus = '00WAITING' | '10PLAYING' | '20END'
 
 export type TStartQuizRequest = {
-  userId: number
+  userId?: number
   quizId: number
   mode: TGameModeEnum
   deadline?: number

@@ -5,18 +5,17 @@ import {TQuestionType, TQuestion} from "../../../../types/types";
 import TextQuestion from "../TextQuestion/TextQuestion";
 import ConnectQuestion from "../ConnectQuestion/ConnectQuestion";
 import EssayQuestion from "../PollQuestion/EssayQuestion";
-import {TimerContext} from "../../../../pages/game/play";
 import PollAnswerSection from "../SelectionQuestion/PollAnswerSection";
+import {useTimer} from "../../../../hooks/useTimer/useTimer";
 
 export class AnswerSectionFactory {
   isHost: boolean;
   answerLayout: string;
-  timerContext = useContext(TimerContext)
+  timerContext = useTimer()
 
 
   constructor(
     isHost: boolean,
-    //  
     answerLayout: string,
   ) {
     this.isHost = isHost
