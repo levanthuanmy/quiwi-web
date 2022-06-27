@@ -263,6 +263,10 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
   const [isNextEmitted, setIsNextEmitted] = useState<boolean>(false)
 
   const goToNextQuestion = () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current)
+      intervalRef.current = null
+    }
     if (!gameSession) return
     const msg = {invitationCode: gameSession.invitationCode}
     gameSkEmit('next-question', msg)
