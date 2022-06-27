@@ -15,6 +15,7 @@ import {TStartQuizResponse} from '../../../types/types'
 import styles from './GamePage.module.css'
 import * as gtag from '../../../libs/gtag'
 import {TimerProvider} from "../../../hooks/useTimer/useTimer";
+import { useLocalStorage } from '../../../hooks/useLocalStorage/useLocalStorage'
 
 export const ExitContext = React.createContext<{
   showEndGameModal: boolean
@@ -36,7 +37,7 @@ const GamePage: NextPage = () => {
   const [isShowHostControl, setIsShowHostControl] = useState<boolean>(true)
   const {fromMedium} = useScreenSize()
   const [endGameData, setEndGameData] = useState<TStartQuizResponse>()
-
+  const [lsBg] = useLocalStorage('bg', '')
   const fabs: FABAction[] = [
     {
       label: 'Khung chat',
@@ -139,6 +140,12 @@ const GamePage: NextPage = () => {
           styles.gameBackground,
           'bg-black customScrollbar'
         )}
+        style={{
+          backgroundImage: `url(${lsBg}`,
+          // backgroundSize: 'auto 100vh',
+          backgroundRepeat: 'repeat',
+          backgroundPosition: 'center',
+        }}
       >
         <div
           className={classNames(

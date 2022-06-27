@@ -10,15 +10,14 @@ import {
   TApiResponse,
   TPaginationResponse,
   TQuiz,
-  TQuizCategory,
+  TQuizCategory
 } from '../../types/types'
 import {
   getUrl,
   storage,
   storageRef,
-  uploadFile,
+  uploadFile
 } from '../../utils/firebaseConfig'
-import FullScreenLoader from '../FullScreenLoader/FullScreenLoader'
 import Loading from '../Loading/Loading'
 import MyButton from '../MyButton/MyButton'
 import MyInput from '../MyInput/MyInput'

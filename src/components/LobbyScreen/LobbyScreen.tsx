@@ -4,20 +4,22 @@ import _ from 'lodash'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { FC, useEffect, useState } from 'react'
-import { Modal, Toast, ToastContainer } from 'react-bootstrap'
+import { Modal } from 'react-bootstrap'
 import QRCode from 'react-qr-code'
+import { useToasts } from 'react-toast-notifications'
 import Cookies from 'universal-cookie'
 import { useGameSession } from '../../hooks/useGameSession/useGameSession'
-import useScreenSize from '../../hooks/useScreenSize/useScreenSize'
 import { useLocalStorage } from '../../hooks/useLocalStorage/useLocalStorage'
+import useScreenSize from '../../hooks/useScreenSize/useScreenSize'
+import * as gtag from '../../libs/gtag'
 import { TPlayer, TStartGameRequest, TUser } from '../../types/types'
 import { JsonParse } from '../../utils/helper'
 import MyButton from '../MyButton/MyButton'
+import MyModal from '../MyModal/MyModal'
 import PlayerLobbyItem from '../PlayerLobbyItem/PlayerLobbyItem'
 import PlayerLobbyList from '../PlayerLobbyList/PlayerLobbyList'
+import BackgroundPicker from './BackgroundPicker/BackgroundPicker'
 import styles from './LobbyScreen.module.css'
-import { useToasts } from 'react-toast-notifications'
-import * as gtag from '../../libs/gtag'
 
 type LobbyScreenProps = {
   invitationCode: string
@@ -26,11 +28,12 @@ type LobbyScreenProps = {
 const LobbyScreen: FC<LobbyScreenProps> = ({ invitationCode, isHost }) => {
   const [playerList, setPlayerList] = useState<TPlayer[]>([])
   const [lsUser] = useLocalStorage('user', '')
+  const [lsBg, saveLsBg] = useLocalStorage('bg', '')
   const [user, setUser] = useState<TUser>()
   const router = useRouter()
-  const [showToast, setShowToast] = useState<boolean>(false)
   const [showQR, setShowQR] = useState<boolean>(false)
   const { isMobile } = useScreenSize()
+  const [showBackgroundModal, setShowBackgroundModal] = useState<boolean>(false)
   const {
     gameSession,
     saveGameSession,
@@ -41,6 +44,7 @@ const LobbyScreen: FC<LobbyScreenProps> = ({ invitationCode, isHost }) => {
     gameSkOnce,
   } = useGameSession()
   const { addToast } = useToasts()
+  const [currentBackground, setCurrentBackground] = useState<string>(lsBg)
 
   useEffect(() => {
     if (!gameSession) return
@@ -89,6 +93,13 @@ const LobbyScreen: FC<LobbyScreenProps> = ({ invitationCode, isHost }) => {
 
   useEffect(() => {
     if (lsUser) setUser(JsonParse(lsUser) as TUser)
+    if(lsBg && lsBg.length) {
+      setCurrentBackground(lsBg)
+    }
+    else {
+      setCurrentBackground('/assets/default-game-bg.svg')
+      saveLsBg('/assets/default-game-bg.svg')
+    }
   }, [])
 
   const handleLeaveRoom = () => {
@@ -123,6 +134,7 @@ const LobbyScreen: FC<LobbyScreenProps> = ({ invitationCode, isHost }) => {
           },
         })
       }
+      saveLsBg(currentBackground)
     } catch (error) {
       console.log('handleStartGame - error', error)
     }
@@ -136,7 +148,17 @@ const LobbyScreen: FC<LobbyScreenProps> = ({ invitationCode, isHost }) => {
       'copyInvitationCode - ',
       `${window.location.host}/lobby/join?invitationCode=${invitationCode}`
     )
-    setShowToast(true)
+    addToast(
+      <>
+        Copy thành công
+        <br />
+        Gửi link mời cho bạn bè để tham gia!
+      </>,
+      {
+        autoDismiss: true,
+        appearance: 'success',
+      }
+    )
   }
 
   function renderHostName() {
@@ -157,32 +179,49 @@ const LobbyScreen: FC<LobbyScreenProps> = ({ invitationCode, isHost }) => {
   }
 
   return (
-    <div className="bg-secondary fw-medium bg-opacity-10 min-vh-100 d-flex flex-column justify-content-center align-items-center">
-      <Head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin={'true'}
+    <div
+      style={{
+        backgroundImage: `url(${currentBackground}`,
+        // backgroundSize: 'auto 100vh',
+        backgroundRepeat: 'repeat',
+        backgroundPosition: 'center',
+      }}
+      className="bg-dark"
+    >
+      <div
+        className="bg-dark bg-opacity-50 fw-medium bg-opacity-10 min-vh-100 d-flex flex-column justify-content-center align-items-center"
+        // style={{ backdropFilter: 'blur(3px)' }}
+      >
+        <Head>
+          <link rel="preconnect" href="https://fonts.googleapis.com" />
+          <link
+            rel="preconnect"
+            href="https://fonts.gstatic.com"
+            crossOrigin={'true'}
+          />
+          <link
+            href="https://fonts.googleapis.com/css2?family=Boogaloo&display=swap"
+            rel="stylesheet"
+          />
+        </Head>
+
+        {isMobile ? renderInvitationCode() : renderPcInvitationCode()}
+
+        {renderHostName()}
+
+        {renderPlayerList()}
+        {/*Thoát + Bắt đầu*/}
+        {functionalButtons()}
+
+        {/*Các view ẩn*/}
+        {renderQrModal()}
+
+        <BackgroundPicker
+          show={showBackgroundModal}
+          onHide={() => setShowBackgroundModal(false)}
+          setCurrentBackground={setCurrentBackground}
         />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Boogaloo&display=swap"
-          rel="stylesheet"
-        />
-      </Head>
-
-      {isMobile ? renderInvitationCode() : renderPcInvitationCode()}
-
-      {/*Game của Thiện*/}
-      {renderHostName()}
-
-      {renderPlayerList()}
-      {/*Thoát + Bắt đầu*/}
-      {functionalButtons()}
-
-      {/*Các view ẩn*/}
-      {renderToast()}
-      {renderQrModal()}
+      </div>
     </div>
   )
 
@@ -261,27 +300,6 @@ const LobbyScreen: FC<LobbyScreenProps> = ({ invitationCode, isHost }) => {
     )
   }
 
-  function renderToast() {
-    return (
-      <ToastContainer className="p-3" position="bottom-end">
-        <Toast
-          bg={'success'}
-          onClose={() => setShowToast(false)}
-          show={showToast}
-          delay={3000}
-          autohide
-        >
-          <Toast.Header closeButton={false}>
-            <strong className="me-auto">Copy thành công</strong>
-          </Toast.Header>
-          <Toast.Body className={'text-white'}>
-            Gửi link mời cho bạn bè để tham gia!
-          </Toast.Body>
-        </Toast>
-      </ToastContainer>
-    )
-  }
-
   function renderQrModal() {
     return (
       <Modal
@@ -289,10 +307,8 @@ const LobbyScreen: FC<LobbyScreenProps> = ({ invitationCode, isHost }) => {
         onHide={() => {
           setShowQR(false)
         }}
-        // size=""
         aria-labelledby="contained-modal-title-vcenter"
         centered
-        // fullscreen="sm-down"
       >
         <Modal.Header closeButton className={styles.modalHeader}>
           <Modal.Title
@@ -302,37 +318,40 @@ const LobbyScreen: FC<LobbyScreenProps> = ({ invitationCode, isHost }) => {
             Quét mã QR để vào phòng
           </Modal.Title>
         </Modal.Header>
-        {/*<Modal.Body cl>*/}
-        {/*<div className={styles.qrContainer}>*/}
         <QRCode
           size={200}
           fgColor={'#009883'}
           value="hey"
           className={styles.qrModal}
         />
-        {/*</div>*/}
-        {/*</Modal.Body>*/}
       </Modal>
     )
   }
 
   function functionalButtons() {
     return (
-      <div className="d-flex gap-3 pt-12px">
+      <div className="d-flex gap-3 p-12px flex-wrap">
         <MyButton
-          variant="secondary"
-          className="text-white fw-medium bg-secondary px-12px"
+          variant="danger"
+          className="fw-medium d-flex align-items-center gap-2"
           onClick={handleLeaveRoom}
         >
+          <i className="bi bi-door-open fs-24px" />
           RỜI PHÒNG
         </MyButton>
-        <br />
-        <br />
+        <MyButton
+          className="text-white fw-medium d-flex align-items-center gap-2"
+          onClick={() => setShowBackgroundModal(true)}
+        >
+          <i className="bi bi-image fs-24px" />
+          CHỌN ẢNH NỀN
+        </MyButton>
         {isHost && (
           <MyButton
-            className="text-white fw-medium px-12px"
+            className="text-white fw-medium d-flex align-items-center gap-2"
             onClick={handleStartGame}
           >
+            <i className="bi bi-play-fill fs-24px" />
             BẮT ĐẦU
           </MyButton>
         )}
