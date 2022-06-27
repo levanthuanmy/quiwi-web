@@ -19,7 +19,6 @@ import {QuestionMedia} from "../../GameComponents/QuestionMedia/QuestionMedia";
 import LoadingBoard from "../../GameComponents/LoadingBoard/LoadingBoard";
 import {useTimer} from "../../../hooks/useTimer/useTimer";
 import {usePracticeGameSession} from "../../../hooks/usePracticeGameSession/usePracticeGameSession";
-import ReactSwitch from "react-switch";
 import {Button} from "@restart/ui";
 import {ExitContext} from "../CommunityGamePlay/CommunityGamePlay";
 
@@ -76,6 +75,7 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
   useEffect(() => {
     handleSocket()
     resetState()
+    setLoading("Chuẩn bị!")
     console.log("=>(CommunityAnswerBoard.tsx:77) goilao");
   }, [])
 
@@ -113,10 +113,10 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
   }
 
   function resetState() {
-    if (!gameSession)
-      setLoading("Chuẩn bị!")
-    else
-      setLoading(null)
+    // if (gameSession)
+
+    // else
+    //   setLoading(null)
     setLoading(null)
     timer.setIsShowSkeleton(true)
     setIsShowNext(false)
