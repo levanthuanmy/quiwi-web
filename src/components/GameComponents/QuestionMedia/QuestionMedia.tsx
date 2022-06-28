@@ -1,11 +1,10 @@
-import classNames from 'classnames'
-import {FC, useContext, useRef, useState} from 'react'
-import {Image} from 'react-bootstrap'
-import styles from './QuestionMedia.module.css'
-import cn from "classnames";
-import {ColorHex, CountdownCircleTimer} from 'react-countdown-circle-timer'
+import { default as classNames, default as cn } from 'classnames';
+import { FC } from 'react';
+import { Image } from 'react-bootstrap';
+import { ColorHex, CountdownCircleTimer } from 'react-countdown-circle-timer';
 import useScreenSize from "../../../hooks/useScreenSize/useScreenSize";
-import {useTimer} from "../../../hooks/useTimer/useTimer";
+import { useTimer } from "../../../hooks/useTimer/useTimer";
+import styles from './QuestionMedia.module.css';
 
 const timerColor: { 0: ColorHex } & { 1: ColorHex } & ColorHex[] = ['#009883', '#dc3545', '#ffc107', '#dc3545', '#ffc107', '#dc3545', '#ffc107', '#dc3545', '#ffc107', '#dc3545', '#ffc107', '#dc3545', '#A30000']
 const QuestionMedia: FC<{
@@ -145,4 +144,5 @@ const QuestionMedia: FC<{
   )
 }
 
-export {QuestionMedia}
+export { QuestionMedia };
+

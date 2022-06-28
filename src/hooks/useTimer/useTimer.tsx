@@ -1,4 +1,6 @@
 import React, {Dispatch, ReactNode, SetStateAction, useRef, useState} from "react";
+import { SOUND_EFFECT } from "../../utils/constants";
+import { playSound } from "../../utils/helper";
 
 type TimerContextValue = {
   isCounting: boolean
@@ -12,6 +14,7 @@ type TimerContextValue = {
   duration: number
   setDefaultDuration: (duration: number) => void
   stopCounting: (stopUI: boolean) => void
+  stopCountingSound: (stopUI: boolean) => void
   startCounting: (duration: number) => void
 }
 
@@ -27,6 +30,7 @@ export const TimerContext = React.createContext<TimerContextValue>({
   duration: 0,
   setDefaultDuration: (duration: number) => {},
   stopCounting: (stopUI: boolean) => {},
+  stopCountingSound: (stopUI: boolean) => {},
   startCounting: (duration: number) => {},
 })
 
@@ -38,6 +42,7 @@ export const TimerProvider = ({children}: { children?: ReactNode }) => {
   const [duration, setDefaultDuration] = useState<number>(0)
   const [isShowSkeleton, setIsShowSkeleton] = useState<boolean>(false)
   const intervalRef = useRef<NodeJS.Timer | null>(null)
+  const intervalRefSound = useRef<NodeJS.Timer | null>(null)
 
 
   const stopCounting = (stopUI: boolean) => {
@@ -52,6 +57,19 @@ export const TimerProvider = ({children}: { children?: ReactNode }) => {
 
       setTimeout(() => {
         setIsSubmittable(false)
+      }, 500)
+    }
+  }
+
+  const stopCountingSound = (stopUI: boolean) => {
+    console.log("=>(useTimer) stopCountingSound stopUI", stopUI);
+    if (intervalRefSound && intervalRefSound.current) {
+      if (stopUI) {
+        clearInterval(intervalRefSound.current)
+        intervalRefSound.current = null
+      }
+
+      setTimeout(() => {
       }, 500)
     }
   }
@@ -82,6 +100,19 @@ export const TimerProvider = ({children}: { children?: ReactNode }) => {
           stopCounting(true)
         }
       }, 100)
+
+      intervalRefSound.current = setInterval(() => {
+        let curr = Math.round(new Date().getTime())
+        let _countDown = Math.ceil((endTime - curr) / 1000)
+        if (_countDown < 4) {
+          console.log(_countDown);
+          playSound(SOUND_EFFECT['ONE_SECOND']);
+        }
+        // setCountDown(_countDown)
+        if (_countDown <= 0) {
+          stopCountingSound(true)
+        }
+      }, 1000)
     }
   }
 
@@ -98,6 +129,7 @@ export const TimerProvider = ({children}: { children?: ReactNode }) => {
     duration,
     setDefaultDuration,
     stopCounting,
+    stopCountingSound,
     startCounting,
   }
   return <TimerContext.Provider value={_value}>{children}</TimerContext.Provider>

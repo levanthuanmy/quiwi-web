@@ -21,11 +21,13 @@ import {useTimer} from "../../../hooks/useTimer/useTimer";
 import {usePracticeGameSession} from "../../../hooks/usePracticeGameSession/usePracticeGameSession";
 import {Button} from "@restart/ui";
 import {ExitContext} from "../CommunityGamePlay/CommunityGamePlay";
+import { Howl } from 'howler'
 
 type CommunityAnswerBoardProps = {
   className?: string
   isShowHostControl: boolean
   setIsShowHostControl: React.Dispatch<React.SetStateAction<boolean>>
+  sound?: Howl
 }
 
 const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
