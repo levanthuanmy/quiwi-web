@@ -16,6 +16,9 @@ import styles from './GamePage.module.css'
 import * as gtag from '../../../libs/gtag'
 import {TimerProvider} from "../../../hooks/useTimer/useTimer";
 import { useLocalStorage } from '../../../hooks/useLocalStorage/useLocalStorage'
+import { Howl } from 'howler'
+import { SOUND_EFFECT } from '../../../utils/constants'
+
 
 export const ExitContext = React.createContext<{
   showEndGameModal: boolean
@@ -37,6 +40,13 @@ const GamePage: NextPage = () => {
   const [isShowHostControl, setIsShowHostControl] = useState<boolean>(true)
   const {fromMedium} = useScreenSize()
   const [endGameData, setEndGameData] = useState<TStartQuizResponse>()
+  const [sound, setSound] = useState<Howl>(
+    new Howl({
+      src: SOUND_EFFECT['GAME_PLAYING'],
+      html5: true,
+      loop: true
+    })
+  );
   const [lsBg] = useLocalStorage('bg', '')
   const fabs: FABAction[] = [
     {
@@ -89,6 +99,7 @@ const GamePage: NextPage = () => {
 
   const exitRoom = () => {
     // dùng clear game session là đủ
+    sound.stop();
     clearGameSession()
     router.push('/my-lib')
   }
@@ -115,7 +126,9 @@ const GamePage: NextPage = () => {
   }
 
   useEffect(() => {
+    sound.play();
     gameSkOn('game-ended', (data) => {
+      sound.stop();
       setEndGameData(data)
       saveGameSession(data)
       setIsGameEnded(true)
@@ -131,6 +144,21 @@ const GamePage: NextPage = () => {
       params: {quizId: gameSession?.quizId, invitationCode: gameSession?.invitationCode},
     })
   }, [])
+
+  useEffect(() => {
+    router.beforePopState(({ as }) => {
+        if (as !== router.asPath) {
+            // Will run when leaving the current page; on back/forward actions
+            // Add your logic here, like toggling the modal state
+            sound.stop();
+        }
+        return true;
+    });
+
+    return () => {
+        router.beforePopState(() => true);
+    };
+}, [router]);
 
   const [exitModal, setExitModal] = useState(false)
   return (
@@ -169,6 +197,7 @@ const GamePage: NextPage = () => {
                   <AnswerBoard
                     className="flex-grow-1"
                     isShowHostControl={isShowHostControl}
+                    sound={sound}
                   />
                 </TimerProvider>
               </ExitContext.Provider>

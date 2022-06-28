@@ -4,7 +4,7 @@ import {useRouter} from 'next/router'
 import React, {FC, memo, useContext, useEffect, useRef, useState} from 'react'
 import {useLocalStorage} from '../../../hooks/useLocalStorage/useLocalStorage'
 import {TPlayer, TQuestion, TViewResult,} from '../../../types/types'
-import {JsonParse} from '../../../utils/helper'
+import {JsonParse, playRandomCorrectAnswerSound, playSound} from '../../../utils/helper'
 import styles from './CommunityAnswerBoard.module.css'
 import {Fade, Form, FormCheck, Image} from 'react-bootstrap'
 import useScreenSize from '../../../hooks/useScreenSize/useScreenSize'
@@ -21,17 +21,21 @@ import {useTimer} from "../../../hooks/useTimer/useTimer";
 import {usePracticeGameSession} from "../../../hooks/usePracticeGameSession/usePracticeGameSession";
 import {Button} from "@restart/ui";
 import {ExitContext} from "../CommunityGamePlay/CommunityGamePlay";
+import { Howl } from 'howler'
+import { SOUND_EFFECT } from '../../../utils/constants'
 
 type CommunityAnswerBoardProps = {
   className?: string
   isShowHostControl: boolean
   setIsShowHostControl: React.Dispatch<React.SetStateAction<boolean>>
+  sound?: Howl
 }
 
 const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
                                                                className,
                                                                isShowHostControl,
-                                                               setIsShowHostControl
+                                                               setIsShowHostControl,
+                                                               sound
                                                              }) => {
   const {
     gameSession,
@@ -182,9 +186,17 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
         setLoading(null)
       }, 1000)
       timer.stopCounting(true)
+      timer.stopCountingSound(true)
       setViewResultData(data)
       setIsShowNext(true)
       if (data?.player && typeof window !== 'undefined') {
+        const curStreak = data.player.currentStreak ?? 0;
+        if (curStreak > 0) {
+          playRandomCorrectAnswerSound();
+        } else {
+          playSound(SOUND_EFFECT['INCORRECT_BACKGROUND']);
+          playSound(SOUND_EFFECT['INCORRECT_ANSWER']);
+        }
         localStorage.setItem(
           'game-session-player',
           JSON.stringify(data?.player)
@@ -273,6 +285,7 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
   }
 
   function endGame() {
+    sound?.stop();
     if (gameSession && gameSocket() != null) {
       const msg = {invitationCode: gameSession.invitationCode}
       gameSkEmit('game-ended', msg)
@@ -360,7 +373,9 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
                     iconClassName="bi bi-x-octagon-fill"
                     className={classNames('text-white fw-medium bg-danger')}
                     title="Kết thúc game"
-                    onClick={() => exitContext.setShowEndGameModal(true)}
+                    onClick={() => {
+                      exitContext.setShowEndGameModal(true)
+                    }}
                 />
             }
           </div>

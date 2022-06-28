@@ -6,7 +6,7 @@ import {useGameSession} from '../../../hooks/useGameSession/useGameSession'
 
 import {useLocalStorage} from '../../../hooks/useLocalStorage/useLocalStorage'
 import {TPlayer, TQuestion, TStartQuizResponse, TUser, TViewResult,} from '../../../types/types'
-import {JsonParse} from '../../../utils/helper'
+import {JsonParse, playRandomCorrectAnswerSound, playSound} from '../../../utils/helper'
 import GameSessionRanking from '../GameSessionRanking/GameSessionRanking'
 import {QuestionMedia} from '../QuestionMedia/QuestionMedia'
 import styles from './AnswerBoard.module.css'
@@ -22,15 +22,19 @@ import {ExitContext} from "../../../pages/game/play";
 import LoadingBoard from "../LoadingBoard/LoadingBoard";
 import {useToasts} from "react-toast-notifications";
 import {useTimer} from "../../../hooks/useTimer/useTimer";
+import { Howl } from 'howler'
+import { SOUND_EFFECT } from '../../../utils/constants'
 
 type AnswerBoardProps = {
   className?: string
   isShowHostControl: boolean
+  sound?: Howl
 }
 
 const AnswerBoard: FC<AnswerBoardProps> = ({
                                              className,
                                              isShowHostControl,
+                                             sound
                                            }) => {
   const {
     gameSession,
@@ -168,10 +172,19 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
         setLoading(null)
       }, 1000)
       timer.stopCounting(true)
+      timer.stopCountingSound(true)
       setViewResultData(data)
+      console.log(data);
       setAnswersStatistic(data.answersStatistic)
       setIsShowNext(true)
       if (data?.player && !isHost && typeof window !== 'undefined') {
+        const curStreak = data.player.currentStreak ?? 0;
+        if (curStreak > 0) {
+          playRandomCorrectAnswerSound();
+        } else {
+          playSound(SOUND_EFFECT['INCORRECT_BACKGROUND']);
+          playSound(SOUND_EFFECT['INCORRECT_ANSWER']);
+        }
         localStorage.setItem(
           'game-session-player',
           JSON.stringify(data?.player)
@@ -282,6 +295,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
   }
 
   function endGame() {
+    sound?.stop();
     if (gameSession && gameSocket() != null && isHost) {
       const msg = {invitationCode: gameSession.invitationCode}
       gameSkEmit('game-ended', msg)
@@ -311,7 +325,9 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
                     iconClassName="bi bi-x-octagon-fill"
                     className={classNames('text-white fw-medium bg-danger')}
                     title="Kết thúc game"
-                    onClick={() => exitContext.setShowEndGameModal(true)}
+                    onClick={() => {
+                      exitContext.setShowEndGameModal(true)
+                    }}
                 />
             }
             {!isShowEndGame &&

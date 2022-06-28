@@ -78,6 +78,13 @@ export const SOUND_EFFECT: Record<string, string> = {
   SPIN_BUTTON: 'https://thumbs.dreamstime.com/audiothumb_14723/147239759.mp3',
   NOTIFICATION: '/sounds/messenger_tone.mp3',
   JACKPOT_CONGRATULATION: '/sounds/congratulation.mp3',
+  GAME_WATING: '/sounds/game-wating.mp3',
+  GAME_PLAYING: '/sounds/game-playing.mp3',
+  INCORRECT_BACKGROUND: '/sounds/incorrect-background.mp3',
+  INCORRECT_ANSWER: '/sounds/incorrect_answer.mp3',
+  ONE_SECOND: '/sounds/one-second.mp3',
+  END_GAME: '/sounds/end-game.mp3',
+  CONGRATULATION_RANKING: '/sounds/congratulations-winner.mp3'
 }
 
 export const TIMEOUT_OPTIONS = [1, 2, 5, 10, 15, 30, 60, 120, 180]

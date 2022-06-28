@@ -20,6 +20,9 @@ import PlayerLobbyItem from '../PlayerLobbyItem/PlayerLobbyItem'
 import PlayerLobbyList from '../PlayerLobbyList/PlayerLobbyList'
 import BackgroundPicker from './BackgroundPicker/BackgroundPicker'
 import styles from './LobbyScreen.module.css'
+import { playSound, playSoundWithLoop } from '../../utils/helper';
+import { SOUND_EFFECT } from '../../utils/constants';
+import { Howl } from 'howler'
 
 type LobbyScreenProps = {
   invitationCode: string
@@ -45,6 +48,13 @@ const LobbyScreen: FC<LobbyScreenProps> = ({ invitationCode, isHost }) => {
   } = useGameSession()
   const { addToast } = useToasts()
   const [currentBackground, setCurrentBackground] = useState<string>(lsBg)
+  const [sound, setSound] = useState<Howl>(
+    new Howl({
+      src: SOUND_EFFECT['GAME_WATING'],
+      html5: true,
+      loop: true
+    })
+  );
 
   useEffect(() => {
     if (!gameSession) return
@@ -78,20 +88,24 @@ const LobbyScreen: FC<LobbyScreenProps> = ({ invitationCode, isHost }) => {
     })
 
     gameSkOnce('host-out', () => {
+      sound.stop();
       router.push('/')
     })
 
     gameSkOnce('loading', (data) => {
       // console.log('game started', data)
+      sound.stop();
       router.push(`/game/play`)
     })
 
     gameSkOn('error', (data) => {
+      sound.stop();
       console.log('LobbyScreen.tsx - error', data)
     })
   }, [gameSession])
 
   useEffect(() => {
+    sound.play();
     if (lsUser) setUser(JsonParse(lsUser) as TUser)
     if(lsBg && lsBg.length) {
       setCurrentBackground(lsBg)
@@ -101,6 +115,21 @@ const LobbyScreen: FC<LobbyScreenProps> = ({ invitationCode, isHost }) => {
       saveLsBg('/assets/default-game-bg.svg')
     }
   }, [])
+
+  useEffect(() => {
+    router.beforePopState(({ as }) => {
+        if (as !== router.asPath) {
+            // Will run when leaving the current page; on back/forward actions
+            // Add your logic here, like toggling the modal state
+            sound.stop();
+        }
+        return true;
+    });
+
+    return () => {
+        router.beforePopState(() => true);
+    };
+}, [router]);
 
   const handleLeaveRoom = () => {
     clearGameSession()

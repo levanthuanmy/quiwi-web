@@ -1,13 +1,16 @@
 import classNames from 'classnames'
-import React, { FC, memo, useState } from 'react'
+import React, { FC, memo, useEffect, useState } from 'react'
 import { Image } from 'react-bootstrap'
+import Confetti from 'react-confetti'
 import { useToasts } from 'react-toast-notifications'
+import { useWindowSize } from 'react-use'
 import { useAuth } from '../../../hooks/useAuth/useAuth'
 import { useGameSession } from '../../../hooks/useGameSession/useGameSession'
 import { useLocalStorage } from '../../../hooks/useLocalStorage/useLocalStorage'
 import { get } from '../../../libs/api'
 import { TPlayer, TStartQuizResponse } from '../../../types/types'
-import { JsonParse } from '../../../utils/helper'
+import { SOUND_EFFECT } from '../../../utils/constants'
+import { JsonParse, playSound } from '../../../utils/helper'
 import MyButton from '../../MyButton/MyButton'
 import styles from './EndGameBoard.module.css'
 
@@ -16,12 +19,18 @@ type EndGameBoardProps = {
 }
 
 const EndGameBoard: FC<EndGameBoardProps> = ({ className }) => {
+  const { width, height } = useWindowSize();
   const { gameSession, isHost } = useGameSession()
   const { isAuth } = useAuth()
   const [isVote, setIsVote] = useState<boolean>(false)
   const { addToast } = useToasts()
 
   const [lsPlayer] = useLocalStorage('game-session-player', '')
+
+  useEffect(() => {
+    playSound(SOUND_EFFECT['END_GAME']);
+    playSound(SOUND_EFFECT['CONGRATULATION_RANKING']);
+  }, [])
 
   const renderList = () => {
     if (!gameSession) return
@@ -89,6 +98,10 @@ const EndGameBoard: FC<EndGameBoardProps> = ({ className }) => {
       )}
     >
       <div className={`${styles.rankingChart} p-5`}>
+        <Confetti
+          width={width}
+          height={height}
+        />
         <div className="fs-1 fw-bold text-center">
           <Image
             src={`/assets/congrat-ribbon.png`}
@@ -149,11 +162,11 @@ const ItemChart: FC<{
   name = name.length > 4 ? name.substring(0, 4) + '...' : name
 
   const medalImage: Record<TPositionRanking, { image: string; color: string }> =
-    {
-      '1st': { image: '/assets/gold-medal.png', color: 'gold' },
-      '2nd': { image: '/assets/silver-medal.png', color: 'silver' },
-      '3rd': { image: '/assets/bronze-medal.png', color: 'brown' },
-    }
+  {
+    '1st': { image: '/assets/gold-medal.png', color: 'gold' },
+    '2nd': { image: '/assets/silver-medal.png', color: 'silver' },
+    '3rd': { image: '/assets/bronze-medal.png', color: 'brown' },
+  }
 
   const getSize = () => {
     if (!gameSession) return
