@@ -20,7 +20,7 @@ import {
 import BadgesPage from '../badges'
 import UserItemPage from '../user-items'
 
-const GetUserPage: NextPage = () => {
+const GetUserProfilePage: NextPage = () => {
   const [user, setUser] = useState<TUser>()
   const [userProfile, setUserProfile] = useState<TUserProfile>()
   const router = useRouter()
@@ -102,21 +102,6 @@ const GetUserPage: NextPage = () => {
     }
   }, [user])
 
-  const renderData = (data: number, label: string, showModal?: Function) => {
-    return (
-      <Col
-        className={`py-1 rounded-20px ${showModal ? 'cursor-pointer' : null}`}
-        onClick={() => {
-          showModal && showModal()
-        }}
-      >
-        <div>
-          <span className="fw-medium">{data} </span> {label}
-        </div>
-      </Col>
-    )
-  }
-
   const getFollowersUsers = async () => {
     try {
       const params = {
@@ -148,26 +133,6 @@ const GetUserPage: NextPage = () => {
       setFollowingUsers(res.response)
     } catch (error) {
       console.log('getFollowingUsers - error', error)
-    }
-  }
-
-  const unfollow = async (followingUserId: number) => {
-    try {
-      const params = {
-        followingUserId: followingUserId,
-      }
-      const res: TApiResponse<{ result: string }> = await post(
-        `/api/users/follow`,
-
-        params,
-        {},
-        true
-      )
-      alert(res.response.result)
-      await getFollowingUsers()
-    } catch (error) {
-      console.log(error)
-      alert('Lỗi')
     }
   }
 
@@ -280,4 +245,4 @@ const GetUserPage: NextPage = () => {
   )
 }
 
-export default GetUserPage
+export default GetUserProfilePage

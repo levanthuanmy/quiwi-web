@@ -36,6 +36,7 @@ const SummaryInfo: FC<SummaryInfoProps> = ({
     useState<TPaginationResponse<TFollowUsers>>()
   const [followerUsers, setFollowerUsers] =
     useState<TPaginationResponse<TFollowUsers>>()
+
   const getFollowersUsers = async () => {
     try {
       const params = {
@@ -82,7 +83,11 @@ const SummaryInfo: FC<SummaryInfoProps> = ({
       <>
         {followerUsers?.items.length ? (
           followerUsers.items.map((follower, key) => (
-            <ItemFollowUser key={key} followUser={follower} />
+            <ItemFollowUser
+              key={key}
+              followUser={follower}
+              onHideModal={onHideModal}
+            />
           ))
         ) : (
           <div>Chưa có ai theo dõi</div>
@@ -93,7 +98,11 @@ const SummaryInfo: FC<SummaryInfoProps> = ({
       <>
         {followingUsers?.items.length ? (
           followingUsers.items.map((following, key) => (
-            <ItemFollowUser key={key} followUser={following} />
+            <ItemFollowUser
+              key={key}
+              followUser={following}
+              onHideModal={onHideModal}
+            />
           ))
         ) : (
           <div>Chưa theo dõi ai</div>
@@ -182,13 +191,17 @@ const SummaryInfo: FC<SummaryInfoProps> = ({
 
 export default SummaryInfo
 
-const ItemFollowUser: FC<{ followUser: TFollowUsers }> = ({ followUser }) => {
+const ItemFollowUser: FC<{
+  followUser: TFollowUsers
+  onHideModal: () => void
+}> = ({ followUser, onHideModal }) => {
   const router = useRouter()
   const user = followUser.followingUser ?? followUser.user
   return (
     <div
       className="btn btn-outline-light mb-3 d-flex align-items-center gap-2 rounded-14px"
       onClick={() => {
+        onHideModal()
         router.push(`/users/${user?.id}`)
       }}
     >

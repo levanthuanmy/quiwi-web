@@ -2,6 +2,7 @@ import classNames from 'classnames'
 import router from 'next/router'
 import React, { FC, memo, ReactNode, useState } from 'react'
 import { Modal } from 'react-bootstrap'
+import { useAuth } from '../../hooks/useAuth/useAuth'
 import { get, post } from '../../libs/api'
 import { TApiResponse, TQuiz, TQuizBodyRequest } from '../../types/types'
 import { HOME_MENU_OPTIONS } from '../../utils/constants'
@@ -20,9 +21,14 @@ const DashboardLayout: FC<DashboardLayoutProps> = ({ children }) => {
   const [showModal, setShowModal] = useState<boolean>(false)
   const [invitationCode, setInvitationCode] = useState<string>('')
   const [invitationInputError, setInvitationInputError] = useState<string>('')
-
+  const auth = useAuth()
+  const user = auth.getUser()
   const onToQuizCreator = async () => {
     try {
+      if (!user) {
+        router.push(`/sign-in`)
+        return
+      }
       const body: TQuizBodyRequest = {
         title: 'Quiz chưa có tên',
         description: '',

@@ -1,4 +1,4 @@
-import classNames from 'classnames'
+import _ from 'lodash'
 import { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { useMemo, useState } from 'react'
@@ -7,7 +7,6 @@ import ReactSelect from 'react-select'
 import useSWR from 'swr'
 import DashboardLayout from '../../components/DashboardLayout/DashboardLayout'
 import ItemQuiz from '../../components/ItemQuiz/ItemQuiz'
-import MyInput from '../../components/MyInput/MyInput'
 import { MyPagination } from '../../components/MyPagination/MyPagination'
 import SearchBar from '../../components/SearchBar/SearchBar'
 import { get } from '../../libs/api'
@@ -15,7 +14,7 @@ import {
   TApiResponse,
   TPaginationResponse,
   TQuiz,
-  TQuizCategory,
+  TQuizCategory
 } from '../../types/types'
 
 const ExplorePage: NextPage = () => {
@@ -33,19 +32,9 @@ const ExplorePage: NextPage = () => {
     TApiResponse<TPaginationResponse<TQuiz>>
   >(
     [
-      `/api/quizzes`,
+      `/api/quizzes/community`,
       false,
       {
-        filter: {
-          relations: ['questions', 'user', 'quizCategories'],
-          where: {
-            isPublic: true,
-            isLocked: false,
-          },
-          order: {
-            createdAt: 'DESC',
-          },
-        },
         quizFilter: currentCategoryId?.length
           ? { quizCategoryIds: currentCategoryId }
           : undefined,
@@ -77,7 +66,10 @@ const ExplorePage: NextPage = () => {
       <div className="w-100 bg-secondary bg-opacity-10 min-vh-100">
         <Container fluid="lg" className="p-3">
           <div className="fs-32px fw-medium mb-3">
-            {q?.length ? q : 'Hãy tìm kiếm gì đó...'}
+            Khám phá
+            <div className='text-muted fs-14px'>
+              Tham gia các Quiz cộng đồng để luyện tập, tích lũy kiến thức ❤️
+            </div>
           </div>
           <Row className="align-items-end mb-4 gap-3">
             <Col xs="12">
@@ -109,14 +101,16 @@ const ExplorePage: NextPage = () => {
               </Col>
             ))}
           </Row>
-          <Row className="mt-3">
-            <Col style={{ display: 'flex', justifyContent: 'center' }}>
-              <MyPagination
-                handlePageClick={handlePageClick}
-                totalPages={quizResponse?.response.totalPages ?? 0}
-              />
-            </Col>
-          </Row>
+          {_.get(quizResponse, 'response.totalPages', 0) > 0 ? (
+            <Row className="mt-3">
+              <Col style={{ display: 'flex', justifyContent: 'center' }}>
+                <MyPagination
+                  handlePageClick={handlePageClick}
+                  totalPages={quizResponse?.response.totalPages ?? 0}
+                />
+              </Col>
+            </Row>
+          ) : null}
         </Container>
       </div>
     </DashboardLayout>

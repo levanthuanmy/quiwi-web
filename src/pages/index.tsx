@@ -24,22 +24,6 @@ const Home: NextPage = () => {
   const authContext = useAuth()
   const router = useRouter()
   const user = authContext.getUser()
-  const popularParams = {
-    filter: {
-      relations: ['questions', 'questions', 'user'],
-
-      order: {
-        numUpvotes: 'DESC',
-        numPlayed: 'DESC',
-      },
-      where: {
-        isPublic: true,
-        isLocked: false,
-      },
-    },
-    pageIndex: 1,
-    pageSize: 6,
-  }
 
   const recentlyCreatedParams = {
     filter: {
@@ -99,6 +83,10 @@ const Home: NextPage = () => {
 
   const handleToQuizCreator = async () => {
     try {
+      if (!user) {
+        router.push('/sign-in')
+        return
+      }
       const body: TQuizBodyRequest = {
         title: 'Quiz chưa có tên',
         description: '',

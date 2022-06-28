@@ -21,7 +21,7 @@ const ItemQuiz: FC<ItemQuizProps> = ({ quiz, exploreMode = false }) => {
       <div
         className={classNames('p-12px cursor-pointer', styles.infoContainer)}
       >
-        <p className="fw-medium fs-18px d-flex justify-content-between align-items-center">
+        <div className="fw-medium fs-18px d-flex justify-content-between align-items-center">
           <div
             title={exploreMode ? 'Bấm vào để xem chi tiết quiz' : ''}
             className="w-100"
@@ -45,7 +45,7 @@ const ItemQuiz: FC<ItemQuizProps> = ({ quiz, exploreMode = false }) => {
               <div className="bi bi-pen fs-16px"></div>
             </Button>
           )}
-        </p>
+        </div>
 
         <div className="fs-14px text-secondary d-flex justify-content-between">
           {exploreMode ? (

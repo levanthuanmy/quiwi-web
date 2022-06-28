@@ -88,7 +88,7 @@ const SignInPage: NextPage = () => {
       </Formik>
 
       <div className="text-secondary pt-4">
-        <div className="pb-3 cursor-pointer fw-medium">Quên mật khẩu</div>
+        {/* <div className="pb-3 cursor-pointer fw-medium">Quên mật khẩu</div> */}
         <div onClick={() => router.push('/sign-up')}>
           Chưa có tài khoản?{' '}
           <span className="text-primary cursor-pointer fw-medium">
