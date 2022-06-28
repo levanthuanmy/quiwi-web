@@ -43,14 +43,15 @@ const ListItemByCategory: FC<IListItem> = (props) => {
     <div className={classNames('cursor-pointer', styles.listItem)}>
       <div onClick={setCollapse} aria-expanded={isCollapse}>
         <Row className="bg-primary py-2 text-white">
-          <Col sm={11}>
-            <div>{props.name}</div>
-          </Col>
-          <Col sm={1}>
-            <div>
-              <address></address>
-            </div>
-          </Col>
+          <div>
+            {props.name}{' '}
+            <span
+              style={{ width: 30, height: 30 }}
+              className="mx-1 bg-dark bg-opacity-25 rounded-10px d-inline-flex justify-content-center align-items-center"
+            >
+              {itemsRes?.length ?? 0}
+            </span>
+          </div>
         </Row>
       </div>
 

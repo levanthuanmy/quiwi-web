@@ -1,9 +1,14 @@
 import { useRouter } from 'next/router'
-import React, { FC, ReactNode, useState } from 'react'
+import React, { FC, ReactNode, useEffect, useState } from 'react'
 import { Row, Col, Modal, Image } from 'react-bootstrap'
-import { TFollowUsers, TUserProfile } from '../../../types/types'
+import { get } from '../../../libs/api'
+import {
+  TApiResponse,
+  TFollowUsers,
+  TPaginationResponse,
+  TUserProfile,
+} from '../../../types/types'
 import MyModal from '../../MyModal/MyModal'
-
 type TModalHandler = {
   show: boolean
   contentType: TContentType
@@ -27,6 +32,47 @@ const SummaryInfo: FC<SummaryInfoProps> = ({
     contentType: 'FOLLOWERS',
   })
 
+  const [followingUsers, setFollowingUsers] =
+    useState<TPaginationResponse<TFollowUsers>>()
+  const [followerUsers, setFollowerUsers] =
+    useState<TPaginationResponse<TFollowUsers>>()
+  const getFollowersUsers = async () => {
+    try {
+      const params = {
+        filter: { relations: ['user'] },
+      }
+      const res: TApiResponse<TPaginationResponse<TFollowUsers>> = await get(
+        `/api/users/user/${userResponse.user?.id}/followers`,
+        true,
+        params
+      )
+
+      setFollowerUsers(res.response)
+    } catch (error) {
+      console.log('getFollowersUsers - error', error)
+    }
+  }
+
+  const getFollowingUsers = async () => {
+    try {
+      const params = {
+        filter: { relations: ['followingUser'] },
+      }
+      const res: TApiResponse<TPaginationResponse<TFollowUsers>> = await get(
+        `/api/users/user/${userResponse.user?.id}/following`,
+        true,
+        params
+      )
+
+      setFollowingUsers(res.response)
+    } catch (error) {
+      console.log('getFollowingUsers - error', error)
+    }
+  }
+  useEffect(() => {
+    onHideModal()
+  }, [])
+
   const onHideModal = () => {
     setModalHandler((prev) => ({ ...prev, show: false }))
   }
@@ -34,23 +80,23 @@ const SummaryInfo: FC<SummaryInfoProps> = ({
   const modalContent: Record<TContentType, ReactNode> = {
     FOLLOWERS: (
       <>
-        {followers?.length ? (
-          followers.map((follower, key) => (
+        {followerUsers?.items.length ? (
+          followerUsers.items.map((follower, key) => (
             <ItemFollowUser key={key} followUser={follower} />
           ))
         ) : (
-          <div>Bạn chưa được ai theo dõi</div>
+          <div>Chưa có ai theo dõi</div>
         )}
       </>
     ),
     FOLLOWINGS: (
       <>
-        {followings?.length ? (
-          followings.map((following, key) => (
+        {followingUsers?.items.length ? (
+          followingUsers.items.map((following, key) => (
             <ItemFollowUser key={key} followUser={following} />
           ))
         ) : (
-          <div>Bạn chưa theo dõi ai</div>
+          <div>Chưa theo dõi ai</div>
         )}
       </>
     ),
@@ -78,9 +124,10 @@ const SummaryInfo: FC<SummaryInfoProps> = ({
 
         <Col
           className="p-0 d-flex gap-2 align-items-center cursor-pointer"
-          onClick={() =>
+          onClick={() => {
+            getFollowersUsers()
             setModalHandler({ show: true, contentType: 'FOLLOWERS' })
-          }
+          }}
         >
           <div
             className="shadow-sm d-flex justify-content-center align-items-center rounded-14px"
@@ -100,9 +147,10 @@ const SummaryInfo: FC<SummaryInfoProps> = ({
 
         <Col
           className="p-0 d-flex gap-2 align-items-center cursor-pointer"
-          onClick={() =>
+          onClick={() => {
+            getFollowingUsers()
             setModalHandler({ show: true, contentType: 'FOLLOWINGS' })
-          }
+          }}
         >
           <div
             className="shadow-sm d-flex justify-content-center align-items-center rounded-14px"
@@ -124,7 +172,7 @@ const SummaryInfo: FC<SummaryInfoProps> = ({
       <MyModal
         onHide={onHideModal}
         show={modalHandler.show}
-        header={<Modal.Title>Lượt Theo Dõi</Modal.Title>}
+        header={<Modal.Title>Đang Theo Dõi</Modal.Title>}
       >
         {modalContent[modalHandler.contentType]}
       </MyModal>
@@ -136,17 +184,18 @@ export default SummaryInfo
 
 const ItemFollowUser: FC<{ followUser: TFollowUsers }> = ({ followUser }) => {
   const router = useRouter()
+  const user = followUser.followingUser ?? followUser.user
   return (
     <div
       className="btn btn-outline-light mb-3 d-flex align-items-center gap-2 rounded-14px"
       onClick={() => {
-        router.push(`/users/${followUser.followingUserId}`)
+        router.push(`/users/${user?.id}`)
       }}
     >
       <div>
-        {followUser.followingUser?.avatar?.length ? (
+        {user?.avatar?.length ? (
           <Image
-            src={followUser.followingUser?.avatar}
+            src={user?.avatar}
             alt=""
             width={30}
             height={30}
@@ -164,10 +213,10 @@ const ItemFollowUser: FC<{ followUser: TFollowUsers }> = ({ followUser }) => {
 
       <div className="text-start">
         <div className="fw-medium text-black">
-          {followUser.followingUser?.name || 'Chưa đặt tên'}
+          {user?.name || followUser.user?.name || 'Chưa đặt tên'}
         </div>
         <div className="fs-14px text-secondary">
-          @{followUser.followingUser?.username}
+          @{user?.username || followUser.user?.username}
         </div>
       </div>
     </div>

@@ -3,11 +3,9 @@ import { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { Col, Container, Row, Table } from 'react-bootstrap'
-import ReactPaginate from 'react-paginate'
 import useSWR from 'swr'
 import DashboardLayout from '../../components/DashboardLayout/DashboardLayout'
 import { HistoryGameRow } from '../../components/HistoryGameRow/HistoryGameRow'
-import Loading from '../../components/Loading/Loading'
 import { MyPagination } from '../../components/MyPagination/MyPagination'
 import MyTabBar from '../../components/MyTabBar/MyTabBar'
 import SearchBar from '../../components/SearchBar/SearchBar'
@@ -118,14 +116,16 @@ const HistoryPage: NextPage = () => {
                 ))}
               </tbody>
             </Table>
-            <Row className="mt-3">
-              <Col style={{ display: 'flex', justifyContent: 'center' }}>
-                <MyPagination
-                  handlePageClick={handlePageClick}
-                  totalPages={pageCount}
-                />
-              </Col>
-            </Row>
+            {pageCount > 0 ? (
+              <Row className="mt-3">
+                <Col style={{ display: 'flex', justifyContent: 'center' }}>
+                  <MyPagination
+                    handlePageClick={handlePageClick}
+                    totalPages={pageCount}
+                  />
+                </Col>
+              </Row>
+            ) : null}
           </div>
         </Container>
       </div>
