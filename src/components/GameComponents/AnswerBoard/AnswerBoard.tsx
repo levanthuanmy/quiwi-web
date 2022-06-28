@@ -326,9 +326,6 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
                     className={classNames('text-white fw-medium bg-danger')}
                     title="Kết thúc game"
                     onClick={() => {
-                      if (sound) {
-                        sound.stop();
-                      }
                       exitContext.setShowEndGameModal(true)
                     }}
                 />
