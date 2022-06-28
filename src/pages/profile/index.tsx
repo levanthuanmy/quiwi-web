@@ -1,12 +1,15 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import _ from 'lodash'
 import { NextPage } from 'next'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
-import { Button, Col, Container, Image, Row } from 'react-bootstrap'
-import useSWR from 'swr'
+import { Button, Col, Container, Image, Modal, Row } from 'react-bootstrap'
 import Cookies from 'universal-cookie'
 import UserItemSelectionModal from '../../components/ItemSelectionModal/ItemSelectionModal'
 import Loading from '../../components/Loading/Loading'
+import LoadingFullScreen from '../../components/LoadingFullScreen/Loading'
+import MyModal from '../../components/MyModal/MyModal'
 import NavBar from '../../components/NavBar/NavBar'
 import SummaryInfo from '../../components/Profile/SummaryInfo/SummaryInfo'
 import { useAuth } from '../../hooks/useAuth/useAuth'
@@ -37,9 +40,12 @@ const ProfilePage: NextPage = () => {
   const [userItems, setUserItems] = useState<TUserItems[]>()
   const [showAvatarSelectionModal, setShowAvatarSelectionModal] =
     useState(false)
+  const [error, setError] = useState('')
 
+  const router = useRouter()
   const auth = useAuth()
   const authUser = auth.getUser()
+
   const getItemCategories = async () => {
     try {
       const res: TApiResponse<TPaginationResponse<TItemCategory>> = await get(
@@ -85,6 +91,12 @@ const ProfilePage: NextPage = () => {
       }
     } catch (error) {
       console.log('==== ~ getUserProfile ~ error', error)
+      console.log(_.get(error, 'code'))
+      console.log(_.get(error, 'message'))
+      if (_.get(error, 'code') === 401) {
+        setError(_.get(error, 'message'))
+        // setTimeout(() => router.push('/'), 2000)
+      }
     }
   }
 
@@ -271,8 +283,22 @@ const ProfilePage: NextPage = () => {
         ) : null}
       </Container>
     </div>
+  ) : error?.length > 0 ? (
+    <MyModal
+      show={error?.length > 0}
+      onHide={() => {
+        setError('')
+        router.push('/')
+      }}
+      size="sm"
+      header={<Modal.Title className="text-danger">Thông báo</Modal.Title>}
+    >
+      <div className="text-center fw-medium fs-16px">{error}</div>
+    </MyModal>
   ) : (
-    <Loading />
+    <div className="bg-dark ">
+      <LoadingFullScreen />
+    </div>
   )
 }
 

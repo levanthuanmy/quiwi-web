@@ -43,50 +43,53 @@ const MenuBar: FC<MenuBarProps> = ({
           'h-100': !authContext.isAuth,
         })}
       >
-        <div
-          className={classNames(
-            'w-100 d-flex gap-3 transition-all-150ms px-3 py-2 cursor-pointer',
-            styles.userInfo,
-            {
-              'align-items-center flex-column justify-content-center': isExpand,
-            }
-          )}
-          onClick={() =>
-            authContext.isAuth ? authContext.navigate('/profile') : null
-          }
-        >
-          {authContext.isAuth ? (
-            <Image
-              src={user?.avatar || '/assets/default-logo.png'}
-              width={isExpand ? 90 : 48}
-              height={isExpand ? 90 : 48}
-              alt="avatar"
-              className="rounded-circle transition-all-150ms"
-            />
-          ) : null}
+        {authContext.isAuth ? (
           <div
             className={classNames(
-              'text-black fw-medium fs-24px transition-all-150ms',
+              'w-100 d-flex gap-3 transition-all-150ms px-3 py-2 cursor-pointer',
+              styles.userInfo,
               {
-                'd-block': isExpand,
-                'd-none': !isExpand,
+                'align-items-center flex-column justify-content-center':
+                  isExpand,
               }
             )}
+            onClick={() =>
+              authContext.isAuth ? authContext.navigate('/profile') : null
+            }
           >
             {authContext.isAuth ? (
-              <>
-                <div className="text-center">{user?.name || 'Khách'}</div>
-                <div className="fs-16px text-center text-secondary">
-                  @{user?.username || 'Khách'}
-                </div>
-              </>
-            ) : (
-              <MyButton className="text-white" onClick={authContext.signIn}>
-                Đăng Nhập
-              </MyButton>
-            )}
+              <Image
+                src={user?.avatar || '/assets/default-logo.png'}
+                width={isExpand ? 90 : 48}
+                height={isExpand ? 90 : 48}
+                alt="avatar"
+                className="rounded-circle transition-all-150ms"
+              />
+            ) : null}
+            <div
+              className={classNames(
+                'text-black fw-medium fs-24px transition-all-150ms',
+                {
+                  'd-block': isExpand,
+                  'd-none': !isExpand,
+                }
+              )}
+            >
+              {authContext.isAuth ? (
+                <>
+                  <div className="text-center">{user?.name || 'Khách'}</div>
+                  <div className="fs-16px text-center text-secondary">
+                    @{user?.username || 'Khách'}
+                  </div>
+                </>
+              ) : (
+                <MyButton className="text-white" onClick={authContext.signIn}>
+                  Đăng Nhập
+                </MyButton>
+              )}
+            </div>
           </div>
-        </div>
+        ) : null}
 
         <div
           className={classNames(
