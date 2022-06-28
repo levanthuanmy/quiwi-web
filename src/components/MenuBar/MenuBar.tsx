@@ -13,6 +13,7 @@ type MenuBarProps = {
     title: string
     url: string
     iconClassName: string
+    isAuth?: boolean
   }[]
   onToQuizCreator?: () => Promise<void>
   onShowJoinQuiz?: () => void

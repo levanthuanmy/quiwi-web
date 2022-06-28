@@ -2,7 +2,7 @@ import { QuestionType } from '../components/IconQuestion/IconQuestion'
 import { TQuestionType } from '../types/types'
 
 export const API_URL = process.env.NEXT_PUBLIC_API_URL
-export const GOOGLE_ANALYTICS = process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS || ""
+export const GOOGLE_ANALYTICS = process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS || ''
 
 export const HOME_MENU_OPTIONS = [
   { title: 'Trang chủ', url: '/', iconClassName: 'bi bi-house' },
@@ -10,10 +10,16 @@ export const HOME_MENU_OPTIONS = [
     title: 'Thư viện của tôi',
     url: '/my-lib',
     iconClassName: 'bi bi-bookmarks',
+    isAuth: true,
   },
   { title: 'Khám phá', url: '/explore', iconClassName: 'bi bi-compass' },
   { title: 'Cửa hàng', url: '/items', iconClassName: 'bi bi-shop' },
-  { title: 'Nhiệm vụ', url: '/quests', iconClassName: 'bi bi-archive' },
+  {
+    title: 'Nhiệm vụ',
+    url: '/quests',
+    iconClassName: 'bi bi-archive',
+    isAuth: true,
+  },
   {
     title: 'Bảng xếp hạng',
     url: '/ranking',
@@ -23,6 +29,7 @@ export const HOME_MENU_OPTIONS = [
     title: 'Lịch sử tham gia',
     url: '/history',
     iconClassName: 'bi bi-clipboard2-data',
+    isAuth: true,
   },
 ]
 

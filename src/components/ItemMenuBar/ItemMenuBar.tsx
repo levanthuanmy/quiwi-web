@@ -2,25 +2,33 @@ import classNames from 'classnames'
 import React, { FC, memo } from 'react'
 import { useAuth } from '../../hooks/useAuth/useAuth'
 import styles from './ItemMenuBar.module.css'
-import {playSound} from '../../utils/helper'
-import {SOUND_EFFECT} from '../../utils/constants'
+import { playSound } from '../../utils/helper'
+import { SOUND_EFFECT } from '../../utils/constants'
+import { useRouter } from 'next/router'
 
 type ItemMenuBarProps = {
   title: string
   iconClassName: string
   url: string
   isActive?: boolean
+  isAuth?: boolean
 }
 const ItemMenuBar: FC<ItemMenuBarProps> = ({
   title,
   iconClassName,
   url,
   isActive,
+  isAuth,
 }) => {
   const authNavigate = useAuth()
+  const router = useRouter()
   const clickEventSoundNivigate = (url: string) => {
-    playSound(SOUND_EFFECT['SIDE_BAR_SOUND_CLICK']);
-    authNavigate.navigate(url);
+    playSound(SOUND_EFFECT['SIDE_BAR_SOUND_CLICK'])
+    if (isAuth) {
+      authNavigate.navigate(url)
+    } else {
+      router.push(url)
+    }
   }
   return (
     <div
