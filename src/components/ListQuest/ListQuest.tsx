@@ -65,7 +65,7 @@ const ListQuest: NextPage = () => {
           setInProgressQuests(iInProgressQuests)
         }
       } catch (error) {
-        alert('Có lỗi nè')
+        // alert('Có lỗi nè')
         console.log(error)
       }
     }

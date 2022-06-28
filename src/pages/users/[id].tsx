@@ -43,7 +43,7 @@ const GetUserPage: NextPage = () => {
         //Lấy category đầu tiên để lấy ra dữ liệu item mặc định khi vào trang Shop
       }
     } catch (error) {
-      alert('Có lỗi nè')
+      // alert('Có lỗi nè')
       console.log(error)
     }
   }
@@ -62,7 +62,7 @@ const GetUserPage: NextPage = () => {
         setUser(res.response.user)
       }
     } catch (error) {
-      alert('Có lỗi nè')
+      // alert('Có lỗi nè')
       console.log(error)
     }
   }
@@ -79,7 +79,7 @@ const GetUserPage: NextPage = () => {
         }
       }
     } catch (error) {
-      alert('Có lỗi nè')
+      // alert('Có lỗi nè')
       console.log(error)
     }
   }
@@ -182,12 +182,12 @@ const GetUserPage: NextPage = () => {
         {},
         true
       )
-      alert(res.response.result)
+      // alert(res.response.result)
       await getFollowingUsers()
       await getUser()
     } catch (error) {
       console.log(error)
-      alert((error as Error).message)
+      // alert((error as Error).message)
     }
   }
   return userProfile && user ? (

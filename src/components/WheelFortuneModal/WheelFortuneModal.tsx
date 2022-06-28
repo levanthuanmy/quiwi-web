@@ -29,7 +29,7 @@ const WheelFortuneModal: FC<WheelModalProps> = ({
           setWheelFortuneResponse(res.response)
         }
       } catch (error) {
-        alert('Có lỗi nè')
+        // alert('Có lỗi nè')
         console.log(error)
       }
     }
@@ -43,7 +43,7 @@ const WheelFortuneModal: FC<WheelModalProps> = ({
           setUserWheelFortuneResponse(res.response)
         }
       } catch (error) {
-        alert('Có lỗi nè')
+        // alert('Có lỗi nè')
         console.log(error)
       }
     }

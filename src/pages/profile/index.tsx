@@ -51,7 +51,7 @@ const ProfilePage: NextPage = () => {
         //Lấy category đầu tiên để lấy ra dữ liệu item mặc định khi vào trang Shop
       }
     } catch (error) {
-      alert('Có lỗi nè')
+      // alert('Có lỗi nè')
       console.log(error)
     }
   }
@@ -68,7 +68,7 @@ const ProfilePage: NextPage = () => {
         }
       }
     } catch (error) {
-      alert('Có lỗi nè')
+      // alert('Có lỗi nè')
       console.log(error)
     }
   }
@@ -153,11 +153,11 @@ const ProfilePage: NextPage = () => {
         {},
         true
       )
-      alert(res.response.result)
+      // alert(res.response.result)
       await getFollowingUsers()
     } catch (error) {
       console.log(error)
-      alert('Lỗi')
+      // alert('Lỗi')
     }
   }
 

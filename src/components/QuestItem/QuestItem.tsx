@@ -36,7 +36,7 @@ const QuestItem: FC<{ quest: TQuest; onClick: () => void }> = ({
       )
       onClick()
     } catch (error) {
-      alert('Có lỗi nè')
+      // alert('Có lỗi nè')
       console.log(error)
     }
   }

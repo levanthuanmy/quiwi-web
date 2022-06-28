@@ -85,7 +85,8 @@ const UserItemSelectionModal: FC<MyModalProps> = ({
         }
       }
     } catch (error) {
-      alert((error as Error).message)
+      // alert((error as Error).message)
+      console.log(error)
     }
   }
 

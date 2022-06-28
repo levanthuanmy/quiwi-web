@@ -33,7 +33,7 @@ const ChangePasswordPage: NextPage = () => {
           setUserReponse(res.response)
         }
       } catch (error) {
-        alert('Có lỗi nè')
+        // alert('Có lỗi nè')
         console.log(error)
       }
     }
