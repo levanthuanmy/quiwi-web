@@ -102,7 +102,9 @@ const ChangePasswordPage: NextPage = () => {
                 <Image
                   fluid={true}
                   alt="avatar"
-                  src="/assets/default-logo.png"
+                  src={
+                    authContext.getUser()?.avatar || '/assets/default-logo.png'
+                  }
                   width={40}
                   height={40}
                   className="rounded-circle"

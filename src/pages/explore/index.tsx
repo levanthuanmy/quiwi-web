@@ -7,6 +7,7 @@ import ReactSelect from 'react-select'
 import useSWR from 'swr'
 import DashboardLayout from '../../components/DashboardLayout/DashboardLayout'
 import ItemQuiz from '../../components/ItemQuiz/ItemQuiz'
+import LoadingFullScreen from '../../components/LoadingFullScreen/Loading'
 import { MyPagination } from '../../components/MyPagination/MyPagination'
 import SearchBar from '../../components/SearchBar/SearchBar'
 import { get } from '../../libs/api'
@@ -14,7 +15,7 @@ import {
   TApiResponse,
   TPaginationResponse,
   TQuiz,
-  TQuizCategory
+  TQuizCategory,
 } from '../../types/types'
 
 const ExplorePage: NextPage = () => {
@@ -67,7 +68,7 @@ const ExplorePage: NextPage = () => {
         <Container fluid="lg" className="p-3">
           <div className="fs-32px fw-medium mb-3">
             Khám phá
-            <div className='text-muted fs-14px'>
+            <div className="text-muted fs-14px">
               Tham gia các Quiz cộng đồng để luyện tập, tích lũy kiến thức ❤️
             </div>
           </div>
@@ -93,14 +94,17 @@ const ExplorePage: NextPage = () => {
               <SearchBar pageUrl="explore" inputClassName="border-0" />
             </Col>
           </Row>
-
-          <Row>
-            {quizResponse?.response?.items?.map((quiz, key) => (
-              <Col xs="12" md="6" lg="4" key={key} className="mb-3">
-                <ItemQuiz quiz={quiz} exploreMode />
-              </Col>
-            ))}
-          </Row>
+          {quizResponse?.response ? (
+            <Row>
+              {quizResponse?.response?.items?.map((quiz, key) => (
+                <Col xs="12" md="6" lg="4" key={key} className="mb-3">
+                  <ItemQuiz quiz={quiz} exploreMode />
+                </Col>
+              ))}
+            </Row>
+          ) : (
+            <LoadingFullScreen />
+          )}
           {_.get(quizResponse, 'response.totalPages', 0) > 0 ? (
             <Row className="mt-3">
               <Col style={{ display: 'flex', justifyContent: 'center' }}>
