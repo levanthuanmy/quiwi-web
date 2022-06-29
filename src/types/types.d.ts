@@ -315,6 +315,8 @@ export type TQuest = {
   typeActionDetail: string
   userQuest: TUserQuest[]
   questGoal: TQuestGoal[]
+  spinNum: number
+  coin: number
   questRequirement: TQuestRequirement[]
 }
 

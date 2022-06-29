@@ -10,10 +10,14 @@ import Loading from '../../components/Loading/Loading'
 import MyButton from '../../components/MyButton/MyButton'
 import MyInput from '../../components/MyInput/MyInput'
 import MyModal from '../../components/MyModal/MyModal'
-import NavBar from '../../components/NavBar/NavBar'
 import { useAuth } from '../../hooks/useAuth/useAuth'
 import { get, post } from '../../libs/api'
 import { TApiResponse, TUser, TUserProfile } from '../../types/types'
+
+import DashboardLayout from '../../components/DashboardLayout/DashboardLayout'
+import _ from 'lodash'
+import { useRouter } from 'next/router'
+
 type ProfileForm = {
   name: string
   phoneNumber: string
@@ -26,7 +30,8 @@ const EditProfilePage: NextPage = () => {
   const [showModal, setShowModal] = useState(false)
   const [showAvatarSelectionModal, setShowAvatarSelectionModal] =
     useState(false)
-
+  const [error, setError] = useState('')
+  const router = useRouter()
   const auth = useAuth()
 
   const user = auth.getUser()
@@ -41,8 +46,12 @@ const EditProfilePage: NextPage = () => {
           setUserReponse(res.response)
         }
       } catch (error) {
-        alert('Có lỗi nè')
         console.log(error)
+        if (_.get(error, 'code') === 401) {
+          setError(_.get(error, 'message'))
+          // setTimeout(() => router.push('/'), 2000)
+        }
+        // setTimeout(() => router.push('/'), 2000)
       }
     }
     if (!userResponse) {
@@ -99,171 +108,188 @@ const EditProfilePage: NextPage = () => {
 
   return userResponse ? (
     <>
-      <NavBar showMenuBtn={false} isExpand={false} setIsExpand={() => null} />
-      <Container className="pt-80px  min-vh-100 position-relative">
-        <Row className="border my-3">
-          <Col xs={3} md={4} className="border-end menu text-center p-0">
-            <LeftProfileMenuBar />
-          </Col>
-          <Col className="p-4">
-            <Row className="justify-content-lg-center align-items-center">
-              <Col xs={3} lg={4} className="text-lg-end">
-                <Image
-                  alt="avatar"
-                  src={user?.avatar || '/assets/default-logo.png'}
-                  width={48}
-                  height={48}
-                  className="rounded-circle"
-                />
-              </Col>
-              <Col className="fs-16px fw-medium">
-                <div>{userResponse.user.username}</div>
-                <div
-                  onClick={() => changeAvatar()}
-                  className={classNames('cursor-pointer text-primary fs-14px')}
-                >
-                  Đổi ảnh đại diện
-                </div>
-              </Col>
-            </Row>
-
-            <Formik
-              initialValues={
-                {
-                  email: userResponse.user.email ?? '',
-                  gender: userResponse.user.gender ?? 'MALE',
-                  name: userResponse.user.name ?? '',
-                  phoneNumber: userResponse.user.phoneNumber ?? '',
-                } as ProfileForm
-              }
-              onSubmit={handleUpdateProfile}
-              validationSchema={ProfileSchema}
-            >
-              {({
-                // values,
-                errors,
-                // touched,
-                // handleChange,
-                // handleBlur,
-                handleSubmit,
-                isSubmitting,
-              }) => (
-                <Form
-                  method="POST"
-                  onSubmit={(e: any) => {
-                    e.preventDefault()
-                    handleSubmit()
-                  }}
-                >
-                  <Row className="justify-content-center align-items-center py-2">
-                    <Col xs={12} lg={4} className="text-lg-end fw-medium">
-                      Họ và Tên
-                    </Col>
-                    <Col>
-                      <Field
-                        type="text"
-                        name="name"
-                        placeholder="Họ và tên"
-                        as={MyInput}
-                        // iconClassName="bi bi-person"
-                        // className="mb-3"
-                      />
-
-                      {errors.name ? (
-                        <div className="text-danger">{errors.name}</div>
-                      ) : null}
-                    </Col>
-                  </Row>
-
-                  <Row className="justify-content-center align-items-center py-2">
-                    <Col xs={12} lg={4} className="text-lg-end fw-medium">
-                      Email
-                    </Col>
-                    <Col>
-                      <Field
-                        type="email"
-                        name="email"
-                        placeholder="Email"
-                        as={MyInput}
-                        // iconClassName="bi bi-person"
-                        // className="mb-3"
-                      />
-                      {errors.email ? (
-                        <div className="text-danger">{errors.email}</div>
-                      ) : null}
-                    </Col>
-                  </Row>
-
-                  <Row className="justify-content-center align-items-center py-2">
-                    <Col xs={12} lg={4} className="text-lg-end fw-medium">
-                      Số điện thoại
-                    </Col>
-                    <Col>
-                      <Field
-                        name="phoneNumber"
-                        placeholder="Số điện thoại"
-                        as={MyInput}
-                        // iconClassName="bi bi-person"
-                        // className="mb-3"
-                      />
-                      {errors.phoneNumber ? (
-                        <div className="text-danger">{errors.phoneNumber}</div>
-                      ) : null}
-                    </Col>
-                  </Row>
-
-                  <Row className="justify-content-center align-items-center py-2">
-                    <Col xs={12} lg={4} className="text-lg-end fw-medium">
-                      Giới tính
-                    </Col>
-                    <Col>
-                      <Field
-                        as="select"
-                        name="gender"
-                        // component={customSelectionInput}
-                        className="form-control rounded-10px h-50px d-flex px-12px overflow-hidden "
-                      >
-                        <option value="MALE">Nam</option>
-                        <option value="FEMALE">Nữ</option>
-                      </Field>
-                    </Col>
-                  </Row>
-
-                  <div className="text-center pt-3">
-                    <MyButton
-                      className="text-white"
-                      type="submit"
-                      disabled={isSubmitting}
-                    >
-                      Lưu thông tin
-                    </MyButton>
+      <DashboardLayout>
+        <Container className=" min-vh-100 position-relative">
+          <Row className="border my-3">
+            <Col xs={3} md={4} className="border-end menu text-center p-0">
+              <LeftProfileMenuBar />
+            </Col>
+            <Col className="p-4">
+              <Row className="justify-content-lg-center align-items-center">
+                <Col xs={3} lg={4} className="text-lg-end">
+                  <Image
+                    alt="avatar"
+                    src={user?.avatar || '/assets/default-logo.png'}
+                    width={48}
+                    height={48}
+                    className="rounded-circle"
+                  />
+                </Col>
+                <Col className="fs-16px fw-medium">
+                  <div>{userResponse.user.username}</div>
+                  <div
+                    onClick={() => changeAvatar()}
+                    className={classNames(
+                      'cursor-pointer text-primary fs-14px'
+                    )}
+                  >
+                    Đổi ảnh đại diện
                   </div>
-                </Form>
-              )}
-            </Formik>
-          </Col>
-        </Row>
-        <MyModal
-          show={showModal}
-          size="sm"
-          onHide={() => setShowModal(false)}
-          activeButtonTitle="Đồng ý"
-          activeButtonCallback={() => setShowModal(false)}
-          header={<Modal.Title>Thông báo</Modal.Title>}
-        >
-          <div className="text-center">Cập nhật thông tin thành công</div>
-        </MyModal>
-        {user ? (
-          <UserItemSelectionModal
-            onHide={() => setShowAvatarSelectionModal(false)}
-            show={showAvatarSelectionModal}
-            key={user.id}
-            user={user}
-            userProfile={userResponse}
-          />
-        ) : null}
-      </Container>
+                </Col>
+              </Row>
+
+              <Formik
+                initialValues={
+                  {
+                    email: userResponse.user.email ?? '',
+                    gender: userResponse.user.gender ?? 'MALE',
+                    name: userResponse.user.name ?? '',
+                    phoneNumber: userResponse.user.phoneNumber ?? '',
+                  } as ProfileForm
+                }
+                onSubmit={handleUpdateProfile}
+                validationSchema={ProfileSchema}
+              >
+                {({
+                  // values,
+                  errors,
+                  // touched,
+                  // handleChange,
+                  // handleBlur,
+                  handleSubmit,
+                  isSubmitting,
+                }) => (
+                  <Form
+                    method="POST"
+                    onSubmit={(e: any) => {
+                      e.preventDefault()
+                      handleSubmit()
+                    }}
+                  >
+                    <Row className="justify-content-center align-items-center py-2">
+                      <Col xs={12} lg={4} className="text-lg-end fw-medium">
+                        Họ và Tên
+                      </Col>
+                      <Col>
+                        <Field
+                          type="text"
+                          name="name"
+                          placeholder="Họ và tên"
+                          as={MyInput}
+                          // iconClassName="bi bi-person"
+                          // className="mb-3"
+                        />
+
+                        {errors.name ? (
+                          <div className="text-danger">{errors.name}</div>
+                        ) : null}
+                      </Col>
+                    </Row>
+
+                    <Row className="justify-content-center align-items-center py-2">
+                      <Col xs={12} lg={4} className="text-lg-end fw-medium">
+                        Email
+                      </Col>
+                      <Col>
+                        <Field
+                          type="email"
+                          name="email"
+                          placeholder="Email"
+                          as={MyInput}
+                          // iconClassName="bi bi-person"
+                          // className="mb-3"
+                        />
+                        {errors.email ? (
+                          <div className="text-danger">{errors.email}</div>
+                        ) : null}
+                      </Col>
+                    </Row>
+
+                    <Row className="justify-content-center align-items-center py-2">
+                      <Col xs={12} lg={4} className="text-lg-end fw-medium">
+                        Số điện thoại
+                      </Col>
+                      <Col>
+                        <Field
+                          name="phoneNumber"
+                          placeholder="Số điện thoại"
+                          as={MyInput}
+                          // iconClassName="bi bi-person"
+                          // className="mb-3"
+                        />
+                        {errors.phoneNumber ? (
+                          <div className="text-danger">
+                            {errors.phoneNumber}
+                          </div>
+                        ) : null}
+                      </Col>
+                    </Row>
+
+                    <Row className="justify-content-center align-items-center py-2">
+                      <Col xs={12} lg={4} className="text-lg-end fw-medium">
+                        Giới tính
+                      </Col>
+                      <Col>
+                        <Field
+                          as="select"
+                          name="gender"
+                          // component={customSelectionInput}
+                          className="form-control rounded-10px h-50px d-flex px-12px overflow-hidden "
+                        >
+                          <option value="MALE">Nam</option>
+                          <option value="FEMALE">Nữ</option>
+                        </Field>
+                      </Col>
+                    </Row>
+
+                    <div className="text-center pt-3">
+                      <MyButton
+                        className="text-white"
+                        type="submit"
+                        disabled={isSubmitting}
+                      >
+                        Lưu thông tin
+                      </MyButton>
+                    </div>
+                  </Form>
+                )}
+              </Formik>
+            </Col>
+          </Row>
+          <MyModal
+            show={showModal}
+            size="sm"
+            onHide={() => setShowModal(false)}
+            activeButtonTitle="Đồng ý"
+            activeButtonCallback={() => setShowModal(false)}
+            header={<Modal.Title>Thông báo</Modal.Title>}
+          >
+            <div className="text-center">Cập nhật thông tin thành công</div>
+          </MyModal>
+          {user ? (
+            <UserItemSelectionModal
+              onHide={() => setShowAvatarSelectionModal(false)}
+              show={showAvatarSelectionModal}
+              key={user.id}
+              user={user}
+              userProfile={userResponse}
+            />
+          ) : null}
+        </Container>
+      </DashboardLayout>
     </>
+  ) : error?.length > 0 ? (
+    <MyModal
+      show={error?.length > 0}
+      onHide={() => {
+        setError('')
+        router.push('/')
+      }}
+      size="sm"
+      header={<Modal.Title className="text-danger">Thông báo</Modal.Title>}
+    >
+      <div className="text-center fw-medium fs-16px">{error}</div>
+    </MyModal>
   ) : (
     <Loading />
   )

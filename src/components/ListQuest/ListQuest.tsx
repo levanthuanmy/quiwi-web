@@ -56,7 +56,7 @@ const ListQuest: NextPage = () => {
         if (res.response) {
           let iDoneQuests: TQuest[] = []
           let iInProgressQuests: TQuest[] = []
-          setItemsResponse(res.response)
+          // setItemsResponse(res.response)
           res.response.items.forEach((element) => {
             if (element.userQuest[0].isReceivedReward) iDoneQuests.push(element)
             else iInProgressQuests.push(element)
@@ -111,8 +111,8 @@ const ListQuest: NextPage = () => {
           >
             <Col
               xs={12}
-              sm={12}
               md={10}
+              lg={8}
               className={classNames('p-2', styles.ListQuest)}
             >
               {toggleState === 0 ? (
