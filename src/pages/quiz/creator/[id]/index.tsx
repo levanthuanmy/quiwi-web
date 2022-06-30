@@ -15,6 +15,7 @@ import { get, post } from '../../../../libs/api'
 import { TApiResponse, TQuestion, TQuiz } from '../../../../types/types'
 import { indexingQuestionsOrderPosition } from '../../../../utils/helper'
 import * as gtag from '../../../../libs/gtag'
+import { useToasts } from 'react-toast-notifications'
 
 export type TEditQuestion = {
   isEdit: boolean
@@ -127,6 +128,23 @@ const QuizCreatorPage: NextPage = () => {
     setIsShowQuestionCreator(true)
   }
 
+  const { addToast } = useToasts()
+
+  const handlePlay = () => {
+    try {
+      if (quiz && quiz?.questions?.length > 0) {
+        authContext.navigate(`/host/lobby?quizId=${quiz?.id}`)
+      } else {
+        addToast('Bộ câu hỏi cần có ít nhất 1 câu hỏi để có thể bắt đầu', {
+          appearance: 'error',
+          autoDismiss: true,
+        })
+      }
+    } catch (error) {
+      console.log('handlePlay - error', error)
+    }
+  }
+
   return (
     <>
       <NavBar showMenuBtn={false} isExpand={false} setIsExpand={() => null} />
@@ -185,9 +203,7 @@ const QuizCreatorPage: NextPage = () => {
             <div className="mt-3">
               <MyButton
                 className="text-white w-100 d-flex align-items-center justify-content-between"
-                onClick={() => {
-                  authContext.navigate(`/host/lobby?quizId=${quizId}`)
-                }}
+                onClick={handlePlay}
               >
                 Bắt đầu ngay
                 <div className="bi bi-play-fill" />

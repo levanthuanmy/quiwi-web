@@ -2,6 +2,7 @@ import classNames from 'classnames'
 import { useRouter } from 'next/router'
 import React, { FC, memo } from 'react'
 import { Button, Image } from 'react-bootstrap'
+import { useToasts } from 'react-toast-notifications'
 import { useAuth } from '../../hooks/useAuth/useAuth'
 import { TQuiz } from '../../types/types'
 import MyButton from '../MyButton/MyButton'
@@ -15,6 +16,26 @@ const ItemQuiz: FC<ItemQuizProps> = ({ quiz, exploreMode = false }) => {
   const authNavigate = useAuth()
   const BANNER_HEIGHT = 160
   const router = useRouter()
+  const { addToast } = useToasts()
+
+  const handlePlay = () => {
+    try {
+      if (quiz?.questions?.length > 0) {
+        if (exploreMode) {
+          router.push(`/quiz/${quiz?.id}/play`)
+        } else {
+          authNavigate.navigate(`/host/lobby?quizId=${quiz?.id}`)
+        }
+      } else {
+        addToast('Bộ câu hỏi cần có ít nhất 1 câu hỏi để có thể bắt đầu', {
+          appearance: 'error',
+          autoDismiss: true,
+        })
+      }
+    } catch (error) {
+      console.log('handlePlay - error', error)
+    }
+  }
 
   return (
     <div className="bg-white h-100 rounded-14px shadow-sm overflow-hidden">
@@ -104,11 +125,7 @@ const ItemQuiz: FC<ItemQuizProps> = ({ quiz, exploreMode = false }) => {
             'text-white text-nowrap rounded-circle bi bi-play-fill fs-32px shadow d-flex justify-content-center align-items-center',
             styles.startBtn
           )}
-          onClick={() =>
-            exploreMode
-              ? router.push(`/quiz/${quiz.id}/play`)
-              : authNavigate.navigate(`/host/lobby?quizId=${quiz.id}`)
-          }
+          onClick={handlePlay}
         ></MyButton>
       </div>
 
