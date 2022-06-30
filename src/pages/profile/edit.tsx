@@ -225,7 +225,7 @@ const EditProfilePage: NextPage = () => {
                       </Col>
                     </Row>
 
-                    <Row className="justify-content-center align-items-center py-2">
+                    {/* <Row className="justify-content-center align-items-center py-2">
                       <Col xs={12} lg={4} className="text-lg-end fw-medium">
                         Giới tính
                       </Col>
@@ -240,7 +240,7 @@ const EditProfilePage: NextPage = () => {
                           <option value="FEMALE">Nữ</option>
                         </Field>
                       </Col>
-                    </Row>
+                    </Row> */}
 
                     <div className="text-center pt-3">
                       <MyButton

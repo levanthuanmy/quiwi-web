@@ -184,15 +184,21 @@ const Home: NextPage = () => {
               <div className="pt-4">
                 <div className="fs-22px fw-medium pb-3">Đã tạo gần đây</div>
                 {recentlyCreatedQuizzesResponse?.response.items ? (
-                  <MySlider>
-                    {recentlyCreatedQuizzesResponse?.response.items?.map(
-                      (quiz, key) => (
-                        <div key={key} className="px-md-2 h-100">
-                          <ItemQuiz quiz={quiz} />
-                        </div>
-                      )
-                    )}
-                  </MySlider>
+                  recentlyCreatedQuizzesResponse?.response.totalItems === 0 ? (
+                    <div className="ms-3 text-muted">
+                      Hãy tạo Quiz để bắt đầu luyện tập kiến thức ❤️
+                    </div>
+                  ) : (
+                    <MySlider>
+                      {recentlyCreatedQuizzesResponse?.response.items?.map(
+                        (quiz, key) => (
+                          <div key={key} className="px-md-2 h-100">
+                            <ItemQuiz quiz={quiz} />
+                          </div>
+                        )
+                      )}
+                    </MySlider>
+                  )
                 ) : (
                   <Loading />
                 )}
@@ -203,15 +209,21 @@ const Home: NextPage = () => {
                   Đã tham gia gần đây
                 </div>
                 {recentlyPlayedQuizzesResponse?.response ? (
-                  <MySlider>
-                    {recentlyPlayedQuizzesResponse?.response?.map(
-                      (quiz, key) => (
-                        <div key={key} className="px-md-2 h-100">
-                          <ItemQuiz quiz={quiz} />
-                        </div>
-                      )
-                    )}
-                  </MySlider>
+                  recentlyPlayedQuizzesResponse?.response.length === 0 ? (
+                    <div className="ms-3 text-muted">
+                      Hãy tham gia Quiz để luyện tập kiến thức ❤️
+                    </div>
+                  ) : (
+                    <MySlider>
+                      {recentlyPlayedQuizzesResponse?.response?.map(
+                        (quiz, key) => (
+                          <div key={key} className="px-md-2 h-100">
+                            <ItemQuiz quiz={quiz} />
+                          </div>
+                        )
+                      )}
+                    </MySlider>
+                  )
                 ) : (
                   <Loading />
                 )}

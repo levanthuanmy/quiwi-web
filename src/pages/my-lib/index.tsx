@@ -1,9 +1,10 @@
 import { NextPage } from 'next'
 import React, { useState } from 'react'
-import { Col, Container, Row } from 'react-bootstrap'
+import { Alert, Card, Col, Container, Row } from 'react-bootstrap'
 import useSWR from 'swr'
 import DashboardLayout from '../../components/DashboardLayout/DashboardLayout'
 import ItemQuiz from '../../components/ItemQuiz/ItemQuiz'
+import LoadingFullScreen from '../../components/LoadingFullScreen/Loading'
 import { MyPagination } from '../../components/MyPagination/MyPagination'
 import { get } from '../../libs/api'
 import { TApiResponse, TPaginationResponse, TQuiz } from '../../types/types'
@@ -35,24 +36,39 @@ const MyLibPage: NextPage = () => {
             'fetching...'
           ) : (
             <Row>
-              <Col xs="12" className="fs-32px fw-medium mb-3">
-                Quiz của bạn
+              <Col xs="12" className="fw-medium mb-3">
+                <h1>Thư viện của bạn</h1>
               </Col>
-              {data?.response.items.map((quiz, key) => (
-                <Col xs="12" md="6" lg="4" key={key} className="mb-3">
-                  <ItemQuiz quiz={quiz} />
-                </Col>
-              ))}
+              {data?.response ? (
+                data.response.totalItems ? (
+                  data.response.items.map((quiz, key) => (
+                    <Col xs="12" md="6" lg="4" key={key} className="mb-3">
+                      <ItemQuiz quiz={quiz} />
+                    </Col>
+                  ))
+                ) : (
+                  <Alert
+                    variant="primary"
+                    className="text- w-75 mx-auto fs-16px py-4 fw-medium"
+                  >
+                    Ấn nút &quot;Tạo Quiz&quot; để tạo Quiz cho riêng mình
+                  </Alert>
+                )
+              ) : (
+                <LoadingFullScreen />
+              )}
             </Row>
           )}
-          <Row className="mt-3">
-            <Col style={{ display: 'flex', justifyContent: 'center' }}>
-              <MyPagination
-                handlePageClick={handlePageClick}
-                totalPages={data?.response.totalPages ?? 0}
-              />
-            </Col>
-          </Row>
+          {data?.response?.totalItems ? (
+            <Row className="mt-3">
+              <Col style={{ display: 'flex', justifyContent: 'center' }}>
+                <MyPagination
+                  handlePageClick={handlePageClick}
+                  totalPages={data?.response.totalPages ?? 0}
+                />
+              </Col>
+            </Row>
+          ) : null}
         </Container>
       </div>
     </DashboardLayout>

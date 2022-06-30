@@ -2,7 +2,7 @@ import classNames from 'classnames'
 import { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
-import { Col, Container, Row, Table } from 'react-bootstrap'
+import { Alert, Col, Container, Row, Table } from 'react-bootstrap'
 import useSWR from 'swr'
 import DashboardLayout from '../../components/DashboardLayout/DashboardLayout'
 import { HistoryGameRow } from '../../components/HistoryGameRow/HistoryGameRow'
@@ -50,7 +50,10 @@ const HistoryPage: NextPage = () => {
       true,
       params,
     ],
-    get
+    get,
+    {
+      revalidateOnFocus: false,
+    }
   )
 
   const [pageCount, setPageCount] = useState(0)
@@ -81,8 +84,8 @@ const HistoryPage: NextPage = () => {
       <div className="w-100 bg-white bg-opacity-10 min-vh-100">
         <Container fluid="lg">
           <Row className="my-3 justify-content-between">
-            <Col xs={2} className="fs-22px fw-medium">
-              Lịch sử
+            <Col xs={2} className=" fw-medium">
+              <h2> Lịch sử</h2>
             </Col>
             <Col>
               <SearchBar
@@ -98,35 +101,44 @@ const HistoryPage: NextPage = () => {
           />
 
           <br />
-          <div>
-            <Table borderless className={classNames(styles.table)}>
-              <tbody>
-                <tr>
-                  <th className={classNames('ps-3')}>Tên bài</th>
-                  <th>Ngày làm</th>
-                  <th>Chế độ chơi</th>
+          {pageCount == 0 ? (
+            <Alert
+              variant="primary"
+              className="text-center w-75 mx-auto fs-16px py-4 fw-medium mt-2"
+            >
+              Chưa có dữ liệu
+            </Alert>
+          ) : (
+            <div>
+              <Table borderless className={classNames(styles.table)}>
+                <tbody>
+                  <tr>
+                    <th className={classNames('ps-3')}>Tên bài</th>
+                    <th>Ngày làm</th>
+                    <th>Chế độ chơi</th>
 
-                  <th className="d-none d-lg-table-cell text-end">
-                    Số người chơi
-                  </th>
-                  <th className="d-none d-md-table-cell"></th>
-                </tr>
-                {data?.response?.items.map((game) => (
-                  <HistoryGameRow key={game.id} gameHistory={game} />
-                ))}
-              </tbody>
-            </Table>
-            {pageCount > 0 ? (
-              <Row className="mt-3">
-                <Col style={{ display: 'flex', justifyContent: 'center' }}>
-                  <MyPagination
-                    handlePageClick={handlePageClick}
-                    totalPages={pageCount}
-                  />
-                </Col>
-              </Row>
-            ) : null}
-          </div>
+                    <th className="d-none d-lg-table-cell text-end">
+                      Số người chơi
+                    </th>
+                    <th className="d-none d-md-table-cell"></th>
+                  </tr>
+                  {data?.response?.items.map((game) => (
+                    <HistoryGameRow key={game.id} gameHistory={game} />
+                  ))}
+                </tbody>
+              </Table>
+              {pageCount > 0 ? (
+                <Row className="mt-3">
+                  <Col style={{ display: 'flex', justifyContent: 'center' }}>
+                    <MyPagination
+                      handlePageClick={handlePageClick}
+                      totalPages={pageCount}
+                    />
+                  </Col>
+                </Row>
+              ) : null}
+            </div>
+          )}
         </Container>
       </div>
     </DashboardLayout>

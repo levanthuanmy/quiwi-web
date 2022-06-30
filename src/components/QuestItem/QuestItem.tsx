@@ -1,6 +1,6 @@
 import classNames from 'classnames'
 import { FC } from 'react'
-import { Col, Container, Image, Row } from 'react-bootstrap'
+import { Col, Image, Row } from 'react-bootstrap'
 import { post } from '../../libs/api'
 import { TApiResponse, TQuest } from '../../types/types'
 import Item from '../Item/Item'

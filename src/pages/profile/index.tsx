@@ -90,9 +90,6 @@ const ProfilePage: NextPage = () => {
         setUserResponse(res.response)
       }
     } catch (error) {
-      console.log('==== ~ getUserProfile ~ error', error)
-      console.log(_.get(error, 'code'))
-      console.log(_.get(error, 'message'))
       if (_.get(error, 'code') === 401) {
         setError(_.get(error, 'message'))
         // setTimeout(() => router.push('/'), 2000)
@@ -241,9 +238,9 @@ const ProfilePage: NextPage = () => {
               </div>
               <BadgesPage userBadges={userResponse?.badges} />
 
-              <div className="text-center border-top pt-12px pb-1 text-secondary opacity-75">
+              {/* <div className="text-center border-top pt-12px pb-1 text-secondary opacity-75">
                 Xem Tất Cả
-              </div>
+              </div> */}
             </div>
           </Col>
           <Col xs="12" lg="6" className="pe-0 ps-0 ps-lg-2 pb-12px">
@@ -266,9 +263,9 @@ const ProfilePage: NextPage = () => {
                 <Loading />
               )}
 
-              <div className="text-center border-top pt-12px pb-1 text-secondary opacity-75">
+              {/* <div className="text-center border-top pt-12px pb-1 text-secondary opacity-75">
                 Xem Tất Cả
-              </div>
+              </div> */}
             </div>
           </Col>
         </Row>

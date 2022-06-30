@@ -66,8 +66,8 @@ const ExplorePage: NextPage = () => {
     <DashboardLayout>
       <div className="w-100 bg-secondary bg-opacity-10 min-vh-100">
         <Container fluid="lg" className="p-3">
-          <div className="fs-32px fw-medium mb-3">
-            Khám phá
+          <div className=" fw-medium mb-3">
+            <h1>Khám phá</h1>
             <div className="text-muted fs-14px">
               Tham gia các Quiz cộng đồng để luyện tập, tích lũy kiến thức ❤️
             </div>

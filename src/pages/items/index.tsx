@@ -26,7 +26,6 @@ const ItemPage: NextPage = () => {
   const [itemCategoriesResponse, setItemCategoriesResponse] =
     useState<TPaginationResponse<TItemCategory>>()
 
-
   const [userResponse, setUserReponse] = useState<TUserProfile>()
   const pageSize = 8
   const router = useRouter()
@@ -126,8 +125,8 @@ const ItemPage: NextPage = () => {
       <div className="w-100 ">
         <Container fluid="lg">
           <Row className="my-3 justify-content-between">
-            <Col xs={12} lg={2} className="fs-22px mb-2 mb-lg-0 fw-medium">
-              Cửa hàng
+            <Col xs={12} lg={3} xxl={2} className="fs-22px mb-2 mb-lg-0 fw-medium">
+              <h1>Cửa hàng</h1>
             </Col>
             <Col>
               <SearchBar
