@@ -1,15 +1,17 @@
+import classNames from 'classnames'
 import { NextPage } from 'next'
 import { useRouter } from 'next/router'
-import React, { useState } from 'react'
-import { Container } from 'react-bootstrap'
+import React, { useEffect, useState } from 'react'
+import { Col, Container, Row, Table, Image } from 'react-bootstrap'
 import useSWR from 'swr'
 import DashboardLayout from '../../components/DashboardLayout/DashboardLayout'
+import { MyPagination } from '../../components/MyPagination/MyPagination'
 import MyTabBar from '../../components/MyTabBar/MyTabBar'
 import RankingBoard from '../../components/Ranking/RankingBoard'
 import SearchBar from '../../components/SearchBar/SearchBar'
 import { useAuth } from '../../hooks/useAuth/useAuth'
 import { get } from '../../libs/api'
-import { TApiResponse } from '../../types/types'
+import { TApiResponse, TPaginationResponse } from '../../types/types'
 
 const rankingTabs = [
   {
@@ -33,18 +35,32 @@ export type TRankingItem = {
 
 const RankingPage: NextPage = () => {
   const [currentRankingTab, setCurrentRankingTab] = useState<number>(0)
+  const [pageIndex, setPageIndex] = useState(1)
   const router = useRouter()
   const q = router.query?.q?.toString()
   const userId = useAuth().getUser()?.id
+  const pageSize = 7
 
-  const { data, isValidating } = useSWR<TApiResponse<TRankingItem[]>>(
+  const { data, isValidating } = useSWR<
+    TApiResponse<TPaginationResponse<TRankingItem>>
+  >(
     [
       `/api/users/user/ranking/${rankingTabs[currentRankingTab].type}`,
       true,
-      { q, userId },
+      {
+        pageIndex,
+        pageSize,
+      },
     ],
     get
   )
+  const handlePageClick = (selected: { selected: number }) => {
+    setPageIndex(Number(selected.selected) + 1)
+  }
+
+  useEffect(() => {
+    setPageIndex(1)
+  }, [currentRankingTab])
 
   return (
     <>
@@ -61,7 +77,21 @@ const RankingPage: NextPage = () => {
 
             <SearchBar pageUrl="/ranking" />
 
-            <RankingBoard rankingList={data?.response as TRankingItem[]} />
+            <RankingBoard
+              rankingList={data?.response.items as TRankingItem[]}
+            />
+            {data?.response.items.length === 0 ? (
+              'Không có dữ liệu'
+            ) : (
+              <Row className="mt-3">
+                <Col style={{ display: 'flex', justifyContent: 'center' }}>
+                  <MyPagination
+                    handlePageClick={handlePageClick}
+                    totalPages={data?.response.totalPages ?? 0}
+                  />
+                </Col>
+              </Row>
+            )}
           </Container>
         </div>
       </DashboardLayout>
