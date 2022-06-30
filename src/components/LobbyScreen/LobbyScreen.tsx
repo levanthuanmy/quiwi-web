@@ -350,7 +350,7 @@ const LobbyScreen: FC<LobbyScreenProps> = ({ invitationCode, isHost }) => {
         <QRCode
           size={200}
           fgColor={'#009883'}
-          value="hey"
+          value={`http://${window.location.host}/lobby/join?invitationCode=${invitationCode}`}
           className={styles.qrModal}
         />
       </Modal>
