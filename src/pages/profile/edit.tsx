@@ -126,7 +126,12 @@ const EditProfilePage: NextPage = () => {
                   />
                 </Col>
                 <Col className="fs-16px fw-medium">
-                  <div>{userResponse.user.username}</div>
+                  <div>
+                    {userResponse.user.username}{' '}
+                    {userResponse.user.isVerified ? (
+                      <i className="bi bi-check-lg text-success"></i>
+                    ) : null}
+                  </div>
                   <div
                     onClick={() => changeAvatar()}
                     className={classNames(
@@ -191,14 +196,25 @@ const EditProfilePage: NextPage = () => {
                         Email
                       </Col>
                       <Col>
-                        <Field
-                          type="email"
-                          name="email"
-                          placeholder="Email"
-                          as={MyInput}
-                          // iconClassName="bi bi-person"
-                          // className="mb-3"
-                        />
+                        {userResponse.user.isVerified ? (
+                          <Field
+                            type="email"
+                            name="email"
+                            placeholder="Email"
+                            as={MyInput}
+                            disabled
+                          />
+                        ) : (
+                          <Field
+                            type="email"
+                            name="email"
+                            placeholder="Email"
+                            as={MyInput}
+                            // iconClassName="bi bi-person"
+                            // className="mb-3"
+                          />
+                        )}
+
                         {errors.email ? (
                           <div className="text-danger">{errors.email}</div>
                         ) : null}
@@ -250,6 +266,15 @@ const EditProfilePage: NextPage = () => {
                       >
                         Lưu thông tin
                       </MyButton>
+                      {!userResponse.user.isVerified ? (
+                        <MyButton
+                          className="text-white ms-3"
+                          type="button"
+                          onClick={() => router.push('/request-verify')}
+                        >
+                          Xác thực tài khoản
+                        </MyButton>
+                      ) : null}
                     </div>
                   </Form>
                 )}

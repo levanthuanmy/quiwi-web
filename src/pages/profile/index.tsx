@@ -207,6 +207,11 @@ const ProfilePage: NextPage = () => {
               <div className="text-secondary">
                 @{userResponse.user.username}
               </div>
+              {userResponse.user.isVerified ? (
+                <div className="mt-1 text-success fw-bold">
+                  Tài khoản đã được xác thực{' '} <i className="bi bi-check-lg"></i>
+                </div>
+              ) : null}
             </div>
 
             <SummaryInfo

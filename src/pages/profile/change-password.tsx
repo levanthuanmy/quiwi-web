@@ -114,13 +114,16 @@ const ChangePasswordPage: NextPage = () => {
                     fluid={true}
                     alt="avatar"
                     src={user?.avatar || '/assets/default-logo.png'}
-                    width={40}
-                    height={40}
+                    width={48}
+                    height={48}
                     className="rounded-circle"
                   />
                 </Col>
                 <Col className="fs-16px fw-medium">
-                  {userResponse.user.username}
+                  {userResponse.user.username}{' '}
+                  {userResponse.user.isVerified ? (
+                    <i className="bi bi-check-lg text-success"></i>
+                  ) : null}
                 </Col>
               </Row>
 

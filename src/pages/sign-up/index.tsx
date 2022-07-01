@@ -73,7 +73,15 @@ const SignUpPage: NextPage = () => {
               name="name"
               placeholder="Họ và tên"
               as={MyInput}
-              iconClassName="bi bi-person"
+              iconClassName="bi bi-card-text"
+              className="mb-3"
+            />
+             <Field
+              type="text"
+              name="email"
+              placeholder="Email"
+              as={MyInput}
+              iconClassName="bi bi-envelope"
               className="mb-3"
             />
             <Field

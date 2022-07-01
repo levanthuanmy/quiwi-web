@@ -172,6 +172,11 @@ const GetUserProfilePage: NextPage = () => {
             <div className="h-100  align-self-center align-self-md-start text-center text-md-start">
               <div className="fs-32px fw-medium">{userProfile.user.name}</div>
               <div className="text-secondary">@{userProfile.user.username}</div>
+              {userProfile.user.isVerified ? (
+                <div className="mt-1 text-success fw-bold">
+                  Tài khoản đã được xác thực <i className="bi bi-check-lg"></i>
+                </div>
+              ) : null}
             </div>
             <div className=" align-self-center align-self-md-start mt-2">
               <Button
