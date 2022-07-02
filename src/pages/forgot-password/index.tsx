@@ -1,7 +1,7 @@
 import { Field, Form, Formik, FormikHelpers, setIn } from 'formik'
 import { NextPage } from 'next'
 import { useRouter } from 'next/router'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 import { Card, Container, Image, Modal } from 'react-bootstrap'
 import * as Yup from 'yup'
@@ -12,55 +12,45 @@ import { useAuth } from '../../hooks/useAuth/useAuth'
 import { post } from '../../libs/api'
 import { TApiResponse, TUser } from '../../types/types'
 
-type ResetPasswordForm = {
-  password: string
-  confirmPassword: string
+type EmailForm = {
+  email: string
 }
 
-const ResetPaswordPage: NextPage = () => {
+const ForgotPasswordPage: NextPage = () => {
   const router = useRouter()
-  const initialValues: ResetPasswordForm = { password: '', confirmPassword: '' }
-  const authContext = useAuth()
+  const initialValues: EmailForm = { email: '' }
   const [error, setError] = useState('')
   const [info, setInfo] = useState('')
-  const { token } = router.query
 
-  useEffect(() => {
-    if (router.isReady) {
-      console.log(window.location.search)
-      if (!token) {
-        setError(
-          'Tham số không hợp lệ. Hệ thống tự quay về trang chủ sau 2 giây'
-        )
-        setTimeout(() => router.replace('/'), 2000)
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [router, token])
-  const onResetPassword = async (
-    body: ResetPasswordForm,
-    actions: FormikHelpers<ResetPasswordForm>
+  const [isSubmitted, setIsSubmit] = useState(false)
+
+  const sendLink = async (
+    body: EmailForm,
+    actions: FormikHelpers<EmailForm>
   ) => {
-    if (!body.password || !body.confirmPassword) {
-      setError('Vui lòng nhập đầy đủ mật khẩu')
-      return
-    }
     try {
-      const res: TApiResponse<TUser> = await post(
-        '/api/auth/reset-password',
+      if (isSubmitted) {
+        setError(
+          'Hệ thống vừa gửi link vào email của bạn. Vui lòng kiểm tra email và quay lại sau 5 giây'
+        )
+        return
+      }
+
+      post(
+        '/api/auth/send-reset-password',
+        {},
         {
-          token,
-        },
-        {
-          password: body.password,
-        },
-        false
+          email: body.email,
+        }
       )
-      authContext.signOut()
+
       setInfo(
-        'Đặt lại mật khẩu thành công. Hệ thống chuyển sang trang đăng nhập sau 2 giây'
+        'Đã gửi link dẫn tới trang đặt lại mật khẩu vào email của bạn. Vui lòng kiểm tra email'
       )
-      setTimeout(() => router.replace('/'), 2000)
+      setIsSubmit(true)
+      setTimeout(() => {
+        setIsSubmit(false)
+      }, 5000)
     } catch (error) {
       console.log('onSignUp - error', error)
       setError((error as Error).message)
@@ -70,32 +60,22 @@ const ResetPaswordPage: NextPage = () => {
   }
 
   const handleSignUpFormSubmit = (
-    values: ResetPasswordForm,
-    actions: FormikHelpers<ResetPasswordForm>
+    values: EmailForm,
+    actions: FormikHelpers<EmailForm>
   ) => {
-    if (!values.confirmPassword || !values.password) {
+    if (!values.email) {
       actions.setErrors({
-        confirmPassword: 'Vui lòng nhập mật khẩu',
-        password: 'Vui lòng nhập mật khẩu',
+        email: 'Vui lòng nhập email',
       })
       actions.setSubmitting(false)
       return
     }
-    if (values.confirmPassword !== values.password) {
-      actions.setErrors({
-        confirmPassword: 'Mật khẩu không trùng khớp',
-        password: 'Mật khẩu không trùng khớp',
-      })
-      actions.setSubmitting(false)
 
-      return
-    }
-    onResetPassword(values, actions)
+    sendLink(values, actions)
   }
 
   const PasswordSchema = Yup.object().shape({
-    password: Yup.string().min(6, 'Mật khẩu phải có ít nhất 6 ký tự'),
-    confirmPassword: Yup.string().min(6, 'Mật khẩu phải có ít nhất 6 ký tự'),
+    email: Yup.string().email('Email không hợp lệ'),
   })
 
   return (
@@ -110,7 +90,11 @@ const ResetPaswordPage: NextPage = () => {
           </div>
         </Card.Header>
         <Card.Body className="p-4">
-          <h3>Nhập lại mật khẩu mới</h3>
+          <h3>Quên mật khẩu</h3>
+          <p className="text-muted">
+            Nhập địa chỉ email mà đã đăng ký với tài khoản Quiwi. Hệ thống sẽ
+            gửi đường link đặt lại mật khẩu vào email của bạn
+          </p>
           <Formik
             initialValues={initialValues}
             onSubmit={handleSignUpFormSubmit}
@@ -127,34 +111,24 @@ const ResetPaswordPage: NextPage = () => {
             }) => (
               <Form onSubmit={handleSubmit}>
                 <Field
-                  type="password"
-                  name="password"
-                  placeholder="Mật khẩu"
+                  type="text"
+                  name="email"
+                  placeholder="Email"
                   as={MyInput}
-                  iconClassName="bi bi-unlock"
+                  iconClassName="bi bi-envelope"
                   className=""
                 />
-                {errors.password ? (
-                  <div className="text-danger">{errors.password}</div>
+                {errors.email ? (
+                  <div className="text-danger">{errors.email}</div>
                 ) : null}
-                <Field
-                  type="password"
-                  name="confirmPassword"
-                  placeholder="Nhập lại mật khẩu"
-                  as={MyInput}
-                  iconClassName="bi bi-unlock"
-                  className="mt-3"
-                />
-                {errors.confirmPassword ? (
-                  <div className="text-danger">{errors.confirmPassword}</div>
-                ) : null}
+
                 <div className="text-center mt-3">
                   <MyButton
                     className=" fw-medium text-white"
                     type="submit"
                     disabled={isSubmitting}
                   >
-                    Đặt lại mật khẩu
+                    Gửi email
                   </MyButton>
                 </div>
               </Form>
@@ -168,6 +142,8 @@ const ResetPaswordPage: NextPage = () => {
         onHide={() => setError('')}
         size="sm"
         header={<Modal.Title className="text-danger">Thông báo</Modal.Title>}
+        inActiveButtonCallback={() => setError('')}
+        inActiveButtonTitle="Huỷ"
       >
         <div className="text-center">{error}</div>
       </MyModal>
@@ -189,4 +165,4 @@ const ResetPaswordPage: NextPage = () => {
   )
 }
 
-export default ResetPaswordPage
+export default ForgotPasswordPage
