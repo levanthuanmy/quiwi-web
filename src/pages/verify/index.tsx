@@ -13,7 +13,7 @@ const VerifyPage: NextPage = () => {
   const router = useRouter()
   const [error, setError] = useState('')
   const [info, setInfo] = useState('')
-  const { token, userId } = router.query
+  const { token } = router.query
 
   const auth = useAuth()
 
@@ -22,7 +22,6 @@ const VerifyPage: NextPage = () => {
       try {
         const params = {
           token,
-          userId,
         }
         const res = await post<TApiResponse<TUser>>(
           '/api/auth/verify',
@@ -41,15 +40,15 @@ const VerifyPage: NextPage = () => {
     }
 
     if (router.isReady) {
-      if (!token || !userId) {
+      if (!token) {
         setError('Tham số không hợp lệ')
         setTimeout(() => router.replace('/'), 2000)
       } else {
         verifyAccount()
       }
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [router, token, userId])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [router, token])
 
   const requestActivation = async () => {
     try {

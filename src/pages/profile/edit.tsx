@@ -91,7 +91,7 @@ const EditProfilePage: NextPage = () => {
     /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
 
   const ProfileSchema = Yup.object().shape({
-    name: Yup.string().min(3, 'Tên quá ngắn!').max(100, 'Tên quá dài!'),
+    name: Yup.string().min(6, 'Tên quá ngắn!').max(100, 'Tên quá dài!'),
     email: Yup.string().email('Email không hợp lệ'),
     phoneNumber: Yup.string()
       .matches(phoneRegExp, 'Số điện thoại không hợp lệ')

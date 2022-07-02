@@ -10,6 +10,7 @@ import SingleFloatingCardLayout from '../../components/SingleFloatingCardLayout/
 import { useAuth } from '../../hooks/useAuth/useAuth'
 import { post } from '../../libs/api'
 import { TApiResponse, TUser } from '../../types/types'
+import * as Yup from 'yup'
 
 type SignUpForm = {
   username: string
@@ -46,10 +47,20 @@ const SignUpPage: NextPage = () => {
     onSignUp(values, actions)
   }
 
+  const ProfileSchema = Yup.object().shape({
+    name: Yup.string().min(6, 'Tên quá ngắn!').max(100, 'Tên quá dài!'),
+    email: Yup.string().email('Email không hợp lệ'),
+    password: Yup.string().min(6, 'Mật khẩu phải có ít nhất 6 ký tự'),
+  })
+
   return (
     <SingleFloatingCardLayout>
       <div className="py-32px fs-32px fw-medium">Đăng ký</div>
-      <Formik initialValues={initialValues} onSubmit={handleSignUpFormSubmit}>
+      <Formik
+        initialValues={initialValues}
+        onSubmit={handleSignUpFormSubmit}
+        validationSchema={ProfileSchema}
+      >
         {({
           // values,
           // errors,
@@ -76,7 +87,7 @@ const SignUpPage: NextPage = () => {
               iconClassName="bi bi-card-text"
               className="mb-3"
             />
-             <Field
+            <Field
               type="text"
               name="email"
               placeholder="Email"

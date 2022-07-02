@@ -88,7 +88,12 @@ const SignInPage: NextPage = () => {
       </Formik>
 
       <div className="text-secondary pt-4">
-        {/* <div className="pb-3 cursor-pointer fw-medium">Quên mật khẩu</div> */}
+        <div
+          className="pb-3 cursor-pointer fw-medium"
+          onClick={() => router.push('/forgot-password')}
+        >
+          Quên mật khẩu
+        </div>
         <div onClick={() => router.push('/sign-up')}>
           Chưa có tài khoản?{' '}
           <span className="text-primary cursor-pointer fw-medium">
@@ -102,7 +107,9 @@ const SignInPage: NextPage = () => {
         onHide={() => setError('')}
         size="sm"
         header={
-          <Modal.Title className="text-danger fs-18px fw-medium">Đăng nhập thất bại</Modal.Title>
+          <Modal.Title className="text-danger fs-18px fw-medium">
+            Đăng nhập thất bại
+          </Modal.Title>
         }
         inActiveButtonCallback={() => setError('')}
         inActiveButtonTitle="Huỷ"
