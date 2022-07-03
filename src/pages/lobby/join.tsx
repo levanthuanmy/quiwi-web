@@ -44,9 +44,7 @@ const JoiningPage: NextPage = () => {
         joinRoom()
       })
 
-      gameSkOnce('error', (data) => {
-        console.log('Lobby/join.tsx socket error', data)
-      })
+
     } else {
       // host đã kết nối socket rồi => join luôn
       joinRoom()

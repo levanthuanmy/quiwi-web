@@ -6,7 +6,7 @@ import {useGameSession} from '../../../hooks/useGameSession/useGameSession'
 
 import {useLocalStorage} from '../../../hooks/useLocalStorage/useLocalStorage'
 import {TPlayer, TQuestion, TStartQuizResponse, TUser, TViewResult,} from '../../../types/types'
-import {JsonParse, playRandomCorrectAnswerSound, playSound} from '../../../utils/helper'
+import {JsonParse} from '../../../utils/helper'
 import GameSessionRanking from '../GameSessionRanking/GameSessionRanking'
 import {QuestionMedia} from '../QuestionMedia/QuestionMedia'
 import styles from './AnswerBoard.module.css'
@@ -22,19 +22,17 @@ import {ExitContext} from "../../../pages/game/play";
 import LoadingBoard from "../LoadingBoard/LoadingBoard";
 import {useToasts} from "react-toast-notifications";
 import {useTimer} from "../../../hooks/useTimer/useTimer";
-import { Howl } from 'howler'
-import { SOUND_EFFECT } from '../../../utils/constants'
+import {SOUND_EFFECT} from '../../../utils/constants'
+import {useSound} from "../../../hooks/useSound/useSound";
 
 type AnswerBoardProps = {
   className?: string
   isShowHostControl: boolean
-  sound?: Howl
 }
 
 const AnswerBoard: FC<AnswerBoardProps> = ({
                                              className,
                                              isShowHostControl,
-                                             sound
                                            }) => {
   const {
     gameSession,
@@ -46,6 +44,15 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
     gameSkOnce,
     getQuestionWithID,
   } = useGameSession()
+
+  const {
+    playSound,
+    playRandomCorrectAnswerSound,
+    turnSound
+  } = useSound()
+
+  // lưu qid để hiển thị bên trang bộ quiz
+  const [lsCurrentQID, setLsCurrentQID] = useLocalStorage('currentQID', '-1')
 
   const exitContext = useContext(ExitContext)
   const timer = useTimer()
@@ -193,6 +200,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
     })
 
     gameSkOn('ranking', (data) => {
+      playSound(SOUND_EFFECT['RECHARGING'])
       setShowRanking(true)
       const rkData: any[] = data?.playersSortedByScore
       setRankingData(rkData)
@@ -212,6 +220,8 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
 
         const currentQuestionId = data.question.currentQuestionIndex as number
         const newQuestion = data.question.question as TQuestion
+        console.log("=>(AnswerBoard.tsx:175) ", `${data.question.currentQuestionIndex}`);
+        setLsCurrentQID(`${data.question.currentQuestionIndex}`)
 
         if (currentQID != currentQuestionId) {
           setCurrentQID(currentQuestionId)
@@ -226,6 +236,10 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
       }
     })
   }
+
+  useEffect(() => {
+    console.log("=>(index.tsx:34) lsCurrentQID", lsCurrentQID);
+  }, [lsCurrentQID]);
 
   const viewRanking = () => {
     if (!gameSession) return
@@ -295,7 +309,6 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
   }
 
   function endGame() {
-    sound?.stop();
     if (gameSession && gameSocket() != null && isHost) {
       const msg = {invitationCode: gameSession.invitationCode}
       gameSkEmit('game-ended', msg)

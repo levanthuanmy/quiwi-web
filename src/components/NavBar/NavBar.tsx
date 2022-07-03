@@ -1,23 +1,19 @@
 import classNames from 'classnames'
-import _ from 'lodash'
 import Image from 'next/image'
-import { useRouter } from 'next/router'
-import React, { FC, memo, useEffect, useState } from 'react'
-import { Collapse } from 'react-bootstrap'
-import { useToasts } from 'react-toast-notifications'
-import { useAuth } from '../../hooks/useAuth/useAuth'
-import { SocketManager } from '../../hooks/useSocket/socketManager'
-import { get } from '../../libs/api'
-import {
-  TApiResponse,
-  TNotification,
-  TPaginationResponse,
-} from '../../types/types'
-import { SOUND_EFFECT } from '../../utils/constants'
-import { playSound, timeSince } from '../../utils/helper'
+import {useRouter} from 'next/router'
+import React, {FC, memo, useEffect, useState} from 'react'
+import {Collapse} from 'react-bootstrap'
+import {useToasts} from 'react-toast-notifications'
+import {useAuth} from '../../hooks/useAuth/useAuth'
+import {SocketManager} from '../../hooks/useSocket/socketManager'
+import {get} from '../../libs/api'
+import {TApiResponse, TNotification, TPaginationResponse,} from '../../types/types'
+import {SOUND_EFFECT} from '../../utils/constants'
+import {timeSince} from '../../utils/helper'
 import MyButton from '../MyButton/MyButton'
 import ItemNotification from './ItemNotification/ItemNotification'
 import styles from './NavBar.module.css'
+import {useSound} from "../../hooks/useSound/useSound";
 
 type NavBarProps = {
   className?: string
@@ -28,13 +24,13 @@ type NavBarProps = {
   onShowJoinQuiz?: () => void
 }
 const NavBar: FC<NavBarProps> = ({
-  className,
-  setIsExpand,
-  isExpand,
-  showMenuBtn = true,
-  onToQuizCreator,
-  onShowJoinQuiz,
-}) => {
+                                   className,
+                                   setIsExpand,
+                                   isExpand,
+                                   showMenuBtn = true,
+                                   onToQuizCreator,
+                                   onShowJoinQuiz,
+                                 }) => {
   const router = useRouter()
   const authContext = useAuth()
   const [showNotifyList, setShowNotifyList] = useState<boolean>(false)
@@ -42,7 +38,8 @@ const NavBar: FC<NavBarProps> = ({
   const notificationSocket = socket.socketOf('NOTIFICATION')
   const [notifications, setNotifications] = useState<TNotification[]>([])
   const [notiCount, setNotiCount] = useState<number>(notifications?.length || 0)
-  const { addToast } = useToasts()
+  const {addToast} = useToasts()
+  const {playSound} = useSound()
 
   useEffect(() => {
     if (authContext.isAuth) {
@@ -56,9 +53,7 @@ const NavBar: FC<NavBarProps> = ({
 
       const getInitNotifications = async () => {
         try {
-          const res = await get<
-            TApiResponse<TPaginationResponse<TNotification>>
-          >(`/api/notification`, true)
+          const res = await get<TApiResponse<TPaginationResponse<TNotification>>>(`/api/notification`, true)
           setNotifications(res.response.items)
           setNotiCount(countUnread(res.response.items))
         } catch (error) {
@@ -113,10 +108,10 @@ const NavBar: FC<NavBarProps> = ({
         setNotifications((prev) => {
           let _current = [...prev]
           if (index !== undefined) {
-            _current[index] = { ...prev[index], isRead: true }
+            _current[index] = {...prev[index], isRead: true}
           } else {
             const idx = prev.findIndex((e) => e.id === notif.id)
-            _current[idx] = { ...prev[idx], isRead: true }
+            _current[idx] = {...prev[idx], isRead: true}
           }
           return _current
         })
@@ -197,7 +192,7 @@ const NavBar: FC<NavBarProps> = ({
                 )}
                 onClick={() => setShowNotifyList((prev) => !prev)}
               >
-                <div className="bi bi-bell-fill fs-20px" />
+                <div className="bi bi-bell-fill fs-20px"/>
 
                 {notiCount > 0 ? (
                   <div
@@ -216,12 +211,12 @@ const NavBar: FC<NavBarProps> = ({
                   <></>
                 )}
               </div>
-              <div className="position-absolute pt-2" style={{ right: 0 }}>
+              <div className="position-absolute pt-2" style={{right: 0}}>
                 <Collapse in={showNotifyList}>
                   <div className="rounded-14px overflow-hidden border shadow">
                     <div
                       className="bg-light p-12px d-flex flex-column gap-2 overflow-auto"
-                      style={{ width: 343, height: 667 }}
+                      style={{width: 343, height: 667}}
                     >
                       <div className="fs-18px fw-medium">
                         Thông báo ({notiCount})

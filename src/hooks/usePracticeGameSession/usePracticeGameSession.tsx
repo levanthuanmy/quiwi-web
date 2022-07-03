@@ -4,6 +4,7 @@ import {TQuestion, TStartQuizResponse, TUser} from '../../types/types'
 import {JsonParse} from '../../utils/helper'
 import {useLocalStorage} from '../useLocalStorage/useLocalStorage'
 import {SocketManager} from '../useSocket/socketManager'
+import {useSound} from "../useSound/useSound";
 
 export const usePracticeGameSession = (): {
   gameSkOnce: (ev: string, listener: (...args: any[]) => void) => void;
@@ -19,7 +20,7 @@ export const usePracticeGameSession = (): {
   saveGameSession: (gameSS: TStartQuizResponse) => void
 } => {
   const sk = SocketManager()
-
+  const soundManager = useSound()
   const [lsUser] = useLocalStorage('user', '')
   let _isHost: boolean | null = null
   const [lsGameSession, setLsGameSession] = useLocalStorage('game-session', '')
@@ -63,6 +64,7 @@ export const usePracticeGameSession = (): {
   const connectGameSocket = () => {
     if (!gameSocket() || gameSocket()?.disconnected) {
       sk.connect("COMMUNITY-GAMES")
+      soundManager.setGameSoundOn(true)
       gameSocket()?.offAny()
       gameSocket()?.onAny(function (event, data) {
         console.log("🌝🌝 Event:", event);
@@ -95,8 +97,11 @@ export const usePracticeGameSession = (): {
 
   const clearGameSession = () => {
     try {
-      if (deleteCount <= 0)
+      if (deleteCount <= 0) {
         console.log('🎯️ PracticeGameSession :: Clear')
+      }
+      soundManager.setGameSoundOn(false)
+      gameSocket()?.offAny()
       setLsGameSession('')
       setGameSession(null)
       localStorage.removeItem('game-session')

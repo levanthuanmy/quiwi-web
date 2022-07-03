@@ -4,9 +4,9 @@ import {useRouter} from 'next/router'
 import React, {FC, memo, useContext, useEffect, useRef, useState} from 'react'
 import {useLocalStorage} from '../../../hooks/useLocalStorage/useLocalStorage'
 import {TPlayer, TQuestion, TViewResult,} from '../../../types/types'
-import {JsonParse, playRandomCorrectAnswerSound, playSound} from '../../../utils/helper'
+import {JsonParse} from '../../../utils/helper'
 import styles from './CommunityAnswerBoard.module.css'
-import {Fade, Form, FormCheck, Image} from 'react-bootstrap'
+import {Fade, Image} from 'react-bootstrap'
 import useScreenSize from '../../../hooks/useScreenSize/useScreenSize'
 import MyModal from "../../MyModal/MyModal";
 import {useToasts} from "react-toast-notifications";
@@ -19,23 +19,20 @@ import {QuestionMedia} from "../../GameComponents/QuestionMedia/QuestionMedia";
 import LoadingBoard from "../../GameComponents/LoadingBoard/LoadingBoard";
 import {useTimer} from "../../../hooks/useTimer/useTimer";
 import {usePracticeGameSession} from "../../../hooks/usePracticeGameSession/usePracticeGameSession";
-import {Button} from "@restart/ui";
 import {ExitContext} from "../CommunityGamePlay/CommunityGamePlay";
-import { Howl } from 'howler'
-import { SOUND_EFFECT } from '../../../utils/constants'
+import {SOUND_EFFECT} from '../../../utils/constants'
+import {useSound} from "../../../hooks/useSound/useSound";
 
 type CommunityAnswerBoardProps = {
   className?: string
   isShowHostControl: boolean
   setIsShowHostControl: React.Dispatch<React.SetStateAction<boolean>>
-  sound?: Howl
 }
 
 const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
                                                                className,
                                                                isShowHostControl,
                                                                setIsShowHostControl,
-                                                               sound
                                                              }) => {
   const {
     gameSession,
@@ -46,6 +43,13 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
     gameSkOnce,
     getQuestionWithID,
   } = usePracticeGameSession()
+
+  const {
+    playSound,
+    playRandomCorrectAnswerSound,
+    turnSound
+  } = useSound()
+
   const exitContext = useContext(ExitContext)
   const timer = useTimer()
 
@@ -79,7 +83,8 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
   useEffect(() => {
     handleSocket()
     resetState()
-    setLoading("Chuẩn bị!")
+    if (currentQID == 0 ) setLoading("Chuẩn bị!")
+    else setLoading(null)
     console.log("=>(CommunityAnswerBoard.tsx:77) goilao");
   }, [])
 
@@ -206,6 +211,7 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
     })
 
     gameSkOn('loading', (data) => {
+      playRandomCorrectAnswerSound();
       if (data?.question?.question) {
         timer.setIsShowSkeleton(true)
         setIsShowNext(false)
@@ -285,7 +291,6 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
   }
 
   function endGame() {
-    sound?.stop();
     if (gameSession && gameSocket() != null) {
       const msg = {invitationCode: gameSession.invitationCode}
       gameSkEmit('game-ended', msg)

@@ -1,6 +1,7 @@
 import dayjs from 'dayjs'
 import { TAnswer, TQuestion } from '../types/types'
 import { Howl } from 'howler'
+import {useLocalStorage} from "../hooks/useLocalStorage/useLocalStorage";
 
 export const JsonParse = (input: string | null) => {
   try {
@@ -79,41 +80,6 @@ export const formatDate_DDMMMMYYYY = (d: Date) => {
 
 export const formatDate_DDMMYYYY = (d: Date) => {
   return dayjs(d).locale('vi').format('DD-MM-YYYY')
-}
-
-export const playSound = (src: string) => {
-  const sound = new Howl({
-    src,
-    html5: true,
-  })
-  sound.play()
-}
-
-export const playSoundWithLoop = (src: string) => {
-  const sound = new Howl({
-    src,
-    html5: true,
-    loop: true
-  })
-  sound.play()
-  return sound;
-}
-
-export const playRandomCorrectAnswerSound = () => {
-  const min = Math.ceil(1);
-  const max = Math.floor(4);
-  const randomNum = Math.floor(Math.random() * (max - min) + min);
-  const url = "/sounds/correct_answer_" + randomNum + ".mp3";
-  const sound_pronuncia = new Howl({
-    src: url,
-    html5: true,
-  })
-  const sound_bell = new Howl({
-    src: "/sounds/ring_bell.mp3",
-    html5: true,
-  })
-  sound_bell.play();
-  sound_pronuncia.play();
 }
 
 export function timeSince(date: string | Date) {

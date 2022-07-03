@@ -20,6 +20,7 @@ import {
 } from '../../../../types/types'
 import {JsonParse} from '../../../../utils/helper'
 import {usePracticeGameSession} from "../../../../hooks/usePracticeGameSession/usePracticeGameSession";
+import {useSound} from "../../../../hooks/useSound/useSound";
 
 const PlayCommunityQuizScreen: NextPage = () => {
   const router = useRouter()
@@ -32,6 +33,7 @@ const PlayCommunityQuizScreen: NextPage = () => {
   const [gameModeEnum, setGameModeEnum] = useState<TGameModeEnum>()
   const [isFetchingSocket, setIsFetchingSocket] = useState<boolean>(false)
   const [error, setError] = useState('')
+  const {setGameSoundOn} = useSound()
 
   const {
     data: quizResponse,

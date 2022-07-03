@@ -1,12 +1,12 @@
-import { FC, useState } from 'react'
-import { Button, Card, Image, Modal } from 'react-bootstrap'
-import { get } from '../../libs/api'
-import { TItem } from '../../types/types'
-import { ItemPurchaseModal } from '../ItemPurchaseModal/ItemPurchaseModal'
+import {FC, useState} from 'react'
+import {Button, Card, Image, Modal} from 'react-bootstrap'
+import {get} from '../../libs/api'
+import {TItem} from '../../types/types'
+import {ItemPurchaseModal} from '../ItemPurchaseModal/ItemPurchaseModal'
 import MyModal from '../MyModal/MyModal'
 import styles from './ItemShopV2.module.css'
-import { playSound } from '../../utils/helper'
-import { SOUND_EFFECT } from '../../utils/constants'
+import {SOUND_EFFECT} from '../../utils/constants'
+import {useSound} from "../../hooks/useSound/useSound";
 
 type ItemShopProps = {
   item: TItem
@@ -18,6 +18,8 @@ const ItemShopV2: FC<ItemShopProps> = ({ item, userBuyItem }) => {
   const [showAlertModal, setShowAlertModal] = useState(false)
   const [error, setError] = useState('')
   const [quantity, setQuantity] = useState(1)
+  const {playSound} = useSound()
+
   const buyItem = async () => {
     playSound(SOUND_EFFECT['CONFIRM_BUY_BUTTON_SOUND_CLICK'])
     setShowConfirmationModal(false)

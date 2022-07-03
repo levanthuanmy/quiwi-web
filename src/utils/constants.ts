@@ -84,7 +84,9 @@ export const SOUND_EFFECT: Record<string, string> = {
   INCORRECT_ANSWER: '/sounds/incorrect_answer.mp3',
   ONE_SECOND: '/sounds/one-second.mp3',
   END_GAME: '/sounds/end-game.mp3',
-  CONGRATULATION_RANKING: '/sounds/congratulations-winner.mp3'
+  CONGRATULATION_RANKING: '/sounds/congratulations-winner.mp3',
+  COMPLETE_LEVEL: '/sounds/complete-level.wav',
+  RECHARGED: '/sounds/recharing.wav'
 }
 
 export const TIMEOUT_OPTIONS = [1, 2, 5, 10, 15, 30, 60, 120, 180]

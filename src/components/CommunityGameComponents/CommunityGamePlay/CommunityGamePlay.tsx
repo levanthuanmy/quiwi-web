@@ -9,10 +9,8 @@ import router from "next/router";
 import MyModal from "../../MyModal/MyModal";
 import {usePracticeGameSession} from "../../../hooks/usePracticeGameSession/usePracticeGameSession";
 import useScreenSize from "../../../hooks/useScreenSize/useScreenSize";
-import * as gtag from "../../../libs/gtag";
 import {TStartQuizResponse} from "../../../types/types";
-import { Howl } from 'howler';
-import { SOUND_EFFECT } from '../../../utils/constants';
+import {useSound} from "../../../hooks/useSound/useSound";
 
 export const ExitContext = React.createContext<{
   showEndGameModal: boolean
@@ -30,13 +28,7 @@ const CommunityGamePlay: NextPage = () => {
   const [exitModal, setExitModal] = useState(false)
   const [endGameData, setEndGameData] = useState<TStartQuizResponse>()
   const {fromMedium} = useScreenSize()
-  const [sound, setSound] = useState<Howl>(
-    new Howl({
-      src: SOUND_EFFECT['GAME_PLAYING'],
-      html5: true,
-      loop: true
-    })
-  );
+  const {turnSound} = useSound()
 
   const hostAction: FABAction = {
     label: 'Hiện bảng điều khiển',
@@ -61,7 +53,6 @@ const CommunityGamePlay: NextPage = () => {
 
   const exitRoom = () => {
     // dùng clear game session là đủ
-    sound.stop();
     clearGameSession()
     router.push('/')
   }
@@ -70,7 +61,7 @@ const CommunityGamePlay: NextPage = () => {
     return (
       <MyModal
         show={isShowExit}
-        onHide={() => setIsShowExit(true)}
+        onHide={() => setIsShowExit(false)}
         activeButtonTitle="Đồng ý"
         activeButtonCallback={exitRoom}
         inActiveButtonCallback={() => setIsShowExit(false)}
@@ -89,27 +80,27 @@ const CommunityGamePlay: NextPage = () => {
 
 
   useEffect(() => {
-    sound.play();
+
     gameSkOn('game-ended', (data) => {
-      sound.stop();
+
       setEndGameData(data)
     })
   }, [])
 
-  useEffect(() => {
-    router.beforePopState(({ as }) => {
-        if (as !== router.asPath) {
-            // Will run when leaving the current page; on back/forward actions
-            // Add your logic here, like toggling the modal state
-            sound.stop();
-        }
-        return true;
-    });
-
-    return () => {
-        router.beforePopState(() => true);
-    };
-}, [router]);
+//   useEffect(() => {
+//     router.beforePopState(({ as }) => {
+//         if (as !== router.asPath) {
+//             // Will run when leaving the current page; on back/forward actions
+//             // Add your logic here, like toggling the modal state
+//             sound.stop();
+//         }
+//         return true;
+//     });
+//
+//     return () => {
+//         router.beforePopState(() => true);
+//     };
+// }, [router]);
 
   return (
     <>
@@ -138,7 +129,6 @@ const CommunityGamePlay: NextPage = () => {
                 isShowHostControl={isShowHostControl}
                 setIsShowHostControl={setIsShowHostControl}
                 className="flex-grow-1"
-                sound={sound}
               />
             </TimerProvider>
             </ExitContext.Provider>

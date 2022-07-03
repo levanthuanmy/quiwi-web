@@ -15,10 +15,10 @@ import {TStartQuizResponse} from '../../../types/types'
 import styles from './GamePage.module.css'
 import * as gtag from '../../../libs/gtag'
 import {TimerProvider} from "../../../hooks/useTimer/useTimer";
-import { useLocalStorage } from '../../../hooks/useLocalStorage/useLocalStorage'
-import { Howl } from 'howler'
-import { SOUND_EFFECT } from '../../../utils/constants'
-
+import {useLocalStorage} from '../../../hooks/useLocalStorage/useLocalStorage'
+import {SOUND_EFFECT} from '../../../utils/constants'
+import {useSound} from "../../../hooks/useSound/useSound";
+import {timeout} from "q";
 
 export const ExitContext = React.createContext<{
   showEndGameModal: boolean
@@ -40,13 +40,7 @@ const GamePage: NextPage = () => {
   const [isShowHostControl, setIsShowHostControl] = useState<boolean>(true)
   const {fromMedium} = useScreenSize()
   const [endGameData, setEndGameData] = useState<TStartQuizResponse>()
-  const [sound, setSound] = useState<Howl>(
-    new Howl({
-      src: SOUND_EFFECT['GAME_PLAYING'],
-      html5: true,
-      loop: true
-    })
-  );
+  const {isMute, playSound, turnSound, setGameSoundOn} = useSound()
   const [lsBg] = useLocalStorage('bg', '')
   const fabs: FABAction[] = [
     {
@@ -99,7 +93,6 @@ const GamePage: NextPage = () => {
 
   const exitRoom = () => {
     // dùng clear game session là đủ
-    sound.stop();
     clearGameSession()
     router.push('/my-lib')
   }
@@ -108,7 +101,7 @@ const GamePage: NextPage = () => {
     return (
       <MyModal
         show={isShowExit}
-        onHide={() => setIsShowExit(true)}
+        onHide={() => setIsShowExit(false)}
         activeButtonTitle="Đồng ý"
         activeButtonCallback={exitRoom}
         inActiveButtonCallback={() => setIsShowExit(false)}
@@ -126,9 +119,8 @@ const GamePage: NextPage = () => {
   }
 
   useEffect(() => {
-    sound.play();
     gameSkOn('game-ended', (data) => {
-      sound.stop();
+      playSound(SOUND_EFFECT['COMPLETE_LEVEL'])
       setEndGameData(data)
       saveGameSession(data)
       setIsGameEnded(true)
@@ -144,21 +136,21 @@ const GamePage: NextPage = () => {
       params: {quizId: gameSession?.quizId, invitationCode: gameSession?.invitationCode},
     })
   }, [])
-
-  useEffect(() => {
-    router.beforePopState(({ as }) => {
-        if (as !== router.asPath) {
-            // Will run when leaving the current page; on back/forward actions
-            // Add your logic here, like toggling the modal state
-            sound.stop();
-        }
-        return true;
-    });
-
-    return () => {
-        router.beforePopState(() => true);
-    };
-}, [router]);
+  //
+  // useEffect(() => {
+  //   router.beforePopState(({as}) => {
+  //     if (as !== router.asPath) {
+  //       // Will run when leaving the current page; on back/forward actions
+  //       // Add your logic here, like toggling the modal state
+  //       sound.stop();
+  //     }
+  //     return true;
+  //   });
+  //
+  //   return () => {
+  //     router.beforePopState(() => true);
+  //   };
+  // }, [router]);
 
   const [exitModal, setExitModal] = useState(false)
   return (
@@ -197,7 +189,6 @@ const GamePage: NextPage = () => {
                   <AnswerBoard
                     className="flex-grow-1"
                     isShowHostControl={isShowHostControl}
-                    sound={sound}
                   />
                 </TimerProvider>
               </ExitContext.Provider>

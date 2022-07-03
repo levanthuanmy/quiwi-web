@@ -1,6 +1,6 @@
 import React, {Dispatch, ReactNode, SetStateAction, useRef, useState} from "react";
 import { SOUND_EFFECT } from "../../utils/constants";
-import { playSound } from "../../utils/helper";
+import {useSound} from "../useSound/useSound";
 
 type TimerContextValue = {
   isCounting: boolean
@@ -44,6 +44,7 @@ export const TimerProvider = ({children}: { children?: ReactNode }) => {
   const intervalRef = useRef<NodeJS.Timer | null>(null)
   const intervalRefSound = useRef<NodeJS.Timer | null>(null)
 
+  const {playSound} = useSound()
 
   const stopCounting = (stopUI: boolean) => {
     console.log("=>(useTimer) stopCounting stopUI", stopUI);

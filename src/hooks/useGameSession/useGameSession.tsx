@@ -4,8 +4,24 @@ import {TQuestion, TStartQuizResponse, TUser} from '../../types/types'
 import {JsonParse} from '../../utils/helper'
 import {useLocalStorage} from '../useLocalStorage/useLocalStorage'
 import {SocketManager} from '../useSocket/socketManager'
+import {useSound} from "../useSound/useSound";
+import {singletonHook} from "react-singleton-hook";
 
-export const useGameSession = (): {
+const init = {
+  gameSkOnce: (ev: string, listener: (...args: any[]) => void) => null,
+  isHost: () => false,
+  getQuestionWithID: (qid: number) => null,
+  gameSkOn: (ev: string, listener: (...args: any[]) => void) => null,
+  connectGameSocket: () => null,
+  clearGameSession: () => null,
+  gameSocket: () => null,
+  disconnectGameSocket: () => null,
+  gameSkEmit: (ev: string, msg: any) => null,
+  gameSession: null,
+  saveGameSession: (gameSS: TStartQuizResponse) => null
+}
+
+const _useGameSession = (): {
   gameSkOnce: (ev: string, listener: (...args: any[]) => void) => void;
   isHost: () => boolean;
   getQuestionWithID: (qid: number) => (TQuestion | null);
@@ -19,7 +35,7 @@ export const useGameSession = (): {
   saveGameSession: (gameSS: TStartQuizResponse) => void
 } => {
   const sk = SocketManager()
-
+  const soundManager = useSound()
   const [lsUser] = useLocalStorage('user', '')
   let _isHost: boolean | null = null
   const [lsGameSession, setLsGameSession] = useLocalStorage('game-session', '')
@@ -63,6 +79,7 @@ export const useGameSession = (): {
   const connectGameSocket = () => {
     if (!gameSocket() || gameSocket()?.disconnected) {
       sk.connect("GAMES")
+      soundManager.setGameSoundOn(true)
       gameSocket()?.offAny()
       gameSocket()?.onAny(function (event, data) {
         console.log("🌎🌎 Event:", event);
@@ -97,6 +114,7 @@ export const useGameSession = (): {
     try {
       if (deleteCount <= 0)
         console.log('🎯️ ️️GameSession :: Clear')
+      soundManager.setGameSoundOn(false)
       setLsGameSession('')
       setGameSession(null)
       localStorage.removeItem('game-session')
@@ -137,3 +155,5 @@ export const useGameSession = (): {
     }
   )
 }
+
+export const useGameSession = singletonHook(init, _useGameSession);

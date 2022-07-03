@@ -17,6 +17,7 @@ import {
 } from '../../../types/types'
 import {JsonParse} from '../../../utils/helper'
 import {useGameSession} from "../../../hooks/useGameSession/useGameSession";
+import {useSound} from "../../../hooks/useSound/useSound";
 
 const HostPage: NextPage = () => {
   const router = useRouter()
@@ -27,6 +28,7 @@ const HostPage: NextPage = () => {
     useState<boolean>(true)
   const [invitationCode, setInvitationCode] = useState<string>()
   const [gameModeEnum, setGameModeEnum] = useState<TGameModeEnum>()
+  const {setGameSoundOn} = useSound()
 
   const {
     data: quizResponse,
@@ -39,6 +41,7 @@ const HostPage: NextPage = () => {
   useEffect(() => {
     // mới vô màn lobby thì connect trước để có socket id gửi lên
     connectGameSocket()
+    setGameSoundOn(true)
   }, [])
 
   useEffect(() => {

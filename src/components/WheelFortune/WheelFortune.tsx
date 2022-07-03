@@ -1,13 +1,14 @@
 import dynamic from 'next/dynamic'
-import { FC, useState } from 'react'
+import {FC, useState} from 'react'
 // import { Wheel } from 'react-custom-roulette'
-import { SOUND_EFFECT } from '../../utils/constants'
-import { playSound } from '../../utils/helper'
+import {SOUND_EFFECT} from '../../utils/constants'
 import styles from './WheelFortune.module.css'
 import JackspotModal from '../JackpotModal'
-import { Image } from 'react-bootstrap'
-import { TApiResponse, TResultWheelFortune, TWheelFortune } from '../../types/types'
-import { get } from '../../libs/api'
+import {Image} from 'react-bootstrap'
+import {TApiResponse, TResultWheelFortune} from '../../types/types'
+import {get} from '../../libs/api'
+import {useSound} from "../../hooks/useSound/useSound";
+
 const AnimatedNumbers = dynamic(() => import('react-animated-numbers'), {
   ssr: false
 })
@@ -68,6 +69,7 @@ const WheelOfFortune: FC<WheelProps> = ({ data, jackpotTotalScore, numberPlayerJ
   const [totalJoinSpinning, setTotalJoinSpinning] = useState(numberPlayerJoin ?? 0);
   const [totalScore, setTotalScore] = useState(0);
   const [prizeNumber, setPrizeNumber] = useState(0);
+  const {playSound} = useSound()
   // console.log(data);
 
   const handleSpinClick = () => {

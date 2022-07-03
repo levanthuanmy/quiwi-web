@@ -1,10 +1,10 @@
 import classNames from 'classnames'
-import React, { FC, memo } from 'react'
-import { useAuth } from '../../hooks/useAuth/useAuth'
+import React, {FC, memo} from 'react'
+import {useAuth} from '../../hooks/useAuth/useAuth'
 import styles from './ItemMenuBar.module.css'
-import { playSound } from '../../utils/helper'
-import { SOUND_EFFECT } from '../../utils/constants'
-import { useRouter } from 'next/router'
+import {SOUND_EFFECT} from '../../utils/constants'
+import {useRouter} from 'next/router'
+import {useSound} from '../../hooks/useSound/useSound'
 
 type ItemMenuBarProps = {
   title: string
@@ -22,6 +22,7 @@ const ItemMenuBar: FC<ItemMenuBarProps> = ({
 }) => {
   const authNavigate = useAuth()
   const router = useRouter()
+  const {playSound} = useSound()
   const clickEventSoundNivigate = (url: string) => {
     playSound(SOUND_EFFECT['SIDE_BAR_SOUND_CLICK'])
     if (isAuth) {

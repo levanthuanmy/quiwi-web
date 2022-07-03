@@ -1,18 +1,19 @@
 import classNames from 'classnames'
-import React, { FC, memo, useEffect, useState } from 'react'
-import { Image } from 'react-bootstrap'
+import React, {FC, memo, useEffect, useState} from 'react'
+import {Image} from 'react-bootstrap'
 import Confetti from 'react-confetti'
-import { useToasts } from 'react-toast-notifications'
-import { useWindowSize } from 'react-use'
-import { useAuth } from '../../../hooks/useAuth/useAuth'
-import { useGameSession } from '../../../hooks/useGameSession/useGameSession'
-import { useLocalStorage } from '../../../hooks/useLocalStorage/useLocalStorage'
-import { get } from '../../../libs/api'
-import { TPlayer, TStartQuizResponse } from '../../../types/types'
-import { SOUND_EFFECT } from '../../../utils/constants'
-import { JsonParse, playSound } from '../../../utils/helper'
+import {useToasts} from 'react-toast-notifications'
+import {useWindowSize} from 'react-use'
+import {useAuth} from '../../../hooks/useAuth/useAuth'
+import {useGameSession} from '../../../hooks/useGameSession/useGameSession'
+import {useLocalStorage} from '../../../hooks/useLocalStorage/useLocalStorage'
+import {get} from '../../../libs/api'
+import {TPlayer} from '../../../types/types'
+import {SOUND_EFFECT} from '../../../utils/constants'
+import {JsonParse} from '../../../utils/helper'
 import MyButton from '../../MyButton/MyButton'
 import styles from './EndGameBoard.module.css'
+import {useSound} from "../../../hooks/useSound/useSound";
 
 type EndGameBoardProps = {
   className?: string
@@ -24,7 +25,7 @@ const EndGameBoard: FC<EndGameBoardProps> = ({ className }) => {
   const { isAuth } = useAuth()
   const [isVote, setIsVote] = useState<boolean>(false)
   const { addToast } = useToasts()
-
+  const {playSound} = useSound()
   const [lsPlayer] = useLocalStorage('game-session-player', '')
 
   useEffect(() => {

@@ -1,37 +1,61 @@
-import { NextPage } from 'next'
-import { useRouter } from 'next/router'
-import { Col, Container, Modal, Row } from 'react-bootstrap'
+import {NextPage} from 'next'
+import {useRouter} from 'next/router'
+import {Col, Container, Modal, Row} from 'react-bootstrap'
 import useSWR from 'swr'
 import CardQuizInfo from '../../../components/CardQuizInfo/CardQuizInfo'
 import ItemQuestion from '../../../components/ItemQuestion/ItemQuestion'
 import MyButton from '../../../components/MyButton/MyButton'
 import NavBar from '../../../components/NavBar/NavBar'
-import { get } from '../../../libs/api'
-import { TApiResponse, TQuiz, TUser } from '../../../types/types'
-import { useEffect, useState } from 'react'
-import { JsonParse } from '../../../utils/helper'
-import { useLocalStorage } from '../../../hooks/useLocalStorage/useLocalStorage'
-import { usePracticeGameSession } from '../../../hooks/usePracticeGameSession/usePracticeGameSession'
+import {get} from '../../../libs/api'
+import {TApiResponse, TQuiz, TUser} from '../../../types/types'
+import {useEffect, useState} from 'react'
+import {JsonParse} from '../../../utils/helper'
+import {useLocalStorage} from '../../../hooks/useLocalStorage/useLocalStorage'
+import {usePracticeGameSession} from '../../../hooks/usePracticeGameSession/usePracticeGameSession'
 import _ from 'lodash'
 import MyModal from '../../../components/MyModal/MyModal'
 import LoadingFullScreen from '../../../components/LoadingFullScreen/Loading'
+import {useGameSession} from "../../../hooks/useGameSession/useGameSession";
 
 const QuizDetailPage: NextPage = () => {
   const router = useRouter()
   const query = router.query
-  const { gameSession, gameSkOn, gameSkOnce } = usePracticeGameSession()
-  const { id } = query
+  const practiceGameSession = usePracticeGameSession()
+  const gameSession = useGameSession()
+  const {id} = query
   const [lsUser] = useLocalStorage('user', '')
   const [user, setUser] = useState<TUser>()
   const [forbiddenError, setForbiddenError] = useState('')
+  const [currentQID, setCurrentQID] = useState<number>(-1)
 
-  const { data, isValidating, error } = useSWR<TApiResponse<TQuiz>>(
+
+  // useEffect(() => {
+  //   console.log("=>(index.tsx:34) lsCurrentQID", lsCurrentQID);
+  // }, [lsCurrentQID]);
+
+  useEffect(() => {
+    gameSession.connectGameSocket()
+    gameSession.gameSkOnce('connect', () => {
+      console.log("=>(index.tsx:30) gameSocket()", gameSession.gameSocket());
+      gameSession.gameSocket()?.on('view-result', (data) => {
+        console.log("=>(index.tsx:31) màn bộ đề", data);
+      })
+    })
+
+    window.addEventListener("storage",(e) => {
+      if (e.key == "currentQID") {
+        setCurrentQID(Number(e.newValue))
+      }
+    });
+  }, []);
+
+  const {data, isValidating, error} = useSWR<TApiResponse<TQuiz>>(
     id
       ? [
-          `/api/quizzes/quiz/${id}`,
-          false,
-          { filter: { relations: ['user', 'quizCategories'] } },
-        ]
+        `/api/quizzes/quiz/${id}`,
+        false,
+        {filter: {relations: ['user', 'quizCategories']}},
+      ]
       : null,
     get,
     {
@@ -40,52 +64,17 @@ const QuizDetailPage: NextPage = () => {
   )
 
   useEffect(() => {
-    if (!gameSession) return
-
-    gameSkOnce('loading', (data) => {
-      // console.log('game started', data)
+    if (!practiceGameSession) return
+    practiceGameSession.gameSkOnce('loading', (data) => {
       router.push(`/game/play`)
     })
-
-    gameSkOn('error', (data) => {
-      console.log('LobbyScreen.tsx - error', data)
-    })
-  }, [gameSession])
-
-  // const handleLeaveRoom = () => {
-  //   clearGameSession()
-  //   router.back()
-  // }
+  }, [practiceGameSession])
 
   useEffect(() => {
     if (lsUser) setUser(JsonParse(lsUser) as TUser)
-    gameSkOn('loading', (data) => {})
+    practiceGameSession.gameSkOn('loading', (data) => {
+    })
   }, [])
-
-  // const handleStartGame = () => {
-  //   try {
-  //     const cookies = new Cookies()
-  //     const accessToken = cookies.get('access-token')
-  //
-  //     if (user) {
-  //       const msg: TStartGameRequest = {
-  //         userId: user.id,
-  //         invitationCode: invitationCode,
-  //         token: accessToken,
-  //       }
-  //       gameSkEmit('start-game', msg)
-  //       gtag.event({
-  //         action: '[start game]',
-  //         params: {
-  //           quizId: gameSession?.quizId,
-  //           invitationCode: gameSession?.invitationCode,
-  //         },
-  //       })
-  //     }
-  //   } catch (error) {
-  //     console.log('handleStartGame - error', error)
-  //   }
-  // }
 
   useEffect(() => {
     if (error) {
@@ -99,7 +88,7 @@ const QuizDetailPage: NextPage = () => {
 
   return (
     <>
-      <NavBar showMenuBtn={false} isExpand={false} setIsExpand={() => null} />
+      <NavBar showMenuBtn={false} isExpand={false} setIsExpand={() => null}/>
       <Container fluid="lg" className="pt-80px min-vh-100">
         {!error ? (
           <Row className="flex-column-reverse flex-lg-row py-3">
@@ -127,13 +116,13 @@ const QuizDetailPage: NextPage = () => {
                   }}
                 >
                   Chơi ngay
-                  <div className="bi bi-play-fill" />
+                  <div className="bi bi-play-fill"/>
                 </MyButton>
               </div>
             </Col>
           </Row>
         ) : null}
-        {!error && !data ? <LoadingFullScreen /> : null}
+        {!error && !data ? <LoadingFullScreen/> : null}
 
         <MyModal
           show={forbiddenError?.length > 0}
