@@ -399,7 +399,7 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
           <div className={classNames("d-flex flex-column bg-dark bg-opacity-50 rounded-10px shadow mb-2")}>
             <div className="pt-2 px-2 d-flex align-items-center gap-3">
               <Image
-                src="/assets/default-logo.png"
+                src="/assets/default-avatar.png"
                 width={40}
                 height={40}
                 className="rounded-circle"

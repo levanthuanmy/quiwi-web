@@ -44,7 +44,7 @@ const RankingBoard: FC<{ rankingList: TRankingItem[] }> = ({ rankingList }) => {
                 })}
               >
                 <Image
-                  src={user.avatar || '/assets/default-logo.png'}
+                  src={user.avatar || '/assets/default-avatar.png'}
                   width={20}
                   height={20}
                   alt="avatar"

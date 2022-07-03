@@ -31,7 +31,7 @@ const PlayerList: FC<PlayerListProps> = (props) => {
           {/*      <div className={'d-flex w-100 ' + styles.name} key={index}>*/}
           {/*        <div className={styles.avatarContainer}>*/}
           {/*          <Image*/}
-          {/*            src={item.user?.avatar ?? '/assets/default-user.png'}*/}
+          {/*            src={item.user?.avatar ?? '/assets/default-avatar.png'}*/}
           {/*            width={28}*/}
           {/*            height={28}*/}
           {/*            alt="avatar"*/}

@@ -194,7 +194,7 @@ const ProfilePage: NextPage = () => {
         <div className="d-flex flex-column flex-md-row mt-3 gap-4 p-12px shadow-sm rounded-20px bg-white position-relative">
           <Image
             alt="avatar"
-            src={authUser?.avatar || '/assets/default-logo.png'}
+            src={authUser?.avatar || '/assets/default-avatar.png'}
             width={160}
             height={160}
             className="rounded-14px cursor-pointer"

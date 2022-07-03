@@ -11,7 +11,7 @@ const Avatar: FC = () => {
     <Dropdown id="avatar">
       <Dropdown.Toggle className="cursor-pointer p-1 rounded-pill">
         <Image
-          src={user?.avatar || '/assets/default-logo.png'}
+          src={user?.avatar || '/assets/default-avatar.png'}
           width={30}
           height={30}
           alt="avatar"

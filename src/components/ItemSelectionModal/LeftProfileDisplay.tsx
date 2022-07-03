@@ -11,7 +11,7 @@ export const LeftProfileDisplay: FC<{
     <>
       <Image
         alt="avatar"
-        src={avatar || '/assets/default-logo.png'}
+        src={avatar || '/assets/default-avatar.png'}
         width={124}
         height={124}
         className="rounded-circle"

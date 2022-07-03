@@ -234,7 +234,7 @@ const LobbyScreen: FC<LobbyScreenProps> = ({ invitationCode, isHost }) => {
             <div className="d-flex w-100 align-items-center gap-3 p-3">
               <Image
                 src={
-                  authContext.isAuth ? user?.avatar : '/assets/default-user.png'
+                  authContext.isAuth && user?.avatar ? user?.avatar : '/assets/default-avatar.png'
                 }
                 width="60"
                 height="60"
@@ -243,13 +243,19 @@ const LobbyScreen: FC<LobbyScreenProps> = ({ invitationCode, isHost }) => {
               />
               <div className="text-white h3 text-truncate">
                 <div>
-                  {authContext.isAuth ? user?.name : gameSession?.nickName}
+                  {isHost
+                    ? user?.name
+                    : `${gameSession?.nickName} ${
+                        authContext.isAuth ? `(${user?.name})` : ''
+                      }`}
                 </div>
                 <div className="fs-14px text-primary text-wrap">
                   {!authContext.isAuth && (
-                    <>
+                    <span
+                      onClick={() => authContext.setSignInModalHandler(true)}
+                    >
                       Đăng nhập ngay để nhận phần thưởng và nhiều tính năng khác
-                    </>
+                    </span>
                   )}
                 </div>
               </div>

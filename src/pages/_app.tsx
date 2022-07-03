@@ -2,8 +2,8 @@ import 'slick-carousel/slick/slick.css'
 import 'slick-carousel/slick/slick-theme.css'
 import 'bootstrap-icons/font/bootstrap-icons.css'
 import 'bootstrap/dist/css/bootstrap.min.css'
-import type {AppProps} from 'next/app'
-import {SSRProvider} from 'react-bootstrap'
+import type { AppProps } from 'next/app'
+import { SSRProvider } from 'react-bootstrap'
 import MyHead from '../components/MyHead/MyHead'
 import '../styles/global.scss'
 import '../styles/common.css'
@@ -12,18 +12,19 @@ import '../styles/sizing.css'
 import '../styles/border.css'
 import '../styles/typography.css'
 import '../styles/custom-arrow-react-slick.css'
-import {AuthProvider} from '../hooks/useAuth/useAuth'
-import {useRouter} from 'next/router'
-import {useEffect, useState} from 'react'
+import { AuthProvider } from '../hooks/useAuth/useAuth'
+import { useRouter } from 'next/router'
+import { useEffect, useState } from 'react'
 import FullScreenLoader from '../components/FullScreenLoader/FullScreenLoader'
-import {DndProvider} from 'react-dnd'
-import {HTML5Backend} from 'react-dnd-html5-backend'
-import {useGameSession} from '../hooks/useGameSession/useGameSession'
-import {ToastProvider} from 'react-toast-notifications'
+import { DndProvider } from 'react-dnd'
+import { HTML5Backend } from 'react-dnd-html5-backend'
+import { useGameSession } from '../hooks/useGameSession/useGameSession'
+import { ToastProvider } from 'react-toast-notifications'
 import * as gtag from '../libs/gtag'
-import {usePracticeGameSession} from "../hooks/usePracticeGameSession/usePracticeGameSession";
+import { usePracticeGameSession } from '../hooks/usePracticeGameSession/usePracticeGameSession'
+import SignInModal from '../components/AuthComponents/SignInModal/SignInModal'
 
-function MyApp({Component, pageProps}: AppProps) {
+function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter()
   const [shouldLoad, setShouldLoad] = useState<boolean>(false)
   const gameSession = useGameSession()
@@ -38,8 +39,7 @@ function MyApp({Component, pageProps}: AppProps) {
       setShouldLoad(false)
     }
 
-    const handleRouteChangeError = () => {
-    }
+    const handleRouteChangeError = () => {}
 
     router.events.on('routeChangeStart', handleRouteChangeStart)
     router.events.on('routeChangeComplete', handleRouteChangeComplete)
@@ -71,7 +71,7 @@ function MyApp({Component, pageProps}: AppProps) {
     '/host/lobby',
     '/lobby',
     '/quiz/[id]/play',
-    '/quiz/[id]'
+    '/quiz/[id]',
   ])
 
   useEffect(() => {
@@ -90,11 +90,11 @@ function MyApp({Component, pageProps}: AppProps) {
     <SSRProvider>
       <DndProvider backend={HTML5Backend}>
         <AuthProvider>
-          <ToastProvider autoDismiss newestOnTop
-                         autoDismissTimeout={4000}>
-            <MyHead/>
+          <ToastProvider autoDismiss newestOnTop autoDismissTimeout={4000}>
+            <MyHead />
             <Component {...pageProps} />
-            <FullScreenLoader isLoading={shouldLoad}/>
+            <FullScreenLoader isLoading={shouldLoad} />
+            <SignInModal />
           </ToastProvider>
         </AuthProvider>
       </DndProvider>

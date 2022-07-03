@@ -25,6 +25,9 @@ const Home: NextPage = () => {
   const router = useRouter()
   const user = authContext.getUser()
 
+  console.log(router.query);
+  
+
   const recentlyCreatedParams = {
     filter: {
       relations: ['questions', 'questions.questionAnswers', 'user'],

@@ -113,7 +113,7 @@ const ChangePasswordPage: NextPage = () => {
                   <Image
                     fluid={true}
                     alt="avatar"
-                    src={user?.avatar || '/assets/default-logo.png'}
+                    src={user?.avatar || '/assets/default-avatar.png'}
                     width={48}
                     height={48}
                     className="rounded-circle"

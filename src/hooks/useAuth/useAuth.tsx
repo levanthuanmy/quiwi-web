@@ -16,6 +16,8 @@ type UseAuthValue = {
   signIn: () => Promise<void>
   getUser: () => TUser | undefined
   setUser: (data: TUser) => void
+  signInModalHandler: boolean
+  setSignInModalHandler: React.Dispatch<React.SetStateAction<boolean>>
 }
 const AuthContext = React.createContext<UseAuthValue>({
   isAuth: false,
@@ -25,6 +27,8 @@ const AuthContext = React.createContext<UseAuthValue>({
   signIn: async () => {},
   getUser: () => undefined,
   setUser: () => {},
+  signInModalHandler: false,
+  setSignInModalHandler: () => {},
 })
 
 export const AuthProvider = ({ children }: { children?: ReactNode }) => {
@@ -36,15 +40,7 @@ export const AuthProvider = ({ children }: { children?: ReactNode }) => {
 
   const [isAuth, setIsAuth] = useState<boolean>(false)
   const [userState, setUserState] = useState<TUser | undefined>()
-
-  useEffect(() => {
-    setIsAuth(
-      Boolean(
-        userState?.token?.accessToken?.length ||
-          cookies.get('access-token')?.length
-      )
-    )
-  }, [userState])
+  const [signInModalHandler, setSignInModalHandler] = useState<boolean>(false)
 
   useEffect(() => {
     const _lsUser = JsonParse(lsUser) as TUser
@@ -63,6 +59,14 @@ export const AuthProvider = ({ children }: { children?: ReactNode }) => {
 
       getUser()
     }
+
+    setIsAuth(
+      Boolean(
+        userState?.token?.accessToken?.length &&
+          cookies.get('access-token')?.length &&
+          _lsUser?.token?.refreshToken?.length
+      )
+    )
   }, [lsUser, cookies.get('access-token')])
 
   const navigate = async (navigateTo: string) => {
@@ -87,6 +91,7 @@ export const AuthProvider = ({ children }: { children?: ReactNode }) => {
     setLsUser('')
     socketManager.disconnectAll()
     setUserState(undefined)
+    setIsAuth(false)
     await router.push('/')
   }
 
@@ -118,6 +123,8 @@ export const AuthProvider = ({ children }: { children?: ReactNode }) => {
     getUser,
     setUser,
     signIn,
+    signInModalHandler,
+    setSignInModalHandler,
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

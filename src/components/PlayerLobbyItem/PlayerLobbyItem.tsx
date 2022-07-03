@@ -19,10 +19,10 @@ const PlayerLobbyItem: FC<PlayerLobbyItemProps> = (props: PlayerLobbyItemProps) 
         style={{backgroundColor: props.bgColor}}
       >
         <Image
-          src={props.avatar ? props.avatar : "/assets/default-logo.png"}
+          src={props.avatar ? props.avatar : "/assets/default-avatar.png"}
           width={isMobile ? 24 : 30}
           height={isMobile ? 24 : 30}
-          alt="/assets/default-logo.png"
+          alt="/assets/default-avatar.png"
           className="rounded-circle"
         />
         <span className="px-1 text-white">{props.displayName}</span>

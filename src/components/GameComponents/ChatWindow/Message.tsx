@@ -44,7 +44,7 @@ const colors: string[] = [
 const Message: FC<MessageProps> = (props) => {
   const avatar =
     _.get(props, 'user.avatar', _.get(props, 'player.user.avatar')) ||
-    '/assets/default-user.png'
+    '/assets/default-avatar.png'
   const socket = SocketManager().socketOf("GAMES")
   const [upvote, setUpvote] = useState(0)
 

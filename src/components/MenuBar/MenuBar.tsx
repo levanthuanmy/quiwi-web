@@ -59,7 +59,7 @@ const MenuBar: FC<MenuBarProps> = ({
           >
             {authContext.isAuth ? (
               <Image
-                src={user?.avatar || '/assets/default-logo.png'}
+                src={user?.avatar || '/assets/default-avatar.png'}
                 width={isExpand ? 90 : 48}
                 height={isExpand ? 90 : 48}
                 alt="avatar"

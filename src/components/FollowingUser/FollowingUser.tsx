@@ -33,7 +33,7 @@ const FollowingUser: FC<{
             <div className="d-flex align-items-center cursor-pointer">
               <div className="pe-2">
                 <Image
-                  src={user.followingUser?.avatar || '/assets/default-user.png'}
+                  src={user.followingUser?.avatar || '/assets/default-avatar.png'}
                   fluid={true}
                   width={30}
                   height={30}

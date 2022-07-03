@@ -119,7 +119,7 @@ const EditProfilePage: NextPage = () => {
                 <Col xs={3} lg={4} className="text-lg-end">
                   <Image
                     alt="avatar"
-                    src={user?.avatar || '/assets/default-logo.png'}
+                    src={user?.avatar || '/assets/default-avatar.png'}
                     width={48}
                     height={48}
                     className="rounded-circle"
