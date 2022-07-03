@@ -1,4 +1,4 @@
-import { Field, Form, Formik, FormikHelpers, setIn } from 'formik'
+import { Field, Form, Formik, FormikHelpers } from 'formik'
 import { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
@@ -8,9 +8,7 @@ import * as Yup from 'yup'
 import MyButton from '../../components/MyButton/MyButton'
 import MyInput from '../../components/MyInput/MyInput'
 import MyModal from '../../components/MyModal/MyModal'
-import { useAuth } from '../../hooks/useAuth/useAuth'
 import { post } from '../../libs/api'
-import { TApiResponse, TUser } from '../../types/types'
 
 type EmailForm = {
   email: string

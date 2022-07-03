@@ -19,8 +19,8 @@
 }
 
 .firstCell {
-  max-width: 14rem;
-  text-overflow: unset;
+  max-width: 10rem;
+  text-overflow: auto;
 }
 
 .cell {

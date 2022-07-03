@@ -125,7 +125,12 @@ const ItemPage: NextPage = () => {
       <div className="w-100 ">
         <Container fluid="lg">
           <Row className="my-3 justify-content-between">
-            <Col xs={12} lg={3} xxl={2} className="fs-22px mb-2 mb-lg-0 fw-medium">
+            <Col
+              xs={12}
+              lg={3}
+              xxl={2}
+              className="fs-22px mb-2 mb-lg-0 fw-medium"
+            >
               <h1>Cửa hàng</h1>
             </Col>
             <Col>
@@ -134,18 +139,20 @@ const ItemPage: NextPage = () => {
                 inputClassName="border border-primary"
               />
             </Col>
-            <Col xs={12} lg={3} xl={2}>
-              <div className="d-flex rounded-20px align-items-center p-2 fw-medium fs-18px border border-primary bg-primary bg-opacity-10">
-                <Image
-                  alt="avatar"
-                  src="/assets/quiwi-coin.png"
-                  width="32"
-                  height="32"
-                ></Image>
+            {userResponse?.user?.coin ? (
+              <Col xs={12} lg={3} xl={2}>
+                <div className="d-flex rounded-20px align-items-center p-2 fw-medium fs-18px border border-primary bg-primary bg-opacity-10">
+                  <Image
+                    alt="avatar"
+                    src="/assets/quiwi-coin.png"
+                    width="32"
+                    height="32"
+                  ></Image>
 
-                <div className="ps-3">{userResponse?.user.coin}</div>
-              </div>
-            </Col>
+                  <div className="ps-3">{userResponse?.user.coin}</div>
+                </div>
+              </Col>
+            ) : null}
           </Row>
 
           <Row className="align-items-center mb-2">

@@ -6,6 +6,7 @@ import { Alert, Col, Container, Row, Table } from 'react-bootstrap'
 import useSWR from 'swr'
 import DashboardLayout from '../../components/DashboardLayout/DashboardLayout'
 import { HistoryGameRow } from '../../components/HistoryGameRow/HistoryGameRow'
+import LoadingFullScreen from '../../components/LoadingFullScreen/Loading'
 import { MyPagination } from '../../components/MyPagination/MyPagination'
 import MyTabBar from '../../components/MyTabBar/MyTabBar'
 import SearchBar from '../../components/SearchBar/SearchBar'
@@ -25,6 +26,9 @@ const tabs = [
   {
     showType: 'Đã tham gia',
   },
+  {
+    showType: 'Game cộng đồng đã tham gia',
+  },
 ]
 const HistoryPage: NextPage = () => {
   const router = useRouter()
@@ -40,21 +44,22 @@ const HistoryPage: NextPage = () => {
     pageSize: pageSize,
     q,
   }
+  const getAPILink = () => {
+    switch (currentTab) {
+      case 0:
+        return `/api/games/hosted-game-history`
+      case 1:
+        return `/api/games/joined-game-history`
+      case 2:
+        return `/api/games/joined-community-game-history`
+    }
+  }
+
   const { data, isValidating } = useSWR<
     TApiResponse<TPaginationResponse<TGameHistory>>
-  >(
-    [
-      currentTab === 0
-        ? `/api/games/hosted-game-history`
-        : `/api/games/joined-game-history`,
-      true,
-      params,
-    ],
-    get,
-    {
-      revalidateOnFocus: false,
-    }
-  )
+  >([getAPILink(), true, params], get, {
+    revalidateOnFocus: false,
+  })
 
   const [pageCount, setPageCount] = useState(0)
 
@@ -101,13 +106,17 @@ const HistoryPage: NextPage = () => {
           />
 
           <br />
-          {pageCount == 0 ? (
-            <Alert
-              variant="primary"
-              className="text-center w-75 mx-auto fs-16px py-4 fw-medium mt-2"
-            >
-              Chưa có dữ liệu
-            </Alert>
+          {pageCount === 0 ? (
+            data?.response ? (
+              <Alert
+                variant="primary"
+                className="text-center w-75 mx-auto fs-16px py-4 fw-medium mt-2"
+              >
+                Chưa có dữ liệu
+              </Alert>
+            ) : (
+              <LoadingFullScreen />
+            )
           ) : (
             <div>
               <Table borderless className={classNames(styles.table)}>

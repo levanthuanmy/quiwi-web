@@ -27,7 +27,7 @@ const HistoryGameRow: FC<{
           router.push(`/history/${gameHistory.id}`)
         }}
       >
-        <div className={classNames('ps-3 py-3  fw-medium rounded-start-14px')}>
+        <div className={classNames('ps-3 py-3 fw-medium rounded-start-14px')}>
           {gameHistory.quiz.title}
         </div>
       </td>

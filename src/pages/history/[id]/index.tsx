@@ -31,7 +31,10 @@ const DetailedHistoryPage: NextPage = () => {
 
   const { data, isValidating } = useSWR<TApiResponse<TGameHistory>>(
     [`/api/games/game-history/${id}`, true],
-    get
+    get,
+    {
+      revalidateOnFocus: false,
+    }
   )
 
   const [showError, setShowError] = useState('')
@@ -62,9 +65,9 @@ const DetailedHistoryPage: NextPage = () => {
         {data?.response ? (
           <Container fluid="lg">
             <Row className="flex-wrap pb-2">
-              <Col xs={8}>
+              <Col xs={7} md={8}>
                 <div className="d-flex justify-content-between align-items-center">
-                  <div className="fw-medium fs-22px">Lịch sử</div>
+                  <h4>Lịch sử</h4>
                   <div>
                     <HistoryDropdownButton
                       key={data.response.id}
@@ -73,11 +76,9 @@ const DetailedHistoryPage: NextPage = () => {
                     />
                   </div>
                 </div>
-                <div className="fw-medium fs-32px">
-                  {data.response.quiz.title}
-                </div>
+                <h1>{data.response.quiz.title}</h1>
               </Col>
-              <Col xs={4} className="py-3">
+              <Col className="py-3">
                 <div className="ps-2 pb-2 border-bottom border-secondary">
                   {GAME_MODE_MAPPING[data.response.mode]}
                 </div>
@@ -85,15 +86,26 @@ const DetailedHistoryPage: NextPage = () => {
                 <div className="ps-2 py-2 border-bottom border-secondary">
                   {formatDate_HHmmDDMMMYYYY(data.response.createdAt)}
                 </div>
-
-                <div className="ps-2 py-2">
-                  Tổ chức bởi{' '}
-                  <span className='fw-medium'>
-                    <Link href={`/users/${data.response.host.id}`}>
-                      {data.response.host.name ?? data.response.host.username}
-                    </Link>
-                  </span>
-                </div>
+                {data.response.isCommunityPlay ? (
+                  <div className="ps-2 py-2">
+                    Quiz của{' '}
+                    <span className="fw-medium">
+                      <Link href={`/users/${data.response.quiz.user?.id}`}>
+                        {data.response.quiz.user?.name ||
+                          data.response.quiz.user?.username}
+                      </Link>
+                    </span>
+                  </div>
+                ) : (
+                  <div className="ps-2 py-2">
+                    Tổ chức bởi{' '}
+                    <span className="fw-medium">
+                      <Link href={`/users/${data.response.host.id}`}>
+                        {data.response.host.name || data.response.host.username}
+                      </Link>
+                    </span>
+                  </div>
+                )}
               </Col>
             </Row>
             <MyTabBar

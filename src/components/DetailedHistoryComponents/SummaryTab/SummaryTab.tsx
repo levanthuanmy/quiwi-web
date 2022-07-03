@@ -27,14 +27,18 @@ const SummaryTab: FC<{ game: TGameHistory }> = ({ game }) => {
                 />
                 <div>Phần trăm trả lời chính xác</div>
               </Col>
-              <Col className="text-center text-md-start pt-3 pt-md-0">
+              <Col className="text-center text-md-start pt-3 pt-md-0 my-auto">
                 <h2>Có công mài sắt có ngày nên kim!</h2>
                 <p>Tiếp tục luyện tập để đạt được những thành tích tốt hơn</p>
                 {user?.id === game.hostId ? (
                   <MyButton
                     className="text-white px-3"
                     onClick={() => {
-                      router.push(`/quiz/${game.quiz.id}/play`)
+                      router.push(
+                        game.isCommunityPlay
+                          ? `/quiz/${game.quiz.id}/play`
+                          : `/host/lobby?quizId=${game.quiz.id}`
+                      )
                     }}
                   >
                     Chơi lại
