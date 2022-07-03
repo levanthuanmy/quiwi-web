@@ -25,8 +25,7 @@ const Home: NextPage = () => {
   const router = useRouter()
   const user = authContext.getUser()
 
-  console.log(router.query);
-  
+  console.log(router.query)
 
   const recentlyCreatedParams = {
     filter: {
@@ -208,9 +207,9 @@ const Home: NextPage = () => {
               </div>
 
               <div className="pt-4">
-                <div className="fs-22px fw-medium pb-3">
+                <h1 className="fs-22px fw-medium pb-3">
                   Đã tham gia gần đây
-                </div>
+                </h1>
                 {recentlyPlayedQuizzesResponse?.response ? (
                   recentlyPlayedQuizzesResponse?.response.length === 0 ? (
                     <div className="ms-3 text-muted">
@@ -221,7 +220,7 @@ const Home: NextPage = () => {
                       {recentlyPlayedQuizzesResponse?.response?.map(
                         (quiz, key) => (
                           <div key={key} className="px-md-2 h-100">
-                            <ItemQuiz quiz={quiz} />
+                            <ItemQuiz quiz={quiz} exploreMode />
                           </div>
                         )
                       )}

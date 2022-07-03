@@ -85,7 +85,7 @@ const HistoryPage: NextPage = () => {
         <Container fluid="lg">
           <Row className="my-3 justify-content-between">
             <Col xs={2} className=" fw-medium">
-              <h2> Lịch sử</h2>
+              <h1> Lịch sử</h1>
             </Col>
             <Col>
               <SearchBar

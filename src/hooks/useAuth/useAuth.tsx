@@ -62,8 +62,7 @@ export const AuthProvider = ({ children }: { children?: ReactNode }) => {
 
     setIsAuth(
       Boolean(
-        userState?.token?.accessToken?.length &&
-          cookies.get('access-token')?.length &&
+        cookies.get('access-token')?.length &&
           _lsUser?.token?.refreshToken?.length
       )
     )
