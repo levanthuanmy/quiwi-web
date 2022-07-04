@@ -10,6 +10,7 @@ import SingleFloatingCardLayout from '../../components/SingleFloatingCardLayout/
 import { useAuth } from '../../hooks/useAuth/useAuth'
 import { post } from '../../libs/api'
 import { TApiResponse, TUser } from '../../types/types'
+import { CredentialResponse, GoogleLogin } from '@react-oauth/google'
 
 type SignInForm = {
   username: string
@@ -35,6 +36,30 @@ const SignInPage: NextPage = () => {
     } finally {
       actions.setSubmitting(false)
     }
+  }
+
+  const responseGoogle = async (response: CredentialResponse) => {
+    console.log('Zo')
+    console.log(response)
+
+    try {
+      const res = await post<TApiResponse<TUser>>(
+        '/api/auth/redirect/google',
+        {},
+        {
+          token: response.credential,
+        }
+      )
+      console.log('==== ~ responseGoogle ~ res', res)
+      authContext.setUser(res.response)
+      await authContext.toPrevRoute()
+    } catch (error) {
+      console.log('==== ~ responseGoogle ~ error', error)
+    }
+  }
+
+  const resposneGoogleFailed = async (error: any) => {
+    console.log('error', error)
   }
 
   const handleSignInFormSubmit = (
@@ -99,6 +124,14 @@ const SignInPage: NextPage = () => {
           <span className="text-primary cursor-pointer fw-medium">
             Đăng ký ngay
           </span>
+        </div>
+        <div className="mt-2 mx-auto text-center">
+          <GoogleLogin
+            onSuccess={responseGoogle}
+            onError={() => {
+              console.log('Login Failed')
+            }}
+          />
         </div>
       </div>
 
