@@ -1,6 +1,14 @@
-import React, {Dispatch, ReactNode, SetStateAction, useRef, useState} from "react";
-import { SOUND_EFFECT } from "../../utils/constants";
-import {useSound} from "../useSound/useSound";
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, {
+  Dispatch,
+  memo,
+  ReactNode,
+  SetStateAction,
+  useRef,
+  useState,
+} from 'react'
+import { SOUND_EFFECT } from '../../utils/constants'
+import { useSound } from '../useSound/useSound'
 
 type TimerContextValue = {
   isCounting: boolean
@@ -34,7 +42,8 @@ export const TimerContext = React.createContext<TimerContextValue>({
   startCounting: (duration: number) => {},
 })
 
-export const TimerProvider = ({children}: { children?: ReactNode }) => {
+// eslint-disable-next-line react/display-name
+export const TimerProvider = memo(({ children }: { children?: ReactNode }) => {
   const [isShowAnswer, setIsShowAnswer] = useState<boolean>(true)
   const [isCounting, setIsCounting] = useState<boolean>(false)
   const [isSubmittable, setIsSubmittable] = useState<boolean>(false)
@@ -44,10 +53,10 @@ export const TimerProvider = ({children}: { children?: ReactNode }) => {
   const intervalRef = useRef<NodeJS.Timer | null>(null)
   const intervalRefSound = useRef<NodeJS.Timer | null>(null)
 
-  const {playSound} = useSound()
+  const { playSound } = useSound()
 
   const stopCounting = (stopUI: boolean) => {
-    console.log("=>(useTimer) stopCounting stopUI", stopUI);
+    console.log('=>(useTimer) stopCounting stopUI', stopUI)
     if (intervalRef && intervalRef.current) {
       if (stopUI) {
         clearInterval(intervalRef.current)
@@ -63,20 +72,19 @@ export const TimerProvider = ({children}: { children?: ReactNode }) => {
   }
 
   const stopCountingSound = (stopUI: boolean) => {
-    console.log("=>(useTimer) stopCountingSound stopUI", stopUI);
+    console.log('=>(useTimer) stopCountingSound stopUI', stopUI)
     if (intervalRefSound && intervalRefSound.current) {
       if (stopUI) {
         clearInterval(intervalRefSound.current)
         intervalRefSound.current = null
       }
 
-      setTimeout(() => {
-      }, 500)
+      setTimeout(() => {}, 500)
     }
   }
 
   const startCounting = (duration: number) => {
-    console.log("=>(useTimer) duration", duration);
+    console.log('=>(useTimer) duration', duration)
     if (duration > 0) {
       let endDate = new Date()
       endDate.setSeconds(endDate.getSeconds() + duration)
@@ -106,8 +114,8 @@ export const TimerProvider = ({children}: { children?: ReactNode }) => {
         let curr = Math.round(new Date().getTime())
         let _countDown = Math.ceil((endTime - curr) / 1000)
         if (_countDown < 4) {
-          console.log(_countDown);
-          playSound(SOUND_EFFECT['ONE_SECOND']);
+          console.log(_countDown)
+          playSound(SOUND_EFFECT['ONE_SECOND'])
         }
         // setCountDown(_countDown)
         if (_countDown <= 0) {
@@ -117,24 +125,41 @@ export const TimerProvider = ({children}: { children?: ReactNode }) => {
     }
   }
 
-
-  const _value = {
-    isCounting,
-    isSubmittable,
-    isShowSkeleton,
-    isShowAnswer,
-    setIsSubmittable,
-    setIsShowSkeleton,
-    setIsShowAnswer,
-    countDown,
-    duration,
-    setDefaultDuration,
-    stopCounting,
-    stopCountingSound,
-    startCounting,
-  }
-  return <TimerContext.Provider value={_value}>{children}</TimerContext.Provider>
-}
-
+  const _value = React.useMemo(
+    () => ({
+      isCounting,
+      isSubmittable,
+      isShowSkeleton,
+      isShowAnswer,
+      setIsSubmittable,
+      setIsShowSkeleton,
+      setIsShowAnswer,
+      countDown,
+      duration,
+      setDefaultDuration,
+      stopCounting,
+      stopCountingSound,
+      startCounting,
+    }),
+    [
+      isCounting,
+      isSubmittable,
+      isShowSkeleton,
+      isShowAnswer,
+      setIsSubmittable,
+      setIsShowSkeleton,
+      setIsShowAnswer,
+      countDown,
+      duration,
+      setDefaultDuration,
+      stopCounting,
+      stopCountingSound,
+      startCounting,
+    ]
+  )
+  return (
+    <TimerContext.Provider value={_value}>{children}</TimerContext.Provider>
+  )
+})
 
 export const useTimer = () => React.useContext(TimerContext)

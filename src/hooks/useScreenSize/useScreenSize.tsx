@@ -1,6 +1,6 @@
-import {useEffect, useState} from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
-export default function useScreenSize() {
+const useScreenSize = () => {
   const [isMobile, setIsMobile] = useState<boolean>(false)
   const [fromSmall, setFromSmall] = useState<boolean>(false)
   const [fromMedium, setFromMedium] = useState<boolean>(false)
@@ -24,5 +24,9 @@ export default function useScreenSize() {
     }
   }, [])
 
-  return ({isMobile, fromSmall, fromMedium, fromLarge, fromExtraLarge})
+  return useMemo(
+    () => ({ isMobile, fromSmall, fromMedium, fromLarge, fromExtraLarge }),
+    [isMobile, fromSmall, fromMedium, fromLarge, fromExtraLarge]
+  )
 }
+export default useScreenSize

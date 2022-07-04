@@ -1,29 +1,35 @@
 import classNames from 'classnames'
 import cn from 'classnames'
-import {useRouter} from 'next/router'
-import React, {FC, memo, useContext, useEffect, useRef, useState} from 'react'
-import {useGameSession} from '../../../hooks/useGameSession/useGameSession'
+import { useRouter } from 'next/router'
+import React, { FC, memo, useContext, useEffect, useRef, useState } from 'react'
+import { useGameSession } from '../../../hooks/useGameSession/useGameSession'
 
-import {useLocalStorage} from '../../../hooks/useLocalStorage/useLocalStorage'
-import {TPlayer, TQuestion, TStartQuizResponse, TUser, TViewResult,} from '../../../types/types'
-import {JsonParse} from '../../../utils/helper'
+import { useLocalStorage } from '../../../hooks/useLocalStorage/useLocalStorage'
+import {
+  TPlayer,
+  TQuestion,
+  TStartQuizResponse,
+  TUser,
+  TViewResult,
+} from '../../../types/types'
+import { JsonParse } from '../../../utils/helper'
 import GameSessionRanking from '../GameSessionRanking/GameSessionRanking'
-import {QuestionMedia} from '../QuestionMedia/QuestionMedia'
+import { QuestionMedia } from '../QuestionMedia/QuestionMedia'
 import styles from './AnswerBoard.module.css'
 import {
   AnswerSectionFactory,
-  QuestionTypeDescription
+  QuestionTypeDescription,
 } from '../AnswerQuestionComponent/AnswerSectionFactory/AnswerSectionFactory'
-import {Fade, Image} from 'react-bootstrap'
+import { Fade, Image } from 'react-bootstrap'
 import GameButton from '../GameButton/GameButton'
 import useScreenSize from '../../../hooks/useScreenSize/useScreenSize'
-import MyModal from "../../MyModal/MyModal";
-import {ExitContext} from "../../../pages/game/play";
-import LoadingBoard from "../LoadingBoard/LoadingBoard";
-import {useToasts} from "react-toast-notifications";
-import {useTimer} from "../../../hooks/useTimer/useTimer";
-import {SOUND_EFFECT} from '../../../utils/constants'
-import {useSound} from "../../../hooks/useSound/useSound";
+import MyModal from '../../MyModal/MyModal'
+import { ExitContext } from '../../../pages/game/play'
+import LoadingBoard from '../LoadingBoard/LoadingBoard'
+import { useToasts } from 'react-toast-notifications'
+import { useTimer } from '../../../hooks/useTimer/useTimer'
+import { SOUND_EFFECT } from '../../../utils/constants'
+import { useSound } from '../../../hooks/useSound/useSound'
 
 type AnswerBoardProps = {
   className?: string
@@ -31,9 +37,9 @@ type AnswerBoardProps = {
 }
 
 const AnswerBoard: FC<AnswerBoardProps> = ({
-                                             className,
-                                             isShowHostControl,
-                                           }) => {
+  className,
+  isShowHostControl,
+}) => {
   const {
     gameSession,
     saveGameSession,
@@ -45,11 +51,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
     getQuestionWithID,
   } = useGameSession()
 
-  const {
-    playSound,
-    playRandomCorrectAnswerSound,
-    turnSound
-  } = useSound()
+  const { playSound, playRandomCorrectAnswerSound, turnSound } = useSound()
 
   // lưu qid để hiển thị bên trang bộ quiz
   const [lsCurrentQID, setLsCurrentQID] = useLocalStorage('currentQID', '-1')
@@ -72,8 +74,10 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
 
   const [showRanking, setShowRanking] = useState<boolean>(false)
   const [rankingData, setRankingData] = useState<any[]>([])
-  const [answersStatistic, setAnswersStatistic] = useState<Record<string, number>>({})
-  
+  const [answersStatistic, setAnswersStatistic] = useState<
+    Record<string, number>
+  >({})
+
   const [loading, setLoading] = useState<string | null>(null)
 
   const _numSubmission = useRef<number>(0)
@@ -81,13 +85,13 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
   const [viewResultData, setViewResultData] = useState<TViewResult>()
 
   const { addToast } = useToasts()
-  const {fromMedium} = useScreenSize()
+  const { fromMedium } = useScreenSize()
   let answerSectionFactory: AnswerSectionFactory
 
   useEffect(() => {
     handleSocket()
     resetState()
-    console.log("=>(AnswerBoard.tsx:80) goilai");
+    console.log('=>(AnswerBoard.tsx:80) goilai')
   }, [])
 
   useEffect(() => {
@@ -116,20 +120,17 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
   }, [gameSession])
 
   useEffect(() => {
-    setIsShowEndGame((currentQID == quizLength - 1) && !timer.isCounting)
-  }, [currentQID, quizLength]);
+    setIsShowEndGame(currentQID == quizLength - 1 && !timer.isCounting)
+  }, [currentQID, quizLength])
 
   const displayQuestion = (question: TQuestion) => {
-    console.log("=>(AnswerBoard.tsx:116) Display question", question);
-    if (question && question.duration > 0)
-      setCurrentQuestion(question)
+    console.log('=>(AnswerBoard.tsx:116) Display question', question)
+    if (question && question.duration > 0) setCurrentQuestion(question)
   }
 
   function resetState() {
-    if (!gameSession && !isNextEmitted)
-      setLoading("Chuẩn bị!")
-    else
-      setLoading(null)
+    if (!gameSession && !isNextEmitted) setLoading('Chuẩn bị!')
+    else setLoading(null)
     setIsNextEmitted(true)
     timer.setIsShowSkeleton(true)
     setIsShowNext(false)
@@ -148,20 +149,27 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
     })
 
     gameSkOn('new-submission', (data) => {
+      console.log('gameSkOn - data', data)
       if (data.playersWithAnswer) {
         _numSubmission.current = data.playersWithAnswer.length
         setNumSubmission(_numSubmission.current)
 
-        const lastSubmit = data.playersWithAnswer[data.playersWithAnswer.length -1]
+        const lastSubmit =
+          data.playersWithAnswer[data.playersWithAnswer.length - 1]
         if (lastSubmit) {
-          addToast(<div><span className={"fw-bolder"}>{lastSubmit.nickname}</span> đã nộp</div>,
+          addToast(
+            <div>
+              <span className={'fw-bolder'}>{lastSubmit.nickname}</span> đã nộp
+            </div>,
             {
               placement: 'bottom-left',
               appearance: 'success',
               newestOnTop: true,
               autoDismiss: true,
-            })
+            }
+          )
         }
+        setAnswersStatistic(data.answersStatistic)
       }
     })
 
@@ -174,23 +182,27 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
     })
 
     gameSkOn('view-result', (data: TViewResult) => {
-      timer.countDown >= 0 ? setLoading("Tất cả đã trả lời!") : setLoading("Hết giờ!")
+      timer.countDown >= 0
+        ? setLoading('Tất cả đã trả lời!')
+        : setLoading('Hết giờ!')
       setTimeout(() => {
         setLoading(null)
       }, 1000)
       timer.stopCounting(true)
       timer.stopCountingSound(true)
       setViewResultData(data)
-      console.log(data);
-      setAnswersStatistic(data.answersStatistic)
+
+      currentQuestion?.type !== '22POLL' &&
+        setAnswersStatistic(data.answersStatistic)
+
       setIsShowNext(true)
       if (data?.player && !isHost && typeof window !== 'undefined') {
-        const curStreak = data.player.currentStreak ?? 0;
+        const curStreak = data.player.currentStreak ?? 0
         if (curStreak > 0) {
-          playRandomCorrectAnswerSound();
+          playRandomCorrectAnswerSound()
         } else {
-          playSound(SOUND_EFFECT['INCORRECT_BACKGROUND']);
-          playSound(SOUND_EFFECT['INCORRECT_ANSWER']);
+          playSound(SOUND_EFFECT['INCORRECT_BACKGROUND'])
+          playSound(SOUND_EFFECT['INCORRECT_ANSWER'])
         }
         localStorage.setItem(
           'game-session-player',
@@ -220,7 +232,10 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
 
         const currentQuestionId = data.question.currentQuestionIndex as number
         const newQuestion = data.question.question as TQuestion
-        console.log("=>(AnswerBoard.tsx:175) ", `${data.question.currentQuestionIndex}`);
+        console.log(
+          '=>(AnswerBoard.tsx:175) ',
+          `${data.question.currentQuestionIndex}`
+        )
         setLsCurrentQID(`${data.question.currentQuestionIndex}`)
 
         if (currentQID != currentQuestionId) {
@@ -229,7 +244,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
         }
         timer.setDefaultDuration(newQuestion.duration)
         setNumSubmission(0)
-        setLoading("Chuẩn bị!")
+        setLoading('Chuẩn bị!')
       }
       if (data?.loading) {
         setLoading(data.loading)
@@ -238,12 +253,12 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
   }
 
   useEffect(() => {
-    console.log("=>(index.tsx:34) lsCurrentQID", lsCurrentQID);
-  }, [lsCurrentQID]);
+    console.log('=>(index.tsx:34) lsCurrentQID', lsCurrentQID)
+  }, [lsCurrentQID])
 
   const viewRanking = () => {
     if (!gameSession) return
-    const msg = {invitationCode: gameSession.invitationCode}
+    const msg = { invitationCode: gameSession.invitationCode }
     gameSkEmit('view-ranking', msg)
     setIsShowNext(true)
   }
@@ -273,7 +288,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
       console.log('=>(AnswerBoard.tsx:191) not supported "', answer, '"')
       return
     }
-    if (currentQuestion && currentQuestion.type != "22POLL")
+    if (currentQuestion && currentQuestion.type != '22POLL')
       timer.setIsSubmittable(false)
     if (msg.answer || msg.answerIds) gameSkEmit('submit-answer', msg)
   }
@@ -289,7 +304,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
     if (!answerSectionFactory)
       answerSectionFactory = new AnswerSectionFactory(
         isHost,
-        styles.answerLayout,
+        styles.answerLayout
       )
     return answerSectionFactory.initAnswerSectionForType(
       currentQuestion.type,
@@ -299,18 +314,17 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
     )
   }
 
-
   const [isNextEmitted, setIsNextEmitted] = useState<boolean>(false)
 
   const goToNextQuestion = () => {
     if (!gameSession) return
-    const msg = {invitationCode: gameSession.invitationCode}
+    const msg = { invitationCode: gameSession.invitationCode }
     gameSkEmit('next-question', msg)
   }
 
   function endGame() {
     if (gameSession && gameSocket() != null && isHost) {
-      const msg = {invitationCode: gameSession.invitationCode}
+      const msg = { invitationCode: gameSession.invitationCode }
       gameSkEmit('game-ended', msg)
     } else {
       clearGameSession()
@@ -321,8 +335,8 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
   const renderHostControlSystem = () => {
     return (
       <Fade in={isShowHostControl || fromMedium}>
-        {(isShowHostControl || fromMedium) ?
-          <div className={cn(styles.hostControl, "px-2 py-2")}>
+        {isShowHostControl || fromMedium ? (
+          <div className={cn(styles.hostControl, 'px-2 py-2')}>
             <GameButton
               isEnable={isShowNext || !timer.isCounting}
               iconClassName="bi bi-bar-chart"
@@ -331,31 +345,30 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
               onClick={viewRanking}
             />
 
-            {
-              isShowEndGame &&
-                <GameButton
-                    isEnable={true}
-                    iconClassName="bi bi-x-octagon-fill"
-                    className={classNames('text-white fw-medium bg-danger')}
-                    title="Kết thúc game"
-                    onClick={() => {
-                      exitContext.setShowEndGameModal(true)
-                    }}
-                />
-            }
-            {!isShowEndGame &&
-                <GameButton
-                    isEnable={!isNextEmitted && !timer.isCounting}
-                    iconClassName="bi bi-arrow-right-circle-fill"
-                    className={classNames('text-white fw-medium')}
-                    title="Câu sau"
-                    onClick={goToNextQuestion}
-                />
-            }
+            {isShowEndGame && (
+              <GameButton
+                isEnable={true}
+                iconClassName="bi bi-x-octagon-fill"
+                className={classNames('text-white fw-medium bg-danger')}
+                title="Kết thúc game"
+                onClick={() => {
+                  exitContext.setShowEndGameModal(true)
+                }}
+              />
+            )}
+            {!isShowEndGame && (
+              <GameButton
+                isEnable={!isNextEmitted && !timer.isCounting}
+                iconClassName="bi bi-arrow-right-circle-fill"
+                className={classNames('text-white fw-medium')}
+                title="Câu sau"
+                onClick={goToNextQuestion}
+              />
+            )}
           </div>
-          :
+        ) : (
           <></>
-        }
+        )}
       </Fade>
     )
   }
@@ -365,52 +378,52 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
     ) ?? -1
 
   function getEndGameModal() {
-    return <MyModal
-      show={exitContext.showEndGameModal}
-      onHide={() => exitContext.setShowEndGameModal(false)}
-      activeButtonTitle="Đồng ý"
-      activeButtonCallback={endGame}
-      inActiveButtonCallback={() => exitContext.setShowEndGameModal(false)}
-      inActiveButtonTitle="Huỷ"
-    >
-      <div className="text-center h3 fw-bolder">
-        Kết thúc game?
-      </div>
+    return (
+      <MyModal
+        show={exitContext.showEndGameModal}
+        onHide={() => exitContext.setShowEndGameModal(false)}
+        activeButtonTitle="Đồng ý"
+        activeButtonCallback={endGame}
+        inActiveButtonCallback={() => exitContext.setShowEndGameModal(false)}
+        inActiveButtonTitle="Huỷ"
+      >
+        <div className="text-center h3 fw-bolder">Kết thúc game?</div>
 
-      <div className="text-center fw-bold">
-        <div className="text-secondary fs-24x">
-          {currentQID + 1 <
-          (gameSession?.quiz?.questions?.length ?? 0) ?
-            <>
-              {"Quiz mới hoàn thành "}
-              <span className="fw-bolder fs-24x  text-primary">
-              {currentQID + 1}
+        <div className="text-center fw-bold">
+          <div className="text-secondary fs-24x">
+            {currentQID + 1 < (gameSession?.quiz?.questions?.length ?? 0) ? (
+              <>
+                {'Quiz mới hoàn thành '}
+                <span className="fw-bolder fs-24x  text-primary">
+                  {currentQID + 1}
                 </span>
-              {" câu, còn "}
-              <span className="fw-bolder fs-24x  text-primary">
-              {gameSession?.quiz?.questions?.length}
+                {' câu, còn '}
+                <span className="fw-bolder fs-24x  text-primary">
+                  {gameSession?.quiz?.questions?.length}
                 </span>
-              {" câu chưa hoàn thành!"}
-            </>
-            :
-            <>
-              {"Quiz đã hoàn thành tất cả "}
-              <span className="fw-bolder fs-24x  text-primary">
-              {currentQID + 1}
+                {' câu chưa hoàn thành!'}
+              </>
+            ) : (
+              <>
+                {'Quiz đã hoàn thành tất cả '}
+                <span className="fw-bolder fs-24x  text-primary">
+                  {currentQID + 1}
                 </span>
-              {" câu trên "}
-              <span className="fw-bolder fs-24x  text-primary">
-              {gameSession?.quiz?.questions?.length}
+                {' câu trên '}
+                <span className="fw-bolder fs-24x  text-primary">
+                  {gameSession?.quiz?.questions?.length}
                 </span>
-              {" câu!"}
-            </>
-          }
+                {' câu!'}
+              </>
+            )}
+          </div>
+          <div className="text-secondary fs-24x text-warning">
+            Các thành viên trong phòng sẽ không thể chat với nhau nữa, bạn có
+            chắc chắn muốn kết thúc phòng?
+          </div>
         </div>
-        <div className="text-secondary fs-24x text-warning">
-          Các thành viên trong phòng sẽ không thể chat với nhau nữa, bạn có chắc chắn muốn kết thúc phòng?
-        </div>
-      </div>
-    </MyModal>;
+      </MyModal>
+    )
   }
 
   return (
@@ -423,7 +436,11 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
         )}
       >
         {currentQuestion?.question ? (
-          <div className={classNames("d-flex flex-column bg-dark bg-opacity-50 rounded-10px shadow mb-2")}>
+          <div
+            className={classNames(
+              'd-flex flex-column bg-dark bg-opacity-50 rounded-10px shadow mb-2'
+            )}
+          >
             <div className="pt-2 px-2 d-flex align-items-center gap-3">
               <Image
                 src="/assets/default-avatar.png"
@@ -448,14 +465,14 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
                 <div
                   id="questionProgressBar"
                   className="flex-grow-1 bg-secondary rounded-pill"
-                  style={{height: 6}}
+                  style={{ height: 6 }}
                 >
                   <div
                     className="bg-primary h-100 rounded-pill transition-all-150ms position-relative"
                     style={{
                       width: `${Math.floor(
                         ((currentQID + 1) * 100) /
-                        Number(gameSession?.quiz?.questions?.length)
+                          Number(gameSession?.quiz?.questions?.length)
                       )}%`,
                     }}
                   />
@@ -467,7 +484,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
                     {viewResultData?.player?.currentStreak ?? 0}
                   </div>
                   <div>
-                    <i className="bi bi-award fs-20px text-primary me-2"/>
+                    <i className="bi bi-award fs-20px text-primary me-2" />
                     {currentPlayerRankingIndex > -1
                       ? currentPlayerRankingIndex + 1
                       : '-'}
@@ -493,33 +510,50 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
         />
 
         <div
-          className={classNames('noselect shadow px-3 pt-2 bg-white mb-2', styles.questionTitle,
-            {'rounded-10px': fromMedium})}>
+          className={classNames(
+            'noselect shadow px-3 pt-2 bg-white mb-2',
+            styles.questionTitle,
+            { 'rounded-10px': fromMedium }
+          )}
+        >
           <div
-            dangerouslySetInnerHTML={{__html: currentQuestion?.question ?? ""}}
+            dangerouslySetInnerHTML={{
+              __html: currentQuestion?.question ?? '',
+            }}
           />
         </div>
-        {
-          currentQuestion &&
-            <div
-                className={classNames('px-2 py-2 fs-4 fw-bold text-white mb-2 bg-dark bg-opacity-50 d-flex justify-content-between align-items-center',
-                  {'rounded-10px': fromMedium})}>
-                <div className={""}>
-                    <i className={cn("fs-20px text-white me-2", QuestionTypeDescription[currentQuestion.type].icon)}/>
-                  {QuestionTypeDescription[currentQuestion.type].title}
-                </div>
-              {
-                !isHost && currentQuestion &&
-                  <GameButton
-                      isEnable={timer.isSubmittable}
-                      iconClassName="bi bi-check-circle-fill"
-                      className={classNames('text-white fw-medium bg-warning', styles.submitButton)}
-                      title={'Trả lời'}
-                      onClick={() => {timer.stopCounting(false)}}
-                  />
-              }
+        {currentQuestion && (
+          <div
+            className={classNames(
+              'px-2 py-2 fs-4 fw-bold text-white mb-2 bg-dark bg-opacity-50 d-flex justify-content-between align-items-center',
+              { 'rounded-10px': fromMedium }
+            )}
+          >
+            <div className={''}>
+              <i
+                className={cn(
+                  'fs-20px text-white me-2',
+                  QuestionTypeDescription[currentQuestion.type].icon
+                )}
+              />
+              {QuestionTypeDescription[currentQuestion.type].title}
             </div>
-        }
+            {!isHost && currentQuestion && (
+              <GameButton
+                isEnable={timer.isSubmittable}
+                iconClassName="bi bi-check-circle-fill"
+                className={classNames(
+                  'text-white fw-medium bg-warning',
+                  styles.submitButton
+                )}
+                title={'Trả lời'}
+                onClick={() => {
+                  timer.stopCounting(false)
+                }}
+              />
+            )}
+          </div>
+        )}
 
         {/*height min của question view là 300*/}
         {/*edit styles.answerLayout trong css*/}
@@ -545,11 +579,10 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
 
         <LoadingBoard
           loading={loading != null}
-          className={"position-fixed top-0 bottom-0 start-0 end-0"}
-          loadingTitle={loading ?? ""}
+          className={'position-fixed top-0 bottom-0 start-0 end-0'}
+          loadingTitle={loading ?? ''}
         />
       </div>
-
     </>
   )
 }

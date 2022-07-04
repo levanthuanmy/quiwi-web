@@ -1,27 +1,25 @@
-import classNames from 'classnames'
-import cn from 'classnames'
-import {useRouter} from 'next/router'
-import React, {FC, memo, useContext, useEffect, useRef, useState} from 'react'
-import {useLocalStorage} from '../../../hooks/useLocalStorage/useLocalStorage'
-import {TPlayer, TQuestion, TViewResult,} from '../../../types/types'
-import {JsonParse} from '../../../utils/helper'
-import styles from './CommunityAnswerBoard.module.css'
-import {Fade, Image} from 'react-bootstrap'
+import { default as classNames, default as cn } from 'classnames'
+import { useRouter } from 'next/router'
+import React, { FC, memo, useContext, useEffect, useRef, useState } from 'react'
+import { Fade, Image } from 'react-bootstrap'
+import { useLocalStorage } from '../../../hooks/useLocalStorage/useLocalStorage'
+import { usePracticeGameSession } from '../../../hooks/usePracticeGameSession/usePracticeGameSession'
 import useScreenSize from '../../../hooks/useScreenSize/useScreenSize'
-import MyModal from "../../MyModal/MyModal";
-import {useToasts} from "react-toast-notifications";
+import { useSound } from '../../../hooks/useSound/useSound'
+import { useTimer } from '../../../hooks/useTimer/useTimer'
+import { TPlayer, TQuestion, TViewResult } from '../../../types/types'
+import { SOUND_EFFECT } from '../../../utils/constants'
+import { JsonParse } from '../../../utils/helper'
 import {
   AnswerSectionFactory,
-  QuestionTypeDescription
-} from "../../GameComponents/AnswerQuestionComponent/AnswerSectionFactory/AnswerSectionFactory";
-import GameButton from "../../GameComponents/GameButton/GameButton";
-import {QuestionMedia} from "../../GameComponents/QuestionMedia/QuestionMedia";
-import LoadingBoard from "../../GameComponents/LoadingBoard/LoadingBoard";
-import {useTimer} from "../../../hooks/useTimer/useTimer";
-import {usePracticeGameSession} from "../../../hooks/usePracticeGameSession/usePracticeGameSession";
-import {ExitContext} from "../CommunityGamePlay/CommunityGamePlay";
-import {SOUND_EFFECT} from '../../../utils/constants'
-import {useSound} from "../../../hooks/useSound/useSound";
+  QuestionTypeDescription,
+} from '../../GameComponents/AnswerQuestionComponent/AnswerSectionFactory/AnswerSectionFactory'
+import GameButton from '../../GameComponents/GameButton/GameButton'
+import LoadingBoard from '../../GameComponents/LoadingBoard/LoadingBoard'
+import { QuestionMedia } from '../../GameComponents/QuestionMedia/QuestionMedia'
+import MyModal from '../../MyModal/MyModal'
+import { ExitContext } from '../CommunityGamePlay/CommunityGamePlay'
+import styles from './CommunityAnswerBoard.module.css'
 
 type CommunityAnswerBoardProps = {
   className?: string
@@ -30,10 +28,10 @@ type CommunityAnswerBoardProps = {
 }
 
 const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
-                                                               className,
-                                                               isShowHostControl,
-                                                               setIsShowHostControl,
-                                                             }) => {
+  className,
+  isShowHostControl,
+  setIsShowHostControl,
+}) => {
   const {
     gameSession,
     clearGameSession,
@@ -44,11 +42,7 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
     getQuestionWithID,
   } = usePracticeGameSession()
 
-  const {
-    playSound,
-    playRandomCorrectAnswerSound,
-    turnSound
-  } = useSound()
+  const { playSound, playRandomCorrectAnswerSound, turnSound } = useSound()
 
   const exitContext = useContext(ExitContext)
   const timer = useTimer()
@@ -76,16 +70,15 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
   const [numSubmission, setNumSubmission] = useState<number>(0)
   const [viewResultData, setViewResultData] = useState<TViewResult>()
 
-  const {addToast} = useToasts()
-  const {fromMedium} = useScreenSize()
+  const { fromMedium } = useScreenSize()
   let answerSectionFactory: AnswerSectionFactory
 
   useEffect(() => {
     handleSocket()
     resetState()
-    if (currentQID == 0 ) setLoading("Chuẩn bị!")
+    if (currentQID == 0) setLoading('Chuẩn bị!')
     else setLoading(null)
-    console.log("=>(CommunityAnswerBoard.tsx:77) goilao");
+    console.log('=>(CommunityAnswerBoard.tsx:77) goilao')
   }, [])
 
   useEffect(() => {
@@ -112,13 +105,12 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
   }, [gameSession])
 
   useEffect(() => {
-    setIsShowEndGame((currentQID == quizLength - 1) && !timer.isCounting)
-  }, [currentQID, quizLength]);
+    setIsShowEndGame(currentQID == quizLength - 1 && !timer.isCounting)
+  }, [currentQID, quizLength])
 
   const displayQuestion = (question: TQuestion) => {
-    console.log("=>(CommunityAnswerBoard.tsx:116) Display question", question);
-    if (question && question.duration > 0)
-      setCurrentQuestion(question)
+    console.log('=>(CommunityAnswerBoard.tsx:116) Display question', question)
+    if (question && question.duration > 0) setCurrentQuestion(question)
   }
 
   function resetState() {
@@ -151,7 +143,7 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
           }, i * 1000)
         }
         intervalRef.current = setInterval(() => {
-          console.log("=>(CommunityAnswerBoard.tsx:138) autoNext", autoNext);
+          console.log('=>(CommunityAnswerBoard.tsx:138) autoNext', autoNext)
           if (autoNext) {
             goToNextQuestion()
           }
@@ -186,7 +178,7 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
     })
 
     gameSkOn('view-result', (data: TViewResult) => {
-      timer.countDown >= 0 ? setLoading("Đã trả lời!") : setLoading("Hết giờ!")
+      timer.countDown >= 0 ? setLoading('Đã trả lời!') : setLoading('Hết giờ!')
       setTimeout(() => {
         setLoading(null)
       }, 1000)
@@ -195,12 +187,12 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
       setViewResultData(data)
       setIsShowNext(true)
       if (data?.player && typeof window !== 'undefined') {
-        const curStreak = data.player.currentStreak ?? 0;
+        const curStreak = data.player.currentStreak ?? 0
         if (curStreak > 0) {
-          playRandomCorrectAnswerSound();
+          playRandomCorrectAnswerSound()
         } else {
-          playSound(SOUND_EFFECT['INCORRECT_BACKGROUND']);
-          playSound(SOUND_EFFECT['INCORRECT_ANSWER']);
+          playSound(SOUND_EFFECT['INCORRECT_BACKGROUND'])
+          playSound(SOUND_EFFECT['INCORRECT_ANSWER'])
         }
         localStorage.setItem(
           'game-session-player',
@@ -211,7 +203,7 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
     })
 
     gameSkOn('loading', (data) => {
-      playRandomCorrectAnswerSound();
+      playRandomCorrectAnswerSound()
       if (data?.question?.question) {
         timer.setIsShowSkeleton(true)
         setIsShowNext(false)
@@ -226,7 +218,7 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
         }
         timer.setDefaultDuration(newQuestion.duration)
         setNumSubmission(0)
-        setLoading("Chuẩn bị!")
+        setLoading('Chuẩn bị!')
       }
       if (data?.loading) {
         setLoading(data.loading)
@@ -258,7 +250,7 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
       console.log('=>(AnswerBoard.tsx:191) not supported "', answer, '"')
       return
     }
-    if (currentQuestion && currentQuestion.type != "22POLL")
+    if (currentQuestion && currentQuestion.type != '22POLL')
       timer.setIsSubmittable(false)
     if (msg.answer || msg.answerIds) gameSkEmit('submit-answer', msg)
   }
@@ -268,15 +260,14 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
     if (!answerSectionFactory)
       answerSectionFactory = new AnswerSectionFactory(
         false,
-        styles.answerLayout,
+        styles.answerLayout
       )
     return answerSectionFactory.initAnswerSectionForType(
       currentQuestion.type,
       currentQuestion,
-      handleSubmitAnswer,
+      handleSubmitAnswer
     )
   }
-
 
   const [isNextEmitted, setIsNextEmitted] = useState<boolean>(false)
 
@@ -286,13 +277,13 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
       intervalRef.current = null
     }
     if (!gameSession) return
-    const msg = {invitationCode: gameSession.invitationCode}
+    const msg = { invitationCode: gameSession.invitationCode }
     gameSkEmit('next-question', msg)
   }
 
   function endGame() {
     if (gameSession && gameSocket() != null) {
-      const msg = {invitationCode: gameSession.invitationCode}
+      const msg = { invitationCode: gameSession.invitationCode }
       gameSkEmit('game-ended', msg)
       clearGameSession()
       router.push('/')
@@ -300,93 +291,101 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
   }
 
   function getEndGameModal() {
-    return <MyModal
-      show={exitContext.showEndGameModal}
-      onHide={() => exitContext.setShowEndGameModal(false)}
-      activeButtonTitle="Đồng ý"
-      activeButtonCallback={endGame}
-      inActiveButtonCallback={() => exitContext.setShowEndGameModal(false)}
-      inActiveButtonTitle="Huỷ"
-    >
-      <div className="text-center h3 fw-bolder">
-        Kết thúc game?
-      </div>
+    return (
+      <MyModal
+        show={exitContext.showEndGameModal}
+        onHide={() => exitContext.setShowEndGameModal(false)}
+        activeButtonTitle="Đồng ý"
+        activeButtonCallback={endGame}
+        inActiveButtonCallback={() => exitContext.setShowEndGameModal(false)}
+        inActiveButtonTitle="Huỷ"
+      >
+        <div className="text-center h3 fw-bolder">Kết thúc game?</div>
 
-      <div className="text-center fw-bold">
-        <div className="text-secondary fs-24x">
-          {currentQID + 1 <
-          (gameSession?.quiz?.questions?.length ?? 0) ?
-            <>
-              {"Quiz mới hoàn thành "}
-              <span className="fw-bolder fs-24x  text-primary">
-              {currentQID + 1}
+        <div className="text-center fw-bold">
+          <div className="text-secondary fs-24x">
+            {currentQID + 1 < (gameSession?.quiz?.questions?.length ?? 0) ? (
+              <>
+                {'Quiz mới hoàn thành '}
+                <span className="fw-bolder fs-24x  text-primary">
+                  {currentQID + 1}
                 </span>
-              {" câu, còn "}
-              <span className="fw-bolder fs-24x  text-primary">
-              {gameSession?.quiz?.questions?.length}
+                {' câu, còn '}
+                <span className="fw-bolder fs-24x  text-primary">
+                  {gameSession?.quiz?.questions?.length}
                 </span>
-              {" câu chưa hoàn thành!"}
-            </>
-            :
-            <>
-              {"Quiz đã hoàn thành tất cả "}
-              <span className="fw-bolder fs-24x  text-primary">
-              {currentQID + 1}
+                {' câu chưa hoàn thành!'}
+              </>
+            ) : (
+              <>
+                {'Quiz đã hoàn thành tất cả '}
+                <span className="fw-bolder fs-24x  text-primary">
+                  {currentQID + 1}
                 </span>
-              {" câu trên "}
-              <span className="fw-bolder fs-24x  text-primary">
-              {gameSession?.quiz?.questions?.length}
+                {' câu trên '}
+                <span className="fw-bolder fs-24x  text-primary">
+                  {gameSession?.quiz?.questions?.length}
                 </span>
-              {" câu!"}
-            </>
-          }
+                {' câu!'}
+              </>
+            )}
+          </div>
+          <div className="text-secondary fs-24x text-warning">
+            Các thành viên trong phòng sẽ không thể chat với nhau nữa, bạn có
+            chắc chắn muốn kết thúc phòng?
+          </div>
         </div>
-        <div className="text-secondary fs-24x text-warning">
-          Các thành viên trong phòng sẽ không thể chat với nhau nữa, bạn có chắc chắn muốn kết thúc phòng?
-        </div>
-      </div>
-    </MyModal>;
+      </MyModal>
+    )
   }
 
   const renderHostControlSystem = () => {
     return (
-      <Fade in={(isShowHostControl || fromMedium)}>
-        {(isShowHostControl || fromMedium) ?
-          <div className={cn(styles.hostControl, "px-2 py-2 flex-end")}>
-            {!isShowEndGame && <GameButton
+      <Fade in={isShowHostControl || fromMedium}>
+        {isShowHostControl || fromMedium ? (
+          <div className={cn(styles.hostControl, 'px-2 py-2 flex-end')}>
+            {!isShowEndGame && (
+              <GameButton
                 isEnable={true}
-                iconClassName={cn("bi", {"bi-pause-circle-fill": !autoNext, "bi-play-circle": autoNext})}
-                className={classNames('text-white fw-medium', {
-                  "bg-secondary": !autoNext
+                iconClassName={cn('bi', {
+                  'bi-pause-circle-fill': !autoNext,
+                  'bi-play-circle': autoNext,
                 })}
-                title={autoNext ? `Tự qua câu sau ${autoNextCountDown} giây` : "Bật tự qua câu"}
+                className={classNames('text-white fw-medium', {
+                  'bg-secondary': !autoNext,
+                })}
+                title={
+                  autoNext
+                    ? `Tự qua câu sau ${autoNextCountDown} giây`
+                    : 'Bật tự qua câu'
+                }
                 onClick={() => setAutoNext(!autoNext)}
-            />}
-            {!isShowEndGame &&
-                <GameButton
-                    isEnable={!isNextEmitted && !timer.isCounting}
-                    iconClassName="bi bi-arrow-right-circle-fill"
-                    className={classNames('text-white fw-medium')}
-                    title="Câu sau"
-                    onClick={goToNextQuestion}
-                />
-            }
-            {
-              isShowEndGame &&
-                <GameButton
-                    isEnable={true}
-                    iconClassName="bi bi-x-octagon-fill"
-                    className={classNames('text-white fw-medium bg-danger')}
-                    title="Kết thúc game"
-                    onClick={() => {
-                      exitContext.setShowEndGameModal(true)
-                    }}
-                />
-            }
+              />
+            )}
+            {!isShowEndGame && (
+              <GameButton
+                isEnable={!isNextEmitted && !timer.isCounting}
+                iconClassName="bi bi-arrow-right-circle-fill"
+                className={classNames('text-white fw-medium')}
+                title="Câu sau"
+                onClick={goToNextQuestion}
+              />
+            )}
+            {isShowEndGame && (
+              <GameButton
+                isEnable={true}
+                iconClassName="bi bi-x-octagon-fill"
+                className={classNames('text-white fw-medium bg-danger')}
+                title="Kết thúc game"
+                onClick={() => {
+                  exitContext.setShowEndGameModal(true)
+                }}
+              />
+            )}
           </div>
-          :
+        ) : (
           <></>
-        }
+        )}
       </Fade>
     )
   }
@@ -401,7 +400,11 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
         )}
       >
         {currentQuestion?.question && (
-          <div className={classNames("d-flex flex-column bg-dark bg-opacity-50 rounded-10px shadow mb-2")}>
+          <div
+            className={classNames(
+              'd-flex flex-column bg-dark bg-opacity-50 rounded-10px shadow mb-2'
+            )}
+          >
             <div className="pt-2 px-2 d-flex align-items-center gap-3">
               <Image
                 src="/assets/default-avatar.png"
@@ -411,7 +414,7 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
                 alt=""
               />
               <div className="fw-medium fs-20px text-white">
-                {gameSession?.host?.name ?? "Ẩn danh"}
+                {gameSession?.host?.name ?? 'Ẩn danh'}
               </div>
             </div>
             <div className="px-2 pb-2 text-white d-flex gap-3 align-items-center justify-content-between">
@@ -424,7 +427,7 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
               </div>
 
               {/*streak hiện tại*/}
-              <div className={"fs-32px"}>
+              <div className={'fs-32px'}>
                 <span className="me-2">🔥</span>
                 {viewResultData?.player?.currentStreak ?? 0}
               </div>
@@ -448,32 +451,48 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
         />
 
         <div
-          className={classNames('shadow px-3 pt-2 bg-white mb-2', styles.questionTitle,
-            {'rounded-10px': fromMedium})}>
+          className={classNames(
+            'shadow px-3 pt-2 bg-white mb-2',
+            styles.questionTitle,
+            { 'rounded-10px': fromMedium }
+          )}
+        >
           <div
-            dangerouslySetInnerHTML={{__html: currentQuestion?.question ?? ""}}
+            dangerouslySetInnerHTML={{
+              __html: currentQuestion?.question ?? '',
+            }}
           />
         </div>
-        {
-          currentQuestion &&
-            <div
-                className={classNames('noselect px-2 py-2 fs-4 fw-bold text-white mb-2 bg-dark bg-opacity-50 d-flex justify-content-between align-items-center',
-                  {'rounded-10px': fromMedium})}>
-                <div className={""}>
-                    <i className={cn("fs-20px text-white me-2", QuestionTypeDescription[currentQuestion.type].icon)}/>
-                  {QuestionTypeDescription[currentQuestion.type].title}
-                </div>
-                <GameButton
-                    isEnable={timer.isSubmittable}
-                    iconClassName="bi bi-check-circle-fill"
-                    className={classNames('text-white fw-medium bg-warning', styles.submitButton)}
-                    title={'Trả lời'}
-                    onClick={() => {
-                      timer.stopCounting(false)
-                    }}
-                />
+        {currentQuestion && (
+          <div
+            className={classNames(
+              'noselect px-2 py-2 fs-4 fw-bold text-white mb-2 bg-dark bg-opacity-50 d-flex justify-content-between align-items-center',
+              { 'rounded-10px': fromMedium }
+            )}
+          >
+            <div className={''}>
+              <i
+                className={cn(
+                  'fs-20px text-white me-2',
+                  QuestionTypeDescription[currentQuestion.type].icon
+                )}
+              />
+              {QuestionTypeDescription[currentQuestion.type].title}
             </div>
-        }
+            <GameButton
+              isEnable={timer.isSubmittable}
+              iconClassName="bi bi-check-circle-fill"
+              className={classNames(
+                'text-white fw-medium bg-warning',
+                styles.submitButton
+              )}
+              title={'Trả lời'}
+              onClick={() => {
+                timer.stopCounting(false)
+              }}
+            />
+          </div>
+        )}
 
         {currentQuestion?.question && renderAnswersSection()}
         {renderHostControlSystem()}
@@ -482,8 +501,8 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
 
         <LoadingBoard
           loading={loading != null}
-          className={"position-fixed top-0 bottom-0 start-0 end-0"}
-          loadingTitle={loading ?? ""}
+          className={'position-fixed top-0 bottom-0 start-0 end-0'}
+          loadingTitle={loading ?? ''}
         />
       </div>
     </>

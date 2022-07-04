@@ -1,34 +1,34 @@
-import {NextPage} from 'next'
-import React, {Dispatch, SetStateAction, useEffect, useState} from 'react'
+import { NextPage } from 'next'
+import React, { Dispatch, SetStateAction, useEffect, useState } from 'react'
 import styles from './CommunityGamePlay.module.css'
-import CommunityAnswerBoard from "../AnswerBoard/CommunityAnswerBoard";
-import classNames from "classnames";
-import {TimerProvider} from "../../../hooks/useTimer/useTimer";
-import {FAB, FABAction} from "../../GameComponents/FAB/FAB";
-import router from "next/router";
-import MyModal from "../../MyModal/MyModal";
-import {usePracticeGameSession} from "../../../hooks/usePracticeGameSession/usePracticeGameSession";
-import useScreenSize from "../../../hooks/useScreenSize/useScreenSize";
-import {TStartQuizResponse} from "../../../types/types";
-import {useSound} from "../../../hooks/useSound/useSound";
+import CommunityAnswerBoard from '../AnswerBoard/CommunityAnswerBoard'
+import classNames from 'classnames'
+import { TimerProvider } from '../../../hooks/useTimer/useTimer'
+import { FAB, FABAction } from '../../GameComponents/FAB/FAB'
+import router from 'next/router'
+import MyModal from '../../MyModal/MyModal'
+import { usePracticeGameSession } from '../../../hooks/usePracticeGameSession/usePracticeGameSession'
+import useScreenSize from '../../../hooks/useScreenSize/useScreenSize'
+import { TStartQuizResponse } from '../../../types/types'
+import { useSound } from '../../../hooks/useSound/useSound'
+import AnswerSheet from '../AnswerSheet/AnswerSheet'
 
 export const ExitContext = React.createContext<{
   showEndGameModal: boolean
   setShowEndGameModal: Dispatch<SetStateAction<boolean>>
 }>({
   showEndGameModal: false,
-  setShowEndGameModal: () => {
-  },
+  setShowEndGameModal: () => {},
 })
 
 const CommunityGamePlay: NextPage = () => {
-  const {clearGameSession, gameSkOn} = usePracticeGameSession()
+  const { clearGameSession, gameSkOn } = usePracticeGameSession()
   const [isShowExit, setIsShowExit] = useState<boolean>(false)
   const [isShowHostControl, setIsShowHostControl] = useState<boolean>(true)
   const [exitModal, setExitModal] = useState(false)
   const [endGameData, setEndGameData] = useState<TStartQuizResponse>()
-  const {fromMedium} = useScreenSize()
-  const {turnSound} = useSound()
+  const { fromMedium } = useScreenSize()
+  const { turnSound } = useSound()
 
   const hostAction: FABAction = {
     label: 'Hiện bảng điều khiển',
@@ -78,29 +78,26 @@ const CommunityGamePlay: NextPage = () => {
     )
   }
 
-
   useEffect(() => {
-
     gameSkOn('game-ended', (data) => {
-
       setEndGameData(data)
     })
   }, [])
 
-//   useEffect(() => {
-//     router.beforePopState(({ as }) => {
-//         if (as !== router.asPath) {
-//             // Will run when leaving the current page; on back/forward actions
-//             // Add your logic here, like toggling the modal state
-//             sound.stop();
-//         }
-//         return true;
-//     });
-//
-//     return () => {
-//         router.beforePopState(() => true);
-//     };
-// }, [router]);
+  //   useEffect(() => {
+  //     router.beforePopState(({ as }) => {
+  //         if (as !== router.asPath) {
+  //             // Will run when leaving the current page; on back/forward actions
+  //             // Add your logic here, like toggling the modal state
+  //             sound.stop();
+  //         }
+  //         return true;
+  //     });
+  //
+  //     return () => {
+  //         router.beforePopState(() => true);
+  //     };
+  // }, [router]);
 
   return (
     <>
@@ -123,25 +120,26 @@ const CommunityGamePlay: NextPage = () => {
                 setShowEndGameModal: setExitModal,
               }}
             >
-            <TimerProvider>
-              <div className={"bg-white w-100 h -100"}></div>
-              <CommunityAnswerBoard
-                isShowHostControl={isShowHostControl}
-                setIsShowHostControl={setIsShowHostControl}
-                className="flex-grow-1"
-              />
-            </TimerProvider>
+              <TimerProvider>
+                <div className={'bg-white w-100 h -100'}></div>
+                <CommunityAnswerBoard
+                  isShowHostControl={isShowHostControl}
+                  setIsShowHostControl={setIsShowHostControl}
+                  className="flex-grow-1"
+                />
+              </TimerProvider>
             </ExitContext.Provider>
           </div>
         </div>
         <FAB
           actions={[
-            !fromMedium ?  hostAction : null,
+            !fromMedium ? hostAction : null,
             !endGameData ? exitAction : null,
           ]}
         />
         {getExitModal()}
       </div>
+      {/* <AnswerSheet /> */}
     </>
   )
 }

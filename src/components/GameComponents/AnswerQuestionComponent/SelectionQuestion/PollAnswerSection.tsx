@@ -1,7 +1,8 @@
 import classNames from 'classnames'
-import {FC, useEffect, useState} from 'react'
-import {TQuestion} from '../../../../types/types'
-import OptionAnswerSection from "./OptionAnswerSection";
+import { FC, useEffect, useState } from 'react'
+import { TQuestion } from '../../../../types/types'
+import HostPollVisualize from './HostPollVisualize'
+import OptionAnswerSection from './OptionAnswerSection'
 
 type PollAnswerSectionProps = {
   className?: string
@@ -18,17 +19,17 @@ type PollAnswerSectionProps = {
 }
 
 const PollAnswerSection: FC<PollAnswerSectionProps> = ({
-                                                                             className,
-                                                                             socketSubmit,
-                                                                             option,
-                                                                             showAnswer,
-                                                                             isHost,
-                                                                             isTimeOut,
-                                                                             isSubmitted,
-                                                                             isCounting,
-                                                                             isShowSkeleton,
-                                                         answersStatistic
-                                                                           }) => {
+  className,
+  socketSubmit,
+  option,
+  showAnswer,
+  isHost,
+  isTimeOut,
+  isSubmitted,
+  isCounting,
+  isShowSkeleton,
+  answersStatistic,
+}) => {
   const [answerSet, setAnswerSet] = useState<Set<number>>(new Set())
   const [numOfVote, setNumOfVote] = useState<number[]>([])
   const selectAnswer = (answerId: number) => {
@@ -45,29 +46,42 @@ const PollAnswerSection: FC<PollAnswerSectionProps> = ({
 
   useEffect(() => {
     if (option) {
-      let answerIds = option.questionAnswers.map(answer => answer.id ? getIndexFor(answer.id) : 0)
+      let answerIds = option.questionAnswers.map((answer) =>
+        answer.id ? getIndexFor(answer.id) : 0
+      )
       setNumOfVote(answerIds)
     }
-  }, [answersStatistic]);
+  }, [answersStatistic])
 
   useEffect(() => {
     if (!isCounting && !isSubmitted && !isHost) {
       socketSubmit(answerSet)
     }
-  }, [isCounting]);
+  }, [isCounting])
 
   return (
     <div className={classNames(className, '')}>
-      <OptionAnswerSection
-        didSelectAnswerId={selectAnswer}
-        option={option}
-        selectedAnswers={answerSet}
-        showAnswer={showAnswer}
-        isShowSkeleton={isShowSkeleton}
-        isHost={isHost}
-        numOfVote={numOfVote.length > 0 ? numOfVote : Array(option ? option.questionAnswers.length : 0 ).fill(0)}
-        baseIcon="square">
-      </OptionAnswerSection>
+      {isHost ? (
+        <HostPollVisualize
+          answersStatistic={answersStatistic}
+          answers={option?.questionAnswers}
+        />
+      ) : (
+        <OptionAnswerSection
+          didSelectAnswerId={selectAnswer}
+          option={option}
+          selectedAnswers={answerSet}
+          showAnswer={showAnswer}
+          isShowSkeleton={isShowSkeleton}
+          isHost={isHost}
+          numOfVote={
+            numOfVote.length > 0
+              ? numOfVote
+              : Array(option ? option.questionAnswers.length : 0).fill(0)
+          }
+          baseIcon="square"
+        ></OptionAnswerSection>
+      )}
     </div>
   )
 }

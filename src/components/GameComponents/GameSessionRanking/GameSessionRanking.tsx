@@ -73,16 +73,13 @@ const GameSessionRanking: FC<GameSessionRankingProps> = ({
     try {
       if (viewResultData && currentQuestion) {
         if (!_.isEmpty(viewResultData.answersStatistic)) {
-          data = Object.keys(viewResultData?.answersStatistic).map(
-            (key, index) => [
-              currentQuestion.questionAnswers.find(
-                (ans) => ans.id === Number(key)
-              )?.answer || key,
-              viewResultData?.answersStatistic[key],
-              ANSWER_COLORS[index % ANSWER_COLORS.length] || ANSWER_COLORS[0],
-              viewResultData?.answersStatistic[key],
-            ]
-          )
+          const { answersStatistic } = viewResultData
+          data = currentQuestion.questionAnswers.map((ans, index) => [
+            ans.answer || index,
+            _.get(answersStatistic, String(ans?.id), 0),
+            ANSWER_COLORS[index % ANSWER_COLORS.length] || ANSWER_COLORS[0],
+            _.get(answersStatistic, String(ans?.id), 0),
+          ])
         } else {
           data = Object.keys(viewResultData?.answerTextStatistic).map(
             (key, index) => [
