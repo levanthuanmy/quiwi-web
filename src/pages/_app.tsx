@@ -23,7 +23,7 @@ import { ToastProvider } from 'react-toast-notifications'
 import * as gtag from '../libs/gtag'
 import { usePracticeGameSession } from '../hooks/usePracticeGameSession/usePracticeGameSession'
 import SignInModal from '../components/AuthComponents/SignInModal/SignInModal'
-
+import { GoogleOAuthProvider } from '@react-oauth/google'
 function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter()
   const [shouldLoad, setShouldLoad] = useState<boolean>(false)
@@ -90,12 +90,16 @@ function MyApp({ Component, pageProps }: AppProps) {
     <SSRProvider>
       <DndProvider backend={HTML5Backend}>
         <AuthProvider>
-          <ToastProvider autoDismiss newestOnTop autoDismissTimeout={4000}>
-            <MyHead />
-            <Component {...pageProps} />
-            <FullScreenLoader isLoading={shouldLoad} />
-            <SignInModal />
-          </ToastProvider>
+          <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID as string}>
+ 
+            <ToastProvider autoDismiss newestOnTop autoDismissTimeout={4000}>
+              <MyHead />
+              <Component {...pageProps} />
+              <FullScreenLoader isLoading={shouldLoad} />
+              <SignInModal />
+            </ToastProvider>
+          </GoogleOAuthProvider>
+          ;
         </AuthProvider>
       </DndProvider>
     </SSRProvider>

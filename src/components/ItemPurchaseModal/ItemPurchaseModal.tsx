@@ -2,9 +2,8 @@ import { FC } from 'react'
 import { Button, ButtonGroup, Col, Image, Modal, Row } from 'react-bootstrap'
 import { TItem } from '../../types/types'
 import { SOUND_EFFECT } from '../../utils/constants'
-import { playSound } from '../../utils/helper'
 import MyModal from '../MyModal/MyModal'
-
+import { useSound } from '../../hooks/useSound/useSound'
 type ItemPurchaseProps = {
   avatar?: string
   name?: string
@@ -28,6 +27,7 @@ const ItemPurchaseModal: FC<ItemPurchaseProps> = ({
   setQuantity,
   item,
 }) => {
+  const { playSound } = useSound()
   return (
     <MyModal
       show={showModal}
@@ -132,4 +132,3 @@ const ItemPurchaseModal: FC<ItemPurchaseProps> = ({
 }
 
 export { ItemPurchaseModal }
-

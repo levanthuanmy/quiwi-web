@@ -25,8 +25,6 @@ const Home: NextPage = () => {
   const router = useRouter()
   const user = authContext.getUser()
 
-  console.log(router.query)
-
   const recentlyCreatedParams = {
     filter: {
       relations: ['questions', 'questions.questionAnswers', 'user'],
@@ -207,9 +205,7 @@ const Home: NextPage = () => {
               </div>
 
               <div className="pt-4">
-                <h1 className="fs-22px fw-medium pb-3">
-                  Đã tham gia gần đây
-                </h1>
+                <h1 className="fs-22px fw-medium pb-3">Đã tham gia gần đây</h1>
                 {recentlyPlayedQuizzesResponse?.response ? (
                   recentlyPlayedQuizzesResponse?.response.length === 0 ? (
                     <div className="ms-3 text-muted">
