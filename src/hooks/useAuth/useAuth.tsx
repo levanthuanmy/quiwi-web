@@ -16,6 +16,7 @@ type UseAuthValue = {
   signIn: () => Promise<void>
   getUser: () => TUser | undefined
   setUser: (data: TUser) => void
+  fetchUser: () => Promise<void>
   signInModalHandler: boolean
   setSignInModalHandler: React.Dispatch<React.SetStateAction<boolean>>
 }
@@ -25,6 +26,7 @@ const AuthContext = React.createContext<UseAuthValue>({
   navigate: async () => {},
   signOut: async () => {},
   signIn: async () => {},
+  fetchUser: async () => {},
   getUser: () => undefined,
   setUser: () => {},
   signInModalHandler: false,
@@ -77,6 +79,16 @@ export const AuthProvider = ({ children }: { children?: ReactNode }) => {
     }
   }
 
+  const fetchUser = async () => {
+    const _lsUser = JsonParse(lsUser) as TUser
+    try {
+      const res = await get<any>('/api/users/profile', true)
+      setUserState({ ..._lsUser, ...res?.response?.user })
+    } catch (error) {
+      console.log('getUser - error', error)
+    }
+  }
+
   const toPrevRoute = async () => {
     const temp = prevRoute
     setPrevRoute('/')
@@ -124,6 +136,7 @@ export const AuthProvider = ({ children }: { children?: ReactNode }) => {
     signIn,
     signInModalHandler,
     setSignInModalHandler,
+    fetchUser,
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

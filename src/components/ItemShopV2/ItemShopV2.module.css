@@ -1,32 +1,8 @@
 @import url(https://fonts.googleapis.com/css?family=Open+Sans:400,700);
 
-/** * VARIABLES **/
-/* * {
-    box-sizing: border-box;
-} */
-
-/* body {
-    font-family: "Open Sans";
-    font-size: 16px;
-    background-color: #eee;
-} */
-
-/** * Title **/
-.title {
-  text-align: center;
-  transform: translateY(20px);
-  font-size: 45px;
-  color: coral;
-  text-transform: uppercase;
-}
-
-/** * CARD **/
 .card {
   /* position: absolute; */
-  border-radius: 2rem;
-  /* top: 50%;
-  left: 50%;
-  transform: translateX(-50%) translateY(-50%) translateZ(0); */
+  border-radius: 16px;
   background-color: #fff;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
   overflow: hidden;
@@ -42,34 +18,9 @@
   box-shadow: 0 0 50px rgba(0, 0, 0, 0.3);
 }
 
-/** * DATE **/
-.card__date {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  width: 45px;
-  height: 45px;
-  padding-top: 10px;
-  background-color: coral;
-  border-radius: 50%;
-  color: #fff;
-  text-align: center;
-  font-weight: 700;
-  line-height: 13px;
-}
-
-.card__date__day {
-  font-size: 14px;
-}
-
-.card__date__month {
-  text-transform: uppercase;
-  font-size: 10px;
-}
-
 /** * THUMB **/
 .card__thumb {
-  height: 245px;
+  height: 10rem;
   overflow: hidden;
   background-color: white;
   transition: height 0.5s;
@@ -78,32 +29,36 @@
 .card__thumb img {
   width: 100%;
   height: 100%;
-  border-radius: 2rem;
+  border-radius: 16px;
   display: block;
   opacity: 1;
   transform: scale(1);
   transition: opacity 0.5s, transform 0.5s;
+  text-align: center;
+  margin: auto auto;
 }
 
 .card:hover .card__thumb {
-  height: 130px;
+  height: 4rem;
 }
 
 .card:hover .card__thumb img {
   opacity: 0.6;
-  transform: scale(1.2);
+  transform: scale(1.4);
+  height: 100%;
+  width: 100%;
 }
 
 /** * BODY **/
 .card__body {
   position: relative;
-  height: 185px;
-  padding: 20px;
+  height: 10rem;
+  padding: 16px;
   transition: height 0.5s;
 }
 
 .card:hover .card__body {
-  height: 300px;
+  height: 16rem;
 }
 
 .card__category {
@@ -123,7 +78,7 @@
   margin: 0;
   padding: 0 0 10px 0;
   color: #000;
-  font-size: 22px;
+  /* font-size: 22px; */
   font-weight: bold;
   text-transform: uppercase;
 }
@@ -131,9 +86,10 @@
 .card__subtitle {
   display: flex;
   justify-content: flex-start;
+  align-items: center;
   margin: 0;
   padding: 0 0 10px 0;
-  font-size: 19px;
+  /* font-size: 19px; */
   color: coral;
 }
 
@@ -145,7 +101,6 @@
   margin: 0;
   padding: 0;
   color: #666c74;
-  line-height: 27px;
   opacity: 0;
   transform: translateY(45px);
   transition: opacity 0.3s, transform 0.3s;
@@ -161,9 +116,8 @@
 .card__footer {
   position: absolute;
   bottom: 12px;
-  left: 20px;
-  right: 20px;
-  font-size: 11px;
+  left: 0;
+  right: 0;
   color: #a3a9a2;
   display: flex;
   justify-content: center;
@@ -178,12 +132,8 @@
   font-size: 18px;
 }
 
-.icon + .icon {
-  padding-left: 10px;
-}
-
 .price {
-  padding-left: 10px;
+  padding-left: 8px;
   color: #d7ce1f;
 }
 
@@ -198,8 +148,48 @@
   font-weight: bold;
   background-color: white;
   border-color: none;
+  font-size: 1rem;
 }
 
 .btnBuy:hover {
   color: white;
+}
+@media (min-width: 1400px) {
+  .card__thumb img {
+    width: 90%;
+  }
+}
+@media (max-width: 768px) {
+  .card__title {
+    font-size: 100%;
+  }
+  .btnBuy {
+    font-size: 0.9rem;
+  }
+
+  .card__subtitle img {
+    width: 16px;
+    height: 16px;
+  }
+}
+@media (min-width: 567px) and (max-width: 768px) {
+  .card__thumb img {
+    width: 90%;
+  }
+}
+
+.imageTypeRare {
+  color: blueviolet;
+}
+
+.imageTypeNormal {
+  color: black;
+}
+
+.imageTypeEpic {
+  color: orange;
+}
+
+.imageTypeLegendary {
+  color: red;
 }
