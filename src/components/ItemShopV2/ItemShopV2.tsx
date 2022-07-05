@@ -18,10 +18,10 @@ const ItemShopV2: FC<ItemShopProps> = ({ item, userBuyItem }) => {
   const [showAlertModal, setShowAlertModal] = useState(false)
   const [error, setError] = useState('')
   const [quantity, setQuantity] = useState(1)
-  const {playSound} = useSound()
+  const sound = useSound()
 
   const buyItem = async () => {
-    playSound(SOUND_EFFECT['CONFIRM_BUY_BUTTON_SOUND_CLICK'])
+    sound?.playSound(SOUND_EFFECT['CONFIRM_BUY_BUTTON_SOUND_CLICK'])
     setShowConfirmationModal(false)
     try {
       const params = {

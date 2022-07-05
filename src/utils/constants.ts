@@ -80,6 +80,7 @@ export const SOUND_EFFECT: Record<string, string> = {
   JACKPOT_CONGRATULATION: '/sounds/congratulation.mp3',
   GAME_WATING: '/sounds/game-wating.mp3',
   GAME_PLAYING: '/sounds/game-playing.mp3',
+  GAME_PLAYING_2: '/sounds/game-playing-2.mp3',
   INCORRECT_BACKGROUND: '/sounds/incorrect-background.mp3',
   INCORRECT_ANSWER: '/sounds/incorrect_answer.mp3',
   ONE_SECOND: '/sounds/one-second.mp3',

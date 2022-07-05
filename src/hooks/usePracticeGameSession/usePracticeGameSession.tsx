@@ -64,7 +64,7 @@ export const usePracticeGameSession = (): {
   const connectGameSocket = () => {
     if (!gameSocket() || gameSocket()?.disconnected) {
       sk.connect("COMMUNITY-GAMES")
-      soundManager.setGameSoundOn(true)
+      soundManager?.setGameSoundOn(true)
       gameSocket()?.offAny()
       gameSocket()?.onAny(function (event, data) {
         console.log("🌝🌝 Event:", event);
@@ -100,14 +100,14 @@ export const usePracticeGameSession = (): {
       if (deleteCount <= 0) {
         console.log('🎯️ PracticeGameSession :: Clear')
       }
-      soundManager.setGameSoundOn(false)
+      soundManager?.setGameSoundOn(false)
       gameSocket()?.offAny()
       setLsGameSession('')
       setGameSession(null)
       localStorage.removeItem('game-session')
       localStorage.removeItem('game-session-player')
     } catch (error) {
-      console.log('🎯️ ️️GameSession => Clear game lỗi', error)
+      console.log('🎯️ PracticeGameSession => Clear game lỗi', error)
     }
   }
 

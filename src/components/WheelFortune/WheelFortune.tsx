@@ -69,7 +69,7 @@ const WheelOfFortune: FC<WheelProps> = ({ data, jackpotTotalScore, numberPlayerJ
   const [totalJoinSpinning, setTotalJoinSpinning] = useState(numberPlayerJoin ?? 0);
   const [totalScore, setTotalScore] = useState(0);
   const [prizeNumber, setPrizeNumber] = useState(0);
-  const {playSound} = useSound()
+  const sound = useSound()
   // console.log(data);
 
   const handleSpinClick = () => {
@@ -88,7 +88,7 @@ const WheelOfFortune: FC<WheelProps> = ({ data, jackpotTotalScore, numberPlayerJ
           setTotalScore(res.response.score);
           setResultSpinning(res.response);
           setMustSpin(true)
-          playSound(SOUND_EFFECT['SPIN_BUTTON']);
+          sound?.playSound(SOUND_EFFECT['SPIN_BUTTON']);
           onShow();
         }
       } catch (error) {

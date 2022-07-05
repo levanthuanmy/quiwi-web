@@ -22,9 +22,9 @@ const ItemMenuBar: FC<ItemMenuBarProps> = ({
 }) => {
   const authNavigate = useAuth()
   const router = useRouter()
-  const {playSound} = useSound()
+  const sound = useSound()
   const clickEventSoundNivigate = (url: string) => {
-    playSound(SOUND_EFFECT['SIDE_BAR_SOUND_CLICK'])
+    sound?.playSound(SOUND_EFFECT['SIDE_BAR_SOUND_CLICK'])
     if (isAuth) {
       authNavigate.navigate(url)
     } else {

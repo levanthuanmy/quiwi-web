@@ -16,9 +16,9 @@ type JackpotModalProps = {
 
 const JackpotModal: FC<JackpotModalProps> = ({ showModal, onHide, score }) => {
   const { width, height } = useWindowSize()
-  const { playSound } = useSound()
+  const sound = useSound()
   if (showModal) {
-    playSound(SOUND_EFFECT['JACKPOT_CONGRATULATION'])
+    sound.playSound(SOUND_EFFECT['JACKPOT_CONGRATULATION'])
   }
 
   return (

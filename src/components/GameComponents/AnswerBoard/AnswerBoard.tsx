@@ -23,13 +23,15 @@ import {
 import { Fade, Image } from 'react-bootstrap'
 import GameButton from '../GameButton/GameButton'
 import useScreenSize from '../../../hooks/useScreenSize/useScreenSize'
-import MyModal from '../../MyModal/MyModal'
-import { ExitContext } from '../../../pages/game/play'
-import LoadingBoard from '../LoadingBoard/LoadingBoard'
-import { useToasts } from 'react-toast-notifications'
-import { useTimer } from '../../../hooks/useTimer/useTimer'
-import { SOUND_EFFECT } from '../../../utils/constants'
-import { useSound } from '../../../hooks/useSound/useSound'
+import MyModal from "../../MyModal/MyModal";
+import {ExitContext} from "../../../pages/game/play";
+import LoadingBoard from "../LoadingBoard/LoadingBoard";
+import {useToasts} from "react-toast-notifications";
+import {useTimer} from "../../../hooks/useTimer/useTimer";
+import {SOUND_EFFECT} from '../../../utils/constants'
+import {useUserSetting} from "../../../hooks/useUserSetting/useUserSetting";
+import {useSound} from "../../../hooks/useSound/useSound";
+
 
 type AnswerBoardProps = {
   className?: string
@@ -51,7 +53,8 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
     getQuestionWithID,
   } = useGameSession()
 
-  const { playSound, playRandomCorrectAnswerSound, turnSound } = useSound()
+  const sound = useSound()
+  const setting = useUserSetting()
 
   // lưu qid để hiển thị bên trang bộ quiz
   const [lsCurrentQID, setLsCurrentQID] = useLocalStorage('currentQID', '-1')
@@ -199,10 +202,10 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
       if (data?.player && !isHost && typeof window !== 'undefined') {
         const curStreak = data.player.currentStreak ?? 0
         if (curStreak > 0) {
-          playRandomCorrectAnswerSound()
+          sound?.playRandomCorrectAnswerSound();
         } else {
-          playSound(SOUND_EFFECT['INCORRECT_BACKGROUND'])
-          playSound(SOUND_EFFECT['INCORRECT_ANSWER'])
+          sound?.playSound(SOUND_EFFECT['INCORRECT_BACKGROUND']);
+          sound?.playSound(SOUND_EFFECT['INCORRECT_ANSWER']);
         }
         localStorage.setItem(
           'game-session-player',
@@ -212,13 +215,14 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
     })
 
     gameSkOn('ranking', (data) => {
-      playSound(SOUND_EFFECT['RECHARGING'])
+      sound?.playSound(SOUND_EFFECT['RECHARGING'])
       setShowRanking(true)
       const rkData: any[] = data?.playersSortedByScore
       setRankingData(rkData)
     })
 
     gameSkOn('loading', (data) => {
+      console.log("=>(AnswerBoard.tsx:209) setting?.isMute", setting?.isMute);
       if (data?.question?.question) {
         timer.setIsShowSkeleton(true)
         setIsShowNext(false)
@@ -450,7 +454,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
                 alt=""
               />
               <div className="fw-medium fs-20px text-white">
-                {isHost ? gameSession?.host.name : gameSessionPlayer?.nickname}
+                {isHost ? gameSession?.host?.name : gameSessionPlayer?.nickname}
               </div>
             </div>
             <div className="px-2 pb-2 text-white d-flex gap-3 align-items-center justify-content-between">

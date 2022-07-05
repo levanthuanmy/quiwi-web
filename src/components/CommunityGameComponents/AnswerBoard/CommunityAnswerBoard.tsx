@@ -42,7 +42,7 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
     getQuestionWithID,
   } = usePracticeGameSession()
 
-  const { playSound, playRandomCorrectAnswerSound, turnSound } = useSound()
+  const sound = useSound()
 
   const exitContext = useContext(ExitContext)
   const timer = useTimer()
@@ -189,10 +189,10 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
       if (data?.player && typeof window !== 'undefined') {
         const curStreak = data.player.currentStreak ?? 0
         if (curStreak > 0) {
-          playRandomCorrectAnswerSound()
+          sound?.playRandomCorrectAnswerSound();
         } else {
-          playSound(SOUND_EFFECT['INCORRECT_BACKGROUND'])
-          playSound(SOUND_EFFECT['INCORRECT_ANSWER'])
+          sound?.playSound(SOUND_EFFECT['INCORRECT_BACKGROUND']);
+          sound?.playSound(SOUND_EFFECT['INCORRECT_ANSWER']);
         }
         localStorage.setItem(
           'game-session-player',
@@ -203,7 +203,6 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
     })
 
     gameSkOn('loading', (data) => {
-      playRandomCorrectAnswerSound()
       if (data?.question?.question) {
         timer.setIsShowSkeleton(true)
         setIsShowNext(false)

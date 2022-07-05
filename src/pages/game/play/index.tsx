@@ -18,7 +18,6 @@ import {TimerProvider} from "../../../hooks/useTimer/useTimer";
 import {useLocalStorage} from '../../../hooks/useLocalStorage/useLocalStorage'
 import {SOUND_EFFECT} from '../../../utils/constants'
 import {useSound} from "../../../hooks/useSound/useSound";
-import {timeout} from "q";
 
 export const ExitContext = React.createContext<{
   showEndGameModal: boolean
@@ -40,7 +39,7 @@ const GamePage: NextPage = () => {
   const [isShowHostControl, setIsShowHostControl] = useState<boolean>(true)
   const {fromMedium} = useScreenSize()
   const [endGameData, setEndGameData] = useState<TStartQuizResponse>()
-  const {isMute, playSound, turnSound, setGameSoundOn} = useSound()
+  const sound = useSound()
   const [lsBg] = useLocalStorage('bg', '')
   const fabs: FABAction[] = [
     {
@@ -120,7 +119,7 @@ const GamePage: NextPage = () => {
 
   useEffect(() => {
     gameSkOn('game-ended', (data) => {
-      playSound(SOUND_EFFECT['COMPLETE_LEVEL'])
+      sound?.playSound(SOUND_EFFECT['COMPLETE_LEVEL'])
       setEndGameData(data)
       saveGameSession(data)
       setIsGameEnded(true)

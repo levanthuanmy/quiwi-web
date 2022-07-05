@@ -10,8 +10,6 @@ import MyModal from '../../MyModal/MyModal'
 import { usePracticeGameSession } from '../../../hooks/usePracticeGameSession/usePracticeGameSession'
 import useScreenSize from '../../../hooks/useScreenSize/useScreenSize'
 import { TStartQuizResponse } from '../../../types/types'
-import { useSound } from '../../../hooks/useSound/useSound'
-import AnswerSheet from '../AnswerSheet/AnswerSheet'
 
 export const ExitContext = React.createContext<{
   showEndGameModal: boolean
@@ -27,8 +25,7 @@ const CommunityGamePlay: NextPage = () => {
   const [isShowHostControl, setIsShowHostControl] = useState<boolean>(true)
   const [exitModal, setExitModal] = useState(false)
   const [endGameData, setEndGameData] = useState<TStartQuizResponse>()
-  const { fromMedium } = useScreenSize()
-  const { turnSound } = useSound()
+  const {fromMedium} = useScreenSize()
 
   const hostAction: FABAction = {
     label: 'Hiện bảng điều khiển',

@@ -21,7 +21,7 @@ const init = {
   saveGameSession: (gameSS: TStartQuizResponse) => null
 }
 
-const _useGameSession = (): {
+export const useGameSession = (): {
   gameSkOnce: (ev: string, listener: (...args: any[]) => void) => void;
   isHost: () => boolean;
   getQuestionWithID: (qid: number) => (TQuestion | null);
@@ -79,7 +79,7 @@ const _useGameSession = (): {
   const connectGameSocket = () => {
     if (!gameSocket() || gameSocket()?.disconnected) {
       sk.connect("GAMES")
-      soundManager.setGameSoundOn(true)
+      soundManager?.setGameSoundOn(true)
       gameSocket()?.offAny()
       gameSocket()?.onAny(function (event, data) {
         console.log("🌎🌎 Event:", event);
@@ -114,7 +114,8 @@ const _useGameSession = (): {
     try {
       if (deleteCount <= 0)
         console.log('🎯️ ️️GameSession :: Clear')
-      soundManager.setGameSoundOn(false)
+      if (soundManager)
+        soundManager?.setGameSoundOn(false)
       setLsGameSession('')
       setGameSession(null)
       localStorage.removeItem('game-session')
@@ -156,4 +157,3 @@ const _useGameSession = (): {
   )
 }
 
-export const useGameSession = singletonHook(init, _useGameSession);

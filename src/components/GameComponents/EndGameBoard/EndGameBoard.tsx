@@ -25,12 +25,12 @@ const EndGameBoard: FC<EndGameBoardProps> = ({ className }) => {
   const { isAuth } = useAuth()
   const [isVote, setIsVote] = useState<boolean>(false)
   const { addToast } = useToasts()
-  const {playSound} = useSound()
+  const sound = useSound()
   const [lsPlayer] = useLocalStorage('game-session-player', '')
 
   useEffect(() => {
-    playSound(SOUND_EFFECT['END_GAME']);
-    playSound(SOUND_EFFECT['CONGRATULATION_RANKING']);
+    sound?.playSound(SOUND_EFFECT['END_GAME']);
+    sound?.playSound(SOUND_EFFECT['CONGRATULATION_RANKING']);
   }, [])
 
   const renderList = () => {

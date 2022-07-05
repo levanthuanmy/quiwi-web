@@ -1,4 +1,4 @@
-import React, {FC, useState} from "react";
+import React, {FC, useEffect, useState} from "react";
 import cn from "classnames";
 import classNames from "classnames";
 import styles from "./FAB.module.css";
@@ -18,13 +18,15 @@ type FABProps = {
 
 export const FAB: FC<FABProps> = (props) => {
   const [open, setOpen] = useState(true);
-  const {isMute, turnSound} = useSound()
+  const sound = useSound()
+  const [isMute, setIsMute] = useState(sound.isMute);
 
   const FABMuteAction: FABAction = {
     label: 'Tắt âm',
     icon: `bi ${!isMute ? "bi-volume-up-fill" : "bi-volume-mute-fill"} text-white`,
     onClick: () => {
-      turnSound(isMute)
+      sound.turnSound(!sound.isMute)
+      setIsMute(sound.isMute)
     }
   }
 

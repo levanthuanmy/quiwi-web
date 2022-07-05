@@ -1,57 +1,73 @@
-import {useEffect, useState} from 'react'
-import {defaultStyles} from 'react-select/dist/declarations/src/styles';
-import {useLocalStorage} from "../useLocalStorage/useLocalStorage";
-import {TGameModeEnum, TGameRoundStatistic, TGameStatus, TPlayer, TQuiz, TUser} from "../../types/types";
+import React from 'react'
 import {JsonParse} from "../../utils/helper";
-import {singletonHook} from "react-singleton-hook";
-import { string } from 'yup';
 
 export type TUserSetting = {
   isMute: boolean
   gameBackgroundUrl: string
 }
 
-const init = {
-  isMute: false,
-  setIsMute: () => {},
-  gameBackgroundUrl: "",
-  setGameBackgroundUrl: () => {}
+export class UserSetting {
+  private static lsKey = "UserSetting"
+  private static _instance?: UserSetting;
+
+  private constructor() {
+    if (UserSetting._instance)
+      throw new Error("Use UserSetting.instance instead of new.");
+    this.readLS()
+    UserSetting._instance = this;
+  }
+
+  static get instance() {
+    return UserSetting._instance ?? (UserSetting._instance = new UserSetting());
+  }
+
+  private readLS() {
+    if (typeof window !== 'undefined') {
+      const ls = window.localStorage.getItem(UserSetting.lsKey)
+      if (ls) {
+        const setting = JsonParse(
+          ls
+        ) as TUserSetting
+        console.log("=>(.tsx:103) doc setting", setting);
+        this._isMute = setting.isMute
+        this._gameBackgroundUrl = setting.gameBackgroundUrl
+      }  // client-side-only code
+    } else {
+      console.log("=>(useUserSetting.tsx:38) sv");
+    }
+  }
+
+  private writeLS() {
+    if (typeof window !== 'undefined') {
+      const setting: TUserSetting = {
+        isMute: this.isMute,
+        gameBackgroundUrl: this.gameBackgroundUrl
+      }
+      console.log("=>(useUserSetting.tsx:103) luu setting", setting);
+      window.localStorage.setItem(UserSetting.lsKey, JSON.stringify(setting))
+    } else {
+      console.log("=>(useUserSetting.tsx:38) sv");
+    }
+  }
+
+  private _isMute: boolean = false;
+  get isMute(): boolean {
+    return this._isMute;
+  }
+  set isMute(value: boolean) {
+    this._isMute = value;
+    this.writeLS()
+  }
+
+  private _gameBackgroundUrl: string = "";
+  get gameBackgroundUrl(): string {
+    return this._gameBackgroundUrl;
+  }
+  set gameBackgroundUrl(value: string) {
+    this._gameBackgroundUrl = value;
+    this.writeLS()
+  }
+
 }
 
-const _useUserSetting = () => {
-  const [lsSetting, setLsSettings] = useLocalStorage("userSettings", '');
-  const [isMute, setIsMute] = useState<boolean>(false)
-  const [gameBackgroundUrl, setGameBackgroundUrl] = useState<string>("")
-
-  useEffect(() => {
-    console.log("=>(useUserSetting.tsx:28) init Setting");
-    const settings: TUserSetting = JsonParse(lsSetting)
-    if (settings) {
-      console.log("=>(useUserSetting.tsx:27) settings", settings);
-      setIsMute(settings.isMute)
-      setGameBackgroundUrl(settings.gameBackgroundUrl)
-    }
-  }, [])
-
-  useEffect(() => {
-    const settings: TUserSetting = {
-      isMute,
-      gameBackgroundUrl
-    }
-    const jsonSetting = JSON.stringify(settings)
-    if (jsonSetting
-      && jsonSetting != lsSetting
-      && jsonSetting !== lsSetting) {
-      setLsSettings(jsonSetting)
-    }
-  }, [isMute, gameBackgroundUrl])
-
-  return ({
-    isMute,
-    setIsMute,
-    gameBackgroundUrl,
-    setGameBackgroundUrl
-  })
-}
-
-export const useUserSetting = singletonHook(init, _useUserSetting);
+export const useUserSetting = () => UserSetting.instance

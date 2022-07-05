@@ -39,7 +39,7 @@ const NavBar: FC<NavBarProps> = ({
   const [notifications, setNotifications] = useState<TNotification[]>([])
   const [notiCount, setNotiCount] = useState<number>(notifications?.length || 0)
   const {addToast} = useToasts()
-  const {playSound} = useSound()
+  const sound = useSound()
 
   useEffect(() => {
     if (authContext.isAuth) {
@@ -70,7 +70,7 @@ const NavBar: FC<NavBarProps> = ({
       notificationSocket.off('notification')
 
       notificationSocket.on('notification', (data: TNotification) => {
-        playSound(SOUND_EFFECT['NOTIFICATION'])
+        sound?.playSound(SOUND_EFFECT['NOTIFICATION'])
         setNotifications((prev) => [data, ...prev])
         setNotiCount((prev) => prev + 1)
         addToast(

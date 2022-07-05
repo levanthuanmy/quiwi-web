@@ -264,7 +264,7 @@ const LobbyScreen: FC<LobbyScreenProps> = ({invitationCode, isHost}) => {
               </div>
               {isHost && (
                 <MyButton size="sm" className="text-white text-nowrap"
-                onClick={() => { window.open(`http://${window.location.host}/quiz/${gameSession?.quizId}`, "Quiwi", "left=100,top=100,width=620,height=820")}}>
+                onClick={() => { window.open(`http://${window.location.host}/quiz/creator/${gameSession?.quizId}`, "Quiwi", "left=100,top=100,width=620,height=820")}}>
                   Chi tiết quiz
                 </MyButton>
               )}

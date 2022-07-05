@@ -53,10 +53,9 @@ export const TimerProvider = memo(({ children }: { children?: ReactNode }) => {
   const intervalRef = useRef<NodeJS.Timer | null>(null)
   const intervalRefSound = useRef<NodeJS.Timer | null>(null)
 
-  const { playSound } = useSound()
+  const sound = useSound()
 
   const stopCounting = (stopUI: boolean) => {
-    console.log('=>(useTimer) stopCounting stopUI', stopUI)
     if (intervalRef && intervalRef.current) {
       if (stopUI) {
         clearInterval(intervalRef.current)
@@ -71,8 +70,7 @@ export const TimerProvider = memo(({ children }: { children?: ReactNode }) => {
     }
   }
 
-  const stopCountingSound = (stopUI: boolean) => {
-    console.log('=>(useTimer) stopCountingSound stopUI', stopUI)
+  const stopCountingSound = (stopUI: boolean) => {    
     if (intervalRefSound && intervalRefSound.current) {
       if (stopUI) {
         clearInterval(intervalRefSound.current)
@@ -113,9 +111,8 @@ export const TimerProvider = memo(({ children }: { children?: ReactNode }) => {
       intervalRefSound.current = setInterval(() => {
         let curr = Math.round(new Date().getTime())
         let _countDown = Math.ceil((endTime - curr) / 1000)
-        if (_countDown < 4) {
-          console.log(_countDown)
-          playSound(SOUND_EFFECT['ONE_SECOND'])
+        if (_countDown < 4) {          
+          sound.playSound(SOUND_EFFECT['ONE_SECOND']);
         }
         // setCountDown(_countDown)
         if (_countDown <= 0) {

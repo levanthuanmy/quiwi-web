@@ -1,63 +1,64 @@
-import { useEffect, useState } from 'react'
-import { useUserSetting } from '../useUserSetting/useUserSetting'
-import { Howl } from 'howler'
-import { SOUND_EFFECT } from '../../utils/constants'
-import { singletonHook } from 'react-singleton-hook'
+import React from 'react'
 
-const init = {
-  isMute: false,
-  turnSound: (on: boolean) => {},
-  playSound: (src: string) => {},
-  playSoundWithLoop: (src: string) => {},
-  playRandomCorrectAnswerSound: () => {},
-  setGameSoundOn: () => {},
-}
+import {Howl} from "howler";
+import {SOUND_EFFECT} from "../../utils/constants";
+import {UserSetting} from "../useUserSetting/useUserSetting";
 
-const _useSound = () => {
-  const { isMute, setIsMute } = useUserSetting()
-  const [gameSoundOn, setGameSoundOn] = useState<boolean>(false)
-  const [gameSound, setGameSound] = useState<Howl>(
-    new Howl({
-      src: SOUND_EFFECT['GAME_PLAYING'],
-      html5: true,
-      loop: true,
-    })
-  )
+export class SoundManager {
+  private static _instance?: SoundManager;
 
-  useEffect(() => {}, [isMute])
-
-  useEffect(() => {
-    if (!isMute && gameSoundOn && !gameSound.playing()) {
-      console.log('=>(useSound.tsx:24) playsound', gameSound)
-      gameSound.play()
-    } else {
-      console.log('=>(useSound.tsx:24) offsound', gameSound)
-      gameSound.pause()
-    }
-  }, [isMute, gameSoundOn])
-
-  const turnSound = (on: boolean) => {
-    setIsMute(!on)
+  private constructor() {
+    if (SoundManager._instance)
+      throw new Error("Use SoundManager.instance instead of new.");
+    this.isMute = UserSetting.instance.isMute;
+    SoundManager._instance = this;
   }
 
-  const playSound = (src: string) => {
-    try {
-      // console.log("=>(useSound.tsx:24) isMute", isMute, src);
-      if (isMute) return
+  static get instance() {
+    return SoundManager._instance ?? (SoundManager._instance = new SoundManager());
+  }
+
+  isMute = false;
+  gameSoundOn = false;
+  gameSound = new Howl({
+    src: SOUND_EFFECT['GAME_PLAYING_2'],
+    html5: true,
+    loop: true
+  });
+
+  private playGameSound() {
+    if (!this.isMute && this.gameSoundOn && !this.gameSound.playing()) {
+      this.gameSound.play()
+    } else {
+      this.gameSound.pause()
+    }
+  }
+
+  public setGameSoundOn(on: boolean) {
+    this.gameSoundOn = on;
+    this.playGameSound()
+  }
+
+  public turnSound(mute: boolean) {
+    this.isMute = mute
+    UserSetting.instance.isMute = mute;
+    this.playGameSound()
+  }
+
+  public playSound(src: string) {
+    console.log("playSound isMute", this.isMute, src);
+    if (!this.isMute) {
       const sound = new Howl({
         src,
         html5: true,
       })
-
-      if (!sound) return
-      sound.play()
-    } catch (error) {
-      console.log('playSound - error', error)
+      sound?.play()
     }
   }
 
-  const playSoundWithLoop = (src: string) => {
-    if (isMute) return
+  public playSoundWithLoop(src: string) {
+    console.log("playSoundWithLoop isMute", this.isMute);
+    if (this.isMute) return;
     const sound = new Howl({
       src,
       html5: true,
@@ -66,14 +67,14 @@ const _useSound = () => {
     sound?.play()
   }
 
-  const playRandomCorrectAnswerSound = () => {
-    console.log('=>(useSound.tsx:73) isMute', isMute)
-    if (isMute) return
-    const min = Math.ceil(1)
-    const max = Math.floor(4)
-    const randomNum = Math.floor(Math.random() * (max - min) + min)
-    const url = '/sounds/correct_answer_' + randomNum + '.mp3'
-    console.log('=>(useSound.tsx:73) url', url)
+  public playRandomCorrectAnswerSound() {
+    console.log("playRandomCorrectAnswerSound isMute", this.isMute);
+    if (this.isMute) return;
+    const min = Math.ceil(1);
+    const max = Math.floor(4);
+    const randomNum = Math.floor(Math.random() * (max - min) + min);
+    const url = "/sounds/correct_answer_" + randomNum + ".mp3";
+    console.log("playRandomCorrectAnswerSound url", url);
     const sound_pronuncia = new Howl({
       src: url,
       html5: true,
@@ -83,19 +84,10 @@ const _useSound = () => {
       src: SOUND_EFFECT['BUY_BUTTON_SOUND_CLICK'],
       html5: true,
     })
-    console.log('=>(useSound.tsx:88) sound_bell', sound_bell)
-    sound_bell.play()
-    sound_pronuncia.play()
-  }
-
-  return {
-    isMute,
-    turnSound,
-    playSound,
-    playSoundWithLoop,
-    playRandomCorrectAnswerSound,
-    setGameSoundOn,
+    console.log("playRandomCorrectAnswerSound sound_bell", sound_bell);
+    sound_bell.play();
+    sound_pronuncia.play();
   }
 }
 
-export const useSound = singletonHook(init, _useSound)
+export const useSound = () => SoundManager.instance
