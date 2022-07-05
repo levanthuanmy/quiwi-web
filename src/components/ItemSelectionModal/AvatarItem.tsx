@@ -17,6 +17,7 @@ const AvatarItem: FC<IItem> = (props) => {
     <div className={classNames(styles.avatarItem)}>
       <div className="position-relative">
         <Image
+          loading="lazy"
           className={classNames('')}
           src={props.avatar}
           width={124}

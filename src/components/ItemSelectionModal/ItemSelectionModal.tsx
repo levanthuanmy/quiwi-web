@@ -1,14 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { FC, useEffect, useState } from 'react'
-import { Col, Image, Modal, Row } from 'react-bootstrap'
+import { Col, Modal, Row } from 'react-bootstrap'
+import { useAuth } from '../../hooks/useAuth/useAuth'
 import { get } from '../../libs/api'
 import {
-  TApiResponse,
-  TUser,
-  TUserItems,
-  TUserProfile,
-  TUserBadge,
-  TBadge,
+  TApiResponse, TBadge, TUser, TUserBadge, TUserItems,
+  TUserProfile
 } from '../../types/types'
 import MyButton from '../MyButton/MyButton'
 import MyTabBar from '../MyTabBar/MyTabBar'
@@ -34,19 +31,16 @@ const tabs = [
     showType: 'Ảnh nền',
   },
 ]
-const UserItemSelectionModal: FC<MyModalProps> = ({
-  show,
-  onHide,
-  user,
-  userProfile,
-}) => {
+const UserItemSelectionModal: FC<MyModalProps> = ({ show, onHide, user }) => {
   const [avatarItems, setAvatarItems] = useState<TUserItems[]>()
   const [backgroundItems, setBackgroundItems] = useState<TUserItems[]>()
   const [badges, setBadges] = useState<TUserBadge[]>()
   const [currentBadge, setCurrentBadge] = useState<TBadge>()
 
-  const [itemIdChosen, setChoose] = useState<number>()
+  const [avatarItemIdChosen, setAvatarItemIdChoose] = useState<number>()
   const [currentTab, setCurrentTab] = useState<number>(0)
+  const auth = useAuth()
+
   const getAvatarItems = async () => {
     try {
       if (user) {
@@ -128,11 +122,11 @@ const UserItemSelectionModal: FC<MyModalProps> = ({
         alert('Chưa hoàn thành')
         return
       }
-      if (userBadge.isCurrent) {
-        return
-      }
+
       const res = await get(`/api/users/set-badge/${userBadge.badge.id}`, true)
       console.log('==== ~ setCurrentBadge ~ res', res)
+      // setCurrentBadge(userBadge.badge)
+      await auth.fetchUser()
     } catch (error) {
       console.log('==== ~ setCurrentBadge ~ error', error)
     }
@@ -181,8 +175,8 @@ const UserItemSelectionModal: FC<MyModalProps> = ({
               {currentTab === 0 ? (
                 <AvatarList
                   avatarItems={avatarItems}
-                  itemIdChosen={itemIdChosen}
-                  setChoose={setChoose}
+                  itemIdChosen={avatarItemIdChosen}
+                  setChoose={setAvatarItemIdChoose}
                 />
               ) : currentTab === 1 ? (
                 <BadgeList
@@ -192,7 +186,7 @@ const UserItemSelectionModal: FC<MyModalProps> = ({
               ) : currentTab === 2 ? (
                 <BackgroundList
                   backgroundItems={backgroundItems}
-                  itemIdChosen={itemIdChosen}
+                  itemIdChosen={avatarItemIdChosen}
                 />
               ) : null}
             </div>

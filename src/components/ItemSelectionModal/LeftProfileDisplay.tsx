@@ -17,7 +17,7 @@ export const LeftProfileDisplay: FC<{
         className="rounded-circle"
       />
       <div className="pt-2 fw-medium fs-32px">{displayName}</div>
-      <div className="mt-2 mb-1 fw-medium fs-16px text-muted text-center">
+      <div className="mt-2 mb-1 fw-medium fs-18px text-muted text-center">
         {currentBadge?.title}
       </div>
       <div>
@@ -25,8 +25,8 @@ export const LeftProfileDisplay: FC<{
           <Image
             alt="badge"
             src={currentBadge?.picture}
-            width={32}
-            height={32}
+            width={48}
+            height={48}
             className="rounded-circle"
           />
         ) : null}
