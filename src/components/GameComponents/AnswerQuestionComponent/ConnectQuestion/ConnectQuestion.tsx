@@ -145,7 +145,7 @@ const ConnectQuestion: FC<ConnectQuestionProps> = ({
 
     for (let i = 0; i < displayAnswer.length; i++) {
       // console.log("=>(ConnectQuestion.tsx:91) dp cr", displayAnswer[i].id, orderedCorrectAnswer[i].id);
-      if ((displayAnswer[i].id == -1 || displayAnswer[i].id != orderedCorrectAnswer[i].id)
+      if ((displayAnswer[i].id == -1 || displayAnswer[i].answer != orderedCorrectAnswer[i].answer)
         && orderedCorrectAnswer[i].type != "21PLHDR") {
         // console.log("=>(ConnectQuestion.tsx:92) wrong", orderedCorrectAnswer[i].answer);
         wrongAnswerArray.push(orderedCorrectAnswer[i])

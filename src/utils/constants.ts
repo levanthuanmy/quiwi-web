@@ -87,7 +87,10 @@ export const SOUND_EFFECT: Record<string, string> = {
   END_GAME: '/sounds/end-game.mp3',
   CONGRATULATION_RANKING: '/sounds/congratulations-winner.mp3',
   COMPLETE_LEVEL: '/sounds/complete-level.wav',
-  RECHARGED: '/sounds/recharing.wav'
+  RECHARGED: '/sounds/recharging.wav',
+  READY: '/sounds/ready.mp3',
+  BELL: '/sounds/ring_bell.mp3',
+  NEWSUBMISSION: '/sounds/new-submission.mp3'
 }
 
 export const TIMEOUT_OPTIONS = [1, 2, 5, 10, 15, 30, 60, 120, 180]

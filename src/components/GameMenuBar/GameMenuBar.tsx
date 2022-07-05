@@ -9,6 +9,8 @@ import styles from './GameMenuBar.module.css'
 import { useToasts } from 'react-toast-notifications'
 import _ from 'lodash'
 import PlayerLobbyList from "../PlayerLobbyList/PlayerLobbyList";
+import {useSound} from "../../hooks/useSound/useSound";
+import {SOUND_EFFECT} from "../../utils/constants";
 
 type GameMenuBarProps = {
   gameSession: TStartQuizResponse
@@ -24,6 +26,7 @@ const GameMenuBar: FC<GameMenuBarProps> = ({
   const [chatContent, setChatContent] = useState<MessageProps[]>([])
   const socket = SocketManager().socketOf('GAMES')
   const { addToast } = useToasts()
+  const sound = useSound()
   const receivedMessage = (message: MessageProps) => {
     if (message) {
       setChatContent([...chatContent, message])
@@ -31,6 +34,7 @@ const GameMenuBar: FC<GameMenuBarProps> = ({
   }
   socket?.off('chat')
   socket?.on('chat', (data: MessageProps) => {
+    sound.playSound(SOUND_EFFECT['NOTIFICATION'])
     receivedMessage(data)
     addToast(
       `${

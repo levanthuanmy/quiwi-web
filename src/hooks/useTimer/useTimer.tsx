@@ -82,7 +82,6 @@ export const TimerProvider = memo(({ children }: { children?: ReactNode }) => {
   }
 
   const startCounting = (duration: number) => {
-    console.log('=>(useTimer) duration', duration)
     if (duration > 0) {
       let endDate = new Date()
       endDate.setSeconds(endDate.getSeconds() + duration)

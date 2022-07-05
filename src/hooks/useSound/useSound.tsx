@@ -23,7 +23,8 @@ export class SoundManager {
   gameSound = new Howl({
     src: SOUND_EFFECT['GAME_PLAYING_2'],
     html5: true,
-    loop: true
+    loop: true,
+    volume: 0.2,
   });
 
   private playGameSound() {

@@ -38,6 +38,9 @@ const PollAnswerSection: FC<PollAnswerSectionProps> = ({
     const answers: Set<number> = answerSet
     answers.has(answerId) ? answers.delete(answerId) : answers.add(answerId)
     setAnswerSet(new Set(answers))
+    if (!isSubmitted && !isHost) {
+      socketSubmit(answerSet)
+    }
   }
 
   function getIndexFor(answerId: number): number {

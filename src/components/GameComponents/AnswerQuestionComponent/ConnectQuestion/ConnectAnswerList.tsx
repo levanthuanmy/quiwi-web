@@ -30,9 +30,10 @@ export const ConnectAnswerList: FC<TextAnswerListProps> = (props: TextAnswerList
   function getColorWithDecor(idx: number, option: TAnswer, showLineThrough: boolean): string {
     if (option.type == "21PLHDR") return '#00000000'
     let highlight = !(props.disabledOption && props.disabledOption.has(option))
-    if (props.userSelectedOptions && props.userSelectedOptions[idx] != option)
+    if (props.userSelectedOptions && props.userSelectedOptions[idx].answer != option.answer)
       highlight = false
-    if (showLineThrough && (props.userSelectedOptions
+    if (showLineThrough
+      && (props.userSelectedOptions
       && props.userSelectedOptions[idx]
       && (props.userSelectedOptions[idx].id ?? -1) >= 0))
       return "#f4f0e7"
