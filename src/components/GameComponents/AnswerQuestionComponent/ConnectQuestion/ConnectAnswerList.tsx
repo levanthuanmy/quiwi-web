@@ -63,7 +63,7 @@ export const ConnectAnswerList: FC<TextAnswerListProps> = (props: TextAnswerList
         props.options.map((option, idx) => {
 
           function showLineThrough(): boolean {
-            return (props.showAnswer && props.displayDecor && props.userSelectedOptions && props.userSelectedOptions[idx] != option) ?? false;
+            return (props.showAnswer && props.displayDecor && props.userSelectedOptions && props.userSelectedOptions[idx].answer != option.answer) ?? false;
           }
 
           return <Col

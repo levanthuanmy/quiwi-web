@@ -27,7 +27,7 @@ const ItemPurchaseModal: FC<ItemPurchaseProps> = ({
   setQuantity,
   item,
 }) => {
-  const { playSound } = useSound()
+  const sound = useSound()
   return (
     <MyModal
       show={showModal}
@@ -84,7 +84,7 @@ const ItemPurchaseModal: FC<ItemPurchaseProps> = ({
                       variant="outline-secondary"
                       onClick={() => {
                         if (quantity > 1) {
-                          playSound(SOUND_EFFECT['BUY_BUTTON_SOUND_CLICK'])
+                          sound.playSound(SOUND_EFFECT['BUY_BUTTON_SOUND_CLICK'])
                           setQuantity(quantity - 1)
                         }
                       }}
@@ -103,7 +103,7 @@ const ItemPurchaseModal: FC<ItemPurchaseProps> = ({
                       variant="outline-secondary"
                       onClick={() => {
                         if (quantity < 10) {
-                          playSound(SOUND_EFFECT['BUY_BUTTON_SOUND_CLICK'])
+                          sound.playSound(SOUND_EFFECT['BUY_BUTTON_SOUND_CLICK'])
                           setQuantity(quantity + 1)
                         }
                       }}

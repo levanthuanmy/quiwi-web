@@ -62,7 +62,7 @@ const ItemShopV2: FC<ItemShopProps> = ({ item, userBuyItem }) => {
           <Button
             className={styles.btnBuy}
             onClick={() => {
-              playSound(SOUND_EFFECT['BUY_BUTTON_SOUND_CLICK'])
+              sound.playSound(SOUND_EFFECT['BUY_BUTTON_SOUND_CLICK'])
               setShowConfirmationModal(true)
             }}
           >
