@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react'
 import { Col, Container, Image, Row } from 'react-bootstrap'
 import DashboardLayout from '../../components/DashboardLayout/DashboardLayout'
 import ItemShopV2 from '../../components/ItemShopV2/ItemShopV2'
+import LoadingFullScreen from '../../components/LoadingFullScreen/Loading'
 import { MyPagination } from '../../components/MyPagination/MyPagination'
 import MyTabBar from '../../components/MyTabBar/MyTabBar'
 import SearchBar from '../../components/SearchBar/SearchBar'
@@ -30,9 +31,7 @@ const ItemPage: NextPage = () => {
   const pageSize = 8
   const router = useRouter()
   const { q } = router.query
-  const stateCoinChange = {
-    value: 150,
-  }
+
   const [pageIndex, setPageIndex] = useState(1)
 
   const handlePageClick = (selected: { selected: number }) => {
@@ -187,21 +186,27 @@ const ItemPage: NextPage = () => {
             />
           </Row>
           <Row className="">
-            {itemsResponse?.items.map((item, idx) => (
-              <Col key={idx} className="p-3" xs={12} md={6} xl={3}>
-                <ItemShopV2 item={item} userBuyItem={userBuyItem} />
-              </Col>
-            ))}
+            {itemCategoriesResponse && itemsResponse ? (
+              itemsResponse?.items.map((item, idx) => (
+                <Col key={idx} className="p-3" xs={6} md={4} lg={3}>
+                  <ItemShopV2 item={item} userBuyItem={userBuyItem} />
+                </Col>
+              ))
+            ) : (
+              <LoadingFullScreen />
+            )}
           </Row>
 
-          <Row className="mt-3">
-            <Col style={{ display: 'flex', justifyContent: 'center' }}>
-              <MyPagination
-                handlePageClick={handlePageClick}
-                totalPages={itemsResponse?.totalPages ?? 0}
-              />
-            </Col>
-          </Row>
+          {itemsResponse?.totalPages || 0 > 0 ? (
+            <Row className="mt-3">
+              <Col style={{ display: 'flex', justifyContent: 'center' }}>
+                <MyPagination
+                  handlePageClick={handlePageClick}
+                  totalPages={itemsResponse?.totalPages ?? 0}
+                />
+              </Col>
+            </Row>
+          ) : null}
 
           <WheelFortuneModal
             onHide={() => {

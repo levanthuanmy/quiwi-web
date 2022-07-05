@@ -1,12 +1,12 @@
-import {FC, useState} from 'react'
-import {Button, Card, Image, Modal} from 'react-bootstrap'
-import {get} from '../../libs/api'
-import {TItem} from '../../types/types'
-import {ItemPurchaseModal} from '../ItemPurchaseModal/ItemPurchaseModal'
+import { FC, useState } from 'react'
+import { Button, Card, Image, Modal } from 'react-bootstrap'
+import { useSound } from '../../hooks/useSound/useSound'
+import { get } from '../../libs/api'
+import { TItem } from '../../types/types'
+import { SOUND_EFFECT } from '../../utils/constants'
+import { ItemPurchaseModal } from '../ItemPurchaseModal/ItemPurchaseModal'
 import MyModal from '../MyModal/MyModal'
 import styles from './ItemShopV2.module.css'
-import {SOUND_EFFECT} from '../../utils/constants'
-import {useSound} from "../../hooks/useSound/useSound";
 
 type ItemShopProps = {
   item: TItem
@@ -38,11 +38,27 @@ const ItemShopV2: FC<ItemShopProps> = ({ item, userBuyItem }) => {
   return (
     <Card className={styles.card}>
       <Card.Header className={styles.card__thumb}>
-        <Image alt="item-avatar" src={item.avatar} />
+        <Image loading="lazy" alt="item-avatar" src={item.avatar} />
       </Card.Header>
       <div className={styles.card__body}>
         <div className={styles.card__category}>{item.itemCategory.name}</div>
-        <h2 className={styles.card__title}>{item.name}</h2>
+        <h6 className={styles.card__title}>{item.name}</h6>
+        <p>
+          Loại:{' '}
+          <span
+            className={
+              item.type === 'RARE'
+                ? styles.imageTypeRare
+                : item.type === 'EPIC'
+                ? styles.imageTypeEpic
+                : item.type === 'LEGENDARY'
+                ? styles.imageTypeLegendary
+                : styles.imageTypeNormal
+            }
+          >
+            {item.type}
+          </span>
+        </p>
         <div className={styles.card__subtitle}>
           <Image
             alt="coin"
@@ -69,12 +85,6 @@ const ItemShopV2: FC<ItemShopProps> = ({ item, userBuyItem }) => {
             MUA NGAY
           </Button>
         )}
-        {/* <Button
-          className={styles.btnBuy}
-          onClick={() => setShowConfirmationModal(true)}
-        >
-          MUA NGAY
-        </Button> */}
       </footer>
 
       <ItemPurchaseModal

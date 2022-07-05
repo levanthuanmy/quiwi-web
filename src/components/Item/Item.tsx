@@ -2,7 +2,6 @@ import classNames from 'classnames'
 import { FC, useState } from 'react'
 import { Image, OverlayTrigger, Tooltip } from 'react-bootstrap'
 import ItemDetail from '../ItemDetail/ItemDetail'
-import ItemToolTip from '../ItemToolTip/ItemToolTip'
 import styles from './Item.module.css'
 
 type IItem = {
@@ -15,8 +14,6 @@ type IItem = {
 }
 
 const Item: FC<IItem> = (props) => {
-  const [isCollapse, setIsCollapse] = useState(false)
-
   return (
     <div className={classNames('', styles.layoutImage)}>
       <OverlayTrigger
