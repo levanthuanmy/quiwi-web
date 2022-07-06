@@ -40,7 +40,7 @@ const colors: string[] = [
   '#B89A61',
   '#AB89A6',
 ]
-const chatEmoji = new Set<string>(["/haha","/angry","/like","/love","/sad","/wow"])
+const chatEmoji = new Set<string>(["/haha","/angry","/like","/love","/sad","/wow","/super-angry"])
 const Message: FC<MessageProps> = (props) => {
   const avatar =
     _.get(props, 'user.avatar', _.get(props, 'player.user.avatar')) ||
