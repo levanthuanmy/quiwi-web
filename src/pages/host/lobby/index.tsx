@@ -1,11 +1,11 @@
-import {NextPage} from 'next'
-import {useRouter} from 'next/router'
-import {useEffect, useState} from 'react'
+import { NextPage } from 'next'
+import { useRouter } from 'next/router'
+import { useEffect, useState } from 'react'
 import useSWR from 'swr'
 import GameModeScreen from '../../../components/GameModeScreen/GameModeScreen'
 import LobbyScreen from '../../../components/LobbyScreen/LobbyScreen'
-import {useLocalStorage} from '../../../hooks/useLocalStorage/useLocalStorage'
-import {get, post} from '../../../libs/api'
+import { useLocalStorage } from '../../../hooks/useLocalStorage/useLocalStorage'
+import { get, post } from '../../../libs/api'
 import {
   TApiResponse,
   TGameModeEnum,
@@ -13,17 +13,18 @@ import {
   TQuiz,
   TStartQuizRequest,
   TStartQuizResponse,
-  TUser
+  TUser,
 } from '../../../types/types'
-import {JsonParse} from '../../../utils/helper'
-import {useGameSession} from "../../../hooks/useGameSession/useGameSession";
-import {useSound} from "../../../hooks/useSound/useSound";
+import { JsonParse } from '../../../utils/helper'
+import { useGameSession } from '../../../hooks/useGameSession/useGameSession'
+import { useSound } from '../../../hooks/useSound/useSound'
 
 const HostPage: NextPage = () => {
   const router = useRouter()
-  const {quizId} = router.query
+  const { quizId } = router.query
   const [lsUser] = useLocalStorage('user', '')
-  const {gameSession, saveGameSession, connectGameSocket, gameSocket} = useGameSession()
+  const { gameSession, saveGameSession, connectGameSocket, gameSocket } =
+    useGameSession()
   const [isShowGameModeScreen, setIsShowGameModeScreen] =
     useState<boolean>(true)
   const [invitationCode, setInvitationCode] = useState<string>()
@@ -35,7 +36,7 @@ const HostPage: NextPage = () => {
     isValidating: isFetchingQuiz,
     error: fetchingQuizError,
   } = useSWR<TApiResponse<TQuiz>>(
-    quizId ? [`/api/quizzes/quiz/${quizId}`] : null,
+    quizId ? [`/api/quizzes/quiz/${quizId}`, true] : null,
     get
   )
   useEffect(() => {
@@ -64,9 +65,7 @@ const HostPage: NextPage = () => {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    gameSession
-  ])
+  }, [gameSession])
 
   useEffect(() => {
     if (gameModeEnum && isShowGameModeScreen) {
@@ -98,7 +97,7 @@ const HostPage: NextPage = () => {
         socketId: gameSocket()!.id,
         data: msg,
       }
-      console.log("=>Màn lobby socket.id", gameSocket()?.id);
+      console.log('=>Màn lobby socket.id', gameSocket()?.id)
       const response: TApiResponse<TStartQuizResponse> = await post(
         'api/games/start-quiz',
         {},
@@ -116,7 +115,7 @@ const HostPage: NextPage = () => {
 
   return (
     <>
-      {isShowGameModeScreen && <GameModeScreen setGameMode={setGameModeEnum}/>}
+      {isShowGameModeScreen && <GameModeScreen setGameMode={setGameModeEnum} />}
       {gameSession && invitationCode && (
         <LobbyScreen
           invitationCode={invitationCode}
