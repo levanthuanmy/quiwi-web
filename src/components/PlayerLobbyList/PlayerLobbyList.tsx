@@ -30,11 +30,6 @@ const PlayerLobbyList: FC<PlayerLobbyListProps> = (props: PlayerLobbyListProps) 
   const [isKicked, setIsKicked] = useState<boolean>(false)
 
   useEffect(() => {
-    sound.playSound(SOUND_EFFECT['INCORRECT_BACKGROUND'])
-    console.log("=>(PlayerLobbyItem.tsx:37) isKicked", isKicked);
-  }, [isKicked]);
-
-  useEffect(() => {
     game.gameSkOn('player-kicked', (data) => {
       sound.playSound(SOUND_EFFECT['INCORRECT_BACKGROUND'])
       setIsKicked(true)

@@ -40,6 +40,7 @@ const PlayerLobbyItem: FC<PlayerLobbyItemProps> = (props: PlayerLobbyItemProps) 
               nickname: props.displayName,
               invitationCode: game.gameSession.invitationCode
             }
+            setIsKick(false)
             game.gameSkEmit("kick-player", msg)
           }
         }}
