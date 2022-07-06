@@ -4,7 +4,7 @@ import classNames from 'classnames'
 import _ from 'lodash'
 import Head from 'next/head'
 import {useRouter} from 'next/router'
-import {FC, useEffect, useState} from 'react'
+import React, {FC, useEffect, useState} from 'react'
 import {Container, Image, Modal} from 'react-bootstrap'
 import QRCode from 'react-qr-code'
 import {useToasts} from 'react-toast-notifications'
@@ -22,6 +22,7 @@ import PlayerLobbyList from '../PlayerLobbyList/PlayerLobbyList'
 import BackgroundPicker from './BackgroundPicker/BackgroundPicker'
 import styles from './LobbyScreen.module.css'
 import MyModal from "../MyModal/MyModal";
+import {useSound} from "../../hooks/useSound/useSound";
 
 type LobbyScreenProps = {
   invitationCode: string
@@ -47,6 +48,8 @@ const LobbyScreen: FC<LobbyScreenProps> = ({invitationCode, isHost}) => {
   const [currentBackground, setCurrentBackground] = useState<string>(lsBg)
   const authContext = useAuth()
   const user = authContext.getUser()
+  const sound = useSound()
+  const [isMute, setIsMute] = useState(sound.isMute);
 
   useEffect(() => {
     if (!gameSession) return
@@ -247,6 +250,18 @@ const LobbyScreen: FC<LobbyScreenProps> = ({invitationCode, isHost}) => {
                     </span>
                   )}
                 </div>
+              </div>
+              <div
+                  className={`flex-grow-1 d-flex justify-content-end`}
+              >
+                <i
+                  className={`text-end bg-white rounded-10px px-2 bi ${!isMute ? "bi-volume-up-fill" : "bi-volume-mute-fill"}  text-secondary fs-1 cursor-pointer`}
+                  onClick={() => {
+                    sound.turnSound(!sound.isMute)
+                    setIsMute(sound.isMute)
+                  }}
+                ></i>
+
               </div>
             </div>
 

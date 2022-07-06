@@ -82,7 +82,7 @@ const PlayerLobbyItem: FC<PlayerLobbyItemProps> = (props: PlayerLobbyItemProps) 
         <span className="px-1 text-white">{props.displayName}</span>
         {!props.isHost && game.isHost &&
             <i
-                className="bi bi-x-circle-fill text-danger fs-4 cursor-pointer"
+                className="flex-grow-1 text-end bi bi-x-circle-fill text-danger fs-4 cursor-pointer"
                 onClick={() => {
                   setIsKick(true)
                 }}
