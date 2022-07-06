@@ -11,7 +11,7 @@ type IItem = {
   type: string
   price: number
   quantity: number
-  onClick: () => void
+  onClick?: () => void
 }
 
 const Item: FC<IItem> = (props) => {
