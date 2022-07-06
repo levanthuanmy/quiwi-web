@@ -33,14 +33,14 @@ const EmojiBar: FC<{className?: string | undefined}> = ({className}) => {
 
         {/* </div> */}
       </div>
-      <div className={styles.separator} />
-      <MoreButton
-        iconClassName="bi bi-chevron-double-up"
-        className={classNames('text-white fw-medium', styles.emojiViewMore)}
-        title="Xem thêm"
-      >
-        Xem thêm
-      </MoreButton>
+      {/*<div className={styles.separator} />*/}
+      {/*<MoreButton*/}
+      {/*  iconClassName="bi bi-chevron-double-up"*/}
+      {/*  className={classNames('text-white fw-medium', styles.emojiViewMore)}*/}
+      {/*  title="Xem thêm"*/}
+      {/*>*/}
+      {/*  Xem thêm*/}
+      {/*</MoreButton>*/}
     </div>
   )
 }

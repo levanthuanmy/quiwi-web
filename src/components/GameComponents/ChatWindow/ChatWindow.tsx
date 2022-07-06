@@ -11,6 +11,7 @@ import styles from './ChatWindow.module.css'
 import {Message, MessageProps, SendMessageProps} from './Message'
 import cn from "classnames";
 import {useGameSession} from "../../../hooks/useGameSession/useGameSession";
+import {FacebookSelector, GithubCounter, ReactionBarSelector} from '@charkour/react-reactions';
 
 const ChatWindow: FC<{
   gameSession: TStartQuizResponse
@@ -105,6 +106,22 @@ const ChatWindow: FC<{
           <br></br>
         </div>
       </div>
+      <div
+        className={"d-flex justify-content-center"}
+      >
+        <FacebookSelector
+          iconSize={50}
+          onSelect={(e => {
+            const path =  `/` + `${e}`
+            sendMessage({
+              message:path,
+              invitationCode: gameSession.invitationCode,
+            })
+          })}
+        />
+
+      </div>
+
       <div className={styles.chatInput}>
         {!isDisabled && <MyInput
           disabled={isDisabled}

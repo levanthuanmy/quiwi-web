@@ -40,7 +40,7 @@ const colors: string[] = [
   '#B89A61',
   '#AB89A6',
 ]
-
+const chatEmoji = new Set<string>(["/haha","/angry","/like","/love","/sad","/wow"])
 const Message: FC<MessageProps> = (props) => {
   const avatar =
     _.get(props, 'user.avatar', _.get(props, 'player.user.avatar')) ||
@@ -114,15 +114,25 @@ const Message: FC<MessageProps> = (props) => {
 
           {/* nội dung chat */}
           <div className={cn("d-flex ", {"flex-row-reverse": props.isCurrentUser})}>
-            <div
-              className={
-                `text-white text-start flex-grow-0 ` +
-                styles.chatContent
-              }
-              style={{backgroundColor: getColorForString(hash(nickname))}}
-            >
-              {props.message ?? `Tin nhắn lỗi!`}
-            </div>
+            {chatEmoji.has(props.message || "") ?
+              <Image
+                src={`/assets/chatEmoji${props.message}.png`}
+                width={80}
+                height={80}
+                alt="avatar"
+                // className={styles.}
+              />
+              :
+              <div
+                className={
+                  `text-white text-start flex-grow-0 ` +
+                  styles.chatContent
+                }
+                style={{backgroundColor: props.isCurrentUser ? getColorForString(hash(nickname)) : "#7a7979"}}
+              >
+                {props.message ?? `Tin nhắn lỗi!`}
+              </div>
+            }
             <div className="m-2 d-flex flex-column align-items-center justify-content-center">
               <div className={"h-100 d-flex flex-column align-items-center justify-content-center"}>
                 {props.voteFromHost === 1 ? (

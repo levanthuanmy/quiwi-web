@@ -92,6 +92,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
   useEffect(() => {
     handleSocket()
     resetState()
+    console.log("=>(AnswerBoard.tsx:95) resetState");
   }, [])
 
   useEffect(() => {
