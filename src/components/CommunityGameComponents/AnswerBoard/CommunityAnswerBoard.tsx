@@ -46,10 +46,9 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
 
   const exitContext = useContext(ExitContext)
   const timer = useTimer()
+  const DEFAULT_NEXT_TIMER = 3
 
-  const [lsUser] = useLocalStorage('user', '')
   const [lsGameSessionPlayer] = useLocalStorage('game-session-player', '')
-  const [gameSessionPlayer, setGameSessionPlayer] = useState<TPlayer>()
   const [currentQID, setCurrentQID] = useState<number>(-1)
   const [quizLength, setQuizLength] = useState<number>(0)
 
@@ -58,7 +57,8 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
   const [currentQuestion, setCurrentQuestion] = useState<TQuestion | null>(null)
 
   const [isShowNext, setIsShowNext] = useState<boolean>(false)
-  const [autoNextCountDown, setAutoNextCountDown] = useState<number>(5)
+  const [autoNextCountDown, setAutoNextCountDown] =
+    useState<number>(DEFAULT_NEXT_TIMER)
   const [isShowEndGame, setIsShowEndGame] = useState<boolean>(false)
 
   const [autoNext, setAutoNext] = useState<boolean>(false)
@@ -80,12 +80,6 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
     else setLoading(null)
     console.log('=>(CommunityAnswerBoard.tsx:77) goilao')
   }, [])
-
-  useEffect(() => {
-    if (lsGameSessionPlayer?.length) {
-      setGameSessionPlayer(JsonParse(lsGameSessionPlayer))
-    }
-  }, [lsGameSessionPlayer])
 
   useEffect(() => {
     if (!gameSession) return
@@ -137,9 +131,9 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
       if (currentQID >= quizLength - 1) {
         setIsShowHostControl(true)
       } else if (autoNext) {
-        for (let i = 0; i <= 5; i++) {
+        for (let i = 0; i <= DEFAULT_NEXT_TIMER; i++) {
           setTimeout(() => {
-            setAutoNextCountDown(5 - i)
+            setAutoNextCountDown(DEFAULT_NEXT_TIMER - i)
           }, i * 1000)
         }
         intervalRef.current = setInterval(() => {
@@ -160,7 +154,7 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
     gameSkOnce('game-started', (data) => {
       _numSubmission.current = 0
       setNumSubmission(_numSubmission.current)
-      setAutoNextCountDown(5)
+      setAutoNextCountDown(DEFAULT_NEXT_TIMER)
       setIsNextEmitted(false)
       timer.startCounting(data.question.duration ?? 0)
       setIsShowHostControl(false)
@@ -170,7 +164,7 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
     gameSkOn('next-question', (data) => {
       _numSubmission.current = 0
       setNumSubmission(_numSubmission.current)
-      setAutoNextCountDown(5)
+      setAutoNextCountDown(DEFAULT_NEXT_TIMER)
       setIsNextEmitted(false)
       timer.startCounting(data.question.duration ?? 0)
       setIsShowHostControl(false)
@@ -189,10 +183,10 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
       if (data?.player && typeof window !== 'undefined') {
         const curStreak = data.player.currentStreak ?? 0
         if (curStreak > 0) {
-          sound?.playRandomCorrectAnswerSound();
+          sound?.playRandomCorrectAnswerSound()
         } else {
-          sound?.playSound(SOUND_EFFECT['INCORRECT_BACKGROUND']);
-          sound?.playSound(SOUND_EFFECT['INCORRECT_ANSWER']);
+          sound?.playSound(SOUND_EFFECT['INCORRECT_BACKGROUND'])
+          sound?.playSound(SOUND_EFFECT['INCORRECT_ANSWER'])
         }
         localStorage.setItem(
           'game-session-player',
