@@ -135,21 +135,6 @@ const GamePage: NextPage = () => {
       params: {quizId: gameSession?.quizId, invitationCode: gameSession?.invitationCode},
     })
   }, [])
-  //
-  // useEffect(() => {
-  //   router.beforePopState(({as}) => {
-  //     if (as !== router.asPath) {
-  //       // Will run when leaving the current page; on back/forward actions
-  //       // Add your logic here, like toggling the modal state
-  //       sound.stop();
-  //     }
-  //     return true;
-  //   });
-  //
-  //   return () => {
-  //     router.beforePopState(() => true);
-  //   };
-  // }, [router]);
 
   const [exitModal, setExitModal] = useState(false)
   return (
@@ -215,8 +200,8 @@ const GamePage: NextPage = () => {
         <FAB
           actions={[
             ...fabs,
-            !fromMedium && isHost() ? hostAction : null,
-            !endGameData && isHost() ? endGameAction : exitAction,
+            !fromMedium && isHost ? hostAction : null,
+            !endGameData && isHost ? endGameAction : exitAction,
           ]}
         />
       </div>

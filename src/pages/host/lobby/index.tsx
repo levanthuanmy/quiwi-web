@@ -40,7 +40,7 @@ const HostPage: NextPage = () => {
     get
   )
   useEffect(() => {
-    // mới vô màn lobby thì connect trước để có socket id gửi lên
+    // mới vô màn lobby thì connect trước để có socket id gửi Zlên
     connectGameSocket()
     sound?.setGameSoundOn(true)
   }, [])

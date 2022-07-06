@@ -8,25 +8,7 @@ import {TApiResponse, TQuiz} from '../../types/types'
 import {useGameSession} from "../../hooks/useGameSession/useGameSession";
 
 const LobbyPage: NextPage = () => {
-  const router = useRouter()
-  const {quizId} = router.query
-  const [invitationCode] = useState('')
-  const {gameSession, saveGameSession, clearGameSession} = useGameSession()
-
-  const {
-    data: quizResponse,
-    isValidating: isFetchingQuiz,
-    error: fetchingQuizError,
-  } = useSWR<TApiResponse<TQuiz>>([`/api/quizzes/quiz/${quizId}`], get)
-
-  // Kiểm tra Quiz tồn tại hay không
-  useEffect(() => {
-    if ((!isFetchingQuiz && !quizResponse?.response) || fetchingQuizError) {
-      alert('Không tìm thấy quiz')
-      router.back()
-    }
-  }, [fetchingQuizError, isFetchingQuiz, quizResponse?.response, router])
-
+  const {gameSession} = useGameSession()
   return (
     <>
       {gameSession && (

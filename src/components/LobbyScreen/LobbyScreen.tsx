@@ -187,6 +187,7 @@ const LobbyScreen: FC<LobbyScreenProps> = ({invitationCode, isHost}) => {
             isHost={true}
             displayName={'Chủ phòng: ' + hostName}
             bgColor={'#009883'}
+            kickable={false}
           />
         </div>
       </>

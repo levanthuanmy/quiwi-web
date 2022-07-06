@@ -9,7 +9,7 @@ import {singletonHook} from "react-singleton-hook";
 
 const init = {
   gameSkOnce: (ev: string, listener: (...args: any[]) => void) => null,
-  isHost: () => false,
+  isHost: false,
   getQuestionWithID: (qid: number) => null,
   gameSkOn: (ev: string, listener: (...args: any[]) => void) => null,
   connectGameSocket: () => null,
@@ -23,7 +23,7 @@ const init = {
 
 export const useGameSession = (): {
   gameSkOnce: (ev: string, listener: (...args: any[]) => void) => void;
-  isHost: () => boolean;
+  isHost: boolean;
   getQuestionWithID: (qid: number) => (TQuestion | null);
   gameSkOn: (ev: string, listener: (...args: any[]) => void) => void;
   connectGameSocket: () => void;
@@ -37,7 +37,7 @@ export const useGameSession = (): {
   const sk = SocketManager()
   const soundManager = useSound()
   const [lsUser] = useLocalStorage('user', '')
-  let _isHost: boolean | null = null
+  const [isHost, setIsHost] = useState<boolean>(false)
   const [lsGameSession, setLsGameSession] = useLocalStorage('game-session', '')
   const [gameSession, setGameSession] = useState<TStartQuizResponse | null>(
     null
@@ -129,16 +129,13 @@ export const useGameSession = (): {
     return gameSession?.quiz?.questions[qid] || null
   }
 
-  const isHost = (): boolean => {
-    if (_isHost == null) {
-      if (!gameSession) _isHost = false
-      else {
-        const user: TUser = JsonParse(lsUser)
-        _isHost = (user.id === gameSession.hostId)
-      }
+  useEffect(() => {
+    if (!gameSession) setIsHost(false)
+    else {
+      const user: TUser = JsonParse(lsUser)
+      setIsHost(user.id === gameSession.hostId)
     }
-    return _isHost
-  }
+  }, [gameSession, lsUser]);
 
   return (
     {

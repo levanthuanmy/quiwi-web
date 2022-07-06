@@ -115,7 +115,7 @@ const EndGameBoard: FC<EndGameBoardProps> = ({ className }) => {
         </div>
         <div className="d-flex align-items-end">{renderList()}</div>
 
-        {!isHost() ? (
+        {!isHost ? (
           !isVote ? (
             <div className="bg-light p-3 px-4 rounded-10px border text-center">
               <div className="h2">Đánh giá quiz</div>

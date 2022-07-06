@@ -1,6 +1,11 @@
-import React, {FC} from 'react'
+import React, {FC, useEffect, useState} from 'react'
 import {TPlayer} from '../../types/types'
 import PlayerLobbyItem from '../PlayerLobbyItem/PlayerLobbyItem'
+import MyModal from "../MyModal/MyModal";
+import {SOUND_EFFECT} from "../../utils/constants";
+import {useGameSession} from "../../hooks/useGameSession/useGameSession";
+import {useSound} from "../../hooks/useSound/useSound";
+import router from "next/router";
 
 type PlayerLobbyListProps = {
   className?: string
@@ -19,6 +24,49 @@ const PlayerLobbyList: FC<PlayerLobbyListProps> = (props: PlayerLobbyListProps) 
     '#B89A61',
     '#AB89A6',
   ]
+
+  const game = useGameSession()
+  const sound = useSound()
+  const [isKicked, setIsKicked] = useState<boolean>(false)
+
+  useEffect(() => {
+    sound.playSound(SOUND_EFFECT['INCORRECT_BACKGROUND'])
+    console.log("=>(PlayerLobbyItem.tsx:37) isKicked", isKicked);
+  }, [isKicked]);
+
+  useEffect(() => {
+    game.gameSkOn('player-kicked', (data) => {
+      sound.playSound(SOUND_EFFECT['INCORRECT_BACKGROUND'])
+      setIsKicked(true)
+      console.log("=>(PlayerLobbyItem.tsx:36) isKicked", isKicked);
+    })
+  }, []);
+
+  function getKickedModal() {
+    return (
+      <MyModal
+        show={isKicked}
+        onHide={() => (setIsKicked(true))}
+        activeButtonTitle="ĐÃ HIỂU"
+        activeButtonCallback={() => {
+          game.clearGameSession()
+          router.push('/my-lib')
+        }}
+      >
+        <div className="text-center h3 fw-bolder text-danger">Bạn đã bị kick!</div>
+        <div className="text-center fw-bold">
+          <div className="text-secondary fs-24x">
+              <span className="fw-bolder fs-24x  text-primary">
+{'Chủ phòng đã kick bạn'}
+                </span>
+          </div>
+          <div className="text-secondary fs-24x text-warning">
+            Bạn sẽ mất phần thưởng và lịch sử tham dự quiz này do bị kick khỏi phòng
+          </div>
+        </div>
+      </MyModal>
+    )
+  }
 
   const getColorForString = (id: number) => {
     return colors[id % colors.length]
@@ -45,9 +93,12 @@ const PlayerLobbyList: FC<PlayerLobbyListProps> = (props: PlayerLobbyListProps) 
             key={idx}
             avatar={player.user?.avatar}
             displayName={player.nickname}
-            bgColor={getColorForString(hash(player.nickname))}/>
+            bgColor={getColorForString(hash(player.nickname))}
+            kickable={true}
+          />
         })
       }
+      {getKickedModal()}
     </>
   )
 }

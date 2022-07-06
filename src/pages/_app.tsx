@@ -99,7 +99,6 @@ function MyApp({ Component, pageProps }: AppProps) {
               <SignInModal />
             </ToastProvider>
           </GoogleOAuthProvider>
-          ;
         </AuthProvider>
       </DndProvider>
     </SSRProvider>
