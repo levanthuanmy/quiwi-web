@@ -5,7 +5,7 @@
     /*bottom: 0;*/
     top: calc(16px + 52px + 8px);
     height: calc(100vh - 2 * (16px + 52px + 8px));
-    z-index: 999;
+    /* z-index: 999; */
     border-radius: 10px;
     width: 512px;
 }

@@ -120,3 +120,31 @@
 .z-neg {
   z-index: -1;
 }
+
+/* FLYING ANIMATION !!!!!!!!!!!!!!!!!!!!! */
+#balloon-container {
+  height: 95vh;
+  width: 95vw;
+  box-sizing: border-box;
+  display: flex;
+  flex-wrap: wrap;
+  overflow: hidden;
+}
+
+.balloon {
+  height: 105px;
+  width: 105px;
+  border-radius: 50%;
+  position: relative;
+  overflow: hidden;
+}
+
+@keyframes float {
+  from {
+    transform: translateY(120vh);
+  }
+  to {
+    transform: translateY(-100vh);
+  }
+}
+/* !!!!!!!!!!!!!!!!!!!! FLYING ANIMATION */

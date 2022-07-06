@@ -1,35 +1,37 @@
 import classNames from 'classnames'
-import {NextPage} from 'next'
+import _ from 'lodash'
+import { NextPage } from 'next'
 import router from 'next/router'
-import React, {Dispatch, SetStateAction, useEffect, useState,} from 'react'
-import {Fade} from 'react-bootstrap'
+import React, { Dispatch, SetStateAction, useEffect, useState } from 'react'
+import { Fade } from 'react-bootstrap'
 import AnswerBoard from '../../../components/GameComponents/AnswerBoard/AnswerBoard'
 import EndGameBoard from '../../../components/GameComponents/EndGameBoard/EndGameBoard'
-import {FAB, FABAction} from '../../../components/GameComponents/FAB/FAB'
+import { FAB, FABAction } from '../../../components/GameComponents/FAB/FAB'
+import FlyingAnimation from '../../../components/GameComponents/FlyingAnimation/FlyingAnimation'
 import GameMenuBar from '../../../components/GameMenuBar/GameMenuBar'
 import MyModal from '../../../components/MyModal/MyModal'
 import UsingItemInGame from '../../../components/UsingItemInGame/UsingItemInGame'
-import {useGameSession} from '../../../hooks/useGameSession/useGameSession'
+import useExtendQueue from '../../../hooks/useExtendQueue'
+import { useGameSession } from '../../../hooks/useGameSession/useGameSession'
+import { useLocalStorage } from '../../../hooks/useLocalStorage/useLocalStorage'
 import useScreenSize from '../../../hooks/useScreenSize/useScreenSize'
-import {TStartQuizResponse} from '../../../types/types'
-import styles from './GamePage.module.css'
+import { useSound } from '../../../hooks/useSound/useSound'
+import { TimerProvider } from '../../../hooks/useTimer/useTimer'
 import * as gtag from '../../../libs/gtag'
-import {TimerProvider} from "../../../hooks/useTimer/useTimer";
-import {useLocalStorage} from '../../../hooks/useLocalStorage/useLocalStorage'
-import {SOUND_EFFECT} from '../../../utils/constants'
-import {useSound} from "../../../hooks/useSound/useSound";
+import { TStartQuizResponse } from '../../../types/types'
+import { SOUND_EFFECT } from '../../../utils/constants'
+import styles from './GamePage.module.css'
 
 export const ExitContext = React.createContext<{
   showEndGameModal: boolean
   setShowEndGameModal: Dispatch<SetStateAction<boolean>>
 }>({
   showEndGameModal: false,
-  setShowEndGameModal: () => {
-  },
+  setShowEndGameModal: () => {},
 })
 
 const GamePage: NextPage = () => {
-  const {gameSession, isHost, gameSkOn, saveGameSession, clearGameSession} =
+  const { gameSession, isHost, gameSkOn, saveGameSession, clearGameSession } =
     useGameSession()
   const [isShowChat, setIsShowChat] = useState<boolean>(false)
   const [isGameEnded, setIsGameEnded] = useState<boolean>(false)
@@ -37,10 +39,13 @@ const GamePage: NextPage = () => {
   const [isShowItem, setIsShowItem] = useState<boolean>(false)
 
   const [isShowHostControl, setIsShowHostControl] = useState<boolean>(true)
-  const {fromMedium} = useScreenSize()
+  const { fromMedium } = useScreenSize()
   const [endGameData, setEndGameData] = useState<TStartQuizResponse>()
   const sound = useSound()
   const [lsBg] = useLocalStorage('bg', '')
+
+  const { add, remove, size, all } = useExtendQueue()
+
   const fabs: FABAction[] = [
     {
       label: 'Khung chat',
@@ -126,13 +131,38 @@ const GamePage: NextPage = () => {
 
       gtag.event({
         action: '[game ended]',
-        params: {quizId: gameSession?.quizId, invitationCode: gameSession?.invitationCode},
+        params: {
+          quizId: gameSession?.quizId,
+          invitationCode: gameSession?.invitationCode,
+        },
       })
     })
 
     gtag.event({
       action: '[access playing quiz page]',
-      params: {quizId: gameSession?.quizId, invitationCode: gameSession?.invitationCode},
+      params: {
+        quizId: gameSession?.quizId,
+        invitationCode: gameSession?.invitationCode,
+      },
+    })
+
+    gameSkOn('use-item', (data) => {
+      try {
+        const { item } = data?.itemUsing || {}
+        switch (item?.itemCategory?.name) {
+          case 'Biểu cảm': {
+            add(
+              <FlyingAnimation key={size + item?.avatar} src={item?.avatar} />
+            )
+            _.delay(() => {
+              remove()
+            }, 4000)
+            break
+          }
+        }
+      } catch (error) {
+        console.log('gameSkOn - error', error)
+      }
     })
   }, [])
 
@@ -160,7 +190,7 @@ const GamePage: NextPage = () => {
           {/*<div className={classNames("")}>*/}
           <div className={classNames(styles.answerBoard, '')}>
             {endGameData ? (
-              <EndGameBoard className="flex-grow-1"/>
+              <EndGameBoard className="flex-grow-1" />
             ) : (
               <ExitContext.Provider
                 value={{
@@ -169,7 +199,7 @@ const GamePage: NextPage = () => {
                 }}
               >
                 <TimerProvider>
-                  <div className={"bg-white w-100 h -100"}></div>
+                  <div className={'bg-white w-100 h -100'}></div>
                   <AnswerBoard
                     className="flex-grow-1"
                     isShowHostControl={isShowHostControl}
@@ -184,11 +214,15 @@ const GamePage: NextPage = () => {
 
           {gameSession && (
             <div>
-              <GameMenuBar gameSession={gameSession} isShow={isShowChat} isGameEnded={isGameEnded}/>
+              <GameMenuBar
+                gameSession={gameSession}
+                isShow={isShowChat}
+                isGameEnded={isGameEnded}
+              />
               <Fade in={isShowItem}>
                 {isShowItem ? (
                   <div>
-                    <UsingItemInGame/>
+                    <UsingItemInGame />
                   </div>
                 ) : (
                   <></>
@@ -206,6 +240,8 @@ const GamePage: NextPage = () => {
         />
       </div>
       {getExitModal()}
+
+      {all}
     </>
   )
 }

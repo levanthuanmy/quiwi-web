@@ -1,105 +1,110 @@
 import classNames from 'classnames'
-import React, { FC, useEffect, useState } from 'react'
-import { SocketManager } from '../../hooks/useSocket/socketManager'
-import { TStartQuizResponse, TUser } from '../../types/types'
-import ChatWindow from '../GameComponents/ChatWindow/ChatWindow'
-import { MessageProps } from '../GameComponents/ChatWindow/Message'
-import PlayerList from '../GameComponents/PlayerList/PlayerList'
-import styles from './UsingItemInGame.module.css'
-
+import { FC, memo, useEffect, useState } from 'react'
 import { useAuth } from '../../hooks/useAuth/useAuth'
+import { useGameSession } from '../../hooks/useGameSession/useGameSession'
 import { get } from '../../libs/api'
 import { TApiResponse, TItem, TUserItems } from '../../types/types'
 import Item from '../Item/Item'
-import { DraggableEvent, DraggableData } from 'react-draggable'
-import Draggable from 'react-draggable'
 
 const UsingItemInGame: FC = () => {
-    const authContext = useAuth()
-    const [itemsRes, setItemsRes] = useState<Array<TItem>>()
-    const [x, setX] = useState(500)
-    const [y, setY] = useState(-100)
+  const authContext = useAuth()
+  const [itemsRes, setItemsRes] = useState<Array<TItem>>()
+  const { gameSkEmit, gameSession } = useGameSession()
+  const user = useAuth().getUser()
+  const [type, setType] = useState('Biểu cảm')
 
-    const handleStop = (event: DraggableEvent, dragElement: DraggableData) => {
-        console.log ("DRAGGG")
-        console.log (dragElement.x)
-        console.log (dragElement.x)
-        setX(dragElement.x)
-        setY(dragElement.y)
-    };
+  useEffect(() => {
+    const getItems = async () => {
+      try {
+        if (authContext !== undefined) {
+          let userId = authContext.getUser()?.id || null
 
-    useEffect(() => {
-        const getItems = async () => {
-            try {
-                if (authContext !== undefined) {
-                    let userId = authContext.getUser()?.id || null
+          const res: TApiResponse<TUserItems[]> = await get(
+            `/api/users/user/${userId}/items?type=${type}`
+          )
 
-                    const res: TApiResponse<TUserItems[]> = await get(
-                        `/api/users/user/${userId}/items`
-                    )
-
-                    if (res.response) {
-                        let items: Array<TItem> = []
-                        res.response.forEach((element) => {
-                            if (element.item != null)
-                                    items.push(element.item)
-                        })
-                        console.log(items)
-                        setItemsRes(items)
-                    }
-                }
-            } catch (error) {
-                alert('Có lỗi nè')
-                console.log(error)
-            }
+          if (res.response) {
+            let items: Array<TItem> = []
+            res.response.forEach((element) => {
+              if (element.item != null) items.push(element.item)
+            })
+            setItemsRes(items)
+          }
         }
+      } catch (error) {
+        console.log(error)
+      }
+    }
 
-        getItems()
-    }, [])
+    getItems()
+  }, [type])
 
-    const renderItems = (
-        <>
-            <div
+  return (
+    <>
+      <div
+        className="position-fixed shadow-lg bg-white rounded-10px border overflow-hidden"
+        style={{
+          bottom: 78,
+          right: 12,
+          width: 'min(calc(100vw - 24px), 400px)',
+          height: 300,
+        }}
+      >
+        <div className={classNames('w-100 h-100 d-flex')}>
+          <div className="h-100" style={{ overflowY: 'auto', width: 48 }}>
+            <div onClick={() => setType('Biểu cảm')}>
+              <i
                 className={classNames(
-                    'd-flex flex-column bg-white shadow-lg',
-                    styles.container
+                  'btn btn-outline-light bi bi-emoji-smile-fill fs-24px border-0 text-dark rounded-0',
+                  { 'bg-secondary bg-opacity-10': type === 'Biểu cảm' }
                 )}
-            >
-                <div
-                    className={classNames(
-                        'position-relative cursor-pointer',
-                        styles.title
-                    )}
-                >
-                    Vật phẩm
-                </div>
-                <div className={classNames('', styles.itemList)}>
-                    {itemsRes?.map((item, idx) => (
-                        <Item
-                            key={idx}
-                            name={item.name}
-                            des={item.description}
-                            avatar={item.avatar}
-                            type={item.type}
-                            price={item.price}
-                            quantity={item.quantity}
-                        ></Item>
-                    ))}
-                </div>
+              />
             </div>
-        </>
-    )
+            <div onClick={() => setType('Đạo cụ')}>
+              <i
+                className={classNames(
+                  'btn btn-outline-light bi bi-briefcase-fill fs-24px border-0 text-dark rounded-0',
+                  { 'bg-secondary bg-opacity-10': type === 'Đạo cụ' }
+                )}
+              />
+            </div>
+          </div>
 
-    return (
-        <Draggable
-            onStop={handleStop}
-            position={{ x: x, y: y }}
-        >
-            <div >
-                {renderItems}
+          <div
+            className="bg-secondary bg-opacity-10 p-2"
+            style={{
+              overflowY: 'auto',
+              width: 'calc(100% - 48px)',
+              overflowX: 'hidden',
+            }}
+          >
+            <div className="d-flex flex-wrap gap-2">
+              {itemsRes?.map((item, idx) => (
+                <Item
+                  key={idx}
+                  name={item.name}
+                  des={item.description}
+                  avatar={item.avatar}
+                  type={item.type}
+                  price={item.price}
+                  quantity={item.quantity}
+                  onClick={() => {
+                    gameSkEmit('use-item', {
+                      userId: user?.id,
+                      nickname: gameSession?.nickName,
+                      invitationCode: gameSession?.invitationCode,
+                      itemId: item?.id,
+                      token: user?.token?.accessToken,
+                    })
+                  }}
+                ></Item>
+              ))}
             </div>
-        </Draggable>
-    )
+          </div>
+        </div>
+      </div>
+    </>
+  )
 }
 
-export default UsingItemInGame
+export default memo(UsingItemInGame)
