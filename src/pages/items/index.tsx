@@ -188,7 +188,7 @@ const ItemPage: NextPage = () => {
           <Row className="">
             {itemCategoriesResponse && itemsResponse ? (
               itemsResponse?.items.map((item, idx) => (
-                <Col key={idx} className="p-3" xs={6} md={4} lg={3}>
+                <Col key={idx} className="p-3" xs={6} md={4} xl={3}>
                   <ItemShopV2 item={item} userBuyItem={userBuyItem} />
                 </Col>
               ))
