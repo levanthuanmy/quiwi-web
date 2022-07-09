@@ -5,13 +5,7 @@ import React, {FC, memo, useContext, useEffect, useRef, useState} from 'react'
 import {useGameSession} from '../../../hooks/useGameSession/useGameSession'
 
 import {useLocalStorage} from '../../../hooks/useLocalStorage/useLocalStorage'
-import {
-  TPlayer,
-  TQuestion,
-  TStartQuizResponse,
-  TUser,
-  TViewResult,
-} from '../../../types/types'
+import {TPlayer, TQuestion, TStartQuizResponse, TUser, TViewResult,} from '../../../types/types'
 import {JsonParse} from '../../../utils/helper'
 import GameSessionRanking from '../GameSessionRanking/GameSessionRanking'
 import {QuestionMedia} from '../QuestionMedia/QuestionMedia'
@@ -42,16 +36,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
                                              className,
                                              isShowHostControl,
                                            }) => {
-  const {
-    gameSession,
-    saveGameSession,
-    clearGameSession,
-    gameSocket,
-    gameSkOn,
-    gameSkEmit,
-    gameSkOnce,
-    getQuestionWithID,
-  } = useGameSession()
+  const gameManager = useGameSession()
 
   const sound = useSound()
   const setting = useUserSetting()
@@ -102,23 +87,23 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
   }, [lsGameSessionPlayer])
 
   useEffect(() => {
-    if (!gameSession) return
+    if (!gameManager.gameSession) return
     const user: TUser = JsonParse(lsUser)
-    setIsHost(user.id === gameSession.hostId)
+    setIsHost(user.id === gameManager.gameSession.hostId)
     if (currentQID < 0) {
-      const firstQuestion = getQuestionWithID(0)
+      const firstQuestion = gameManager.getQuestionWithID(0)
       if (firstQuestion) {
         setCurrentQID(0)
         displayQuestion(firstQuestion)
         timer.setDefaultDuration(firstQuestion.duration)
         setNumSubmission(0)
       }
-      const quizLength = gameSession.quiz.questions.length
+      const quizLength = gameManager.gameSession.quiz.questions.length
       if (quizLength) {
         setQuizLength(quizLength)
       }
     }
-  }, [gameSession])
+  }, [gameManager.gameSession])
 
   useEffect(() => {
     setIsShowEndGame(currentQID == quizLength - 1 && !timer.isCounting)
@@ -143,8 +128,8 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
   }
 
   const handleSocket = () => {
-    if (!gameSocket()) return
-    gameSkOnce('game-started', (data) => {
+    if (!gameManager.gameSocket()) return
+    gameManager.gameSkOnce('game-started', (data) => {
       _numSubmission.current = 0
       setNumSubmission(_numSubmission.current)
       setIsNextEmitted(false)
@@ -152,7 +137,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
       setLoading(null)
     })
 
-    gameSkOn('new-submission', (data) => {
+    gameManager.gameSkOn('new-submission', (data) => {
       sound.playSound(SOUND_EFFECT['NEWSUBMISSION'])
       if (data.playersWithAnswer) {
         _numSubmission.current = data.playersWithAnswer.length
@@ -177,7 +162,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
       }
     })
 
-    gameSkOn('next-question', (data) => {
+    gameManager.gameSkOn('next-question', (data) => {
       _numSubmission.current = 0
       setNumSubmission(_numSubmission.current)
       setIsNextEmitted(false)
@@ -185,7 +170,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
       setLoading(null)
     })
 
-    gameSkOn('view-result', (data: TViewResult) => {
+    gameManager.gameSkOn('view-result', (data: TViewResult) => {
       timer.countDown >= 0
         ? setLoading('Tất cả đã trả lời!')
         : setLoading('Hết giờ!')
@@ -213,21 +198,21 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
       }
     })
 
-    gameSkOn('ranking', (data) => {
+    gameManager.gameSkOn('ranking', (data) => {
       sound?.playSound(SOUND_EFFECT['RECHARGED'])
       setShowRanking(true)
       const rkData: any[] = data?.playersSortedByScore
       setRankingData(rkData)
     })
 
-    gameSkOn('loading', (data) => {
+    gameManager.gameSkOn('loading', (data) => {
       if (data?.question?.question) {
         timer.setIsShowSkeleton(true)
         setIsShowNext(false)
         setShowRanking(false)
         setIsNextEmitted(true)
 
-        saveGameSession({
+        gameManager.saveGameSession({
           ...JsonParse(localStorage.getItem('game-session')),
           players: [...rankingData],
         } as TStartQuizResponse)
@@ -253,20 +238,20 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
   }
 
   const viewRanking = () => {
-    if (!gameSession) return
-    const msg = {invitationCode: gameSession.invitationCode}
-    gameSkEmit('view-ranking', msg)
+    if (!gameManager.gameSession) return
+    const msg = {invitationCode: gameManager.gameSession.invitationCode}
+    gameManager.gameSkEmit('view-ranking', msg)
     setIsShowNext(true)
   }
 
   const handleSubmitAnswer = (answer: any) => {
-    if (!gameSession) return
+    if (!gameManager.gameSession) return
     if (!timer.isSubmittable) return
     if (isHost) return
 
     let msg = {
-      invitationCode: gameSession.invitationCode,
-      nickname: gameSession.nickName,
+      invitationCode: gameManager.gameSession.invitationCode,
+      nickname: gameManager.gameSession.nickName,
       answerIds: [] as any[],
       answer: '',
     }
@@ -286,12 +271,12 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
     }
     if (currentQuestion && currentQuestion.type != '22POLL')
       timer.setIsSubmittable(false)
-    if (msg.answer || msg.answerIds) gameSkEmit('submit-answer', msg)
+    if (msg.answer || msg.answerIds) gameManager.gameSkEmit('submit-answer', msg)
   }
 
   const exitRoom = () => {
     // dùng clear game session là đủ
-    clearGameSession()
+    gameManager.clearGameSession()
     router.push('/my-lib')
   }
 
@@ -313,17 +298,17 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
   const [isNextEmitted, setIsNextEmitted] = useState<boolean>(false)
 
   const goToNextQuestion = () => {
-    if (!gameSession) return
-    const msg = {invitationCode: gameSession.invitationCode}
-    gameSkEmit('next-question', msg)
+    if (!gameManager.gameSession) return
+    const msg = {invitationCode: gameManager.gameSession.invitationCode}
+    gameManager.gameSkEmit('next-question', msg)
   }
 
   function endGame() {
-    if (gameSession && gameSocket() != null && isHost) {
-      const msg = {invitationCode: gameSession.invitationCode}
-      gameSkEmit('game-ended', msg)
+    if (gameManager.gameSession && gameManager.gameSocket() != null && isHost) {
+      const msg = {invitationCode: gameManager.gameSession.invitationCode}
+      gameManager.gameSkEmit('game-ended', msg)
     } else {
-      clearGameSession()
+      gameManager.clearGameSession()
       router.push('/my-lib')
     }
   }
@@ -369,7 +354,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
     )
   }
   const currentPlayerRankingIndex =
-    gameSession?.players?.findIndex(
+    gameManager.gameSession?.players?.findIndex(
       (item) => item.nickname === viewResultData?.player?.nickname
     ) ?? -1
 
@@ -387,7 +372,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
 
         <div className="text-center fw-bold">
           <div className="text-secondary fs-24x">
-            {currentQID + 1 < (gameSession?.quiz?.questions?.length ?? 0) ? (
+            {currentQID + 1 < (gameManager.gameSession?.quiz?.questions?.length ?? 0) ? (
               <>
                 {'Quiz mới hoàn thành '}
                 <span className="fw-bolder fs-24x  text-primary">
@@ -395,7 +380,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
                 </span>
                 {' câu, còn '}
                 <span className="fw-bolder fs-24x  text-primary">
-                  {gameSession?.quiz?.questions?.length}
+                  {gameManager.gameSession?.quiz?.questions?.length}
                 </span>
                 {' câu chưa hoàn thành!'}
               </>
@@ -407,7 +392,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
                 </span>
                 {' câu trên '}
                 <span className="fw-bolder fs-24x  text-primary">
-                  {gameSession?.quiz?.questions?.length}
+                  {gameManager.gameSession?.quiz?.questions?.length}
                 </span>
                 {' câu!'}
               </>
@@ -446,14 +431,14 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
                 alt=""
               />
               <div className="fw-medium fs-20px text-white">
-                {isHost ? gameSession?.host?.name : gameSessionPlayer?.nickname}
+                {isHost ? gameManager.gameSession?.host?.name : gameSessionPlayer?.nickname}
               </div>
             </div>
             <div className="px-2 pb-2 text-white d-flex gap-3 align-items-center justify-content-between">
               <div className="fw-medium fs-32px text-primary">
                 {currentQID + 1}/
                 <span className="text-secondary fs-24px">
-                  {gameSession?.quiz?.questions?.length}
+                  {gameManager.gameSession?.quiz?.questions?.length}
                 </span>
               </div>
 
@@ -468,7 +453,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
                     style={{
                       width: `${Math.floor(
                         ((currentQID + 1) * 100) /
-                        Number(gameSession?.quiz?.questions?.length)
+                        Number(gameManager.gameSession?.quiz?.questions?.length)
                       )}%`,
                     }}
                   />
@@ -561,8 +546,8 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
           show={showRanking}
           onHide={() => {
             setShowRanking(false)
-            saveGameSession({
-              ...gameSession,
+            gameManager.saveGameSession({
+              ...gameManager.gameSession,
               players: [...rankingData],
             } as TStartQuizResponse)
           }}
