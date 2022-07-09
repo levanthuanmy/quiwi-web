@@ -1,5 +1,4 @@
 import classNames from 'classnames'
-import _ from 'lodash'
 import { NextPage } from 'next'
 import router from 'next/router'
 import React, { Dispatch, SetStateAction, useEffect, useState } from 'react'
@@ -44,7 +43,7 @@ const GamePage: NextPage = () => {
   const sound = useSound()
   const [lsBg] = useLocalStorage('bg', '')
 
-  const { add, remove, size, all } = useExtendQueue()
+  const { add, size, all } = useExtendQueue()
 
   const fabs: FABAction[] = [
     {
@@ -154,9 +153,7 @@ const GamePage: NextPage = () => {
             add(
               <FlyingAnimation key={size + item?.avatar} src={item?.avatar} />
             )
-            _.delay(() => {
-              remove()
-            }, 4000)
+
             break
           }
         }
@@ -241,7 +238,7 @@ const GamePage: NextPage = () => {
       </div>
       {getExitModal()}
 
-      {all}
+      <div id="balloon-container">{all}</div>
     </>
   )
 }
