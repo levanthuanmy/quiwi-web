@@ -1,4 +1,4 @@
-export type TUser = {
+export interface TUser {
   avatar: string
   coin: number
   id: number

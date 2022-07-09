@@ -1,20 +1,15 @@
-import { NextPage } from 'next'
-import { useRouter } from 'next/router'
-import { useState } from 'react'
-import { Form, Image } from 'react-bootstrap'
+import {NextPage} from 'next'
+import {useRouter} from 'next/router'
+import {useState} from 'react'
+import {Form, Image} from 'react-bootstrap'
 import Cookies from 'universal-cookie'
 import MyButton from '../../components/MyButton/MyButton'
 import MyInput from '../../components/MyInput/MyInput'
-import { useLocalStorage } from '../../hooks/useLocalStorage/useLocalStorage'
-import { post } from '../../libs/api'
-import {
-  TApiResponse,
-  TGamePlayBodyRequest,
-  TJoinQuizResponse,
-  TStartQuizResponse,
-} from '../../types/types'
-import { JsonParse } from '../../utils/helper'
-import { useGameSession } from '../../hooks/useGameSession/useGameSession'
+import {useLocalStorage} from '../../hooks/useLocalStorage/useLocalStorage'
+import {post} from '../../libs/api'
+import {TApiResponse, TGamePlayBodyRequest, TJoinQuizResponse,} from '../../types/types'
+import {JsonParse} from '../../utils/helper'
+import {useGameSession} from '../../hooks/useGameSession/useGameSession'
 
 type TJoinQuizRequest = {
   userId?: number
@@ -26,9 +21,8 @@ const JoiningPage: NextPage = () => {
   const router = useRouter()
   const invitationCode = router.query?.invitationCode?.toString() || ''
 
-  const {saveGameSession, gameSocket, connectGameSocket, gameSkOnce} = useGameSession()
+  const gameManager = useGameSession()
 
-  const [lsPlayer, setLsPlayer] = useLocalStorage('game-session-player', '')
   const [nickname, _setNickName] = useState<string>('')
   const [lsUser] = useLocalStorage('user', '')
 
@@ -37,16 +31,12 @@ const JoiningPage: NextPage = () => {
       alert('Vui lòng nhập tên hiển thị')
       return
     }
-    if (!gameSocket()) {
-      connectGameSocket()
-      // đợi socket có rồi mới join room
-      gameSkOnce('connect', () => {
+    if (!gameManager.gameSocket) {
+      gameManager.connectGameSocket()
+      gameManager.gameSkOnce('connect', () => {
         joinRoom()
       })
-
-
     } else {
-      // host đã kết nối socket rồi => join luôn
       joinRoom()
     }
   }
@@ -61,7 +51,7 @@ const JoiningPage: NextPage = () => {
     }
 
     const body: TGamePlayBodyRequest<TJoinQuizRequest> = {
-      socketId: gameSocket()!.id,
+      socketId: gameManager.gameSocket!.id,
       data: joinRoomRequest,
     }
 
@@ -80,13 +70,12 @@ const JoiningPage: NextPage = () => {
       )
 
       const data = response.response
-      console.log("=>(join.tsx:81) data", data);
-      // lưu lại nickname của mình để dùng
-      const gameSession: TStartQuizResponse = data.gameLobby
-      gameSession.nickName = nickname
 
-      saveGameSession(gameSession)
-      setLsPlayer(JSON.stringify(data.player))
+      console.log("=>(join.tsx:81) data", data);
+
+      gameManager.gameSession = data.gameLobby
+      gameManager.gameSession.nickName = data.player.nickname
+      gameManager.player = data.player
 
       router.push(`/lobby?quizId=${data.gameLobby.quizId}`)
     } catch (error) {

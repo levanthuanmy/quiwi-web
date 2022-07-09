@@ -1,156 +1,172 @@
-import {useEffect, useState} from 'react'
 import {Socket} from "socket.io-client";
-import {TQuestion, TStartQuizResponse, TUser} from '../../types/types'
-import {JsonParse} from '../../utils/helper'
-import {useLocalStorage} from '../useLocalStorage/useLocalStorage'
+import {
+  TGameModeEnum,
+  TGameRoundStatistic,
+  TGameStatus,
+  TPlayer,
+  TQuestion,
+  TQuiz,
+  TUser
+} from '../../types/types'
 import {SocketManager} from '../useSocket/socketManager'
 import {useSound} from "../useSound/useSound";
-import {singletonHook} from "react-singleton-hook";
+import {useUser} from "../useUser/useUser";
+import {JsonParse} from "../../utils/helper";
+import {MessageProps} from "../../components/GameComponents/ChatWindow/Message";
 
-const init = {
-  gameSkOnce: (ev: string, listener: (...args: any[]) => void) => null,
-  isHost: false,
-  getQuestionWithID: (qid: number) => null,
-  gameSkOn: (ev: string, listener: (...args: any[]) => void) => null,
-  connectGameSocket: () => null,
-  clearGameSession: () => null,
-  gameSocket: () => null,
-  disconnectGameSocket: () => null,
-  gameSkEmit: (ev: string, msg: any) => null,
-  gameSession: null,
-  saveGameSession: (gameSS: TStartQuizResponse) => null
+export type TGameLobby = {
+  nickName: string
+  gameMode: {
+    curIndexQuestion: number
+  }
+  mode: TGameModeEnum
+  host: TUser
+  hostId: number
+  invitationCode: string
+  players: TPlayer[]
+  quiz: TQuiz
+  quizId: number
+  status: TGameStatus
+  chats: MessageProps[]
+  gameRoundStatistics: TGameRoundStatistic[]
 }
 
-export const useGameSession = (): {
-  gameSkOnce: (ev: string, listener: (...args: any[]) => void) => void;
-  isHost: boolean;
-  getQuestionWithID: (qid: number) => (TQuestion | null);
-  gameSkOn: (ev: string, listener: (...args: any[]) => void) => void;
-  connectGameSocket: () => void;
-  clearGameSession: () => void;
-  gameSocket: () => (Socket | null);
-  disconnectGameSocket: () => void;
-  gameSkEmit: (ev: string, msg: any) => void;
-  gameSession: TStartQuizResponse | null;
-  saveGameSession: (gameSS: TStartQuizResponse) => void
-} => {
-  const sk = SocketManager()
-  const soundManager = useSound()
-  const [lsUser] = useLocalStorage('user', '')
-  const [isHost, setIsHost] = useState<boolean>(false)
-  const [lsGameSession, setLsGameSession] = useLocalStorage('game-session', '')
-  const [gameSession, setGameSession] = useState<TStartQuizResponse | null>(
-    null
-  )
+export type TGameSession = {}
 
-  // cần debug thì in số này ra
-  let deleteCount = 0
+export class GameManager {
+  private static lsKey = "game-session"
+  private static _instance?: GameManager;
 
-  useEffect(() => {
-    if (lsGameSession && lsGameSession.length > 0) {
-      deleteCount = 0
-      const gs: TStartQuizResponse = JsonParse(
-        lsGameSession
-      ) as TStartQuizResponse
-      setGameSession(gs)
-      console.log('🎯️ GameSession => 💸')
-    } else {
-      if (deleteCount <= 0) {
-        console.log('🎯️ ️GameSession => 🚮')
-      }
-      deleteCount += 1
-      setGameSession(null)
+
+  private _gameSession: TGameLobby | null = null;
+  get gameSession(): TGameLobby | null {
+    if (!this._gameSession) {
+      this.readGSLS()
     }
-  }, [lsGameSession])
-
-  const saveGameSession = (gameSS: TStartQuizResponse) => {
-    console.log('🎯️ ️️GameSession => saveGameSession')
-    setLsGameSession(JSON.stringify(gameSS))
-    setGameSession(gameSS)
+    return this._gameSession;
   }
 
-  // alias cho sk.socketOf("GAMES") thôi
-  const gameSocket = (): (Socket | null) => {
-    // test xem có cần thiết connect lại trong này ko
-    // sk.connect("GAMES")
-    return sk.socketOf("GAMES")
+  set gameSession(value: TGameLobby | null) {
+    if ((this._gameSession && this._gameSession != value) || !this._gameSession) {
+      this._gameSession = value;
+      this.writeGSLS()
+    }
   }
 
-  const connectGameSocket = () => {
-    if (!gameSocket() || gameSocket()?.disconnected) {
-      sk.connect("GAMES")
-      soundManager?.setGameSoundOn(true)
-      gameSocket()?.offAny()
-      gameSocket()?.onAny(function (event, data) {
+  get players(): TPlayer[] {
+    if (this._gameSession) {
+      return this._gameSession.players;
+    }
+    return [];
+  }
+
+  set players(value: TPlayer[]) {
+    if (this._gameSession) {
+      this._gameSession.players = value;
+      this.writeGSLS()
+    }
+  }
+
+  updateGameSession(updateBlock: (gameSession: TGameLobby) => void) {
+    if (this._gameSession)
+      updateBlock(this._gameSession)
+    this.writeGSLS()
+  }
+
+  sk = SocketManager()
+  soundManager = useSound()
+  user = useUser()
+  player: TPlayer | null = null;
+
+  get isHost(): boolean {
+    if (this.gameSession) {
+      return this.user.id == this.gameSession.hostId
+    }
+    return false;
+  }
+
+  get gameSocket(): (Socket | null) {
+    return this.sk.socketOf("GAMES")
+  }
+
+  set gameSocket(value: Socket | null) {
+
+  }
+
+  private constructor() {
+    if (GameManager._instance)
+      throw new Error("Use GameManager.instance instead of new.");
+    GameManager._instance = this;
+  }
+
+  static get instance() {
+    return GameManager._instance ?? (GameManager._instance = new GameManager());
+  }
+
+  private readGSLS() {
+    if (typeof window !== 'undefined') {
+      const ls = window.localStorage.getItem(GameManager.lsKey)
+      if (ls) {
+        this._gameSession = JsonParse(ls) as TGameLobby
+      }
+    }
+  }
+
+  private writeGSLS() {
+    if (typeof window !== 'undefined') {
+      window.localStorage.setItem(GameManager.lsKey, JSON.stringify(this.gameSession))
+    }
+  }
+
+  connectGameSocket() {
+    if (!this.gameSocket || this.gameSocket?.disconnected) {
+      this.sk.connect("GAMES")
+      this.soundManager?.setGameSoundOn(true)
+      this.gameSocket?.offAny()
+      this.gameSocket?.onAny(function (event, data) {
         console.log("🌎🌎 Event:", event);
         console.log("🌎🌎 Data:", data);
       });
+    } else {
+      console.log("=>(useGameSession.tsx:106) connect Failed", this, this.gameSession, this.gameSocket);
     }
   }
 
-  const disconnectGameSocket = () => {
-    if (gameSocket()?.connected) {
-      sk.disconnect("GAMES")
+  disconnectGameSocket() {
+    if (this.gameSocket?.connected) {
+      this.sk.disconnect("GAMES")
     }
   }
 
-  const gameSkEmit = (ev: string, msg: any) => {
+  gameSkEmit(ev: string, msg: any) {
     console.log("📨📨 Event:", ev);
     console.log("📨📨 Message:", msg);
-    gameSocket()?.emit(ev, msg)
+    this.gameSocket?.emit(ev, msg)
   }
 
-  const gameSkOn = (ev: string, listener: (...args: any[]) => void) => {
-    gameSocket()?.off(ev)
-    gameSocket()?.on(ev, listener)
+  gameSkOn(ev: string, listener: (...args: any[]) => void) {
+    this.gameSocket?.off(ev)
+    this.gameSocket?.on(ev, listener)
   }
 
-  const gameSkOnce = (ev: string, listener: (...args: any[]) => void) => {
-    gameSocket()?.off(ev)
-    gameSocket()?.once(ev, listener)
+//
+  gameSkOnce(ev: string, listener: (...args: any[]) => void) {
+    this.gameSocket?.off(ev)
+    this.gameSocket?.once(ev, listener)
   }
 
-  const clearGameSession = () => {
-    try {
-      if (deleteCount <= 0)
-        console.log('🎯️ ️️GameSession :: Clear')
-      if (soundManager)
-        soundManager?.setGameSoundOn(false)
-      setLsGameSession('')
-      setGameSession(null)
-      localStorage.removeItem('game-session')
-      localStorage.removeItem('game-session-player')
-    } catch (error) {
-      console.log('🎯️ ️️GameSession => Clear game lỗi', error)
+  clearGameSession() {
+    if (this._gameSession) {
+      console.log('🎯️ ️️GameSession :: Clear')
+      this.soundManager?.setGameSoundOn(false)
+      this.gameSession = null
     }
   }
 
-  const getQuestionWithID = (qid: number): (TQuestion | null) => {
-    return gameSession?.quiz?.questions[qid] || null
+  getQuestionWithID(qid: number): (TQuestion | null) {
+    return this.gameSession?.quiz?.questions[qid] || null
   }
 
-  useEffect(() => {
-    if (!gameSession) setIsHost(false)
-    else {
-      const user: TUser = JsonParse(lsUser)
-      setIsHost(user.id === gameSession.hostId)
-    }
-  }, [gameSession, lsUser]);
-
-  return (
-    {
-      gameSession,
-      saveGameSession,
-      clearGameSession,
-      connectGameSocket,
-      disconnectGameSocket,
-      gameSocket,
-      gameSkOn,
-      gameSkEmit,
-      gameSkOnce,
-      getQuestionWithID,
-      isHost,
-    }
-  )
 }
 
+export const useGameSession = () => GameManager.instance

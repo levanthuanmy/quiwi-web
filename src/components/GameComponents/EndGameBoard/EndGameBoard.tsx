@@ -19,14 +19,14 @@ type EndGameBoardProps = {
   className?: string
 }
 
-const EndGameBoard: FC<EndGameBoardProps> = ({ className }) => {
-  const { width, height } = useWindowSize();
-  const { gameSession, isHost } = useGameSession()
-  const { isAuth } = useAuth()
+const EndGameBoard: FC<EndGameBoardProps> = ({className}) => {
+  const {width, height} = useWindowSize();
+  const gameManager = useGameSession()
+  const {isAuth} = useAuth()
   const [isVote, setIsVote] = useState<boolean>(false)
-  const { addToast } = useToasts()
+  const {addToast} = useToasts()
   const sound = useSound()
-  const [lsPlayer] = useLocalStorage('game-session-player', '')
+  const player = gameManager.player
 
   useEffect(() => {
     sound?.playSound(SOUND_EFFECT['END_GAME']);
@@ -34,8 +34,8 @@ const EndGameBoard: FC<EndGameBoardProps> = ({ className }) => {
   }, [])
 
   const renderList = () => {
-    if (!gameSession) return
-    const { players } = gameSession
+    if (!gameManager.gameSession) return
+    const players = gameManager.gameSession.players
 
     return (
       <>
@@ -70,13 +70,13 @@ const EndGameBoard: FC<EndGameBoardProps> = ({ className }) => {
     try {
       if (isAuth) {
         await get(
-          `/api/quizzes/vote-quiz-auth/${gameSession?.quizId}?vote=${type}`,
+          `/api/quizzes/vote-quiz-auth/${gameManager.gameSession?.quizId}?vote=${type}`,
           isAuth
         )
       } else {
-        const playerName = (JsonParse(lsPlayer) as TPlayer)?.nickname || ''
+        const playerName = player?.nickname || 'Ẩn danh'
         await get(
-          `/api/quizzes/vote-quiz-unauth?vote=${type}&nickname=${playerName}&invitationCode=${gameSession?.invitationCode}`,
+          `/api/quizzes/vote-quiz-unauth?vote=${type}&nickname=${playerName}&invitationCode=${gameManager.gameSession?.invitationCode}`,
           isAuth
         )
       }
@@ -110,12 +110,12 @@ const EndGameBoard: FC<EndGameBoardProps> = ({ className }) => {
             width="174"
             height="83"
           />
-          <br />
+          <br/>
           Tổng kết
         </div>
         <div className="d-flex align-items-end">{renderList()}</div>
 
-        {!isHost ? (
+        {!gameManager.isHost && (
           !isVote ? (
             <div className="bg-light p-3 px-4 rounded-10px border text-center">
               <div className="h2">Đánh giá quiz</div>
@@ -136,13 +136,11 @@ const EndGameBoard: FC<EndGameBoardProps> = ({ className }) => {
             <div className="bg-light p-3 px-4 rounded-10px border text-center">
               <div className="h2">
                 Phản hồi của bạn đã được ghi nhận.
-                <br />
+                <br/>
                 Cảm ơn bạn đã tham gia quiz này.
               </div>
             </div>
           )
-        ) : (
-          <></>
         )}
       </div>
     </div>
@@ -157,25 +155,24 @@ const ItemChart: FC<{
   point: number
   name: string
   // eslint-disable-next-line react/display-name
-}> = memo(({ position, point, name }) => {
-  const { gameSession } = useGameSession()
+}> = memo(({position, point, name}) => {
+  const game = useGameSession()
   point = Math.round(point)
   name = name.length > 4 ? name.substring(0, 4) + '...' : name
 
   const medalImage: Record<TPositionRanking, { image: string; color: string }> =
-  {
-    '1st': { image: '/assets/gold-medal.png', color: 'gold' },
-    '2nd': { image: '/assets/silver-medal.png', color: 'silver' },
-    '3rd': { image: '/assets/bronze-medal.png', color: 'brown' },
-  }
+    {
+      '1st': {image: '/assets/gold-medal.png', color: 'gold'},
+      '2nd': {image: '/assets/silver-medal.png', color: 'silver'},
+      '3rd': {image: '/assets/bronze-medal.png', color: 'brown'},
+    }
 
   const getSize = () => {
-    if (!gameSession) return
-
-    if (position === '1st') return { height: 300, width: 100 }
+    if (!game.gameSession) return
+    if (position === '1st') return {height: 300, width: 100}
     else {
       return {
-        height: Math.floor((point / gameSession.players[0].score) * 300),
+        height: Math.floor((point / game.players[0].score) * 300),
         width: 90,
       }
     }

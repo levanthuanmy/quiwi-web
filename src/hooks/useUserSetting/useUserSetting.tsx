@@ -32,8 +32,6 @@ export class UserSetting {
         this._isMute = setting.isMute
         this._gameBackgroundUrl = setting.gameBackgroundUrl
       }  // client-side-only code
-    } else {
-      console.log("=>(useUserSetting.tsx:38) sv");
     }
   }
 
@@ -45,8 +43,6 @@ export class UserSetting {
       }
       console.log("=>(useUserSetting.tsx:103) luu setting", setting);
       window.localStorage.setItem(UserSetting.lsKey, JSON.stringify(setting))
-    } else {
-      console.log("=>(useUserSetting.tsx:38) sv");
     }
   }
 

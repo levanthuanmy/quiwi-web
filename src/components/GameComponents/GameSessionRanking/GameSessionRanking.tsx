@@ -26,7 +26,7 @@ const GameSessionRanking: FC<GameSessionRankingProps> = ({
   viewResultData,
   currentQuestion,
 }) => {
-  // const { gameSession } = useGameSession()
+
   const [currentPlayerRankingIndex, setCurrentPlayerRankingIndex] =
     useState<number>(0)
 

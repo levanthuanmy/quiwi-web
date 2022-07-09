@@ -21,7 +21,7 @@ const QuizDetailPage: NextPage = () => {
   const router = useRouter()
   const query = router.query
   const practiceGameSession = usePracticeGameSession()
-  const gameSession = useGameSession()
+  const game = useGameSession()
   const {id} = query
   const [lsUser] = useLocalStorage('user', '')
   const [user, setUser] = useState<TUser>()
@@ -34,15 +34,7 @@ const QuizDetailPage: NextPage = () => {
   // }, [lsCurrentQID]);
 
   useEffect(() => {
-    gameSession.connectGameSocket()
-    gameSession.gameSkOnce('connect', () => {
-      console.log("=>(index.tsx:30) gameSocket()", gameSession.gameSocket());
-      gameSession.gameSocket()?.on('view-result', (data) => {
-        console.log("=>(index.tsx:31) màn bộ đề", data);
-      })
-    })
-
-    window.addEventListener("storage",(e) => {
+    window.addEventListener("storage", (e) => {
       if (e.key == "currentQID") {
         setCurrentQID(Number(e.newValue))
       }

@@ -8,15 +8,11 @@ import {TApiResponse, TQuiz} from '../../types/types'
 import {useGameSession} from "../../hooks/useGameSession/useGameSession";
 
 const LobbyPage: NextPage = () => {
-  const {gameSession} = useGameSession()
+  const game = useGameSession()
   return (
     <>
-      {gameSession && (
-        <LobbyScreen
-          invitationCode={gameSession.invitationCode}
-          isHost={false}
-          // players={gameSession.players}
-        />
+      {game.gameSession && (
+        <LobbyScreen/>
       )}
     </>
   )

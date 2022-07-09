@@ -20,7 +20,7 @@ const ChatWindow: FC<{
   isDisabled: boolean
 }> = ({gameSession, chatContent, setChatContent, isDisabled}) => {
   const [chatValue, setChatValue] = useState<string>('')
-  const {gameSkOn, gameSkEmit} = useGameSession()
+  const game = useGameSession()
   const [lsPlayer, setLsPlayer] = useLocalStorage('game-session-player', '')
   const [player, setPLayer] = useState<TPlayer>()
   const authContext = useAuth()
@@ -35,7 +35,7 @@ const ChatWindow: FC<{
   const sendMessage = (message: SendMessageProps) => {
     if (message.message?.length ?? 0 > 0) {
       setChatValue('')
-      gameSkEmit('chat', message)
+      game.gameSkEmit('chat', message)
     }
   }
 
@@ -44,7 +44,7 @@ const ChatWindow: FC<{
   }
 
   const handleSocketListener = () => {
-    gameSkOn('vote', (data: MessageProps) => {
+    game.gameSkOn('vote', (data: MessageProps) => {
       const cache: MessageProps[] = chatContent
       for (const chat of cache) {
         if (chat.id === data.id) {
@@ -60,7 +60,7 @@ const ChatWindow: FC<{
   }
   const updateVoteForMessage = (voteChange: number, messageIndex: number) => {
     if (messageIndex < chatContent.length) {
-      gameSkEmit('vote', {
+      game.gameSkEmit('vote', {
         invitationCode: gameSession.invitationCode,
         vote: voteChange,
         chatId: chatContent[messageIndex].id,

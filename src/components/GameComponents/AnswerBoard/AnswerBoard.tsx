@@ -5,8 +5,7 @@ import React, {FC, memo, useContext, useEffect, useRef, useState} from 'react'
 import {useGameSession} from '../../../hooks/useGameSession/useGameSession'
 
 import {useLocalStorage} from '../../../hooks/useLocalStorage/useLocalStorage'
-import {TPlayer, TQuestion, TStartQuizResponse, TUser, TViewResult,} from '../../../types/types'
-import {JsonParse} from '../../../utils/helper'
+import {TQuestion, TViewResult,} from '../../../types/types'
 import GameSessionRanking from '../GameSessionRanking/GameSessionRanking'
 import {QuestionMedia} from '../QuestionMedia/QuestionMedia'
 import styles from './AnswerBoard.module.css'
@@ -25,6 +24,7 @@ import {useTimer} from "../../../hooks/useTimer/useTimer";
 import {SOUND_EFFECT} from '../../../utils/constants'
 import {useUserSetting} from "../../../hooks/useUserSetting/useUserSetting";
 import {useSound} from "../../../hooks/useSound/useSound";
+import {useUser} from "../../../hooks/useUser/useUser";
 
 
 type AnswerBoardProps = {
@@ -37,19 +37,18 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
                                              isShowHostControl,
                                            }) => {
   const gameManager = useGameSession()
+  const gameSessionPlayer = gameManager.player
+  const isHost = gameManager.isHost;
 
   const sound = useSound()
   const setting = useUserSetting()
+  const timer = useTimer()
+  const user = useUser()
+  const exitContext = useContext(ExitContext)
 
   // lưu qid để hiển thị bên trang bộ quiz
   const [lsCurrentQID, setLsCurrentQID] = useLocalStorage('currentQID', '-1')
 
-  const exitContext = useContext(ExitContext)
-  const timer = useTimer()
-  const [lsUser] = useLocalStorage('user', '')
-  const [lsGameSessionPlayer] = useLocalStorage('game-session-player', '')
-  const [gameSessionPlayer, setGameSessionPlayer] = useState<TPlayer>()
-  const [isHost, setIsHost] = useState<boolean>(false)
   const [currentQID, setCurrentQID] = useState<number>(-1)
   const [quizLength, setQuizLength] = useState<number>(0)
 
@@ -81,15 +80,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
   }, [])
 
   useEffect(() => {
-    if (lsGameSessionPlayer?.length) {
-      setGameSessionPlayer(JsonParse(lsGameSessionPlayer))
-    }
-  }, [lsGameSessionPlayer])
-
-  useEffect(() => {
     if (!gameManager.gameSession) return
-    const user: TUser = JsonParse(lsUser)
-    setIsHost(user.id === gameManager.gameSession.hostId)
     if (currentQID < 0) {
       const firstQuestion = gameManager.getQuestionWithID(0)
       if (firstQuestion) {
@@ -110,7 +101,6 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
   }, [currentQID, quizLength])
 
   const displayQuestion = (question: TQuestion) => {
-    console.log('=>(AnswerBoard.tsx:116) Display question', question)
     if (question && question.duration > 0) setCurrentQuestion(question)
   }
 
@@ -128,7 +118,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
   }
 
   const handleSocket = () => {
-    if (!gameManager.gameSocket()) return
+    if (!gameManager.gameSocket) return
     gameManager.gameSkOnce('game-started', (data) => {
       _numSubmission.current = 0
       setNumSubmission(_numSubmission.current)
@@ -212,10 +202,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
         setShowRanking(false)
         setIsNextEmitted(true)
 
-        gameManager.saveGameSession({
-          ...JsonParse(localStorage.getItem('game-session')),
-          players: [...rankingData],
-        } as TStartQuizResponse)
+        gameManager.players = [...rankingData];
 
         const currentQuestionId = data.question.currentQuestionIndex as number
         const newQuestion = data.question.question as TQuestion
@@ -304,7 +291,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
   }
 
   function endGame() {
-    if (gameManager.gameSession && gameManager.gameSocket() != null && isHost) {
+    if (gameManager.gameSession && gameManager.gameSocket && isHost) {
       const msg = {invitationCode: gameManager.gameSession.invitationCode}
       gameManager.gameSkEmit('game-ended', msg)
     } else {
@@ -354,7 +341,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
     )
   }
   const currentPlayerRankingIndex =
-    gameManager.gameSession?.players?.findIndex(
+    gameManager.gameSession?.players.findIndex(
       (item) => item.nickname === viewResultData?.player?.nickname
     ) ?? -1
 
@@ -546,10 +533,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
           show={showRanking}
           onHide={() => {
             setShowRanking(false)
-            gameManager.saveGameSession({
-              ...gameManager.gameSession,
-              players: [...rankingData],
-            } as TStartQuizResponse)
+            gameManager.players = [...rankingData];
           }}
           rankingData={rankingData}
           viewResultData={viewResultData as TViewResult}

@@ -25,25 +25,22 @@ import MyModal from "../MyModal/MyModal";
 import {useSound} from "../../hooks/useSound/useSound";
 
 type LobbyScreenProps = {
-  invitationCode: string
-  isHost: boolean
+
 }
-const LobbyScreen: FC<LobbyScreenProps> = ({invitationCode, isHost}) => {
+
+const LobbyScreen: FC<LobbyScreenProps> = () => {
+  const game = useGameSession()
+  const isHost = game.isHost
+  const invitationCode = game.gameSession?.invitationCode ?? ""
+
   const [playerList, setPlayerList] = useState<TPlayer[]>([])
   const [lsBg, saveLsBg] = useLocalStorage('bg', '')
   const router = useRouter()
   const [showQR, setShowQR] = useState<boolean>(false)
   const {isMobile} = useScreenSize()
   const [showBackgroundModal, setShowBackgroundModal] = useState<boolean>(false)
-  const {
-    gameSession,
-    saveGameSession,
-    clearGameSession,
-    gameSocket,
-    gameSkOn,
-    gameSkEmit,
-    gameSkOnce,
-  } = useGameSession()
+
+
   const {addToast} = useToasts()
   const [currentBackground, setCurrentBackground] = useState<string>(lsBg)
   const authContext = useAuth()
@@ -52,48 +49,39 @@ const LobbyScreen: FC<LobbyScreenProps> = ({invitationCode, isHost}) => {
   const [isMute, setIsMute] = useState(sound.isMute);
 
   useEffect(() => {
-    if (!gameSession) return
-    const lsPlayers: TPlayer[] = [...gameSession.players]
-    setPlayerList(lsPlayers)
+    if (!game.gameSession) return
+    setPlayerList(game.gameSession.players)
 
-    gameSkOn('new-player', (data: { newPlayer: TPlayer }) => {
-      let newPlayerList: TPlayer[] = [...lsPlayers, data.newPlayer]
-      // for (let i =0; i < 100; i++) {
-      //   newPlayerList = [...newPlayerList, data.newPlayer]
-      // }
+    game.gameSkOn('new-player', (data: { newPlayer: TPlayer }) => {
+      let newPlayerList: TPlayer[] = [...game.players, data.newPlayer]
       setPlayerList(newPlayerList)
-      gameSession.players = newPlayerList
-      saveGameSession(gameSession)
+      game.players = newPlayerList
       addToast(`${data.newPlayer.nickname} đã tham gia phòng`, {
         appearance: 'success',
         autoDismiss: true,
       })
     })
 
-    gameSkOn('player-left', (data) => {
+    game.gameSkOn('player-left', (data) => {
       let _players = [...playerList]
       _.remove(_players, (player) => player.id === data.id)
       setPlayerList(_players)
-      gameSession.players = [..._players]
-      saveGameSession(gameSession)
+      game.players = [..._players]
+
       addToast(`${data?.player?.nickname} đã rời phòng`, {
         appearance: 'error',
         autoDismiss: true,
       })
     })
 
-    gameSkOnce('host-out', () => {
+    game.gameSkOnce('host-out', () => {
       router.push('/')
     })
 
-    gameSkOnce('loading', (data) => {
+    game.gameSkOnce('loading', (data) => {
       router.push(`/game/play`)
     })
-
-    gameSkOn('error', (data) => {
-
-    })
-  }, [gameSession])
+  }, [])
 
   useEffect(() => {
     if (lsBg && lsBg.length) {
@@ -120,13 +108,13 @@ const LobbyScreen: FC<LobbyScreenProps> = ({invitationCode, isHost}) => {
   }, [router])
 
   const handleLeaveRoom = () => {
-    clearGameSession()
+    game.clearGameSession()
     router.back()
   }
 
   const handleStartGame = () => {
     try {
-      if (!gameSession?.players?.length) {
+      if (!game.gameSession?.players.length) {
         addToast(`Cần có ít nhất 1 người tham gia để có thể bắt đầu`, {
           appearance: 'error',
           autoDismiss: true,
@@ -142,12 +130,12 @@ const LobbyScreen: FC<LobbyScreenProps> = ({invitationCode, isHost}) => {
           invitationCode: invitationCode,
           token: accessToken,
         }
-        gameSkEmit('start-game', msg)
+        game.gameSkEmit('start-game', msg)
         gtag.event({
           action: '[start game]',
           params: {
-            quizId: gameSession?.quizId,
-            invitationCode: gameSession?.invitationCode,
+            quizId: game.gameSession?.quizId,
+            invitationCode: game.gameSession?.invitationCode,
           },
         })
       }
@@ -179,14 +167,14 @@ const LobbyScreen: FC<LobbyScreenProps> = ({invitationCode, isHost}) => {
   }
 
   function renderHostName() {
-    if (!gameSession) return
-    let hostName = gameSession.host.name
-    if (hostName.length == 0) hostName = gameSession.host.username
+    if (!game.gameSession) return
+    let hostName = game.gameSession.host.name
+    if (hostName.length == 0) hostName = game.gameSession.host.username
     return (
       <>
         <div className={styles.gameOfHost}>
           <PlayerLobbyItem
-            avatar={gameSession?.host?.avatar}
+            avatar={game.gameSession?.host?.avatar}
             isHost={true}
             displayName={'Chủ phòng: ' + hostName}
             bgColor={'#009883'}
@@ -237,7 +225,7 @@ const LobbyScreen: FC<LobbyScreenProps> = ({invitationCode, isHost}) => {
                 <div>
                   {isHost
                     ? user?.name
-                    : `${gameSession?.nickName} ${
+                    : `${game.gameSession?.nickName} ${
                         authContext.isAuth ? `(${user?.name})` : ''
                       }`}
                 </div>
@@ -268,19 +256,19 @@ const LobbyScreen: FC<LobbyScreenProps> = ({invitationCode, isHost}) => {
             <div className="text-white d-flex w-100 align-items-center gap-3 bg-black bg-opacity-50 p-3">
               <div className="w-100">
                 <div className="text-truncate">
-                  Tên quiz: {gameSession?.quiz?.title}
+                  Tên quiz: {game.gameSession?.quiz?.title}
                 </div>
                 <div className="">
-                  Số câu: {gameSession?.quiz?.questions?.length}
+                  Số câu: {game.gameSession?.quiz?.questions?.length}
                 </div>
                 <div>
                   Chế độ chơi:{' '}
-                  {GAME_MODE_MAPPING[gameSession?.mode || '10CLASSIC']}
+                  {GAME_MODE_MAPPING[game.gameSession?.mode || '10CLASSIC']}
                 </div>
               </div>
               {isHost && (
                 <MyButton size="sm" className="text-white text-nowrap"
-                onClick={() => { window.open(`http://${window.location.host}/quiz/creator/${gameSession?.quizId}`, "Quiwi", "left=100,top=100,width=620,height=820")}}>
+                onClick={() => { window.open(`http://${window.location.host}/quiz/creator/${game.gameSession?.quizId}`, "Quiwi", "left=100,top=100,width=620,height=820")}}>
                   Chi tiết quiz
                 </MyButton>
               )}
