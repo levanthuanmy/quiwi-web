@@ -9,6 +9,7 @@ import Cookies from 'universal-cookie'
 import UserItemSelectionModal from '../../components/ItemSelectionModal/ItemSelectionModal'
 import Loading from '../../components/Loading/Loading'
 import LoadingFullScreen from '../../components/LoadingFullScreen/Loading'
+import MyButton from '../../components/MyButton/MyButton'
 import MyModal from '../../components/MyModal/MyModal'
 import NavBar from '../../components/NavBar/NavBar'
 import SummaryInfo from '../../components/Profile/SummaryInfo/SummaryInfo'
@@ -170,110 +171,121 @@ const ProfilePage: NextPage = () => {
     }
   }
 
-  const setCurrentBadge = async (badgeId: number) => {
-    try {
-      const res = await get<TApiResponse<null>>(
-        `/api/users/set-badge/${badgeId}`,
-        true
-      )
-      console.log('==== ~ setCurrentBadge ~ res', res)
-      if (res.code === 200) {
-        getUserProfile()
-      } else {
-        console.log(res)
-      }
-    } catch (error) {
-      console.log('==== ~ setCurrentBadge ~ error', error)
-    }
-  }
-
   return userResponse && authUser ? (
     <div className="bg-light">
       <NavBar showMenuBtn={false} isExpand={false} setIsExpand={() => null} />
       <Container className="pt-80px min-vh-100 pb-3" fluid="lg">
-        <div className="d-flex flex-column flex-md-row mt-3 gap-4 p-12px shadow-sm rounded-20px bg-white position-relative">
-          <Image
-            alt="avatar"
-            src={authUser?.avatar || '/assets/default-avatar.png'}
-            width={160}
-            height={160}
-            className="rounded-14px cursor-pointer"
-            onClick={() => setShowAvatarSelectionModal(true)}
-          />
-
-          <div className="w-100 d-flex flex-column">
-            <div className="h-100">
-              <div className="fs-32px fw-medium">{userResponse.user.name}</div>
-              <div className="text-secondary">
-                @{userResponse.user.username}
+        <Row className="d-flex">
+          <Col>
+            <div className="d-flex flex-column mt-3 gap-4 p-12px shadow-sm rounded-20px bg-white position-relative">
+              <div className="text-center">
+                <Image
+                  alt="avatar"
+                  src={authUser?.avatar || '/assets/default-avatar.png'}
+                  width={240}
+                  height={240}
+                  className="rounded-14px cursor-pointer"
+                  onClick={() => setShowAvatarSelectionModal(true)}
+                />
               </div>
-              {userResponse.user.isVerified ? (
-                <div className="mt-1 text-success fw-bold">
-                  Tài khoản đã được xác thực{' '} <i className="bi bi-check-lg"></i>
+
+              <div className="w-100 d-flex flex-column">
+                <div className="h-100">
+                  <div className="fs-48px fw-medium">
+                    {userResponse.user.name}
+                  </div>
+                  <div className="text-secondary fs-24px">
+                    @{userResponse.user.username}
+                  </div>
+                  {userResponse.user.isVerified ? (
+                    <div className="mt-1 text-success fw-bold">
+                      Tài khoản đã được xác thực{' '}
+                      <i className="bi bi-check-lg"></i>
+                    </div>
+                  ) : null}
                 </div>
-              ) : null}
-            </div>
 
-            <SummaryInfo
-              userResponse={userResponse}
-              followers={followerUsers?.items as TFollowUsers[]}
-              followings={followingUsers?.items as TFollowUsers[]}
-            />
-          </div>
-          <Link href="/profile/edit" passHref={true}>
-            <Button
-              variant="light"
-              className="bi bi-pencil-fill rounded-10px position-absolute fs-14px py-1 px-2 text-secondary border"
-              style={{ right: 12 }}
-            />
-          </Link>
-        </div>
-
-        <Row className="m-0 mt-3">
-          <Col xs="12" lg="6" className="ps-0 pe-0 pe-lg-2 pb-12px">
-            <div className="bg-white p-12px rounded-20px shadow-sm d-flex flex-column gap-3 overflow-hidden h-100 justify-content-between">
-              <div className="fs-24px fw-medium d-flex gap-3 align-items-center">
-                Thành Tựu
-                <div
-                  style={{ width: 32, height: 32 }}
-                  className="fs-16px bg-secondary bg-opacity-25 rounded-10px d-flex justify-content-center align-items-center"
-                >
-                  {userResponse?.badges.length}
+                <SummaryInfo
+                  userResponse={userResponse}
+                  followers={followerUsers?.items as TFollowUsers[]}
+                  followings={followingUsers?.items as TFollowUsers[]}
+                />
+              </div>
+              <div className="text-center">
+                <div className="mt-2 mb-1 fw-medium fs-18px text-muted text-center">
+                  {userResponse.currentBadge?.title}
+                </div>
+                <div>
+                  {userResponse.currentBadge?.picture ? (
+                    <Image
+                      alt="badge"
+                      src={userResponse.currentBadge?.picture}
+                      width={80}
+                      height={80}
+                      className="rounded-circle"
+                    />
+                  ) : null}
                 </div>
               </div>
-              <BadgesPage userBadges={userResponse?.badges} />
 
-              {/* <div className="text-center border-top pt-12px pb-1 text-secondary opacity-75">
-                Xem Tất Cả
-              </div> */}
+              <MyButton
+                className=" text-white my-auto"
+                title="Chinh sửa thông tin"
+                onClick={() => router.push('/profile/edit')}
+              >
+                Chinh sửa thông tin
+              </MyButton>
             </div>
           </Col>
-          <Col xs="12" lg="6" className="pe-0 ps-0 ps-lg-2 pb-12px">
-            <div className="bg-white p-12px rounded-20px shadow-sm d-flex flex-column gap-3 overflow-hidden h-100 justify-content-between">
-              <div className="fs-24px fw-medium d-flex gap-3 align-items-center">
-                Vật Phẩm
-                <div
-                  style={{ width: 30, height: 30 }}
-                  className="fs-16px bg-secondary bg-opacity-25 rounded-10px d-flex justify-content-center align-items-center"
-                >
-                  {userItems?.length ?? <Loading />}
-                </div>
-              </div>
-              {itemCategoriesResponse && userItems ? (
-                <UserItemPage
-                  itemCategories={itemCategoriesResponse}
-                  userItems={userItems}
-                />
-              ) : (
-                <Loading />
-              )}
+          <Col xs={12} md={7} lg={8}>
+            <Row className="m-0 mt-3">
+              <Col xs="12" className="ps-0 pe-0 pe-lg-2 pb-12px">
+                <div className="bg-white p-12px rounded-20px shadow-sm d-flex flex-column gap-3 overflow-hidden h-100 justify-content-between">
+                  <div className="fs-24px fw-medium d-flex gap-3 align-items-center">
+                    Thành Tựu
+                    <div
+                      style={{ width: 32, height: 32 }}
+                      className="fs-16px bg-secondary bg-opacity-25 rounded-10px d-flex justify-content-center align-items-center"
+                    >
+                      {userResponse?.badges.length}
+                    </div>
+                  </div>
+                  <BadgesPage userBadges={userResponse?.badges} />
 
-              {/* <div className="text-center border-top pt-12px pb-1 text-secondary opacity-75">
+                  {/* <div className="text-center border-top pt-12px pb-1 text-secondary opacity-75">
                 Xem Tất Cả
               </div> */}
-            </div>
+                </div>
+              </Col>
+              <Col xs="12" className="pe-0 ps-0 ps-lg-2 pb-12px">
+                <div className="bg-white p-12px rounded-20px shadow-sm d-flex flex-column gap-3 overflow-hidden h-100 justify-content-between">
+                  <div className="fs-24px fw-medium d-flex gap-3 align-items-center">
+                    Vật Phẩm
+                    <div
+                      style={{ width: 30, height: 30 }}
+                      className="fs-16px bg-secondary bg-opacity-25 rounded-10px d-flex justify-content-center align-items-center"
+                    >
+                      {userItems?.length ?? <Loading />}
+                    </div>
+                  </div>
+                  {itemCategoriesResponse && userItems ? (
+                    <UserItemPage
+                      itemCategories={itemCategoriesResponse}
+                      userItems={userItems}
+                    />
+                  ) : (
+                    <Loading />
+                  )}
+
+                  {/* <div className="text-center border-top pt-12px pb-1 text-secondary opacity-75">
+                Xem Tất Cả
+              </div> */}
+                </div>
+              </Col>
+            </Row>
           </Col>
         </Row>
+
         {authUser ? (
           <UserItemSelectionModal
             onHide={() => setShowAvatarSelectionModal(false)}

@@ -113,21 +113,22 @@ const SummaryInfo: FC<SummaryInfoProps> = ({
 
   return (
     <>
-      <Row className="mx-0 mt-3">
+      <Row className="mx-0 mt-3 flex-row flex-md-column">
         <Col className="p-0 d-flex gap-2 align-items-center">
           <div
             className="shadow-sm d-flex justify-content-center align-items-center rounded-14px"
-            style={{ width: 45, height: 45 }}
+            style={{ width: 40, height: 40 }}
           >
             <i className="bi bi-trophy-fill" />
           </div>
           <div>
-            <div className="fs-24px line-height-normal fw-medium">
-              {userResponse?.badges.length}
-            </div>
-            <div className="text-secondary fs-14px d-none d-md-block">
+            <div className="fs line-height-normal text-secondary">
+              <span className="text-dark fw-medium">
+                {userResponse?.badges.length}
+              </span>{' '}
               Danh Hiệu
             </div>
+            <div className="text-secondary fs-14px d-none d-md-block"></div>
           </div>
         </Col>
 
@@ -140,15 +141,13 @@ const SummaryInfo: FC<SummaryInfoProps> = ({
         >
           <div
             className="shadow-sm d-flex justify-content-center align-items-center rounded-14px"
-            style={{ width: 45, height: 45 }}
+            style={{ width: 40, height: 40 }}
           >
             <i className="bi bi-people-fill fs-18px" />
           </div>
           <div>
-            <div className="fs-24px line-height-normal fw-medium">
-              {followers?.length}
-            </div>
-            <div className="text-secondary fs-14px d-none d-md-block">
+            <div className="line-height-normal text-secondary">
+              <span className="fw-medium text-black"> {followers?.length}</span>{' '}
               Lượt Theo Dõi
             </div>
           </div>
@@ -163,15 +162,13 @@ const SummaryInfo: FC<SummaryInfoProps> = ({
         >
           <div
             className="shadow-sm d-flex justify-content-center align-items-center rounded-14px"
-            style={{ width: 45, height: 45 }}
+            style={{ width: 40, height: 40 }}
           >
             <i className="bi bi-person-heart fs-18px" />
           </div>
           <div>
-            <div className="fs-24px line-height-normal fw-medium">
-              {followings?.length}
-            </div>
-            <div className="text-secondary fs-14px d-none d-md-block">
+            <div className=" line-height-normal text-secondary">
+              <span className="text-black fw-medium">{followings?.length}</span>{' '}
               Đang Theo Dõi
             </div>
           </div>
