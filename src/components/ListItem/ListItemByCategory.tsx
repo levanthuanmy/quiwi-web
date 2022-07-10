@@ -1,8 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import classNames from 'classnames'
 import { FC, useEffect, useState } from 'react'
-import { Col, Collapse, Row } from 'react-bootstrap'
-import { TItem, TUserItems } from '../../types/types'
+import { Collapse, Row } from 'react-bootstrap'
+import { TUserItems } from '../../types/types'
 import Item from '../Item/Item'
 import styles from './ListItemByCategory.module.css'
 
@@ -24,10 +24,13 @@ const ListItemByCategory: FC<IListItem> = (props) => {
       try {
         if (props.userItems) {
           let items: TUserItems[] = []
-          props.userItems.forEach((element) => {
-            if (element.item != null)
-              if (element.item.itemCategoryId === props.id) items.push(element)
-          })
+
+          for (const userItem of props.userItems) {
+            if (userItem.item != null)
+              if (userItem.item.itemCategoryId === props.id) {
+                items.push(userItem)
+              }
+          }
           setItemsRes(items)
         }
       } catch (error) {
@@ -55,9 +58,9 @@ const ListItemByCategory: FC<IListItem> = (props) => {
         </Row>
       </div>
 
-      <Collapse in={isCollapse} className={classNames('', styles.content)}>
-        <div className="justify-content-md-center">
-          <div className={classNames('', styles.itemList)}>
+      <div className={classNames('', styles.content)}>
+        <div className="d-flex ">
+          <div className={classNames('d-flex', styles.itemList)}>
             {itemsRes?.length === 0 ? (
               <div>Không có vật phẩm</div>
             ) : (
@@ -76,7 +79,7 @@ const ListItemByCategory: FC<IListItem> = (props) => {
             )}
           </div>
         </div>
-      </Collapse>
+      </div>
     </div>
   )
 }

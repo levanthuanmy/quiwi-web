@@ -1,10 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import _ from 'lodash'
 import { NextPage } from 'next'
-import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
-import { Button, Col, Container, Image, Modal, Row } from 'react-bootstrap'
+import { Col, Container, Image, Modal, Row } from 'react-bootstrap'
 import Cookies from 'universal-cookie'
 import UserItemSelectionModal from '../../components/ItemSelectionModal/ItemSelectionModal'
 import Loading from '../../components/Loading/Loading'
@@ -13,6 +12,8 @@ import MyButton from '../../components/MyButton/MyButton'
 import MyModal from '../../components/MyModal/MyModal'
 import NavBar from '../../components/NavBar/NavBar'
 import SummaryInfo from '../../components/Profile/SummaryInfo/SummaryInfo'
+import ProfileBadge from '../../components/ProfileInformation/ProfileBadge'
+import ProfileInformation from '../../components/ProfileInformation/ProfileInformation'
 import { useAuth } from '../../hooks/useAuth/useAuth'
 import { get, post } from '../../libs/api'
 import {
@@ -174,8 +175,8 @@ const ProfilePage: NextPage = () => {
   return userResponse && authUser ? (
     <div className="bg-light">
       <NavBar showMenuBtn={false} isExpand={false} setIsExpand={() => null} />
-      <Container className="pt-80px min-vh-100 pb-3" fluid="lg">
-        <Row className="d-flex">
+      <Container fluid={true} className="pt-80px min-vh-100 pb-3">
+        <Row>
           <Col>
             <div className="d-flex flex-column mt-3 gap-4 p-12px shadow-sm rounded-20px bg-white position-relative">
               <div className="text-center">
@@ -190,20 +191,7 @@ const ProfilePage: NextPage = () => {
               </div>
 
               <div className="w-100 d-flex flex-column">
-                <div className="h-100">
-                  <div className="fs-48px fw-medium">
-                    {userResponse.user.name}
-                  </div>
-                  <div className="text-secondary fs-24px">
-                    @{userResponse.user.username}
-                  </div>
-                  {userResponse.user.isVerified ? (
-                    <div className="mt-1 text-success fw-bold">
-                      Tài khoản đã được xác thực{' '}
-                      <i className="bi bi-check-lg"></i>
-                    </div>
-                  ) : null}
-                </div>
+                <ProfileInformation user={userResponse.user} />
 
                 <SummaryInfo
                   userResponse={userResponse}
@@ -211,23 +199,9 @@ const ProfilePage: NextPage = () => {
                   followings={followingUsers?.items as TFollowUsers[]}
                 />
               </div>
-              <div className="text-center">
-                <div className="mt-2 mb-1 fw-medium fs-18px text-muted text-center">
-                  {userResponse.currentBadge?.title}
-                </div>
-                <div>
-                  {userResponse.currentBadge?.picture ? (
-                    <Image
-                      alt="badge"
-                      src={userResponse.currentBadge?.picture}
-                      width={80}
-                      height={80}
-                      className="rounded-circle"
-                    />
-                  ) : null}
-                </div>
-              </div>
-
+              {userResponse.currentBadge ? (
+                <ProfileBadge currentBadge={userResponse.currentBadge} />
+              ) : null}
               <MyButton
                 className=" text-white my-auto"
                 title="Chinh sửa thông tin"
@@ -237,9 +211,9 @@ const ProfilePage: NextPage = () => {
               </MyButton>
             </div>
           </Col>
-          <Col xs={12} md={7} lg={8}>
-            <Row className="m-0 mt-3">
-              <Col xs="12" className="ps-0 pe-0 pe-lg-2 pb-12px">
+          <Col xs={12} md={7} xl={8}>
+            <Row className="m-0 mt-3 flex-column">
+              <Row className="ps-0 pe-0 pe-lg-2 pb-12px">
                 <div className="bg-white p-12px rounded-20px shadow-sm d-flex flex-column gap-3 overflow-hidden h-100 justify-content-between">
                   <div className="fs-24px fw-medium d-flex gap-3 align-items-center">
                     Thành Tựu
@@ -256,8 +230,8 @@ const ProfilePage: NextPage = () => {
                 Xem Tất Cả
               </div> */}
                 </div>
-              </Col>
-              <Col xs="12" className="pe-0 ps-0 ps-lg-2 pb-12px">
+              </Row>
+              <Row className="pe-0 ps-0 ps-lg-2 pb-12px">
                 <div className="bg-white p-12px rounded-20px shadow-sm d-flex flex-column gap-3 overflow-hidden h-100 justify-content-between">
                   <div className="fs-24px fw-medium d-flex gap-3 align-items-center">
                     Vật Phẩm
@@ -281,7 +255,7 @@ const ProfilePage: NextPage = () => {
                 Xem Tất Cả
               </div> */}
                 </div>
-              </Col>
+              </Row>
             </Row>
           </Col>
         </Row>

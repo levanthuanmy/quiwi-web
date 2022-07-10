@@ -6,6 +6,8 @@ import { Button, Col, Container, Image, Row } from 'react-bootstrap'
 import Loading from '../../components/Loading/Loading'
 import NavBar from '../../components/NavBar/NavBar'
 import SummaryInfo from '../../components/Profile/SummaryInfo/SummaryInfo'
+import ProfileBadge from '../../components/ProfileInformation/ProfileBadge'
+import ProfileInformation from '../../components/ProfileInformation/ProfileInformation'
 import { useAuth } from '../../hooks/useAuth/useAuth'
 import { get, post } from '../../libs/api'
 import {
@@ -158,89 +160,91 @@ const GetUserProfilePage: NextPage = () => {
   return userProfile && user ? (
     <div className="bg-light">
       <NavBar showMenuBtn={false} isExpand={false} setIsExpand={() => null} />
-      <Container className="pt-80px min-vh-100 pb-3" fluid="lg">
-        <div className="d-flex flex-column flex-md-row mt-3 gap-4 p-12px align-items-center shadow-sm rounded-20px bg-white position-relative">
-          <Image
-            alt="avatar"
-            src={user?.avatar || '/assets/default-avatar.png'}
-            width={160}
-            height={160}
-            className="rounded-14px cursor-pointer"
-          />
+      <Container fluid={true} className="pt-80px min-vh-100 pb-3">
+        <Row>
+          <Col>
+            <div className="d-flex flex-column  mt-3 gap-4 p-12px align-items-center shadow-sm rounded-20px bg-white position-relative">
+              <Image
+                alt="avatar"
+                src={user?.avatar || '/assets/default-avatar.png'}
+                width={240}
+                height={240}
+                className="rounded-14px"
+              />
 
-          <div className="w-100 d-flex flex-column">
-            <div className="h-100  align-self-center align-self-md-start text-center text-md-start">
-              <div className="fs-32px fw-medium">{userProfile.user.name}</div>
-              <div className="text-secondary">@{userProfile.user.username}</div>
-              {userProfile.user.isVerified ? (
-                <div className="mt-1 text-success fw-bold">
-                  Tài khoản đã được xác thực <i className="bi bi-check-lg"></i>
+              <div className="w-100 d-flex flex-column">
+                <ProfileInformation user={userProfile.user} />
+                <div className=" align-self-center align-self-md-start mt-2">
+                  <Button
+                    className={
+                      userProfile.isFollowing
+                        ? 'bg-white border-dark '
+                        : 'text-white'
+                    }
+                    onClick={followOrUnfollowUser}
+                  >
+                    {userProfile.isFollowing ? 'Bỏ theo dõi' : 'Theo dõi'}
+                  </Button>
                 </div>
-              ) : null}
-            </div>
-            <div className=" align-self-center align-self-md-start mt-2">
-              <Button
-                className={
-                  userProfile.isFollowing
-                    ? 'bg-white border-dark '
-                    : 'text-white'
-                }
-                onClick={followOrUnfollowUser}
-              >
-                {userProfile.isFollowing ? 'Bỏ theo dõi' : 'Theo dõi'}
-              </Button>
-            </div>
-            <SummaryInfo
-              userResponse={userProfile}
-              followers={followerUsers?.items as TFollowUsers[]}
-              followings={followingUsers?.items as TFollowUsers[]}
-            />
-          </div>
-        </div>
+                <SummaryInfo
+                  userResponse={userProfile}
+                  followers={followerUsers?.items as TFollowUsers[]}
+                  followings={followingUsers?.items as TFollowUsers[]}
+                />
 
-        <Row className="m-0 mt-3">
-          <Col xs="12" lg="6" className="ps-0 pe-0 pe-lg-2 pb-12px">
-            <div className="bg-white p-12px rounded-20px shadow-sm d-flex flex-column gap-3 overflow-hidden h-100 justify-content-between">
-              <div className="fs-24px fw-medium d-flex gap-3 align-items-center">
-                Thành Tựu
-                <div
-                  style={{ width: 32, height: 32 }}
-                  className="fs-16px bg-secondary bg-opacity-25 rounded-10px d-flex justify-content-center align-items-center"
-                >
-                  {userProfile?.badges.length}
-                </div>
-              </div>
-              <BadgesPage userBadges={userProfile?.badges} />
-
-              <div className="text-center border-top pt-12px pb-1 text-secondary opacity-75">
-                Xem Tất Cả
+                {userProfile.currentBadge ? (
+                  <ProfileBadge currentBadge={userProfile.currentBadge} />
+                ) : null}
               </div>
             </div>
           </Col>
-          <Col xs="12" lg="6" className="pe-0 ps-0 ps-lg-2 pb-12px">
-            <div className="bg-white p-12px rounded-20px shadow-sm d-flex flex-column gap-3 overflow-hidden h-100 justify-content-between">
-              <div className="fs-24px fw-medium d-flex gap-3 align-items-center">
-                Vật Phẩm
-                <div
-                  style={{ width: 30, height: 30 }}
-                  className="fs-16px bg-secondary bg-opacity-25 rounded-10px d-flex justify-content-center align-items-center"
-                >
-                  {userItems?.length ?? <Loading />}
-                </div>
-              </div>
-              {itemCategoriesResponse && userItems ? (
-                <UserItemPage
-                  itemCategories={itemCategoriesResponse}
-                  userItems={userItems}
-                />
-              ) : (
-                <Loading />
-              )}
 
+          <Col xs={12} md={7} xl={8}>
+            <Row className="m-0 mt-3">
+              <Row className="ps-0 pe-0 pe-lg-2 pb-12px">
+                <div className="bg-white p-12px rounded-20px shadow-sm d-flex flex-column gap-3 overflow-hidden h-100 justify-content-between">
+                  <div className="fs-24px fw-medium d-flex gap-3 align-items-center">
+                    Thành Tựu
+                    <div
+                      style={{ width: 32, height: 32 }}
+                      className="fs-16px bg-secondary bg-opacity-25 rounded-10px d-flex justify-content-center align-items-center"
+                    >
+                      {userProfile?.badges.length}
+                    </div>
+                  </div>
+                  <BadgesPage userBadges={userProfile?.badges} />
+
+                  {/* <div className="text-center border-top pt-12px pb-1 text-secondary opacity-75">
+                Xem Tất Cả
+              </div> */}
+                </div>
+              </Row>
+              <Row className="pe-0 ps-0 ps-lg-2 pb-12px">
+                <div className="bg-white p-12px rounded-20px shadow-sm d-flex flex-column gap-3 overflow-hidden h-100 justify-content-between">
+                  <div className="fs-24px fw-medium d-flex gap-3 align-items-center">
+                    Vật Phẩm
+                    <div
+                      style={{ width: 30, height: 30 }}
+                      className="fs-16px bg-secondary bg-opacity-25 rounded-10px d-flex justify-content-center align-items-center"
+                    >
+                      {userItems?.length ?? <Loading />}
+                    </div>
+                  </div>
+                  {itemCategoriesResponse && userItems ? (
+                    <UserItemPage
+                      itemCategories={itemCategoriesResponse}
+                      userItems={userItems}
+                    />
+                  ) : (
+                    <Loading />
+                  )}
+                  {/* 
               <div className="text-center border-top pt-12px pb-1 text-secondary opacity-75">
                 Xem Tất Cả
-              </div>
-            </div>
+              </div> */}
+                </div>
+              </Row>
+            </Row>
           </Col>
         </Row>
       </Container>

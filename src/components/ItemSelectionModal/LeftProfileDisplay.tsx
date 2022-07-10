@@ -1,5 +1,5 @@
 import { FC } from 'react'
-import { Col, Image, Modal, Row } from 'react-bootstrap'
+import { Image } from 'react-bootstrap'
 import { TBadge } from '../../types/types'
 
 export const LeftProfileDisplay: FC<{
