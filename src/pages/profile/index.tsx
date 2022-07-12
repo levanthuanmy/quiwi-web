@@ -3,17 +3,14 @@ import _ from 'lodash'
 import { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
-import { Col, Container, Image, Modal, Row } from 'react-bootstrap'
+import { Col, Container, Modal, Row } from 'react-bootstrap'
 import Cookies from 'universal-cookie'
 import UserItemSelectionModal from '../../components/ItemSelectionModal/ItemSelectionModal'
-import Loading from '../../components/Loading/Loading'
 import LoadingFullScreen from '../../components/LoadingFullScreen/Loading'
-import MyButton from '../../components/MyButton/MyButton'
 import MyModal from '../../components/MyModal/MyModal'
 import NavBar from '../../components/NavBar/NavBar'
-import SummaryInfo from '../../components/Profile/SummaryInfo/SummaryInfo'
-import ProfileBadge from '../../components/ProfileInformation/ProfileBadge'
-import ProfileInformation from '../../components/ProfileInformation/ProfileInformation'
+import LeftProfileInformation from '../../components/ProfileInformation/LeftProfileInformation'
+import ProfileItems from '../../components/ProfileInformation/ProfileItems'
 import { useAuth } from '../../hooks/useAuth/useAuth'
 import { get, post } from '../../libs/api'
 import {
@@ -25,8 +22,6 @@ import {
   TUserItems,
   TUserProfile,
 } from '../../types/types'
-import BadgesPage from '../badges'
-import UserItemPage from '../user-items'
 
 const ProfilePage: NextPage = () => {
   const [user, setUser] = useState<TUser>()
@@ -175,89 +170,23 @@ const ProfilePage: NextPage = () => {
   return userResponse && authUser ? (
     <div className="bg-light">
       <NavBar showMenuBtn={false} isExpand={false} setIsExpand={() => null} />
-      <Container fluid={true} className="pt-80px min-vh-100 pb-3">
-        <Row>
+      <Container fluid={'lg'} className="pt-80px min-vh-100 pb-3">
+        <Row className="justify-content-between">
           <Col>
-            <div className="d-flex flex-column mt-3 gap-4 p-12px shadow-sm rounded-20px bg-white position-relative">
-              <div className="text-center">
-                <Image
-                  alt="avatar"
-                  src={authUser?.avatar || '/assets/default-avatar.png'}
-                  width={240}
-                  height={240}
-                  className="rounded-14px cursor-pointer"
-                  onClick={() => setShowAvatarSelectionModal(true)}
-                />
-              </div>
-
-              <div className="w-100 d-flex flex-column">
-                <ProfileInformation user={userResponse.user} />
-
-                <SummaryInfo
-                  userResponse={userResponse}
-                  followers={followerUsers?.items as TFollowUsers[]}
-                  followings={followingUsers?.items as TFollowUsers[]}
-                />
-              </div>
-              {userResponse.currentBadge ? (
-                <ProfileBadge currentBadge={userResponse.currentBadge} />
-              ) : null}
-              <MyButton
-                className=" text-white my-auto"
-                title="Chinh sửa thông tin"
-                onClick={() => router.push('/profile/edit')}
-              >
-                Chinh sửa thông tin
-              </MyButton>
-            </div>
+            <LeftProfileInformation
+              followerUsers={followerUsers}
+              followingUsers={followingUsers}
+              user={authUser}
+              userResponse={userResponse}
+              setShowAvatarSelectionModal={setShowAvatarSelectionModal}
+              isAuth={true}
+            />
           </Col>
-          <Col xs={12} md={7} xl={8}>
-            <Row className="m-0 mt-3 flex-column">
-              <Row className="ps-0 pe-0 pe-lg-2 pb-12px">
-                <div className="bg-white p-12px rounded-20px shadow-sm d-flex flex-column gap-3 overflow-hidden h-100 justify-content-between">
-                  <div className="fs-24px fw-medium d-flex gap-3 align-items-center">
-                    Thành Tựu
-                    <div
-                      style={{ width: 32, height: 32 }}
-                      className="fs-16px bg-secondary bg-opacity-25 rounded-10px d-flex justify-content-center align-items-center"
-                    >
-                      {userResponse?.badges.length}
-                    </div>
-                  </div>
-                  <BadgesPage userBadges={userResponse?.badges} />
-
-                  {/* <div className="text-center border-top pt-12px pb-1 text-secondary opacity-75">
-                Xem Tất Cả
-              </div> */}
-                </div>
-              </Row>
-              <Row className="pe-0 ps-0 ps-lg-2 pb-12px">
-                <div className="bg-white p-12px rounded-20px shadow-sm d-flex flex-column gap-3 overflow-hidden h-100 justify-content-between">
-                  <div className="fs-24px fw-medium d-flex gap-3 align-items-center">
-                    Vật Phẩm
-                    <div
-                      style={{ width: 30, height: 30 }}
-                      className="fs-16px bg-secondary bg-opacity-25 rounded-10px d-flex justify-content-center align-items-center"
-                    >
-                      {userItems?.length ?? <Loading />}
-                    </div>
-                  </div>
-                  {itemCategoriesResponse && userItems ? (
-                    <UserItemPage
-                      itemCategories={itemCategoriesResponse}
-                      userItems={userItems}
-                    />
-                  ) : (
-                    <Loading />
-                  )}
-
-                  {/* <div className="text-center border-top pt-12px pb-1 text-secondary opacity-75">
-                Xem Tất Cả
-              </div> */}
-                </div>
-              </Row>
-            </Row>
-          </Col>
+          <ProfileItems
+            itemCategoriesResponse={itemCategoriesResponse}
+            userItems={userItems}
+            userProfile={userResponse}
+          />
         </Row>
 
         {authUser ? (

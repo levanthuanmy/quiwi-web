@@ -1,7 +1,6 @@
 import classNames from 'classnames'
 import { FC } from 'react'
 import { Image } from 'react-bootstrap'
-import FlyingAnimation from '../GameComponents/FlyingAnimation/FlyingAnimation'
 import styles from './Item.module.css'
 
 type IItem = {
@@ -32,7 +31,7 @@ const Item: FC<IItem> = (props) => {
       <Image
         className={classNames('w-100 h-100 object-fit-cover')}
         src={props.avatar}
-        alt="coin"
+        alt="item"
       />
     </div>
   )
