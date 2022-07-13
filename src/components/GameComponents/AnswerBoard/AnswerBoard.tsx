@@ -1,11 +1,9 @@
 import classNames from 'classnames'
 import cn from 'classnames'
 import {useRouter} from 'next/router'
-import React, {FC, memo, useContext, useEffect, useRef, useState} from 'react'
+import React, {FC, memo, useContext, useEffect, useState} from 'react'
 import {useGameSession} from '../../../hooks/useGameSession/useGameSession'
-
-import {useLocalStorage} from '../../../hooks/useLocalStorage/useLocalStorage'
-import {TQuestion, TViewResult,} from '../../../types/types'
+import {TAnswerSubmit, TQuestion, TViewResult,} from '../../../types/types'
 import GameSessionRanking from '../GameSessionRanking/GameSessionRanking'
 import {QuestionMedia} from '../QuestionMedia/QuestionMedia'
 import styles from './AnswerBoard.module.css'
@@ -22,9 +20,7 @@ import LoadingBoard from "../LoadingBoard/LoadingBoard";
 import {useToasts} from "react-toast-notifications";
 import {useTimer} from "../../../hooks/useTimer/useTimer";
 import {SOUND_EFFECT} from '../../../utils/constants'
-import {useUserSetting} from "../../../hooks/useUserSetting/useUserSetting";
 import {useSound} from "../../../hooks/useSound/useSound";
-import {useUser} from "../../../hooks/useUser/useUser";
 
 
 type AnswerBoardProps = {
@@ -37,75 +33,49 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
                                              isShowHostControl,
                                            }) => {
   const gameManager = useGameSession()
-  const gameSessionPlayer = gameManager.player
-  const isHost = gameManager.isHost;
-
   const sound = useSound()
-  const setting = useUserSetting()
   const timer = useTimer()
-  const user = useUser()
   const exitContext = useContext(ExitContext)
-
-  // lưu qid để hiển thị bên trang bộ quiz
-  const [lsCurrentQID, setLsCurrentQID] = useLocalStorage('currentQID', '-1')
-
-  const [currentQID, setCurrentQID] = useState<number>(-1)
-  const [quizLength, setQuizLength] = useState<number>(0)
-
   const router = useRouter()
 
-  const [currentQuestion, setCurrentQuestion] = useState<TQuestion | null>(null)
+  let answerSectionFactory: AnswerSectionFactory
 
   const [isShowNext, setIsShowNext] = useState<boolean>(false)
   const [isShowEndGame, setIsShowEndGame] = useState<boolean>(false)
-
   const [showRanking, setShowRanking] = useState<boolean>(false)
   const [rankingData, setRankingData] = useState<any[]>([])
   const [answersStatistic, setAnswersStatistic] = useState<Record<string, number>>({})
-
   const [loading, setLoading] = useState<string | null>(null)
-
-  const _numSubmission = useRef<number>(0)
   const [numSubmission, setNumSubmission] = useState<number>(0)
   const [viewResultData, setViewResultData] = useState<TViewResult>()
-
   const {addToast} = useToasts()
   const {fromMedium} = useScreenSize()
-  let answerSectionFactory: AnswerSectionFactory
 
   useEffect(() => {
     handleSocket()
     resetState()
-    console.log("=>(AnswerBoard.tsx:95) resetState");
   }, [])
 
-  useEffect(() => {
-    if (!gameManager.gameSession) return
-    if (currentQID < 0) {
-      const firstQuestion = gameManager.getQuestionWithID(0)
-      if (firstQuestion) {
-        setCurrentQID(0)
-        displayQuestion(firstQuestion)
-        timer.setDefaultDuration(firstQuestion.duration)
-        setNumSubmission(0)
-      }
-      const quizLength = gameManager.gameSession.quiz.questions.length
-      if (quizLength) {
-        setQuizLength(quizLength)
-      }
+  const displayFirstQuestion = () => {
+    if (!gameManager.currentQuestion || !gameManager.gameSession) return
+    if (gameManager.currentQuestion.orderPosition != 0) {
+      gameManager.submittedAnswer
+    } else {
+      console.log("=>(AnswerBoard.tsx:82) gameManager.currentQuestion", gameManager.currentQuestion);
+      timer.setDefaultDuration(gameManager.currentQuestion.duration)
+      setNumSubmission(0)
     }
-  }, [gameManager.gameSession])
+  }
 
-  useEffect(() => {
-    setIsShowEndGame(currentQID == quizLength - 1 && !timer.isCounting)
-  }, [currentQID, quizLength])
-
-  const displayQuestion = (question: TQuestion) => {
-    if (question && question.duration > 0) setCurrentQuestion(question)
+  function checkEndGame() {
+    if (!gameManager.currentQuestion) return
+    if (gameManager.gameSession?.quiz?.questions?.length) {
+      setIsShowEndGame(gameManager.currentQuestion?.orderPosition == gameManager.gameSession?.quiz?.questions?.length - 1 && !timer.isCounting)
+    }
   }
 
   function resetState() {
-    if (!isNextEmitted && !currentQuestion) {
+    if (!isNextEmitted && !gameManager.currentQuestion) {
       setLoading('Chuẩn bị!')
       sound.playSound(SOUND_EFFECT['READY'])
     } else setLoading(null)
@@ -115,13 +85,17 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
     setIsShowNext(false)
     setIsNextEmitted(false)
     setShowRanking(false)
+
+    displayFirstQuestion()
   }
 
   const handleSocket = () => {
-    if (!gameManager.gameSocket) return
+    if (!gameManager.gameSocket) {
+      gameManager.connectGameSocket()
+    }
+
     gameManager.gameSkOnce('game-started', (data) => {
-      _numSubmission.current = 0
-      setNumSubmission(_numSubmission.current)
+      setNumSubmission(0)
       setIsNextEmitted(false)
       timer.startCounting(data.question.duration ?? 0)
       setLoading(null)
@@ -129,9 +103,8 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
 
     gameManager.gameSkOn('new-submission', (data) => {
       sound.playSound(SOUND_EFFECT['NEWSUBMISSION'])
-      if (data.playersWithAnswer) {
-        _numSubmission.current = data.playersWithAnswer.length
-        setNumSubmission(_numSubmission.current)
+      if (data.numberOfSubmission) {
+        setNumSubmission(data.numberOfSubmission)
 
         const lastSubmit =
           data.playersWithAnswer[data.playersWithAnswer.length - 1]
@@ -153,8 +126,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
     })
 
     gameManager.gameSkOn('next-question', (data) => {
-      _numSubmission.current = 0
-      setNumSubmission(_numSubmission.current)
+      setNumSubmission(0)
       setIsNextEmitted(false)
       timer.startCounting(data.question.duration ?? 0)
       setLoading(null)
@@ -173,7 +145,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
       if (data.answersStatistic.length > 0) setAnswersStatistic(data.answersStatistic)
 
       setIsShowNext(true)
-      if (data?.player && !isHost && typeof window !== 'undefined') {
+      if (data?.player && !gameManager.isHost && typeof window !== 'undefined') {
         const curStreak = data.player.currentStreak ?? 0
         if (curStreak > 0) {
           sound?.playRandomCorrectAnswerSound();
@@ -186,6 +158,8 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
           JSON.stringify(data?.player)
         )
       }
+
+      checkEndGame()
     })
 
     gameManager.gameSkOn('ranking', (data) => {
@@ -204,18 +178,14 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
 
         gameManager.players = [...rankingData];
 
-        const currentQuestionId = data.question.currentQuestionIndex as number
         const newQuestion = data.question.question as TQuestion
-        setLsCurrentQID(`${data.question.currentQuestionIndex}`)
 
-        if (currentQID != currentQuestionId) {
-          setCurrentQID(currentQuestionId)
-          displayQuestion(newQuestion)
-        }
         timer.setDefaultDuration(newQuestion.duration)
         setNumSubmission(0)
         setLoading('Chuẩn bị!')
         sound.playSound(SOUND_EFFECT['READY'])
+
+        gameManager.submittedAnswer = null
       }
       if (data?.loading) {
         setLoading(data.loading)
@@ -234,31 +204,36 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
   const handleSubmitAnswer = (answer: any) => {
     if (!gameManager.gameSession) return
     if (!timer.isSubmittable) return
-    if (isHost) return
+    if (gameManager.isHost) return
 
-    let msg = {
+    let answerToSubmit: TAnswerSubmit = {
       invitationCode: gameManager.gameSession.invitationCode,
-      nickname: gameManager.gameSession.nickName,
+      nickname: gameManager.nickName,
       answerIds: [] as any[],
       answer: '',
     }
 
     if (answer instanceof Set) {
       console.log('=>(AnswerBoard.tsx:174) submit set "', answer, '"')
-      msg.answerIds = Array.from(answer)
+      answerToSubmit.answerIds = Array.from(answer)
     } else if (answer instanceof Array) {
       console.log('=>(AnswerBoard.tsx:174) submit array "', answer, '"')
-      msg.answerIds = answer
+      answerToSubmit.answerIds = answer
     } else if (typeof answer === 'string') {
       console.log('=>(AnswerBoard.tsx:174) submit text "', answer, '"')
-      msg.answer = answer
+      answerToSubmit.answer = answer
     } else {
       console.log('=>(AnswerBoard.tsx:191) not supported "', answer, '"')
       return
     }
-    if (currentQuestion && currentQuestion.type != '22POLL')
+
+    if (gameManager.currentQuestion && gameManager.currentQuestion.type != '22POLL')
       timer.setIsSubmittable(false)
-    if (msg.answer || msg.answerIds) gameManager.gameSkEmit('submit-answer', msg)
+    if (answerToSubmit.answer || answerToSubmit.answerIds) {
+      gameManager.gameSkEmit('submit-answer', answerToSubmit)
+      answerToSubmit.questionId = gameManager.currentQuestion?.orderPosition
+      gameManager.submittedAnswer = answerToSubmit
+    }
   }
 
   const exitRoom = () => {
@@ -268,15 +243,15 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
   }
 
   const renderAnswersSection = () => {
-    if (!currentQuestion) return
+    if (!gameManager.currentQuestion) return
     if (!answerSectionFactory)
       answerSectionFactory = new AnswerSectionFactory(
-        isHost,
+        gameManager.isHost,
         styles.answerLayout
       )
     return answerSectionFactory.initAnswerSectionForType(
-      currentQuestion.type,
-      currentQuestion,
+      gameManager.currentQuestion.type,
+      gameManager.currentQuestion,
       handleSubmitAnswer,
       answersStatistic
     )
@@ -291,7 +266,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
   }
 
   function endGame() {
-    if (gameManager.gameSession && gameManager.gameSocket && isHost) {
+    if (gameManager.gameSession && gameManager.gameSocket && gameManager.isHost) {
       const msg = {invitationCode: gameManager.gameSession.invitationCode}
       gameManager.gameSkEmit('game-ended', msg)
     } else {
@@ -358,33 +333,34 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
         <div className="text-center h3 fw-bolder">Kết thúc game?</div>
 
         <div className="text-center fw-bold">
-          <div className="text-secondary fs-24x">
-            {currentQID + 1 < (gameManager.gameSession?.quiz?.questions?.length ?? 0) ? (
-              <>
-                {'Quiz mới hoàn thành '}
-                <span className="fw-bolder fs-24x  text-primary">
-                  {currentQID + 1}
+          {gameManager.currentQuestion &&
+              <div className="text-secondary fs-24x">
+                {gameManager.currentQuestion.orderPosition + 1 < (gameManager.gameSession?.quiz?.questions?.length ?? 0) ? (
+                  <>
+                    {'Quiz mới hoàn thành '}
+                    <span className="fw-bolder fs-24x  text-primary">
+                  {gameManager.currentQuestion.orderPosition + 1}
                 </span>
-                {' câu, còn '}
-                <span className="fw-bolder fs-24x  text-primary">
+                    {' câu, còn '}
+                    <span className="fw-bolder fs-24x  text-primary">
                   {gameManager.gameSession?.quiz?.questions?.length}
                 </span>
-                {' câu chưa hoàn thành!'}
-              </>
-            ) : (
-              <>
-                {'Quiz đã hoàn thành tất cả '}
-                <span className="fw-bolder fs-24x  text-primary">
-                  {currentQID + 1}
+                    {' câu chưa hoàn thành!'}
+                  </>
+                ) : (
+                  <>
+                    {'Quiz đã hoàn thành tất cả '}
+                    <span className="fw-bolder fs-24x  text-primary">
+                  {gameManager.currentQuestion.orderPosition + 1}
                 </span>
-                {' câu trên '}
-                <span className="fw-bolder fs-24x  text-primary">
+                    {' câu trên '}
+                    <span className="fw-bolder fs-24x  text-primary">
                   {gameManager.gameSession?.quiz?.questions?.length}
                 </span>
-                {' câu!'}
-              </>
-            )}
-          </div>
+                    {' câu!'}
+                  </>
+                )}
+              </div>}
           <div className="text-secondary fs-24x text-warning">
             Các thành viên trong phòng sẽ không thể chat với nhau nữa, bạn có
             chắc chắn muốn kết thúc phòng?
@@ -403,7 +379,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
           styles.container
         )}
       >
-        {currentQuestion?.question ? (
+        {gameManager.currentQuestion?.question ? (
           <div
             className={classNames(
               'd-flex flex-column bg-dark bg-opacity-50 rounded-10px shadow mb-2'
@@ -418,18 +394,17 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
                 alt=""
               />
               <div className="fw-medium fs-20px text-white">
-                {isHost ? gameManager.gameSession?.host?.name : gameSessionPlayer?.nickname}
+                {gameManager.isHost ? gameManager.gameSession?.host?.name : gameManager.player?.nickname}
               </div>
             </div>
             <div className="px-2 pb-2 text-white d-flex gap-3 align-items-center justify-content-between">
               <div className="fw-medium fs-32px text-primary">
-                {currentQID + 1}/
+                {(gameManager.currentQuestion?.orderPosition ?? 0) + 1}/
                 <span className="text-secondary fs-24px">
                   {gameManager.gameSession?.quiz?.questions?.length}
                 </span>
               </div>
-
-              {isHost ? (
+              {gameManager.currentQuestion && gameManager.isHost ? (
                 <div
                   id="questionProgressBar"
                   className="flex-grow-1 bg-secondary rounded-pill"
@@ -439,7 +414,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
                     className="bg-primary h-100 rounded-pill transition-all-150ms position-relative"
                     style={{
                       width: `${Math.floor(
-                        ((currentQID + 1) * 100) /
+                        ((gameManager.currentQuestion.orderPosition + 1) * 100) /
                         Number(gameManager.gameSession?.quiz?.questions?.length)
                       )}%`,
                     }}
@@ -468,14 +443,14 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
         ) : (
           <></>
         )}
-
-        <QuestionMedia
-          media={currentQuestion?.media ?? null}
-          numStreak={0}
-          numSubmission={numSubmission}
-          key={currentQID}
-          className={styles.questionMedia}
-        />
+        {gameManager.currentQuestion &&
+            <QuestionMedia
+                media={gameManager.currentQuestion.media ?? null}
+                numStreak={0}
+                numSubmission={numSubmission}
+                key={gameManager.currentQuestion.orderPosition}
+                className={styles.questionMedia}
+            />}
 
         <div
           className={classNames(
@@ -486,11 +461,11 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
         >
           <div
             dangerouslySetInnerHTML={{
-              __html: currentQuestion?.question ?? '',
+              __html: gameManager.currentQuestion?.question ?? '',
             }}
           />
         </div>
-        {currentQuestion && (
+        {gameManager.currentQuestion && (
           <div
             className={classNames(
               'px-2 py-2 fs-4 fw-bold text-white mb-2 bg-dark bg-opacity-50 d-flex justify-content-between align-items-center',
@@ -501,20 +476,20 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
               <i
                 className={cn(
                   'fs-20px text-white me-2',
-                  QuestionTypeDescription[currentQuestion.type].icon
+                  QuestionTypeDescription[gameManager.currentQuestion.type]?.icon
                 )}
               />
-              {QuestionTypeDescription[currentQuestion.type].title}
+              {QuestionTypeDescription[gameManager.currentQuestion.type]?.title}
             </div>
-            {!isHost && currentQuestion && (
+            {!gameManager.isHost && gameManager.currentQuestion && (
               <GameButton
-                isEnable={timer.isSubmittable && currentQuestion?.type !== '22POLL'}
+                isEnable={timer.isSubmittable && gameManager.currentQuestion?.type !== '22POLL'}
                 iconClassName="bi bi-check-circle-fill"
                 className={classNames(
                   'text-white fw-medium bg-warning',
                   styles.submitButton
                 )}
-                title={currentQuestion?.type !== '22POLL' ? 'Trả lời' : 'Câu trả lời tự nộp'}
+                title={gameManager.currentQuestion?.type !== '22POLL' ? 'Trả lời' : 'Câu trả lời tự nộp'}
                 onClick={() => {
                   timer.stopCounting(false)
                 }}
@@ -525,8 +500,8 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
 
         {/*height min của question view là 300*/}
         {/*edit styles.answerLayout trong css*/}
-        {currentQuestion?.question && renderAnswersSection()}
-        {isHost && renderHostControlSystem()}
+        {gameManager.currentQuestion?.question && renderAnswersSection()}
+        {gameManager.isHost && renderHostControlSystem()}
         {/*&& currentQuestion.type != "22POLL"*/}
         <div className={styles.blankDiv}></div>
         <GameSessionRanking
@@ -537,10 +512,10 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
           }}
           rankingData={rankingData}
           viewResultData={viewResultData as TViewResult}
-          currentQuestion={currentQuestion as TQuestion}
+          currentQuestion={gameManager.currentQuestion as TQuestion}
         />
 
-        {isHost && getEndGameModal()}
+        {gameManager.isHost && getEndGameModal()}
 
         <LoadingBoard
           loading={loading != null}

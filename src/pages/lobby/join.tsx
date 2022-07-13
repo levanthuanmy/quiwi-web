@@ -7,9 +7,9 @@ import MyButton from '../../components/MyButton/MyButton'
 import MyInput from '../../components/MyInput/MyInput'
 import {useLocalStorage} from '../../hooks/useLocalStorage/useLocalStorage'
 import {post} from '../../libs/api'
-import {TApiResponse, TGamePlayBodyRequest, TJoinQuizResponse,} from '../../types/types'
+import {TApiResponse, TGamePlayBodyRequest, TPlayer,} from '../../types/types'
 import {JsonParse} from '../../utils/helper'
-import {useGameSession} from '../../hooks/useGameSession/useGameSession'
+import {TGameLobby, useGameSession} from '../../hooks/useGameSession/useGameSession'
 
 type TJoinQuizRequest = {
   userId?: number
@@ -62,7 +62,10 @@ const JoiningPage: NextPage = () => {
 
     console.log('Join quiz - body', body)
     try {
-      const response: TApiResponse<TJoinQuizResponse> = await post(
+      const response: TApiResponse<{
+        gameLobby: TGameLobby
+        player: TPlayer
+      }> = await post(
         'api/games/join-room',
         {},
         body,
@@ -71,10 +74,8 @@ const JoiningPage: NextPage = () => {
 
       const data = response.response
 
-      console.log("=>(join.tsx:81) data", data);
-
+      gameManager.nickName = data.player.nickname
       gameManager.gameSession = data.gameLobby
-      gameManager.gameSession.nickName = data.player.nickname
       gameManager.player = data.player
 
       router.push(`/lobby?quizId=${data.gameLobby.quizId}`)
@@ -85,7 +86,8 @@ const JoiningPage: NextPage = () => {
   }
 
   return (
-    <div className="bg-secondary fw-medium bg-opacity-25 min-vh-100 d-flex flex-column justify-content-center align-items-center">
+    <div
+      className="bg-secondary fw-medium bg-opacity-25 min-vh-100 d-flex flex-column justify-content-center align-items-center">
       <div className="bg-white px-3 py-5 rounded-20px shadow-sm">
         <div className="mb-5 text-center">
           <Image

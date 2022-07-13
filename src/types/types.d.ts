@@ -393,3 +393,11 @@ export type TQuizCategory = {
   name: string
   keyword: string
 }
+
+export type TAnswerSubmit = {
+  invitationCode: string
+  nickname: string
+  answerIds: number[]
+  answer: string
+  questionId?: number
+}

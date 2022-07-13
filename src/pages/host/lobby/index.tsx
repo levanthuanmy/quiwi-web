@@ -13,7 +13,7 @@ import {
   TStartQuizRequest,
   TStartQuizResponse,
 } from '../../../types/types'
-import {useGameSession} from '../../../hooks/useGameSession/useGameSession'
+import {TGameLobby, TGameSession, useGameSession} from '../../../hooks/useGameSession/useGameSession'
 import {useSound} from '../../../hooks/useSound/useSound'
 import {useUser} from "../../../hooks/useUser/useUser";
 
@@ -79,7 +79,7 @@ const HostPage: NextPage = () => {
         data: msg,
       }
 
-      const response: TApiResponse<TStartQuizResponse> = await post(
+      const response: TApiResponse<TGameLobby> = await post(
         'api/games/start-quiz',
         {},
         body,

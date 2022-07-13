@@ -9,7 +9,7 @@ import Item from '../Item/Item'
 const UsingItemInGame: FC = () => {
   const authContext = useAuth()
   const [itemsRes, setItemsRes] = useState<Array<TItem>>()
-  const { gameSkEmit, gameSession } = useGameSession()
+  const game = useGameSession()
   const user = useAuth().getUser()
   const [type, setType] = useState('Biểu cảm')
 
@@ -89,10 +89,10 @@ const UsingItemInGame: FC = () => {
                   price={item.price}
                   quantity={item.quantity}
                   onClick={() => {
-                    gameSkEmit('use-item', {
+                    game.gameSkEmit('use-item', {
                       userId: user?.id,
-                      nickname: gameSession?.nickName,
-                      invitationCode: gameSession?.invitationCode,
+                      nickname: game.gameSession?.nickName,
+                      invitationCode: game.gameSession?.invitationCode,
                       itemId: item?.id,
                       token: user?.token?.accessToken,
                     })
