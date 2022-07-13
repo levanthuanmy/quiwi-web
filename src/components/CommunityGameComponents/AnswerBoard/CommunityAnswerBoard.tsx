@@ -91,7 +91,7 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
         timer.setDefaultDuration(firstQuestion.duration)
         setNumSubmission(0)
       }
-      const quizLength = gameSession.quiz.questions.length
+      const quizLength = gameSession.quiz?.questions.length
       if (quizLength) {
         setQuizLength(quizLength)
       }
@@ -156,7 +156,7 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
       setNumSubmission(_numSubmission.current)
       setAutoNextCountDown(DEFAULT_NEXT_TIMER)
       setIsNextEmitted(false)
-      timer.startCounting(data.question.duration ?? 0)
+      timer.startCounting(data.question?.duration ?? 0)
       setIsShowHostControl(false)
       setLoading(null)
     })
@@ -166,7 +166,7 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
       setNumSubmission(_numSubmission.current)
       setAutoNextCountDown(DEFAULT_NEXT_TIMER)
       setIsNextEmitted(false)
-      timer.startCounting(data.question.duration ?? 0)
+      timer.startCounting(data.question?.duration ?? 0)
       setIsShowHostControl(false)
       setLoading(null)
     })

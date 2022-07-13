@@ -4,6 +4,6 @@
   "bracketSameLine": false,
   "singleQuote": true,
   "semi": false,
-  "lineWidth": 80,
+  "lineWidth": 120,
   "trailingComma": "es5"
 }

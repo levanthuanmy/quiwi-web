@@ -1,10 +1,10 @@
 import classNames from 'classnames'
-import {FC, useEffect, useState} from 'react'
-import {Col, Row} from 'react-bootstrap'
-import {TAnswer, TQuestion} from '../../../../types/types'
+import { FC, useEffect, useState } from 'react'
+import { Col, Row } from 'react-bootstrap'
+import { TAnswer, TQuestion } from '../../../../types/types'
 import styles from './SingleChoiceAnswerSection.module.css'
-import OptionAnswerSection from "./OptionAnswerSection";
-import {bool} from "yup";
+import OptionAnswerSection from './OptionAnswerSection'
+import { bool } from 'yup'
 
 type SingpleChoiceAnswerSectionProps = {
   className?: string
@@ -17,22 +17,39 @@ type SingpleChoiceAnswerSectionProps = {
   isTimeOut: boolean
   isCounting: boolean
   isShowSkeleton: boolean
+  isExam?: boolean
+  initSelectedAnswer?: any 
 }
 
 const SingleChoiceAnswerSection: FC<SingpleChoiceAnswerSectionProps> = ({
-                                                                          className,
-                                                                          socketSubmit,
-                                                                          option,
-                                                                          showAnswer,
-                                                                          isHost,
-                                                                          isSubmitted,
-                                                                          isTimeOut,
-                                                                          isCounting,
-                                                                          isShowSkeleton
-                                                                        }) => {
-
-  const [answerSet, setAnswerSet] = useState<Set<number>>(new Set())
+  className,
+  socketSubmit,
+  option,
+  showAnswer,
+  isHost,
+  isSubmitted,
+  isTimeOut,
+  isCounting,
+  isShowSkeleton,
+  isExam,
+  initSelectedAnswer
+}) => {
+  const [answerSet, setAnswerSet] = useState<Set<number>>(new Set(initSelectedAnswer))
   const selectAnswer = (answerId: number) => {
+    if (isExam) {
+      // Mỹ Lê Exam
+      const answers: Set<number> = answerSet
+      if (answers.has(answerId)) {
+        answers.delete(answerId)
+      } else {
+        answers.clear()
+        answers.add(answerId)
+      }
+      setAnswerSet(new Set(answers))
+      socketSubmit(answers)
+      return
+    }
+
     if (isHost) return
     if (isSubmitted || !isCounting) return
     // Chọn và bỏ chọn câu hỏi
@@ -50,7 +67,7 @@ const SingleChoiceAnswerSection: FC<SingpleChoiceAnswerSectionProps> = ({
     if (!isCounting && !isSubmitted && !isHost) {
       socketSubmit(answerSet)
     }
-  }, [isCounting]);
+  }, [isCounting])
 
   return (
     <div className={classNames(className, '')}>
@@ -61,8 +78,8 @@ const SingleChoiceAnswerSection: FC<SingpleChoiceAnswerSectionProps> = ({
         showAnswer={showAnswer}
         isHost={isHost}
         isShowSkeleton={isShowSkeleton}
-        baseIcon="circle">
-      </OptionAnswerSection>
+        baseIcon="circle"
+      ></OptionAnswerSection>
     </div>
   )
 }

@@ -1,0 +1,5 @@
+.answerLayout {
+  flex-grow: 1;
+  position: relative;
+  min-height: 300px;
+}

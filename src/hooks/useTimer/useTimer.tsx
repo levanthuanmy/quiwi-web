@@ -24,6 +24,7 @@ type TimerContextValue = {
   stopCounting: (stopUI: boolean) => void
   stopCountingSound: (stopUI: boolean) => void
   startCounting: (duration: number) => void
+  setIsCounting: Dispatch<SetStateAction<boolean>>
 }
 
 export const TimerContext = React.createContext<TimerContextValue>({
@@ -40,6 +41,7 @@ export const TimerContext = React.createContext<TimerContextValue>({
   stopCounting: (stopUI: boolean) => {},
   stopCountingSound: (stopUI: boolean) => {},
   startCounting: (duration: number) => {},
+  setIsCounting: () => {},
 })
 
 // eslint-disable-next-line react/display-name
@@ -70,7 +72,7 @@ export const TimerProvider = memo(({ children }: { children?: ReactNode }) => {
     }
   }
 
-  const stopCountingSound = (stopUI: boolean) => {    
+  const stopCountingSound = (stopUI: boolean) => {
     if (intervalRefSound && intervalRefSound.current) {
       if (stopUI) {
         clearInterval(intervalRefSound.current)
@@ -110,8 +112,8 @@ export const TimerProvider = memo(({ children }: { children?: ReactNode }) => {
       intervalRefSound.current = setInterval(() => {
         let curr = Math.round(new Date().getTime())
         let _countDown = Math.ceil((endTime - curr) / 1000)
-        if (_countDown < 4) {          
-          sound.playSound(SOUND_EFFECT['ONE_SECOND']);
+        if (_countDown < 4) {
+          sound.playSound(SOUND_EFFECT['ONE_SECOND'])
         }
         // setCountDown(_countDown)
         if (_countDown <= 0) {
@@ -136,6 +138,7 @@ export const TimerProvider = memo(({ children }: { children?: ReactNode }) => {
       stopCounting,
       stopCountingSound,
       startCounting,
+      setIsCounting,
     }),
     [
       isCounting,
@@ -151,6 +154,7 @@ export const TimerProvider = memo(({ children }: { children?: ReactNode }) => {
       stopCounting,
       stopCountingSound,
       startCounting,
+      setIsCounting,
     ]
   )
   return (

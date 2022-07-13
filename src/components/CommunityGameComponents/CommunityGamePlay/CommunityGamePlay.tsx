@@ -10,6 +10,7 @@ import MyModal from '../../MyModal/MyModal'
 import { usePracticeGameSession } from '../../../hooks/usePracticeGameSession/usePracticeGameSession'
 import useScreenSize from '../../../hooks/useScreenSize/useScreenSize'
 import { TStartQuizResponse } from '../../../types/types'
+import ExamAnswerBoard from '../ExamComponents/ExamAnswerBoard/ExamAnswerBoard'
 
 export const ExitContext = React.createContext<{
   showEndGameModal: boolean
@@ -20,12 +21,13 @@ export const ExitContext = React.createContext<{
 })
 
 const CommunityGamePlay: NextPage = () => {
-  const { clearGameSession, gameSkOn } = usePracticeGameSession()
+  const { clearGameSession, gameSkOn, gameSession, saveGameSession } =
+    usePracticeGameSession()
   const [isShowExit, setIsShowExit] = useState<boolean>(false)
   const [isShowHostControl, setIsShowHostControl] = useState<boolean>(true)
   const [exitModal, setExitModal] = useState(false)
   const [endGameData, setEndGameData] = useState<TStartQuizResponse>()
-  const {fromMedium} = useScreenSize()
+  const { fromMedium } = useScreenSize()
 
   const hostAction: FABAction = {
     label: 'Hiện bảng điều khiển',
@@ -79,6 +81,9 @@ const CommunityGamePlay: NextPage = () => {
     gameSkOn('game-ended', (data) => {
       setEndGameData(data)
     })
+    // gameSkOn('game-started', (data) => {
+    //   saveGameSession({ ...gameSession, deadline: data?.deadline })
+    // })
   }, [])
 
   //   useEffect(() => {
@@ -119,11 +124,15 @@ const CommunityGamePlay: NextPage = () => {
             >
               <TimerProvider>
                 <div className={'bg-white w-100 h -100'}></div>
-                <CommunityAnswerBoard
-                  isShowHostControl={isShowHostControl}
-                  setIsShowHostControl={setIsShowHostControl}
-                  className="flex-grow-1"
-                />
+                {gameSession?.mode === '30EXAM' ? (
+                  <ExamAnswerBoard />
+                ) : (
+                  <CommunityAnswerBoard
+                    isShowHostControl={isShowHostControl}
+                    setIsShowHostControl={setIsShowHostControl}
+                    className="flex-grow-1"
+                  />
+                )}
               </TimerProvider>
             </ExitContext.Provider>
           </div>

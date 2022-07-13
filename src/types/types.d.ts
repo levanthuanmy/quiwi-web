@@ -55,7 +55,7 @@ export type TQuiz = {
   quizCategories?: TQuizCategory[]
 }
 
-export type TGameModeEnum = '10CLASSIC' | '20MRT'
+export type TGameModeEnum = '10CLASSIC' | '20MRT' | '30EXAM'
 
 export type TGameStatus = '00WAITING' | '10PLAYING' | '20END'
 

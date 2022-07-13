@@ -30,20 +30,20 @@ const GameModeScreen: FC<GameModeScreenProps> = ({setGameMode}) => {
       banner: "/assets/trophy.svg"
     },
     {
-      mode: '20MRT',
-      name: 'Marathon',
+      mode: '30EXAM',
+      name: 'Kiểm tra',
       useFor: 'Dùng cho kiểm tra',
-      description: 'Người hoàn tất nhanh nhất sẽ chiến thắng',
+      description: 'Kiểm tra lại kiến thức của bản thân',
       banner: "/assets/grade-sheet.svg"
     },
   ]
 
   const selectGameMode = (idx: number) => {
     const mode = modes[idx]
-    if (mode.mode != '10CLASSIC') {
+    // if (mode.mode != '10CLASSIC') {
 
-      return
-    }
+    //   return
+    // }
     setGameMode(mode.mode)
   }
 

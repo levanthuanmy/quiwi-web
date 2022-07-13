@@ -1,7 +1,7 @@
 import classNames from 'classnames'
-import {FC, useEffect, useState} from 'react'
-import {TQuestion} from '../../../../types/types'
-import OptionAnswerSection from "./OptionAnswerSection";
+import { FC, useEffect, useState } from 'react'
+import { TQuestion } from '../../../../types/types'
+import OptionAnswerSection from './OptionAnswerSection'
 
 type MultipleChoiceAnswerSectionProps = {
   className?: string
@@ -14,22 +14,36 @@ type MultipleChoiceAnswerSectionProps = {
   isSubmitted: boolean
   isCounting: boolean
   isShowSkeleton: boolean
+  isExam?: boolean
+  initSelectedAnswer?: any
 }
 
 const MultipleChoiceAnswerSection: FC<MultipleChoiceAnswerSectionProps> = ({
-                                                                             className,
-                                                                             socketSubmit,
-                                                                             option,
-                                                                             showAnswer,
-                                                                             isHost,
-                                                                             isTimeOut,
-                                                                             isSubmitted,
-                                                                             isCounting,
-                                                                             isShowSkeleton
-                                                                           }) => {
-  const [answerSet, setAnswerSet] = useState<Set<number>>(new Set())
+  className,
+  socketSubmit,
+  option,
+  showAnswer,
+  isHost,
+  isTimeOut,
+  isSubmitted,
+  isCounting,
+  isShowSkeleton,
+  isExam,
+  initSelectedAnswer,
+}) => {
+  const [answerSet, setAnswerSet] = useState<Set<number>>(
+    new Set(initSelectedAnswer)
+  )
 
   const selectAnswer = (answerId: number) => {
+    if (isExam) {
+      // Mỹ Lê Exam
+      const answers: Set<number> = answerSet
+      answers.has(answerId) ? answers.delete(answerId) : answers.add(answerId)
+      setAnswerSet(new Set(answers))
+      socketSubmit(answers)
+      return
+    }
     if (isTimeOut) return
     // Chọn và bỏ chọn câu hỏi
     const answers: Set<number> = answerSet
@@ -41,7 +55,7 @@ const MultipleChoiceAnswerSection: FC<MultipleChoiceAnswerSectionProps> = ({
     if (!isCounting && !isSubmitted && !isHost) {
       socketSubmit(answerSet)
     }
-  }, [isCounting]);
+  }, [isCounting])
 
   return (
     <div className={classNames(className, '')}>
@@ -52,8 +66,8 @@ const MultipleChoiceAnswerSection: FC<MultipleChoiceAnswerSectionProps> = ({
         showAnswer={showAnswer}
         isShowSkeleton={isShowSkeleton}
         isHost={isHost}
-        baseIcon="square">
-      </OptionAnswerSection>
+        baseIcon="square"
+      ></OptionAnswerSection>
     </div>
   )
 }

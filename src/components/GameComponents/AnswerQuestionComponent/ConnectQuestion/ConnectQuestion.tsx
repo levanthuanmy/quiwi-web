@@ -1,11 +1,8 @@
-import React, {FC, useEffect, useRef, useState} from 'react'
-import {TAnswer, TQuestion} from "../../../../types/types";
-import styles from "./ConnectQuestion.module.css"
-import classNames from "classnames";
-import {ConnectAnswerList} from "./ConnectAnswerList";
-import {getEmptyImage} from "react-dnd-html5-backend";
-import {func} from "prop-types";
-import {timeout} from "q";
+import classNames from 'classnames'
+import { FC, useEffect, useRef, useState } from 'react'
+import { TAnswer, TQuestion } from '../../../../types/types'
+import { ConnectAnswerList } from './ConnectAnswerList'
+import styles from './ConnectQuestion.module.css'
 
 type ConnectQuestionProps = {
   className?: string
@@ -18,74 +15,94 @@ type ConnectQuestionProps = {
   isSubmitted: boolean
   isCounting: boolean
   isShowSkeleton: boolean
+  isExam?: boolean
+  initSelectedAnswer?: any
 }
-const correctColor = "#0082BE"
-const incorrectColor = "#cccccc"
+const correctColor = '#0082BE'
+const incorrectColor = '#cccccc'
 
 const ConnectQuestion: FC<ConnectQuestionProps> = ({
-                                                     className,
-                                                     socketSubmit,
-                                                     question,
-                                                     showAnswer,
-                                                     isHost,
-                                                     isTimeOut,
-                                                     isSubmitted,
-                                                     isCounting,
-                                                     isShowSkeleton
-                                                   }) => {
+  className,
+  socketSubmit,
+  question,
+  showAnswer,
+  isHost,
+  isTimeOut,
+  isSubmitted,
+  isCounting,
+  isShowSkeleton,
+  isExam,
+  initSelectedAnswer,
+}) => {
   const [isCorrect, setIsCorrect] = useState<boolean>(false)
   const [options, setOptions] = useState<TAnswer[]>([])
   const [skeletonOptions, setSkeletonOptions] = useState<TAnswer[]>([])
   const [decorOptions, setDecorOptions] = useState<TAnswer[]>([])
 
-  const [selectedAnswerSet, setSelectedAnswerSet] = useState<Set<TAnswer>>(new Set<TAnswer>())
-  const [wrongAnswerSet, setWrongAnswerSet] = useState<Set<TAnswer>>(new Set<TAnswer>())
-  const [correctAnswerSet, setCorrectAnswerSet] = useState<Set<TAnswer>>(new Set<TAnswer>())
+  const [selectedAnswerSet, setSelectedAnswerSet] = useState<Set<TAnswer>>(
+    new Set<TAnswer>()
+  )
+  const [wrongAnswerSet, setWrongAnswerSet] = useState<Set<TAnswer>>(
+    new Set<TAnswer>()
+  )
+  const [correctAnswerSet, setCorrectAnswerSet] = useState<Set<TAnswer>>(
+    new Set<TAnswer>()
+  )
 
-  const defaultPlaceHolder = useRef<string>("     ")
+  const defaultPlaceHolder = useRef<string>('     ')
 
   const [displayAnswer, setDisplayAnswer] = useState<TAnswer[]>([])
-  const [orderedCorrectAnswer, setOrderedCorrectAnswer] = useState<TAnswer[]>([])
+  const [orderedCorrectAnswer, setOrderedCorrectAnswer] = useState<TAnswer[]>(
+    []
+  )
+
+  // useEffect(() => {
+  //   prepareData()
+  // }, [])
 
   useEffect(() => {
     prepareData()
-  }, []);
-
-  useEffect(() => {
-    prepareData()
-  }, [question]);
+  }, [question])
 
   useEffect(() => {
     setDecorOptions(showAnswer ? orderedCorrectAnswer : displayAnswer)
-  }, [showAnswer, orderedCorrectAnswer, displayAnswer]);
+  }, [showAnswer, orderedCorrectAnswer, displayAnswer])
 
   function shuffle(array: TAnswer[]) {
-    let currentIndex = array.length, randomIndex;
+    let currentIndex = array.length,
+      randomIndex
 
     // While there remain elements to shuffle.
     while (currentIndex != 0) {
-
       // Pick a remaining element.
-      randomIndex = Math.floor(Math.random() * currentIndex);
-      currentIndex--;
+      randomIndex = Math.floor(Math.random() * currentIndex)
+      currentIndex--
 
       // And swap it with the current element.
-      [array[currentIndex], array[randomIndex]] = [
-        array[randomIndex], array[currentIndex]];
+      ;[array[currentIndex], array[randomIndex]] = [
+        array[randomIndex],
+        array[currentIndex],
+      ]
     }
 
-    return array;
+    return array
   }
 
   function prepareData() {
     if (question?.questionAnswers) {
-
       //Lựa chọn để click
-      const _options = shuffle([...question.questionAnswers.filter(item => item.type != "21PLHDR")])
+      const _options = shuffle([
+        ...question.questionAnswers.filter((item) => item.type != '21PLHDR'),
+      ])
       setOptions(_options)
-      setSkeletonOptions(_options.map(option => getPlaceHolderAnswer(Array(option.answer.length).fill("_").join(""))))
+      setSkeletonOptions(
+        _options.map((option) =>
+          getPlaceHolderAnswer(Array(option.answer.length).fill('_').join(''))
+        )
+      )
       // Danh sách hiển thị
-      let orderedAnswer = question.questionAnswers.filter(item => item.isCorrect)
+      let orderedAnswer = question.questionAnswers
+        .filter((item) => item.isCorrect)
         .sort(function (a, b) {
           return a.orderPosition - b.orderPosition
         })
@@ -97,10 +114,12 @@ const ConnectQuestion: FC<ConnectQuestionProps> = ({
         }
       }
 
-      defaultPlaceHolder.current = Array(maxLength).fill("_").join("")
+      defaultPlaceHolder.current = Array(maxLength).fill('_').join('')
       setOrderedCorrectAnswer(orderedAnswer)
       let displayList = orderedAnswer.map((answer) => {
-        return (answer.type != "21PLHDR" ? getPlaceHolderAnswer(defaultPlaceHolder.current) : answer)
+        return answer.type != '21PLHDR'
+          ? getPlaceHolderAnswer(defaultPlaceHolder.current)
+          : answer
       })
 
       setWrongAnswerSet(new Set())
@@ -110,31 +129,49 @@ const ConnectQuestion: FC<ConnectQuestionProps> = ({
       if (isHost) {
         setWrongAnswerSet(new Set())
         setIsCorrect(true)
-        setCorrectAnswerSet(new Set(orderedAnswer.filter(answer => answer.type != "21PLHDR")))
-        setSelectedAnswerSet(new Set(orderedAnswer.filter(answer => answer.type != "21PLHDR")))
+        setCorrectAnswerSet(
+          new Set(orderedAnswer.filter((answer) => answer.type != '21PLHDR'))
+        )
+        setSelectedAnswerSet(
+          new Set(orderedAnswer.filter((answer) => answer.type != '21PLHDR'))
+        )
         // setDisplayAnswer(orderedAnswer)
       }
-
     }
   }
 
   useEffect(() => {
     if (!isCounting && !isSubmitted && !isHost) {
-      const answerList = displayAnswer.map<number>((answer) => Number(answer.id))
+      const answerList = displayAnswer.map<number>((answer) =>
+        Number(answer.id)
+      )
       socketSubmit(answerList)
     }
-  }, [isCounting]);
+  }, [isCounting])
 
   useEffect(() => {
-    if (showAnswer)
-      isHost ? showAnswerForHost() : setIsCorrect(checkAnswer())
-  }, [showAnswer]);
+    // Mỹ Lê Exam
+    if (isExam) {
+      const answerList = displayAnswer.map<number>((answer) =>
+        Number(answer.id)
+      )
+      socketSubmit(answerList)
+    }
+  }, [displayAnswer, isExam])
+
+  useEffect(() => {
+    if (showAnswer) isHost ? showAnswerForHost() : setIsCorrect(checkAnswer())
+  }, [showAnswer])
 
   const showAnswerForHost = () => {
     setWrongAnswerSet(new Set())
     setIsCorrect(true)
-    setCorrectAnswerSet(new Set(orderedCorrectAnswer.filter(answer => answer.type != "21PLHDR")))
-    setSelectedAnswerSet(new Set(orderedCorrectAnswer.filter(answer => answer.type != "21PLHDR")))
+    setCorrectAnswerSet(
+      new Set(orderedCorrectAnswer.filter((answer) => answer.type != '21PLHDR'))
+    )
+    setSelectedAnswerSet(
+      new Set(orderedCorrectAnswer.filter((answer) => answer.type != '21PLHDR'))
+    )
     setDisplayAnswer(orderedCorrectAnswer)
   }
 
@@ -145,8 +182,11 @@ const ConnectQuestion: FC<ConnectQuestionProps> = ({
 
     for (let i = 0; i < displayAnswer.length; i++) {
       // console.log("=>(ConnectQuestion.tsx:91) dp cr", displayAnswer[i].id, orderedCorrectAnswer[i].id);
-      if ((displayAnswer[i].id == -1 || displayAnswer[i].answer != orderedCorrectAnswer[i].answer)
-        && orderedCorrectAnswer[i].type != "21PLHDR") {
+      if (
+        (displayAnswer[i].id == -1 ||
+          displayAnswer[i].answer != orderedCorrectAnswer[i].answer) &&
+        orderedCorrectAnswer[i].type != '21PLHDR'
+      ) {
         // console.log("=>(ConnectQuestion.tsx:92) wrong", orderedCorrectAnswer[i].answer);
         wrongAnswerArray.push(orderedCorrectAnswer[i])
       } else {
@@ -156,7 +196,7 @@ const ConnectQuestion: FC<ConnectQuestionProps> = ({
     setWrongAnswerSet(new Set(wrongAnswerArray))
     setCorrectAnswerSet(new Set(correctAnswerArray))
 
-    return (correctAnswerArray.length == orderedCorrectAnswer.length)
+    return correctAnswerArray.length == orderedCorrectAnswer.length
   }
 
   const getBackgroundColorForAnswer = (): string => {
@@ -169,53 +209,91 @@ const ConnectQuestion: FC<ConnectQuestionProps> = ({
   function getPlaceHolderAnswer(placeHolder: string): TAnswer {
     return {
       id: -1,
-      answer: placeHolder
+      answer: placeHolder,
     } as TAnswer
   }
 
+  useEffect(() => {
+    if (initSelectedAnswer && question && isExam) {
+      question.questionAnswers.forEach((answer) => {
+        if (initSelectedAnswer.includes(answer.id) && answer.type != '21PLHDR') {
+          didClickWord(answer)
+        }
+      })
+    }
+  }, [initSelectedAnswer, question, isExam])
+
   const didClickWord = (answer: TAnswer) => {
-    if (isHost) return;
-    if (isTimeOut || isSubmitted) return;
+    if (isExam) {
+      // Mỹ Lê Exam
+      const insertList: TAnswer[] = displayAnswer
+
+      for (let i = 0; i < insertList.length; i++) {
+        if (
+          insertList[i].id == answer.id &&
+          insertList[i].orderPosition == answer.orderPosition &&
+          insertList[i].type != '21PLHDR'
+        ) {
+          insertList[i] = getPlaceHolderAnswer(defaultPlaceHolder.current)
+          setSelectedAnswerSet(new Set(insertList))
+          setDisplayAnswer([...insertList])
+          return
+        }
+      }
+
+      for (let i = 0; i < insertList.length; i++) {
+        if (insertList[i].id == -1 && insertList[i].type != '21PLHDR') {
+          insertList[i] = answer
+          setSelectedAnswerSet(new Set(insertList))
+          setDisplayAnswer([...insertList])
+          return
+        }
+      }
+    }
+
+    if (isHost) return
+    if (isTimeOut || isSubmitted) return
     const insertList: TAnswer[] = displayAnswer
 
     for (let i = 0; i < insertList.length; i++) {
-      if (insertList[i].id == answer.id
-        && insertList[i].orderPosition == answer.orderPosition
-        && insertList[i].type != "21PLHDR") {
+      if (
+        insertList[i].id == answer.id &&
+        insertList[i].orderPosition == answer.orderPosition &&
+        insertList[i].type != '21PLHDR'
+      ) {
         insertList[i] = getPlaceHolderAnswer(defaultPlaceHolder.current)
         setSelectedAnswerSet(new Set(insertList))
         setDisplayAnswer([...insertList])
-        return;
+        return
       }
-
     }
 
     for (let i = 0; i < insertList.length; i++) {
-      if (insertList[i].id == -1 && insertList[i].type != "21PLHDR") {
+      if (insertList[i].id == -1 && insertList[i].type != '21PLHDR') {
         insertList[i] = answer
         setSelectedAnswerSet(new Set(insertList))
         setDisplayAnswer([...insertList])
-        return;
+        return
       }
     }
-
   }
 
   return (
     <div
       style={{
         background: getBackgroundColorForAnswer(),
-        transition: "all .5s ease",
-        WebkitTransition: "all .5s ease",
-        MozTransition: "all .5s ease"
+        transition: 'all .5s ease',
+        WebkitTransition: 'all .5s ease',
+        MozTransition: 'all .5s ease',
       }}
       className={classNames(
         'd-flex flex-column align-items-center ', //justify-content-center
-        styles.container,
+        styles.container
       )}
     >
       <div
-        className={`d-flex flex-column bg-white justify-content-around w-100 customScrollbar ${styles.selectedBox}`}>
+        className={`d-flex flex-column bg-white justify-content-around w-100 customScrollbar ${styles.selectedBox}`}
+      >
         <ConnectAnswerList
           className={styles.selectedOption}
           options={decorOptions}
@@ -228,10 +306,13 @@ const ConnectQuestion: FC<ConnectQuestionProps> = ({
       </div>
 
       <div
-        className={`d-flex flex-column justify-content-around w-100 customScrollbar ${styles.selectionBox}`}>
+        className={`d-flex flex-column justify-content-around w-100 customScrollbar ${styles.selectionBox}`}
+      >
         <ConnectAnswerList
           className={styles.availableOption}
-          disabledOption={(isHost && !showAnswer) ? new Set([]) : selectedAnswerSet}
+          disabledOption={
+            isHost && !showAnswer ? new Set([]) : selectedAnswerSet
+          }
           options={isShowSkeleton ? skeletonOptions : options}
           showAnswer={showAnswer}
           displayDecor={false}

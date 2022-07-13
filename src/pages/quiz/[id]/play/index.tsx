@@ -1,14 +1,13 @@
-import {get} from 'lodash'
-import {NextPage} from 'next'
-import {useRouter} from 'next/router'
-import {useEffect, useState} from 'react'
-import {Modal} from 'react-bootstrap'
+import { NextPage } from 'next'
+import { useRouter } from 'next/router'
+import { useEffect, useState } from 'react'
+import { Modal } from 'react-bootstrap'
 import useSWR from 'swr'
 import CommunityGamePlay from '../../../../components/CommunityGameComponents/CommunityGamePlay/CommunityGamePlay'
 import GameModeScreen from '../../../../components/GameModeScreen/GameModeScreen'
 import MyModal from '../../../../components/MyModal/MyModal'
-import {useLocalStorage} from '../../../../hooks/useLocalStorage/useLocalStorage'
-import {post} from '../../../../libs/api'
+import { useLocalStorage } from '../../../../hooks/useLocalStorage/useLocalStorage'
+import { get, post } from '../../../../libs/api'
 import {
   TApiResponse,
   TGameModeEnum,
@@ -16,17 +15,18 @@ import {
   TQuiz,
   TStartQuizRequest,
   TStartQuizResponse,
-  TUser
+  TUser,
 } from '../../../../types/types'
-import {JsonParse} from '../../../../utils/helper'
-import {usePracticeGameSession} from "../../../../hooks/usePracticeGameSession/usePracticeGameSession";
-import {useSound} from "../../../../hooks/useSound/useSound";
+import { JsonParse } from '../../../../utils/helper'
+import { usePracticeGameSession } from '../../../../hooks/usePracticeGameSession/usePracticeGameSession'
+import { useSound } from '../../../../hooks/useSound/useSound'
 
 const PlayCommunityQuizScreen: NextPage = () => {
   const router = useRouter()
-  const {id} = router.query
+  const { id } = router.query
   const [lsUser] = useLocalStorage('user', '')
-  const {gameSession, gameSocket, saveGameSession, connectGameSocket} = usePracticeGameSession()
+  const { gameSession, gameSocket, saveGameSession, connectGameSocket } =
+    usePracticeGameSession()
   const [isShowGameModeScreen, setIsShowGameModeScreen] =
     useState<boolean>(true)
   const [invitationCode, setInvitationCode] = useState<string>()
@@ -45,14 +45,12 @@ const PlayCommunityQuizScreen: NextPage = () => {
     // setGameModeEnum("10CLASSIC")
   }, [])
 
-
   useEffect(() => {
     if (gameModeEnum && isShowGameModeScreen) {
       const user: TUser = JsonParse(lsUser)
       handleStartQuiz(Number(id), gameModeEnum, user.id)
     }
   }, [gameModeEnum, isShowGameModeScreen])
-
 
   // useEffect(() => {
   //   if (gameSession) {
@@ -65,7 +63,6 @@ const PlayCommunityQuizScreen: NextPage = () => {
     mode: TGameModeEnum,
     userId: number
   ) => {
-    console.log("=>(index.tsx:68) userId", userId);
     setIsFetchingSocket(true)
     try {
       if (!gameSocket()) return
@@ -76,11 +73,17 @@ const PlayCommunityQuizScreen: NextPage = () => {
       if (userId) {
         msg.userId = userId
       }
-      console.log("=>(index.tsx:79) msg", msg);
 
       const body: TGamePlayBodyRequest<TStartQuizRequest> = {
         socketId: gameSocket()!.id,
-        data: msg,
+        data: {
+          ...msg,
+          deadline:
+            quizResponse?.response?.questions?.reduce(
+              (a, b) => a + b.duration,
+              0
+            ) || 0 / 60,
+        },
       }
 
       const response: TApiResponse<TStartQuizResponse> = await post(
@@ -89,7 +92,6 @@ const PlayCommunityQuizScreen: NextPage = () => {
         body,
         true
       )
-      console.log("=>(api/games/start-community-quiz) response", response);
 
       if (response.response) {
         saveGameSession(response.response)
@@ -122,13 +124,13 @@ const PlayCommunityQuizScreen: NextPage = () => {
   }, [gameSession])
 
   useEffect(() => {
-    console.log("=>(index.tsx:125) isShowGameModeScreen", isShowGameModeScreen);
-  },[isShowGameModeScreen])
+    console.log('=>(index.tsx:125) isShowGameModeScreen', isShowGameModeScreen)
+  }, [isShowGameModeScreen])
 
   return (
     <>
-      {isShowGameModeScreen && <GameModeScreen setGameMode={setGameModeEnum}/>}
-      {!isShowGameModeScreen && <CommunityGamePlay/>}
+      {isShowGameModeScreen && <GameModeScreen setGameMode={setGameModeEnum} />}
+      {!isShowGameModeScreen && <CommunityGamePlay />}
       <MyModal
         show={error.length > 0}
         onHide={() => setError('')}
