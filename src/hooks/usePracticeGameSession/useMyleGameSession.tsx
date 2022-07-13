@@ -23,4 +23,4 @@ class MyLeGameManagerSingleton extends MyLeGameManager {
   }
 }
 
-export const useGameSession = () => MyLeGameManagerSingleton.instance
+export const useMyleGameSession = () => MyLeGameManagerSingleton.instance
