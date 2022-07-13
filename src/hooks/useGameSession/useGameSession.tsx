@@ -32,20 +32,29 @@ export type TGameLobby = {
   gameRoundStatistics: TGameRoundStatistic[]
 }
 
-export type TGameSession = {}
-
 export class GameManager {
-  private static lsKey = "game-session"
-  private static lsQuestionKey = "current-question"
-  private static lsSubmitedAnswerKey = "recent-submit-question"
-  private static _instance?: GameManager;
+  get key(): string {
+    return "GAME-";
+  }
 
+  get lsKey(): string {
+    return this.key + "game-session";
+  }
 
-  private _gameSession: TGameLobby | null = null;
+  get lsQuestionKey(): string {
+    return this.key + "current-question";
+  }
+
+  get lsSubmitedAnswerKey(): string {
+    return this.key + "recent-submit-question";
+  }
+
+  constructor() {
+    this.readGSLS()
+  }
+
+  protected _gameSession: TGameLobby | null = null;
   get gameSession(): TGameLobby | null {
-    if (!this._gameSession) {
-      this.readGSLS()
-    }
     return this._gameSession;
   }
 
@@ -69,6 +78,7 @@ export class GameManager {
       this.writeGSLS()
     }
   }
+
   //
 
   updateGameSession(updateBlock: (gameSession: TGameLobby) => void) {
@@ -76,9 +86,10 @@ export class GameManager {
       updateBlock(this._gameSession)
     this.writeGSLS()
   }
+
 //
 
-  private _currentQuestion: TQuestion | null = null
+  protected _currentQuestion: TQuestion | null = null
   get currentQuestion(): TQuestion | null {
     return this._currentQuestion;
   }
@@ -87,20 +98,17 @@ export class GameManager {
     this._currentQuestion = value;
     this.writeGSLS()
   }
-  //
 
-  private _submittedAnswer: TAnswerSubmit | null = null
+  //
+  protected _submittedAnswer: TAnswerSubmit | null = null
   get submittedAnswer(): TAnswerSubmit | null {
-    console.log("=>(useGameSession.tsx:87) get this._submittedAnswer", this._submittedAnswer);
     return this._submittedAnswer;
   }
 
   set submittedAnswer(value: TAnswerSubmit | null) {
-    console.log("=>(useGameSession.tsx:87) set this._submittedAnswer", this._submittedAnswer);
     this._submittedAnswer = value;
     this.writeGSLS()
   }
-
 
   nickName: string = "Ẩn danh"
 
@@ -124,42 +132,36 @@ export class GameManager {
 
   }
 
-  private constructor() {
-    if (GameManager._instance)
-      throw new Error("Use GameManager.instance instead of new.");
-    GameManager._instance = this;
-  }
-
-  static get instance() {
-    return GameManager._instance ?? (GameManager._instance = new GameManager());
-  }
-
-  private readGSLS() {
+  protected readGSLS() {
     if (typeof window !== 'undefined') {
-      const ls = window.localStorage.getItem(GameManager.lsKey)
+      const ls = window.localStorage.getItem(this.lsKey)
       if (ls) {
         this._gameSession = JsonParse(ls) as TGameLobby
-        this.nickName = this._gameSession.nickName;
+        if (this._gameSession)
+          this.nickName = this._gameSession.nickName;
       }
-      const currentQuestionLs = window.localStorage.getItem(GameManager.lsQuestionKey)
+      const currentQuestionLs = window.localStorage.getItem(this.lsQuestionKey)
       if (currentQuestionLs)
         this._currentQuestion = JsonParse(currentQuestionLs) as TQuestion
 
-      const submittedAnswerLs = window.localStorage.getItem(GameManager.lsSubmitedAnswerKey)
+      const submittedAnswerLs = window.localStorage.getItem(this.lsSubmitedAnswerKey)
       if (submittedAnswerLs)
         this._submittedAnswer = JsonParse(submittedAnswerLs) as TAnswerSubmit
     }
   }
 
-  private writeGSLS() {
-    console.log("=>(useGameSession.tsx:154) writeGSLS");
+  protected writeGSLS() {
+    // console.log("=>(useGameSession.tsx:154) writeGSLS");
+    // console.log("=>(useGameSession.tsx:156) gameSession", this._gameSession);
+    // console.log("=>(useGameSession.tsx:156) currentQuestion", this._currentQuestion);
+    // console.log("=>(useGameSession.tsx:156) submittedAnswer", this._submittedAnswer);
     if (typeof window !== 'undefined') {
       if (this.gameSession) {
         this.gameSession.nickName = this.nickName;
       }
-      window.localStorage.setItem(GameManager.lsKey, JSON.stringify(this.gameSession))
-      window.localStorage.setItem(GameManager.lsQuestionKey, JSON.stringify(this.currentQuestion))
-      window.localStorage.setItem(GameManager.lsSubmitedAnswerKey, JSON.stringify(this.submittedAnswer))
+      window.localStorage.setItem(this.lsKey, JSON.stringify(this._gameSession))
+      window.localStorage.setItem(this.lsQuestionKey, JSON.stringify(this._currentQuestion))
+      window.localStorage.setItem(this.lsSubmitedAnswerKey, JSON.stringify(this._submittedAnswer))
     }
   }
 
@@ -210,7 +212,7 @@ export class GameManager {
   }
 
   clearGameSession() {
-    if (this._gameSession) {
+    if (this.gameSession) {
       console.log('🎯️ ️️GameSession :: Clear')
       this.soundManager?.setGameSoundOn(false)
       this.gameSession = null
@@ -225,4 +227,19 @@ export class GameManager {
 
 }
 
-export const useGameSession = () => GameManager.instance
+class GameManagerSingleton extends GameManager {
+  private static _instance?: GameManagerSingleton;
+
+  constructor() {
+    if (GameManagerSingleton._instance)
+      throw new Error("Use GameManagerSingleton.instance instead of new.");
+    super();
+    GameManagerSingleton._instance = this;
+  }
+
+  static get instance() {
+    return GameManagerSingleton._instance ?? (GameManagerSingleton._instance = new GameManagerSingleton());
+  }
+}
+
+export const useGameSession = () => GameManagerSingleton.instance
