@@ -7,6 +7,7 @@ import ReactSelect from 'react-select'
 import useSWR from 'swr'
 import DashboardLayout from '../../components/DashboardLayout/DashboardLayout'
 import ItemQuiz from '../../components/ItemQuiz/ItemQuiz'
+import Loading from '../../components/Loading/Loading'
 import LoadingFullScreen from '../../components/LoadingFullScreen/Loading'
 import { MyPagination } from '../../components/MyPagination/MyPagination'
 import SearchBar from '../../components/SearchBar/SearchBar'
@@ -29,9 +30,11 @@ const ExplorePage: NextPage = () => {
   const handlePageClick = (selected: { selected: number }) => {
     setPageIndex(Number(selected.selected) + 1)
   }
-  const { data: quizResponse, isValidating } = useSWR<
-    TApiResponse<TPaginationResponse<TQuiz>>
-  >(
+  const {
+    data: quizResponse,
+    isValidating: quizValidating,
+    error: quizError,
+  } = useSWR<TApiResponse<TPaginationResponse<TQuiz>>>(
     [
       `/api/quizzes/community`,
       false,
@@ -48,9 +51,15 @@ const ExplorePage: NextPage = () => {
     }
   )
 
-  const { data: categoryResponse } = useSWR<
-    TApiResponse<TPaginationResponse<TQuizCategory>>
-  >([`/api/quiz-categories`, false], get, { revalidateOnFocus: false })
+  const {
+    data: categoryResponse,
+    isValidating: categoriesValidating,
+    error: categoriesError,
+  } = useSWR<TApiResponse<TPaginationResponse<TQuizCategory>>>(
+    [`/api/quiz-categories`, false],
+    get,
+    { revalidateOnFocus: false }
+  )
 
   const categoryOptions: { value: number; label: string }[] = useMemo(() => {
     if (categoryResponse) {
@@ -61,6 +70,9 @@ const ExplorePage: NextPage = () => {
     }
     return []
   }, [categoryResponse])
+
+  const isValidating = categoriesValidating || quizValidating
+  const isError = categoriesError || quizError
 
   return (
     <DashboardLayout>
@@ -94,7 +106,7 @@ const ExplorePage: NextPage = () => {
               <SearchBar pageUrl="explore" inputClassName="border-0" />
             </Col>
           </Row>
-          {quizResponse?.response ? (
+          {quizResponse?.response && (
             <Row>
               {quizResponse?.response?.items?.map((quiz, key) => (
                 <Col xs="12" md="6" lg="4" key={key} className="mb-3">
@@ -102,8 +114,11 @@ const ExplorePage: NextPage = () => {
                 </Col>
               ))}
             </Row>
-          ) : (
-            <LoadingFullScreen />
+          )}
+          {(isError || quizResponse?.response?.items?.length === 0) && (
+            <div className="fs-4 text-center">
+              Chúng tôi không tìm thấy bộ quiz phù hợp
+            </div>
           )}
           {_.get(quizResponse, 'response.totalPages', 0) > 0 ? (
             <Row className="mt-3">
@@ -115,6 +130,12 @@ const ExplorePage: NextPage = () => {
               </Col>
             </Row>
           ) : null}
+
+          {isValidating && (
+            <div className="text-center">
+              <Loading color="gray" />
+            </div>
+          )}
         </Container>
       </div>
     </DashboardLayout>

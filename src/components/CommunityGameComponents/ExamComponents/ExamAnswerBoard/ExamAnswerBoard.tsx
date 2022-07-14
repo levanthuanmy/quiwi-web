@@ -122,6 +122,7 @@ const ExamAnswerBoard: FC = () => {
         className={classNames(
           'd-flex flex-column position-relative flex-grow-1'
         )}
+        style={{ overflowX: 'hidden' }}
       >
         {
           // currentQuestion?.question &&
@@ -169,6 +170,7 @@ const ExamAnswerBoard: FC = () => {
         }
 
         <CountdownCircleTimer
+          strokeLinecap="square"
           isPlaying={true}
           duration={330}
           size={180}
@@ -224,7 +226,9 @@ const ExamAnswerBoard: FC = () => {
           </div>
         )}
 
-        {renderAnswersSection()}
+        <div style={{ marginLeft: -5, marginRight: -5 }}>
+          {renderAnswersSection()}
+        </div>
 
         <div className="d-flex gap-2">
           <MyButton
@@ -267,14 +271,14 @@ const FormatTime = memo(({ remainingTime }: { remainingTime: number }) => {
 
   return (
     <div className="text-center user-select-none">
-      {remainingTime >= 0 ? (
+      {remainingTime > 0 ? (
         <>
           <div className="text-white fs-20px fw-medium">Còn lại</div>
 
           <div className="text-white fs-32px fw-bold">{`${minutes} : ${seconds}`}</div>
         </>
       ) : (
-        <div className={classNames(styles.valueDanger)}>Hết giờ!</div>
+        <div className="text-white fs-32px fw-bold">Hết giờ!</div>
       )}
     </div>
   )

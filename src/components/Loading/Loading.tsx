@@ -1,13 +1,13 @@
-import React, { FC } from "react"
-import styles from "./Loading.module.css"
+import React, { FC } from 'react'
+import styles from './Loading.module.css'
 
-const Loading: FC = () => {
+const Loading: FC<{ color?: string }> = ({ color = '#fff' }) => {
   return (
     <div className={styles.ldEllipsis}>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
+      <div style={{ backgroundColor: color }}></div>
+      <div style={{ backgroundColor: color }}></div>
+      <div style={{ backgroundColor: color }}></div>
+      <div style={{ backgroundColor: color }}></div>
     </div>
   )
 }
