@@ -13,7 +13,7 @@ import MyModal from '../../MyModal/MyModal'
 type SignUpForm = {
   username: string
   password: string
-  email: string
+  email?: string
   name: string
 }
 
@@ -24,7 +24,6 @@ const SignUpModal: FC<{ setShow: Dispatch<SetStateAction<boolean>> }> = ({
     username: '',
     password: '',
     name: '',
-    email: '',
   }
   const { addToast } = useToasts()
   const authContext = useAuth()
@@ -58,7 +57,9 @@ const SignUpModal: FC<{ setShow: Dispatch<SetStateAction<boolean>> }> = ({
   }
 
   const ProfileSchema = Yup.object().shape({
-    name: Yup.string().min(6, 'Tên quá ngắn!').max(100, 'Tên quá dài!'),
+    username: Yup.string()
+      .min(6, 'Tên tài khoản phải có ít nhất 6 ký tự')
+      .max(50, 'Tên tài khoản tối đa 50 ký tự'),
     email: Yup.string().email('Email không hợp lệ'),
     password: Yup.string().min(6, 'Mật khẩu phải có ít nhất 6 ký tự'),
   })
@@ -76,7 +77,7 @@ const SignUpModal: FC<{ setShow: Dispatch<SetStateAction<boolean>> }> = ({
       >
         {({
           // values,
-          // errors,
+          errors,
           // touched,
           // handleChange,
           // handleBlur,
@@ -90,35 +91,43 @@ const SignUpModal: FC<{ setShow: Dispatch<SetStateAction<boolean>> }> = ({
               placeholder="Tên tài khoản"
               as={MyInput}
               iconClassName="bi bi-person"
-              className="mb-3"
             />
+            {errors.username ? (
+              <div className="text-danger text-start">{errors.username}</div>
+            ) : null}
             <Field
               type="text"
               name="name"
               placeholder="Họ và tên"
               as={MyInput}
               iconClassName="bi bi-card-text"
-              className="mb-3"
+              className="mt-3"
             />
+
             <Field
               type="text"
               name="email"
               placeholder="Email"
               as={MyInput}
               iconClassName="bi bi-envelope"
-              className="mb-3"
+              className="mt-3"
             />
+            {errors.email ? (
+              <div className="text-danger text-start">{errors.email}</div>
+            ) : null}
             <Field
               type="password"
               name="password"
               placeholder="Mật khẩu"
               as={MyInput}
               iconClassName="bi bi-unlock"
-              className="mb-3"
+              className="mt-3"
             />
-
+            {errors.password ? (
+              <div className="text-danger text-start">{errors.password}</div>
+            ) : null}
             <MyButton
-              className="w-100 fw-medium text-white"
+              className="w-100 fw-medium text-white mt-3"
               type="submit"
               disabled={isSubmitting}
             >
