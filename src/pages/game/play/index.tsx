@@ -211,7 +211,6 @@ const GamePage: NextPage = () => {
           {game.gameSession && (
             <div>
               <GameMenuBar
-                gameSession={game.gameSession}
                 isShow={isShowChat}
                 isGameEnded={isGameEnded}
               />
