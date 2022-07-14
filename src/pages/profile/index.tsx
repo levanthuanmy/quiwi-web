@@ -177,7 +177,7 @@ const ProfilePage: NextPage = () => {
               followerUsers={followerUsers}
               followingUsers={followingUsers}
               user={authUser}
-              userResponse={userResponse}
+              userProfile={userResponse}
               setShowAvatarSelectionModal={setShowAvatarSelectionModal}
               isAuth={true}
             />

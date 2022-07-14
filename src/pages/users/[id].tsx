@@ -147,7 +147,6 @@ const GetUserProfilePage: NextPage = () => {
         true
       )
       // alert(res.response.result)
-      await getFollowingUsers()
       await getUser()
     } catch (error) {
       console.log(error)
@@ -164,7 +163,8 @@ const GetUserProfilePage: NextPage = () => {
               followerUsers={followerUsers}
               followingUsers={followingUsers}
               user={user}
-              userResponse={userProfile}
+              userProfile={userProfile}
+              followOrUnfollowUser={followOrUnfollowUser}
             />
           </Col>
 
