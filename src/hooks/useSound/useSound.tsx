@@ -47,7 +47,6 @@ export class SoundManager {
   }
 
   public playSound(src: string) {
-    console.log("playSound isMute", this.isMute, src);
     if (!this.isMute) {
       const sound = new Howl({
         src,
@@ -58,7 +57,6 @@ export class SoundManager {
   }
 
   public playSoundWithLoop(src: string) {
-    console.log("playSoundWithLoop isMute", this.isMute);
     if (this.isMute) return;
     const sound = new Howl({
       src,
@@ -69,13 +67,11 @@ export class SoundManager {
   }
 
   public playRandomCorrectAnswerSound() {
-    console.log("playRandomCorrectAnswerSound isMute", this.isMute);
     if (this.isMute) return;
     const min = Math.ceil(1);
     const max = Math.floor(4);
     const randomNum = Math.floor(Math.random() * (max - min) + min);
     const url = "/sounds/correct_answer_" + randomNum + ".mp3";
-    console.log("playRandomCorrectAnswerSound url", url);
     const sound_pronuncia = new Howl({
       src: url,
       html5: true,
@@ -85,7 +81,6 @@ export class SoundManager {
       src: SOUND_EFFECT['BUY_BUTTON_SOUND_CLICK'],
       html5: true,
     })
-    console.log("playRandomCorrectAnswerSound sound_bell", sound_bell);
     sound_bell.play();
     sound_pronuncia.play();
   }

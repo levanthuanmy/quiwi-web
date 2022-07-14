@@ -5,15 +5,8 @@ import useSWR from 'swr'
 import GameModeScreen from '../../../components/GameModeScreen/GameModeScreen'
 import LobbyScreen from '../../../components/LobbyScreen/LobbyScreen'
 import {get, post} from '../../../libs/api'
-import {
-  TApiResponse,
-  TGameModeEnum,
-  TGamePlayBodyRequest,
-  TQuiz,
-  TStartQuizRequest,
-  TStartQuizResponse,
-} from '../../../types/types'
-import {useGameSession} from '../../../hooks/useGameSession/useGameSession'
+import {TApiResponse, TGameModeEnum, TGamePlayBodyRequest, TQuiz, TStartQuizRequest,} from '../../../types/types'
+import {TGameLobby, useGameSession} from '../../../hooks/useGameSession/useGameSession'
 import {useSound} from '../../../hooks/useSound/useSound'
 import {useUser} from "../../../hooks/useUser/useUser";
 
@@ -79,7 +72,7 @@ const HostPage: NextPage = () => {
         data: msg,
       }
 
-      const response: TApiResponse<TStartQuizResponse> = await post(
+      const response: TApiResponse<TGameLobby> = await post(
         'api/games/start-quiz',
         {},
         body,

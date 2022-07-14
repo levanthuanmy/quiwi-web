@@ -90,6 +90,7 @@ const GamePage: NextPage = () => {
 
   const resetAllFAB = () => {
     if (isShowChat) setIsShowChat(false)
+    if (isShowItem) setIsShowItem(false)
     if (isShowHostControl) setIsShowHostControl(false)
   }
 
@@ -152,7 +153,6 @@ const GamePage: NextPage = () => {
             add(
               <FlyingAnimation key={size + item?.avatar} src={item?.avatar}/>
             )
-
             break
           }
         }
@@ -211,19 +211,12 @@ const GamePage: NextPage = () => {
           {game.gameSession && (
             <div>
               <GameMenuBar
-                gameSession={game.gameSession}
                 isShow={isShowChat}
                 isGameEnded={isGameEnded}
               />
-              <Fade in={isShowItem}>
-                {isShowItem ? (
-                  <div>
+                {isShowItem &&
                     <UsingItemInGame/>
-                  </div>
-                ) : (
-                  <></>
-                )}
-              </Fade>
+                }
             </div>
           )}
         </div>

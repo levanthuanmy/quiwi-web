@@ -11,18 +11,18 @@ import _ from 'lodash'
 import PlayerLobbyList from "../PlayerLobbyList/PlayerLobbyList";
 import {useSound} from "../../hooks/useSound/useSound";
 import {SOUND_EFFECT} from "../../utils/constants";
+import {useGameSession} from "../../hooks/useGameSession/useGameSession";
 
 type GameMenuBarProps = {
-  gameSession: TStartQuizResponse
   user?: TUser
   isShow: boolean
   isGameEnded: boolean
 }
 const GameMenuBar: FC<GameMenuBarProps> = ({
-  gameSession,
   isShow,
   isGameEnded,
 }) => {
+  const game = useGameSession()
   const [chatContent, setChatContent] = useState<MessageProps[]>([])
   const socket = SocketManager().socketOf('GAMES')
   const { addToast } = useToasts()
@@ -49,7 +49,7 @@ const GameMenuBar: FC<GameMenuBarProps> = ({
 
   const renderItems = (
     <>
-      <PlayerList playerList={gameSession.players} />
+      <PlayerList playerList={game.players} />
       <div
         className={`${styles.slider} bg-secondary`}
         onMouseDown={(e) => {
@@ -72,7 +72,6 @@ const GameMenuBar: FC<GameMenuBarProps> = ({
         <i className="text-white bi bi-grip-horizontal "></i>
       </div>
       <ChatWindow
-        gameSession={gameSession}
         chatContent={chatContent}
         setChatContent={setChatContent}
         isDisabled={isGameEnded}

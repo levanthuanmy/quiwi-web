@@ -14,11 +14,10 @@ import {useGameSession} from "../../../hooks/useGameSession/useGameSession";
 import {FacebookSelector, GithubCounter, ReactionBarSelector} from '@charkour/react-reactions';
 
 const ChatWindow: FC<{
-  gameSession: TStartQuizResponse
   chatContent: MessageProps[]
   setChatContent: Function
   isDisabled: boolean
-}> = ({gameSession, chatContent, setChatContent, isDisabled}) => {
+}> = ({chatContent, setChatContent, isDisabled}) => {
   const [chatValue, setChatValue] = useState<string>('')
   const game = useGameSession()
   const [lsPlayer, setLsPlayer] = useLocalStorage('game-session-player', '')
@@ -61,7 +60,7 @@ const ChatWindow: FC<{
   const updateVoteForMessage = (voteChange: number, messageIndex: number) => {
     if (messageIndex < chatContent.length) {
       game.gameSkEmit('vote', {
-        invitationCode: gameSession.invitationCode,
+        invitationCode: game.gameSession?.invitationCode ?? "",
         vote: voteChange,
         chatId: chatContent[messageIndex].id,
       })
@@ -115,7 +114,7 @@ const ChatWindow: FC<{
             const path =  `/` + `${e}`
             sendMessage({
               message:path,
-              invitationCode: gameSession.invitationCode,
+              invitationCode: game.gameSession?.invitationCode ?? "",
             })
           })}
         />
@@ -132,14 +131,14 @@ const ChatWindow: FC<{
           handleIconClick={() => {
             sendMessage({
               message: chatValue,
-              invitationCode: gameSession.invitationCode,
+              invitationCode: game.gameSession?.invitationCode ?? "",
             })
           }}
           onKeyDown={(e) => {
             if (e.key === 'Enter') {
               sendMessage({
                 message: chatValue,
-                invitationCode: gameSession.invitationCode,
+                invitationCode: game.gameSession?.invitationCode ?? "",
               })
               e.preventDefault()
             }

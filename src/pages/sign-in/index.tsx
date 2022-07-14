@@ -39,9 +39,6 @@ const SignInPage: NextPage = () => {
   }
 
   const responseGoogle = async (response: CredentialResponse) => {
-    console.log('Zo')
-    console.log(response)
-
     try {
       const res = await post<TApiResponse<TUser>>(
         '/api/auth/redirect/google',
@@ -50,16 +47,11 @@ const SignInPage: NextPage = () => {
           token: response.credential,
         }
       )
-      console.log('==== ~ responseGoogle ~ res', res)
       authContext.setUser(res.response)
       await authContext.toPrevRoute()
     } catch (error) {
       console.log('==== ~ responseGoogle ~ error', error)
     }
-  }
-
-  const resposneGoogleFailed = async (error: any) => {
-    console.log('error', error)
   }
 
   const handleSignInFormSubmit = (
@@ -76,7 +68,7 @@ const SignInPage: NextPage = () => {
       <Formik initialValues={initialValues} onSubmit={handleSignInFormSubmit}>
         {({
           // values,
-          // errors,
+          errors,
           // touched,
           // handleChange,
           // handleBlur,
@@ -92,6 +84,9 @@ const SignInPage: NextPage = () => {
               iconClassName="bi bi-person"
               className="mb-3"
             />
+            {errors.username ? (
+              <div className="text-danger text-start">{errors.username}</div>
+            ) : null}
             <Field
               type="password"
               name="password"
@@ -100,7 +95,9 @@ const SignInPage: NextPage = () => {
               iconClassName="bi bi-unlock"
               className="mb-3"
             />
-
+            {errors.password ? (
+              <div className="text-danger text-start">{errors.password}</div>
+            ) : null}
             <MyButton
               className="w-100 fw-medium text-white"
               type="submit"
