@@ -2,12 +2,10 @@ import {NextPage} from 'next'
 import {useRouter} from 'next/router'
 import {useEffect, useState} from 'react'
 import {Modal} from 'react-bootstrap'
-import useSWR from 'swr'
 import CommunityGamePlay from '../../../../components/CommunityGameComponents/CommunityGamePlay/CommunityGamePlay'
 import GameModeScreen from '../../../../components/GameModeScreen/GameModeScreen'
 import MyModal from '../../../../components/MyModal/MyModal'
 import {TGameLobby} from '../../../../hooks/useGameSession/useGameSession'
-import {useLocalStorage} from '../../../../hooks/useLocalStorage/useLocalStorage'
 import {useMyleGameSession} from '../../../../hooks/usePracticeGameSession/useMyleGameSession'
 import {get, post} from '../../../../libs/api'
 import {TApiResponse, TGameModeEnum, TGamePlayBodyRequest, TQuiz, TStartQuizRequest,} from '../../../../types/types'
@@ -68,7 +66,7 @@ const PlayCommunityQuizScreen: NextPage = () => {
         'api/games/start-community-quiz',
         {},
         body,
-        true
+        false
       )
 
       if (response.response) {
