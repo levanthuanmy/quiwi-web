@@ -1,7 +1,7 @@
 import {io, Socket} from "socket.io-client";
 import {API_URL} from "../../utils/constants";
 
-type TSocketType = "GAMES" | "COMMUNITY-GAMES" | "NOTIFICATION"
+export type TSocketType = "GAMES" | "COMMUNITY-GAMES" | "NOTIFICATION"
 
 const sockets: Record<TSocketType, Socket | null> = {"COMMUNITY-GAMES": null, GAMES: null, NOTIFICATION: null}
 

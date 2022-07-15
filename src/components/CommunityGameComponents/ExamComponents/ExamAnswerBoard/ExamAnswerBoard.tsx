@@ -4,7 +4,7 @@ import _ from 'lodash'
 import { FC, memo, useEffect, useState } from 'react'
 import { Image } from 'react-bootstrap'
 import { ColorHex, CountdownCircleTimer } from 'react-countdown-circle-timer'
-import { usePracticeGameSession } from '../../../../hooks/usePracticeGameSession/usePracticeGameSession'
+import { useMyleGameSession } from '../../../../hooks/usePracticeGameSession/useMyleGameSession'
 import { useTimer } from '../../../../hooks/useTimer/useTimer'
 import {
   AnswerSectionFactory,
@@ -19,16 +19,17 @@ export type UserAnswer = {
   answerIds: number[]
 }
 const ExamAnswerBoard: FC = () => {
-  const { gameSession, gameSkEmit } = usePracticeGameSession()
+  const myleGameSession = useMyleGameSession()
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0)
-  const user = gameSession?.host
-  const quiz = gameSession?.quiz
+  const user = myleGameSession.gameSession?.host
+  const quiz = myleGameSession.gameSession?.quiz
   const questions = quiz?.questions
   const questionsLength = questions?.length ?? 0
   const currentQuestion = _.get(questions, currentQuestionIndex)
   let answerSectionFactory: AnswerSectionFactory
   const timer = useTimer()
   const [userAnswers, setUserAnswers] = useState<UserAnswer[]>([]) // answer each question of user that will be submitted to server
+  // const timeEnd = new Date(myleGameSession.gameSession?.deadline?.timeEnd || 0)
   console.log('userAnswers', userAnswers)
 
   const init = () => {
@@ -95,8 +96,8 @@ const ExamAnswerBoard: FC = () => {
   }
 
   const submit = () => {
-    gameSkEmit('submit-answer', {
-      invitationCode: gameSession?.invitationCode,
+    myleGameSession.gameSkEmit('submit-answer', {
+      invitationCode: myleGameSession.gameSession?.invitationCode,
       answers: userAnswers,
     })
   }

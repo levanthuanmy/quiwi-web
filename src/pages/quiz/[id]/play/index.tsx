@@ -6,7 +6,10 @@ import useSWR from 'swr'
 import CommunityGamePlay from '../../../../components/CommunityGameComponents/CommunityGamePlay/CommunityGamePlay'
 import GameModeScreen from '../../../../components/GameModeScreen/GameModeScreen'
 import MyModal from '../../../../components/MyModal/MyModal'
+import { TGameLobby } from '../../../../hooks/useGameSession/useGameSession'
 import { useLocalStorage } from '../../../../hooks/useLocalStorage/useLocalStorage'
+import { useMyleGameSession } from '../../../../hooks/usePracticeGameSession/useMyleGameSession'
+import { usePracticeGameSession } from '../../../../hooks/usePracticeGameSession/usePracticeGameSession'
 import { get, post } from '../../../../libs/api'
 import {
   TApiResponse,
@@ -18,8 +21,6 @@ import {
   TUser,
 } from '../../../../types/types'
 import { JsonParse } from '../../../../utils/helper'
-import { usePracticeGameSession } from '../../../../hooks/usePracticeGameSession/usePracticeGameSession'
-import { useSound } from '../../../../hooks/useSound/useSound'
 
 const PlayCommunityQuizScreen: NextPage = () => {
   const router = useRouter()
@@ -27,6 +28,7 @@ const PlayCommunityQuizScreen: NextPage = () => {
   const [lsUser] = useLocalStorage('user', '')
   const { gameSession, gameSocket, saveGameSession, connectGameSocket } =
     usePracticeGameSession()
+  const myleGameSession = useMyleGameSession()
   const [isShowGameModeScreen, setIsShowGameModeScreen] =
     useState<boolean>(true)
   const [invitationCode, setInvitationCode] = useState<string>()
@@ -39,11 +41,6 @@ const PlayCommunityQuizScreen: NextPage = () => {
     isValidating: isFetchingQuiz,
     error: fetchingQuizError,
   } = useSWR<TApiResponse<TQuiz>>(id ? `/api/quizzes/quiz/${id}` : null, get)
-
-  useEffect(() => {
-    connectGameSocket()
-    // setGameModeEnum("10CLASSIC")
-  }, [])
 
   useEffect(() => {
     if (gameModeEnum && isShowGameModeScreen) {
@@ -64,8 +61,19 @@ const PlayCommunityQuizScreen: NextPage = () => {
     userId: number
   ) => {
     setIsFetchingSocket(true)
+    // if (!gameSocket()) return
+    if (mode === '30EXAM') {
+      myleGameSession.connectGameSocket()
+      myleGameSession.gameSkOnce('connect', () => {})
+    } else if (mode) {
+      connectGameSocket()
+    }
+
+    const skId =
+      mode === '30EXAM' ? myleGameSession.gameSocket?.id : gameSocket()?.id
+    if (!mode || !skId) return
+
     try {
-      if (!gameSocket()) return
       const msg: TStartQuizRequest = {
         quizId: quizId,
         mode,
@@ -75,7 +83,7 @@ const PlayCommunityQuizScreen: NextPage = () => {
       }
 
       const body: TGamePlayBodyRequest<TStartQuizRequest> = {
-        socketId: gameSocket()!.id,
+        socketId: skId,
         data: {
           ...msg,
           deadline:
@@ -94,7 +102,11 @@ const PlayCommunityQuizScreen: NextPage = () => {
       )
 
       if (response.response) {
-        saveGameSession(response.response)
+        if (response.response.mode === '30EXAM') {
+          myleGameSession.gameSession = response.response as never as TGameLobby
+        } else {
+          saveGameSession(response.response)
+        }
         setIsShowGameModeScreen(false)
       }
     } catch (error) {

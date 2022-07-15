@@ -1,4 +1,5 @@
-import {Socket} from "socket.io-client";
+import { Socket } from 'socket.io-client'
+import { MessageProps } from '../../components/GameComponents/ChatWindow/Message'
 import {
   TAnswerSubmit,
   TGameModeEnum,
@@ -7,13 +8,12 @@ import {
   TPlayer,
   TQuestion,
   TQuiz,
-  TUser
+  TUser,
 } from '../../types/types'
-import {SocketManager} from '../useSocket/socketManager'
-import {useSound} from "../useSound/useSound";
-import {useUser} from "../useUser/useUser";
-import {JsonParse} from "../../utils/helper";
-import {MessageProps} from "../../components/GameComponents/ChatWindow/Message";
+import { JsonParse } from '../../utils/helper'
+import { SocketManager, TSocketType } from '../useSocket/socketManager'
+import { useSound } from '../useSound/useSound'
+import { useUser } from '../useUser/useUser'
 
 export type TGameLobby = {
   nickName: string
@@ -34,47 +34,54 @@ export type TGameLobby = {
 
 export class GameManager {
   get key(): string {
-    return "GAME-";
+    return 'GAME-'
+  }
+
+  get socketKey(): TSocketType {
+    return 'GAMES'
   }
 
   get lsKey(): string {
-    return this.key + "game-session";
+    return this.key + 'game-session'
   }
 
   get lsQuestionKey(): string {
-    return this.key + "current-question";
+    return this.key + 'current-question'
   }
 
   get lsSubmitedAnswerKey(): string {
-    return this.key + "recent-submit-question";
+    return this.key + 'recent-submit-question'
   }
 
   constructor() {
     this.readGSLS()
   }
 
-  protected _gameSession: TGameLobby | null = null;
+  protected _gameSession: TGameLobby | null = null
   get gameSession(): TGameLobby | null {
-    return this._gameSession;
+    return this._gameSession
   }
 
   set gameSession(value: TGameLobby | null) {
-    if ((this._gameSession && this._gameSession != value) || !this._gameSession) {
-      this._gameSession = value;
+    if (
+      (this._gameSession && this._gameSession != value) ||
+      !this._gameSession
+    ) {
+      this._gameSession = value
       this.writeGSLS()
     }
   }
 
   get players(): TPlayer[] {
     if (this._gameSession) {
-      return this._gameSession.players;
+      return this._gameSession.players
     }
-    return [];
+    return []
   }
 
   set players(value: TPlayer[]) {
     if (this._gameSession) {
-      this._gameSession.players = value;
+      this._gameSession.players = value
       this.writeGSLS()
     }
   }
@@ -82,69 +89,67 @@ export class GameManager {
   //
 
   updateGameSession(updateBlock: (gameSession: TGameLobby) => void) {
-    if (this._gameSession)
-      updateBlock(this._gameSession)
+    if (this._gameSession) updateBlock(this._gameSession)
     this.writeGSLS()
   }
 
-//
+  //
 
   protected _currentQuestion: TQuestion | null = null
   get currentQuestion(): TQuestion | null {
-    return this._currentQuestion;
+    return this._currentQuestion
   }
 
   set currentQuestion(value: TQuestion | null) {
-    this._currentQuestion = value;
+    this._currentQuestion = value
     this.writeGSLS()
   }
 
   //
   protected _submittedAnswer: TAnswerSubmit | null = null
   get submittedAnswer(): TAnswerSubmit | null {
-    return this._submittedAnswer;
+    return this._submittedAnswer
   }
 
   set submittedAnswer(value: TAnswerSubmit | null) {
-    this._submittedAnswer = value;
+    this._submittedAnswer = value
     this.writeGSLS()
   }
 
-  nickName: string = "Ẩn danh"
+  nickName: string = 'Ẩn danh'
 
   sk = SocketManager()
   soundManager = useSound()
   user = useUser()
-  player: TPlayer | null = null;
+  player: TPlayer | null = null
 
   get isHost(): boolean {
     if (this.gameSession) {
       return this.user.id == this.gameSession.hostId
     }
-    return false;
+    return false
   }
 
-  get gameSocket(): (Socket | null) {
-    return this.sk.socketOf("GAMES")
+  get gameSocket(): Socket | null {
+    return this.sk.socketOf(this.socketKey)
   }
 
-  set gameSocket(value: Socket | null) {
-
-  }
+  set gameSocket(value: Socket | null) {}
 
   protected readGSLS() {
     if (typeof window !== 'undefined') {
       const ls = window.localStorage.getItem(this.lsKey)
       if (ls) {
         this._gameSession = JsonParse(ls) as TGameLobby
-        if (this._gameSession)
-          this.nickName = this._gameSession.nickName;
+        if (this._gameSession) this.nickName = this._gameSession.nickName
       }
       const currentQuestionLs = window.localStorage.getItem(this.lsQuestionKey)
       if (currentQuestionLs)
         this._currentQuestion = JsonParse(currentQuestionLs) as TQuestion
 
-      const submittedAnswerLs = window.localStorage.getItem(this.lsSubmitedAnswerKey)
+      const submittedAnswerLs = window.localStorage.getItem(
+        this.lsSubmitedAnswerKey
+      )
       if (submittedAnswerLs)
         this._submittedAnswer = JsonParse(submittedAnswerLs) as TAnswerSubmit
     }
@@ -157,23 +162,29 @@ export class GameManager {
     // console.log("=>(useGameSession.tsx:156) submittedAnswer", this._submittedAnswer);
     if (typeof window !== 'undefined') {
       if (this.gameSession) {
-        this.gameSession.nickName = this.nickName;
+        this.gameSession.nickName = this.nickName
       }
       window.localStorage.setItem(this.lsKey, JSON.stringify(this._gameSession))
-      window.localStorage.setItem(this.lsQuestionKey, JSON.stringify(this._currentQuestion))
-      window.localStorage.setItem(this.lsSubmitedAnswerKey, JSON.stringify(this._submittedAnswer))
+      window.localStorage.setItem(
+        this.lsQuestionKey,
+        JSON.stringify(this._currentQuestion)
+      )
+      window.localStorage.setItem(
+        this.lsSubmitedAnswerKey,
+        JSON.stringify(this._submittedAnswer)
+      )
     }
   }
 
   connectGameSocket() {
     if (!this.gameSocket || this.gameSocket?.disconnected) {
-      this.sk.connect("GAMES")
+      this.sk.connect(this.socketKey)
       this.soundManager?.setGameSoundOn(true)
       this.gameSocket?.offAny()
       this.gameSocket?.onAny((event, data) => {
-        console.log("🌎🌎 Event:", event);
-        console.log("🌎🌎 Data:", data);
-        if (event === "loading" && data.question?.question) {
+        console.log('🌎🌎 Event:', event)
+        console.log('🌎🌎 Data:', data)
+        if (event === 'loading' && data.question?.question) {
           this.currentQuestion = data.question?.question
         } else if (data.question as TQuestion) {
           this.currentQuestion = data.question
@@ -182,21 +193,26 @@ export class GameManager {
           this.currentQuestion = data.game.question
         }
         // console.log("=>(useGameSession.tsx:181) this.currentQuestion", this.currentQuestion);
-      });
+      })
     } else {
-      console.log("=>(useGameSession.tsx:106) connect Failed", this, this.gameSession, this.gameSocket);
+      console.log(
+        '=>(useGameSession.tsx:106) connect Failed',
+        this,
+        this.gameSession,
+        this.gameSocket
+      )
     }
   }
 
   disconnectGameSocket() {
     if (this.gameSocket?.connected) {
-      this.sk.disconnect("GAMES")
+      this.sk.disconnect(this.socketKey)
     }
   }
 
   gameSkEmit(ev: string, msg: any) {
-    console.log("📨📨 Event:", ev);
-    console.log("📨📨 Message:", msg);
+    console.log('📨📨 Event:', ev)
+    console.log('📨📨 Message:', msg)
     this.gameSocket?.emit(ev, msg)
   }
 
@@ -205,7 +221,7 @@ export class GameManager {
     this.gameSocket?.on(ev, listener)
   }
 
-//
+  //
   gameSkOnce(ev: string, listener: (...args: any[]) => void) {
     this.gameSocket?.off(ev)
     this.gameSocket?.once(ev, listener)
@@ -221,24 +237,26 @@ export class GameManager {
     }
   }
 
-  getQuestionWithID(qid: number): (TQuestion | null) {
+  getQuestionWithID(qid: number): TQuestion | null {
     return this.gameSession?.quiz?.questions[qid] || null
   }
-
 }
 
 class GameManagerSingleton extends GameManager {
-  private static _instance?: GameManagerSingleton;
+  private static _instance?: GameManagerSingleton
 
   constructor() {
     if (GameManagerSingleton._instance)
-      throw new Error("Use GameManagerSingleton.instance instead of new.");
-    super();
-    GameManagerSingleton._instance = this;
+      throw new Error('Use GameManagerSingleton.instance instead of new.')
+    super()
+    GameManagerSingleton._instance = this
   }
 
   static get instance() {
-    return GameManagerSingleton._instance ?? (GameManagerSingleton._instance = new GameManagerSingleton());
+    return (
+      GameManagerSingleton._instance ??
+      (GameManagerSingleton._instance = new GameManagerSingleton())
+    )
   }
 }
 

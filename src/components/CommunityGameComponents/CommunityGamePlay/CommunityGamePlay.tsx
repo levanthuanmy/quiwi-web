@@ -11,6 +11,7 @@ import { usePracticeGameSession } from '../../../hooks/usePracticeGameSession/us
 import useScreenSize from '../../../hooks/useScreenSize/useScreenSize'
 import { TStartQuizResponse } from '../../../types/types'
 import ExamAnswerBoard from '../ExamComponents/ExamAnswerBoard/ExamAnswerBoard'
+import { useMyleGameSession } from '../../../hooks/usePracticeGameSession/useMyleGameSession'
 
 export const ExitContext = React.createContext<{
   showEndGameModal: boolean
@@ -23,6 +24,7 @@ export const ExitContext = React.createContext<{
 const CommunityGamePlay: NextPage = () => {
   const { clearGameSession, gameSkOn, gameSession, saveGameSession } =
     usePracticeGameSession()
+  const myleGameSession = useMyleGameSession()
   const [isShowExit, setIsShowExit] = useState<boolean>(false)
   const [isShowHostControl, setIsShowHostControl] = useState<boolean>(true)
   const [exitModal, setExitModal] = useState(false)
@@ -81,9 +83,6 @@ const CommunityGamePlay: NextPage = () => {
     gameSkOn('game-ended', (data) => {
       setEndGameData(data)
     })
-    // gameSkOn('game-started', (data) => {
-    //   saveGameSession({ ...gameSession, deadline: data?.deadline })
-    // })
   }, [])
 
   //   useEffect(() => {
@@ -124,7 +123,7 @@ const CommunityGamePlay: NextPage = () => {
             >
               <TimerProvider>
                 <div className={'bg-white w-100 h -100'}></div>
-                {gameSession?.mode === '30EXAM' ? (
+                {myleGameSession.gameSession?.mode === '30EXAM' ? (
                   <ExamAnswerBoard />
                 ) : (
                   <CommunityAnswerBoard

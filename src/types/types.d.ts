@@ -82,6 +82,11 @@ export type TStartQuizResponse = {
   status: TGameStatus
   chats: MessageProps[]
   gameRoundStatistics: TGameRoundStatistic[]
+  deadline?: {
+    duration?: number //minutes
+    timeEnd?: number // timestamp
+    timeStart?: number // timestamp
+  }
 }
 
 export type QuestionGameResponse = {
