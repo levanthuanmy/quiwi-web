@@ -7,8 +7,7 @@ import Slider from "react-slick";
 import useScreenSize from "../../hooks/useScreenSize/useScreenSize";
 
 type GameModeScreenProps = {
-  //   title: string
-  setGameMode: Dispatch<SetStateAction<TGameModeEnum | undefined>>
+  setGameMode: (mode: TGameModeEnum) => void
 }
 
 type TGameModeOption = {
@@ -40,10 +39,6 @@ const GameModeScreen: FC<GameModeScreenProps> = ({setGameMode}) => {
 
   const selectGameMode = (idx: number) => {
     const mode = modes[idx]
-    // if (mode.mode != '10CLASSIC') {
-
-    //   return
-    // }
     setGameMode(mode.mode)
   }
 

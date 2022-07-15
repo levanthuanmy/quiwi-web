@@ -38,9 +38,11 @@ export class MyLeGameManager extends GameManager {
 
   override readGSLS() {
     super.readGSLS()
-    const examDeadline = localStorage.getItem(this.lsExamDeadline)
-    if (examDeadline) {
-      this._examDeadline = JSON.parse(examDeadline)
+    if (typeof window !== 'undefined') {
+      const examDeadline = window.localStorage.getItem(this.lsExamDeadline)
+      if (examDeadline) {
+        this._examDeadline = JSON.parse(examDeadline)
+      }
     }
   }
 
@@ -48,8 +50,6 @@ export class MyLeGameManager extends GameManager {
     super.connectGameSocket()
     if (!this.gameSocket || this.gameSocket?.disconnected) {
       this.gameSocket?.onAny((event, data) => {
-        console.log('🌎🌎 Event:', event)
-        console.log('🌎🌎 Data:', data)
         if (event === 'game-started' && data.deadline) {
           this.examDeadline = data.deadline
         }

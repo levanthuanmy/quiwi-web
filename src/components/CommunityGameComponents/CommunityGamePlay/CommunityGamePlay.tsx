@@ -85,21 +85,6 @@ const CommunityGamePlay: NextPage = () => {
     })
   }, [])
 
-  //   useEffect(() => {
-  //     router.beforePopState(({ as }) => {
-  //         if (as !== router.asPath) {
-  //             // Will run when leaving the current page; on back/forward actions
-  //             // Add your logic here, like toggling the modal state
-  //             sound.stop();
-  //         }
-  //         return true;
-  //     });
-  //
-  //     return () => {
-  //         router.beforePopState(() => true);
-  //     };
-  // }, [router]);
-
   return (
     <>
       <div
