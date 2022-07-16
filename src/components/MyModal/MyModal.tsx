@@ -25,7 +25,7 @@ const MyModal: FC<MyModalProps> = ({
   activeButtonCallback,
   inActiveButtonCallback,
   fullscreen = false,
-  size ,
+  size,
   footer,
 }) => {
   return (
@@ -34,7 +34,7 @@ const MyModal: FC<MyModalProps> = ({
       onHide={onHide}
       aria-labelledby="contained-modal-title-vcenter"
       centered
-      contentClassName="rounded-20px"
+      contentClassName="rounded-14px border-0 shadow-lg"
       fullscreen={fullscreen ? 'lg-down' : undefined}
       size={size}
     >

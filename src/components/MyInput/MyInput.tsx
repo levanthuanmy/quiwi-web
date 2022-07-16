@@ -19,7 +19,7 @@ const MyInput: FC<MyInputProps> = (props: MyInputProps) => {
           props.className,
           styles.input,
           errorText ? styles.inputError : null,
-          'form-control rounded-10px h-50px d-flex p-0 overflow-hidden'
+          'form-control rounded-8px h-50px d-flex p-0 overflow-hidden'
         )}
       >
         <input
