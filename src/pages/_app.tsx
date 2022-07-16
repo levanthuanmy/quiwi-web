@@ -24,11 +24,13 @@ import * as gtag from '../libs/gtag'
 import {usePracticeGameSession} from '../hooks/usePracticeGameSession/usePracticeGameSession'
 import SignInModal from '../components/AuthComponents/SignInModal/SignInModal'
 import { GoogleOAuthProvider } from '@react-oauth/google'
+import {useMyleGameSession} from "../hooks/usePracticeGameSession/useMyleGameSession";
 function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter()
   const [shouldLoad, setShouldLoad] = useState<boolean>(false)
   const gameSession = useGameSession()
   const practiceGameSession = usePracticeGameSession()
+  const myleGameSession = useMyleGameSession()
 
   useEffect(() => {
     const handleRouteChangeStart = () => {
@@ -82,6 +84,8 @@ function MyApp({ Component, pageProps }: AppProps) {
       gameSession.disconnectGameSocket()
       practiceGameSession.clearGameSession()
       practiceGameSession.disconnectGameSocket()
+      myleGameSession.clearGameSession()
+      myleGameSession.disconnectGameSocket()
     } else {
       console.log('🏠 =>', router.pathname)
     }
