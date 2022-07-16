@@ -249,31 +249,31 @@ const ConnectQuestion: FC<ConnectQuestionProps> = ({
           return
         }
       }
-    }
+    } else {
+      if (isHost) return
+      if (isTimeOut || isSubmitted) return
+      const insertList: TAnswer[] = displayAnswer
 
-    if (isHost) return
-    if (isTimeOut || isSubmitted) return
-    const insertList: TAnswer[] = displayAnswer
-
-    for (let i = 0; i < insertList.length; i++) {
-      if (
-        insertList[i].id == answer.id &&
-        insertList[i].orderPosition == answer.orderPosition &&
-        insertList[i].type != '21PLHDR'
-      ) {
-        insertList[i] = getPlaceHolderAnswer(defaultPlaceHolder.current)
-        setSelectedAnswerSet(new Set(insertList))
-        setDisplayAnswer([...insertList])
-        return
+      for (let i = 0; i < insertList.length; i++) {
+        if (
+          insertList[i].id == answer.id &&
+          insertList[i].orderPosition == answer.orderPosition &&
+          insertList[i].type != '21PLHDR'
+        ) {
+          insertList[i] = getPlaceHolderAnswer(defaultPlaceHolder.current)
+          setSelectedAnswerSet(new Set(insertList))
+          setDisplayAnswer([...insertList])
+          return
+        }
       }
-    }
 
-    for (let i = 0; i < insertList.length; i++) {
-      if (insertList[i].id == -1 && insertList[i].type != '21PLHDR') {
-        insertList[i] = answer
-        setSelectedAnswerSet(new Set(insertList))
-        setDisplayAnswer([...insertList])
-        return
+      for (let i = 0; i < insertList.length; i++) {
+        if (insertList[i].id == -1 && insertList[i].type != '21PLHDR') {
+          insertList[i] = answer
+          setSelectedAnswerSet(new Set(insertList))
+          setDisplayAnswer([...insertList])
+          return
+        }
       }
     }
   }

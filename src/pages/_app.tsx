@@ -21,7 +21,6 @@ import {HTML5Backend} from 'react-dnd-html5-backend'
 import {useGameSession} from '../hooks/useGameSession/useGameSession'
 import {ToastProvider} from 'react-toast-notifications'
 import * as gtag from '../libs/gtag'
-import {usePracticeGameSession} from '../hooks/usePracticeGameSession/usePracticeGameSession'
 import SignInModal from '../components/AuthComponents/SignInModal/SignInModal'
 import { GoogleOAuthProvider } from '@react-oauth/google'
 import {useMyleGameSession} from "../hooks/usePracticeGameSession/useMyleGameSession";
@@ -29,7 +28,6 @@ function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter()
   const [shouldLoad, setShouldLoad] = useState<boolean>(false)
   const gameSession = useGameSession()
-  const practiceGameSession = usePracticeGameSession()
   const myleGameSession = useMyleGameSession()
 
   useEffect(() => {
@@ -82,8 +80,8 @@ function MyApp({ Component, pageProps }: AppProps) {
       console.log('🏡 =>', router.pathname)
       gameSession.clearGameSession()
       gameSession.disconnectGameSocket()
-      practiceGameSession.clearGameSession()
-      practiceGameSession.disconnectGameSocket()
+      // practiceGameSession.clearGameSession()
+      // practiceGameSession.disconnectGameSocket()
       myleGameSession.clearGameSession()
       myleGameSession.disconnectGameSocket()
     } else {
