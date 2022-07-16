@@ -2,6 +2,7 @@
 /* eslint-disable @next/next/no-sync-scripts */
 /* eslint-disable @next/next/no-css-tags */
 import Head from 'next/head'
+import Link from 'next/link'
 import Script from 'next/script'
 import { FC, useEffect, useState } from 'react'
 
@@ -9,7 +10,7 @@ const WelcomePage: FC = () => {
   const [shouldRender, setShouldRender] = useState(false)
   useEffect(() => {
     history.scrollRestoration = 'manual'
-    scrollTo(0, 0)
+    // scrollTo(0, 0)
     // client side rendering only
     setShouldRender(true)
   }, [])
@@ -56,9 +57,9 @@ const WelcomePage: FC = () => {
             <div className="row">
               <div className="col-lg-12">
                 <nav className="navbar navbar-expand-lg">
-                  <a className="navbar-brand" href="/welcome">
-                    <img src="/assets/logo-text.png" alt="Logo" />
-                  </a>
+                  <Link passHref href="/welcome">
+                    <img src="/assets/logo-text.png" className="navbar-brand" alt="Logo" />
+                  </Link>
                   <button
                     className="navbar-toggler"
                     type="button"
@@ -225,7 +226,7 @@ const WelcomePage: FC = () => {
                         </div>
                       </div>
                     </div>
-                    {/* <div className="col-sm-4">
+                    <div className="col-sm-4">
                       <div
                         className="single-counter counter-color-2 mt-30 d-flex wow fadeInUp"
                         data-wow-duration="1s"
@@ -237,12 +238,12 @@ const WelcomePage: FC = () => {
                         </div>
                         <div className="counter-content media-body">
                           <span className="counter-count">
-                            <span className="counter">99</span>%
+                            <span className="counter">20</span>+
                           </span>
-                          <p className="text">Satisfaction</p>
+                          <p className="text">Vật phẩm</p>
                         </div>
                       </div>
-                    </div> */}
+                    </div>
                     <div className="col-sm-4">
                       <div
                         className="single-counter counter-color-3 mt-30 d-flex wow fadeInUp"
@@ -269,7 +270,7 @@ const WelcomePage: FC = () => {
         </div>
       </section>
 
-      <section id="services" className="our-services-area pt-115">
+      {/* <section id="services" className="our-services-area pt-115">
         <div className="container">
           <div className="row justify-content-center">
             <div className="col-xl-5 col-lg-6 col-md-8 col-sm-9">
@@ -490,7 +491,7 @@ const WelcomePage: FC = () => {
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
 
       <section id="service" className="service-area pt-105">
         <div className="container">
@@ -501,7 +502,7 @@ const WelcomePage: FC = () => {
                 data-wow-duration="1s"
                 data-wow-delay="0.2s"
               >
-                <h6 className="sub-title">Why Us</h6>
+                <h6 className="sub-title">Tính năng nổi trội</h6>
                 <h4 className="title">
                   The reasons to choose us <span>as your business partner</span>
                 </h4>
@@ -523,7 +524,7 @@ const WelcomePage: FC = () => {
                     />
                   </div>
                   <div className="service-content media-body">
-                    <h4 className="service-title">Highly Experienced</h4>
+                    <h4 className="service-title">Hệ thống shop và nhiệm vụ</h4>
                     <p className="text">
                       Lorem Ipsum is simply dummy tex of the printing and
                       typesetting industry. Lorem Ipsum .
@@ -552,7 +553,7 @@ const WelcomePage: FC = () => {
                     />
                   </div>
                   <div className="service-content media-body">
-                    <h4 className="service-title">Bunch of Services</h4>
+                    <h4 className="service-title">Đa dạng loại câu hỏi</h4>
                     <p className="text">
                       Lorem Ipsum is simply dummy tex of the printing and
                       typesetting industry. Lorem Ipsum .
@@ -575,7 +576,7 @@ const WelcomePage: FC = () => {
                     />
                   </div>
                   <div className="service-content media-body">
-                    <h4 className="service-title">Quality Support</h4>
+                    <h4 className="service-title">N</h4>
                     <p className="text">
                       Lorem Ipsum is simply dummy tex of the printing and
                       typesetting industry. Lorem Ipsum .
