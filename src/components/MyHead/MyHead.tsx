@@ -41,13 +41,14 @@ const MyHead: FC = () => {
 
       {/* google analytics */}
       {/* Global Site Tag (gtag.js) - Google Analytics */}
-      <script
-        async
-        src={`https://www.googletagmanager.com/gtag/js?id=${GOOGLE_ANALYTICS}`}
-      />
-      <script
-        dangerouslySetInnerHTML={{
-          __html: `
+      <>
+        <script
+          async
+          src={`https://www.googletagmanager.com/gtag/js?id=${GOOGLE_ANALYTICS}`}
+        />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
@@ -55,8 +56,158 @@ const MyHead: FC = () => {
               page_path: window.location.pathname,
             });
           `,
-        }}
-      />
+          }}
+        />
+      </>
+
+      {/* template */}
+      <>
+        <link
+          as="script"
+          rel="preload"
+          href="/template-assets/js/vendor/jquery-1.12.4.min.js"
+        ></link>
+
+        <link
+          as="script"
+          rel="preload"
+          href="/template-assets/js/jquery.magnific-popup.min.js"
+        ></link>
+
+        <link
+          as="script"
+          rel="preload"
+          href="/template-assets/js/jquery.counterup.min.js"
+        ></link>
+
+        <link
+          as="script"
+          rel="preload"
+          href="/template-assets/js/jquery.appear.min.js"
+        ></link>
+
+        <link
+          as="script"
+          rel="preload"
+          href="/template-assets/js/jquery.nav.js"
+        ></link>
+
+        <link
+          as="script"
+          rel="preload"
+          href="/template-assets/js/vendor/modernizr-3.7.1.min.js"
+        ></link>
+
+        <link
+          as="script"
+          rel="preload"
+          href="/template-assets/js/popper.min.js"
+        ></link>
+        <link
+          as="script"
+          rel="preload"
+          href="/template-assets/js/bootstrap.min.js"
+        ></link>
+
+        <link
+          as="script"
+          rel="preload"
+          href="/template-assets/js/slick.min.js"
+        ></link>
+
+        <link
+          as="script"
+          rel="preload"
+          href="/template-assets/js/imagesloaded.pkgd.min.js"
+        ></link>
+        <link
+          as="script"
+          rel="preload"
+          href="/template-assets/js/isotope.pkgd.min.js"
+        ></link>
+
+        <link
+          as="script"
+          rel="preload"
+          href="/template-assets/js/waypoints.min.js"
+        ></link>
+
+        <link
+          as="script"
+          rel="preload"
+          href="/template-assets/js/circles.min.js"
+        ></link>
+
+        <link
+          as="script"
+          rel="preload"
+          href="/template-assets/js/wow.min.js"
+        ></link>
+
+        <link
+          as="script"
+          rel="preload"
+          href="/template-assets/js/headroom.min.js"
+        ></link>
+
+        <link
+          as="script"
+          rel="preload"
+          href="/template-assets/js/scrollIt.min.js"
+        ></link>
+
+        <link
+          as="script"
+          rel="preload"
+          href="/template-assets/js/main.js"
+        ></link>
+
+        <link
+          rel="shortcut icon"
+          href="/template-assets/images/favicon.png"
+          type="image/png"
+        />
+
+        <link rel="preload" as="style" href="/template-assets/css/slick.css" />
+
+        <link
+          rel="preload"
+          as="style"
+          href="/template-assets/css/font-awesome.min.css"
+        />
+
+        <link
+          rel="preload"
+          as="style"
+          href="/template-assets/css/LineIcons.css"
+        />
+
+        <link
+          rel="preload"
+          as="style"
+          href="/template-assets/css/animate.css"
+        />
+
+        <link
+          rel="preload"
+          as="style"
+          href="/template-assets/css/magnific-popup.css"
+        />
+
+        <link
+          rel="preload"
+          as="style"
+          href="/template-assets/css/bootstrap.min.css"
+        />
+
+        <link
+          rel="preload"
+          as="style"
+          href="/template-assets/css/default.css"
+        />
+
+        <link rel="preload" as="style" href="/template-assets/css/style.css" />
+      </>
     </Head>
   )
 }
