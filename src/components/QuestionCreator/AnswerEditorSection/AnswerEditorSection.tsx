@@ -1,7 +1,7 @@
 import classNames from 'classnames'
 import { Field, Form as FormikForm, Formik } from 'formik'
 import _ from 'lodash'
-import { FC, memo } from 'react'
+import {FC, memo, useState} from 'react'
 import { Col, Form, Row } from 'react-bootstrap'
 import { TAnswer, TMatcherQuestion, TQuestion } from '../../../types/types'
 import { QuestionType } from '../../IconQuestion/IconQuestion'
@@ -35,6 +35,7 @@ const AnswerEditorSection: FC<{
   correctIndexes,
   setCorrectIndexes,
 }) => {
+
   const sortedCorrectAnswers =
     answers
       ?.filter((answer) => answer.isCorrect)
@@ -48,6 +49,9 @@ const AnswerEditorSection: FC<{
       ?.sort((a, b) => {
         return a.orderPosition - b.orderPosition
       }) || []
+
+  const [field, setField] = useState<string>("")
+  const [needCreate, setNeedCreate] = useState<boolean>(true)
 
   return (
     <>
@@ -110,7 +114,7 @@ const AnswerEditorSection: FC<{
               </Col>
 
               <Col>
-                {fillAnswers.map((answer, key) => (
+                {fillAnswers.slice(0, !needCreate ? fillAnswers.length -1 : fillAnswers.length ).map((answer, key) => (
                   <div key={key} className="d-flex mb-3 fw-medium w-100">
                     <div className="p-12px border rounded-8px w-100 bg-primary bg-opacity-25">
                       {answer}
@@ -131,11 +135,10 @@ const AnswerEditorSection: FC<{
                 <Formik
                   initialValues={{ newAnswer: '' }}
                   onSubmit={(values, actions) => {
-                    if (values.newAnswer.length) {
-                      setFillAnswers([...fillAnswers, values.newAnswer])
-                    }
                     actions.setSubmitting(false)
                     actions.resetForm()
+                    setField("")
+                    setNeedCreate(true)
                   }}
                 >
                   {({ isSubmitting }) => (
@@ -143,6 +146,16 @@ const AnswerEditorSection: FC<{
                       <Field
                         maxLength={100}
                         type="text"
+                        value={field}
+                        onChange={(e:any) => {
+                          if (needCreate)
+                            fillAnswers[fillAnswers.length] = e.target.value
+                          else
+                            fillAnswers[fillAnswers.length - 1] = e.target.value
+                          setNeedCreate(false)
+                          setFillAnswers(fillAnswers)
+                          setField(e.target.value)
+                        }}
                         name="newAnswer"
                         placeholder="Nhập đáp án mới"
                         as={MyInput}

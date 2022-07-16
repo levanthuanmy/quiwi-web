@@ -279,7 +279,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
     return (
       <Fade in={isShowHostControl || fromMedium}>
         {isShowHostControl || fromMedium ? (
-          <div className={cn(styles.hostControl, 'px-2 py-2')}>
+          <div className={cn(styles.hostControl, 'px-2 py-2 bg-dark bg-opacity-50')}>
             <GameButton
               isEnable={isShowNext || !timer.isCounting}
               iconClassName="bi bi-bar-chart"
@@ -481,20 +481,6 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
               />
               {QuestionTypeDescription[gameManager.currentQuestion.type]?.title}
             </div>
-            {!gameManager.isHost && gameManager.currentQuestion && (
-              <GameButton
-                isEnable={timer.isSubmittable && gameManager.currentQuestion?.type !== '22POLL'}
-                iconClassName="bi bi-check-circle-fill"
-                className={classNames(
-                  'text-white fw-medium bg-warning',
-                  styles.submitButton
-                )}
-                title={gameManager.currentQuestion?.type !== '22POLL' ? 'Trả lời' : 'Câu trả lời tự nộp'}
-                onClick={() => {
-                  timer.stopCounting(false)
-                }}
-              />
-            )}
           </div>
         )}
 
@@ -502,6 +488,27 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
         {/*edit styles.answerLayout trong css*/}
         {gameManager.currentQuestion?.question && renderAnswersSection()}
         {gameManager.isHost && renderHostControlSystem()}
+        {!gameManager.isHost && gameManager.currentQuestion && (
+          <div
+            className={classNames(
+              'px-2 py-2 fs-4 fw-bold text-white mb-2 bg-dark bg-opacity-50 d-flex justify-content-end align-items-center',
+              {'rounded-10px': fromMedium}
+            )}
+          >
+            <GameButton
+              isEnable={timer.isSubmittable && gameManager.currentQuestion?.type !== '22POLL'}
+              iconClassName="bi bi-check-circle-fill"
+              className={classNames(
+                'text-white fw-medium bg-warning',
+                styles.submitButton
+              )}
+              title={gameManager.currentQuestion?.type !== '22POLL' ? 'Trả lời' : 'Câu trả lời tự nộp'}
+              onClick={() => {
+                timer.stopCounting(false)
+              }}
+            />
+          </div>
+        )}
         {/*&& currentQuestion.type != "22POLL"*/}
         <div className={styles.blankDiv}></div>
         <GameSessionRanking

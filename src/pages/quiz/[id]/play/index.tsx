@@ -41,8 +41,8 @@ const PlayCommunityQuizScreen: NextPage = () => {
         quizId: Number(id),
         mode,
       }
-      if (user.id) {
-        msg.userId = user.id
+      if (user?.id) {
+        msg.userId = user?.id
       }
 
       const quizResponse: TApiResponse<TQuiz> = await get(
@@ -66,7 +66,7 @@ const PlayCommunityQuizScreen: NextPage = () => {
         'api/games/start-community-quiz',
         {},
         body,
-        false
+        true
       )
 
       if (response.response) {

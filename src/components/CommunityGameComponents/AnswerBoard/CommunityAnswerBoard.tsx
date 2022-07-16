@@ -1,25 +1,23 @@
-import { default as classNames, default as cn } from 'classnames'
-import { useRouter } from 'next/router'
-import React, { FC, memo, useContext, useEffect, useRef, useState } from 'react'
-import { Fade, Image } from 'react-bootstrap'
-import { useLocalStorage } from '../../../hooks/useLocalStorage/useLocalStorage'
-import { usePracticeGameSession } from '../../../hooks/usePracticeGameSession/usePracticeGameSession'
+import {default as classNames, default as cn} from 'classnames'
+import {useRouter} from 'next/router'
+import React, {FC, memo, useContext, useEffect, useRef, useState} from 'react'
+import {Fade, Image} from 'react-bootstrap'
 import useScreenSize from '../../../hooks/useScreenSize/useScreenSize'
-import { useSound } from '../../../hooks/useSound/useSound'
-import { useTimer } from '../../../hooks/useTimer/useTimer'
-import { TPlayer, TQuestion, TViewResult } from '../../../types/types'
-import { SOUND_EFFECT } from '../../../utils/constants'
-import { JsonParse } from '../../../utils/helper'
+import {useSound} from '../../../hooks/useSound/useSound'
+import {useTimer} from '../../../hooks/useTimer/useTimer'
+import {TQuestion, TViewResult} from '../../../types/types'
+import {SOUND_EFFECT} from '../../../utils/constants'
 import {
   AnswerSectionFactory,
   QuestionTypeDescription,
 } from '../../GameComponents/AnswerQuestionComponent/AnswerSectionFactory/AnswerSectionFactory'
 import GameButton from '../../GameComponents/GameButton/GameButton'
 import LoadingBoard from '../../GameComponents/LoadingBoard/LoadingBoard'
-import { QuestionMedia } from '../../GameComponents/QuestionMedia/QuestionMedia'
+import {QuestionMedia} from '../../GameComponents/QuestionMedia/QuestionMedia'
 import MyModal from '../../MyModal/MyModal'
-import { ExitContext } from '../CommunityGamePlay/CommunityGamePlay'
+import {ExitContext} from '../CommunityGamePlay/CommunityGamePlay'
 import styles from './CommunityAnswerBoard.module.css'
+import {useMyleGameSession} from "../../../hooks/usePracticeGameSession/useMyleGameSession";
 
 type CommunityAnswerBoardProps = {
   className?: string
@@ -28,34 +26,17 @@ type CommunityAnswerBoardProps = {
 }
 
 const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
-  className,
-  isShowHostControl,
-  setIsShowHostControl,
-}) => {
-  const {
-    gameSession,
-    clearGameSession,
-    gameSocket,
-    gameSkOn,
-    gameSkEmit,
-    gameSkOnce,
-    getQuestionWithID,
-  } = usePracticeGameSession()
+                                                               className,
+                                                               isShowHostControl,
+                                                               setIsShowHostControl,
+                                                             }) => {
 
+  const game = useMyleGameSession()
   const sound = useSound()
-
   const exitContext = useContext(ExitContext)
   const timer = useTimer()
   const DEFAULT_NEXT_TIMER = 3
-
-  const [lsGameSessionPlayer] = useLocalStorage('game-session-player', '')
-  const [currentQID, setCurrentQID] = useState<number>(-1)
-  const [quizLength, setQuizLength] = useState<number>(0)
-
   const router = useRouter()
-
-  const [currentQuestion, setCurrentQuestion] = useState<TQuestion | null>(null)
-
   const [isShowNext, setIsShowNext] = useState<boolean>(false)
   const [autoNextCountDown, setAutoNextCountDown] =
     useState<number>(DEFAULT_NEXT_TIMER)
@@ -63,60 +44,48 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
 
   const [autoNext, setAutoNext] = useState<boolean>(false)
   const [submit, setSubmit] = useState<boolean>(false)
-
   const [loading, setLoading] = useState<string | null>(null)
-
-  const _numSubmission = useRef<number>(0)
-  const [numSubmission, setNumSubmission] = useState<number>(0)
   const [viewResultData, setViewResultData] = useState<TViewResult>()
+  const [numSubmission, setNumSubmission] = useState<number>(1)
+  const {fromMedium} = useScreenSize()
 
-  const { fromMedium } = useScreenSize()
   let answerSectionFactory: AnswerSectionFactory
 
   useEffect(() => {
     handleSocket()
     resetState()
-    if (currentQID == 0) setLoading('Chuẩn bị!')
-    else setLoading(null)
-    console.log('=>(CommunityAnswerBoard.tsx:77) goilao')
   }, [])
 
-  useEffect(() => {
-    if (!gameSession) return
-    if (currentQID < 0) {
-      const firstQuestion = getQuestionWithID(0)
-      if (firstQuestion) {
-        setCurrentQID(0)
-        displayQuestion(firstQuestion)
-        timer.setDefaultDuration(firstQuestion.duration)
-        setNumSubmission(0)
-      }
-      const quizLength = gameSession.quiz?.questions.length
-      if (quizLength) {
-        setQuizLength(quizLength)
-      }
+  function checkEndGame() {
+    if (!game.currentQuestion) return
+    if (game.gameSession?.quiz?.questions?.length) {
+      setIsShowEndGame(game.currentQuestion?.orderPosition == game.gameSession?.quiz?.questions?.length - 1 && !timer.isCounting)
     }
-  }, [gameSession])
+  }
 
-  useEffect(() => {
-    setIsShowEndGame(currentQID == quizLength - 1 && !timer.isCounting)
-  }, [currentQID, quizLength])
-
-  const displayQuestion = (question: TQuestion) => {
-    console.log('=>(CommunityAnswerBoard.tsx:116) Display question', question)
-    if (question && question.duration > 0) setCurrentQuestion(question)
+  const displayFirstQuestion = () => {
+    if (!game.currentQuestion || !game.gameSession) return
+    if (game.currentQuestion.orderPosition != 0) {
+      // game.submittedAnswer
+    } else {
+      timer.setDefaultDuration(game.currentQuestion.duration)
+    }
   }
 
   function resetState() {
-    // if (gameSession)
+    if (!game.currentQuestion) {
+      setLoading('Chuẩn bị!')
+      sound.playSound(SOUND_EFFECT['READY'])
+    } else setLoading(null)
 
-    // else
-    //   setLoading(null)
     setLoading(null)
     timer.setIsShowSkeleton(true)
     setIsShowNext(false)
     setIsNextEmitted(false)
+
+    displayFirstQuestion()
   }
+
   const intervalRef = useRef<NodeJS.Timer | null>(null)
 
   useEffect(() => {
@@ -128,20 +97,20 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
 
   useEffect(() => {
     if (submit) {
-      if (currentQID >= quizLength - 1) {
+      if (game.currentQuestion?.orderPosition ?? 0 >= (game.gameSession?.quiz.questions.length ?? 0) - 1) {
         setIsShowHostControl(true)
-      } else if (autoNext) {
+      }
+      if (autoNext) {
         for (let i = 0; i <= DEFAULT_NEXT_TIMER; i++) {
           setTimeout(() => {
             setAutoNextCountDown(DEFAULT_NEXT_TIMER - i)
           }, i * 1000)
         }
         intervalRef.current = setInterval(() => {
-          console.log('=>(CommunityAnswerBoard.tsx:138) autoNext', autoNext)
           if (autoNext) {
             goToNextQuestion()
           }
-        }, 5000)
+        }, DEFAULT_NEXT_TIMER * 1000)
       } else {
         setIsShowHostControl(true)
       }
@@ -150,10 +119,8 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
   }, [submit])
 
   const handleSocket = () => {
-    if (!gameSocket()) return
-    gameSkOnce('game-started', (data) => {
-      _numSubmission.current = 0
-      setNumSubmission(_numSubmission.current)
+    if (!game.gameSocket) return
+    game.gameSkOnce('game-started', (data) => {
       setAutoNextCountDown(DEFAULT_NEXT_TIMER)
       setIsNextEmitted(false)
       timer.startCounting(data.question?.duration ?? 0)
@@ -161,9 +128,7 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
       setLoading(null)
     })
 
-    gameSkOn('next-question', (data) => {
-      _numSubmission.current = 0
-      setNumSubmission(_numSubmission.current)
+    game.gameSkOn('next-question', (data) => {
       setAutoNextCountDown(DEFAULT_NEXT_TIMER)
       setIsNextEmitted(false)
       timer.startCounting(data.question?.duration ?? 0)
@@ -171,7 +136,7 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
       setLoading(null)
     })
 
-    gameSkOn('view-result', (data: TViewResult) => {
+    game.gameSkOn('view-result', (data: TViewResult) => {
       timer.countDown >= 0 ? setLoading('Đã trả lời!') : setLoading('Hết giờ!')
       setTimeout(() => {
         setLoading(null)
@@ -180,6 +145,7 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
       timer.stopCountingSound(true)
       setViewResultData(data)
       setIsShowNext(true)
+      game.player = data?.player ?? null
       if (data?.player && typeof window !== 'undefined') {
         const curStreak = data.player.currentStreak ?? 0
         if (curStreak > 0) {
@@ -188,44 +154,38 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
           sound?.playSound(SOUND_EFFECT['INCORRECT_BACKGROUND'])
           sound?.playSound(SOUND_EFFECT['INCORRECT_ANSWER'])
         }
-        localStorage.setItem(
-          'game-session-player',
-          JSON.stringify(data?.player)
-        )
       }
       setSubmit(true)
+      checkEndGame()
     })
 
-    gameSkOn('loading', (data) => {
+    game.gameSkOn('loading', (data) => {
       if (data?.question?.question) {
         timer.setIsShowSkeleton(true)
         setIsShowNext(false)
         setIsNextEmitted(true)
 
-        const currentQuestionId = data.question.currentQuestionIndex as number
         const newQuestion = data.question.question as TQuestion
 
-        if (currentQID != currentQuestionId) {
-          setCurrentQID(currentQuestionId)
-          displayQuestion(newQuestion)
-        }
         timer.setDefaultDuration(newQuestion.duration)
-        setNumSubmission(0)
         setLoading('Chuẩn bị!')
+        sound.playSound(SOUND_EFFECT['READY'])
+        game.submittedAnswer = null
       }
       if (data?.loading) {
         setLoading(data.loading)
+        sound.playSound(SOUND_EFFECT['BELL'])
       }
     })
   }
 
   const handleSubmitAnswer = (answer: any) => {
-    if (!gameSession) return
+    if (!game.gameSession) return
     if (!timer.isSubmittable) return
 
     let msg = {
-      invitationCode: gameSession.invitationCode,
-      nickname: gameSession.nickName,
+      invitationCode: game.gameSession.invitationCode,
+      nickname: game.gameSession.nickName,
       answerIds: [] as any[],
       answer: '',
     }
@@ -243,21 +203,21 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
       console.log('=>(AnswerBoard.tsx:191) not supported "', answer, '"')
       return
     }
-    if (currentQuestion && currentQuestion.type != '22POLL')
+    if (game.currentQuestion && game.currentQuestion.type != '22POLL')
       timer.setIsSubmittable(false)
-    if (msg.answer || msg.answerIds) gameSkEmit('submit-answer', msg)
+    if (msg.answer || msg.answerIds) game.gameSkEmit('submit-answer', msg)
   }
 
   const renderAnswersSection = () => {
-    if (!currentQuestion) return
+    if (!game.currentQuestion) return
     if (!answerSectionFactory)
       answerSectionFactory = new AnswerSectionFactory(
         false,
         styles.answerLayout
       )
     return answerSectionFactory.initAnswerSectionForType(
-      currentQuestion.type,
-      currentQuestion,
+      game.currentQuestion.type,
+      game.currentQuestion,
       handleSubmitAnswer
     )
   }
@@ -265,20 +225,21 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
   const [isNextEmitted, setIsNextEmitted] = useState<boolean>(false)
 
   const goToNextQuestion = () => {
+    console.log("=>(CommunityAnswerBoard.tsx:232) game", game);
     if (intervalRef.current) {
       clearInterval(intervalRef.current)
       intervalRef.current = null
     }
-    if (!gameSession) return
-    const msg = { invitationCode: gameSession.invitationCode }
-    gameSkEmit('next-question', msg)
+    if (!game.gameSession) return
+    const msg = {invitationCode: game.gameSession.invitationCode}
+    game.gameSkEmit('next-question', msg)
   }
 
   function endGame() {
-    if (gameSession && gameSocket() != null) {
-      const msg = { invitationCode: gameSession.invitationCode }
-      gameSkEmit('game-ended', msg)
-      clearGameSession()
+    if (game.gameSession && game.gameSocket != null) {
+      const msg = {invitationCode: game.gameSession.invitationCode}
+      game.gameSkEmit('game-ended', msg)
+      game.clearGameSession()
       router.push('/')
     }
   }
@@ -297,15 +258,15 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
 
         <div className="text-center fw-bold">
           <div className="text-secondary fs-24x">
-            {currentQID + 1 < (gameSession?.quiz?.questions?.length ?? 0) ? (
+            {(game.currentQuestion?.orderPosition ?? 0) + 1 < (game.gameSession?.quiz?.questions?.length ?? 0) ? (
               <>
                 {'Quiz mới hoàn thành '}
                 <span className="fw-bolder fs-24x  text-primary">
-                  {currentQID + 1}
+                  {(game.currentQuestion?.orderPosition ?? 0) + 1}
                 </span>
                 {' câu, còn '}
                 <span className="fw-bolder fs-24x  text-primary">
-                  {gameSession?.quiz?.questions?.length}
+                  {game.gameSession?.quiz?.questions?.length}
                 </span>
                 {' câu chưa hoàn thành!'}
               </>
@@ -313,11 +274,11 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
               <>
                 {'Quiz đã hoàn thành tất cả '}
                 <span className="fw-bolder fs-24x  text-primary">
-                  {currentQID + 1}
+                  {(game.currentQuestion?.orderPosition ?? 0) + 1}
                 </span>
                 {' câu trên '}
                 <span className="fw-bolder fs-24x  text-primary">
-                  {gameSession?.quiz?.questions?.length}
+                  {game.gameSession?.quiz?.questions?.length}
                 </span>
                 {' câu!'}
               </>
@@ -336,7 +297,7 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
     return (
       <Fade in={isShowHostControl || fromMedium}>
         {isShowHostControl || fromMedium ? (
-          <div className={cn(styles.hostControl, 'px-2 py-2 flex-end')}>
+          <div className={cn(styles.hostControl, 'px-2 py-2 flex-end bg-dark bg-opacity-50')}>
             {!isShowEndGame && (
               <GameButton
                 isEnable={true}
@@ -355,15 +316,26 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
                 onClick={() => setAutoNext(!autoNext)}
               />
             )}
-            {!isShowEndGame && (
-              <GameButton
-                isEnable={!isNextEmitted && !timer.isCounting}
-                iconClassName="bi bi-arrow-right-circle-fill"
-                className={classNames('text-white fw-medium')}
-                title="Câu sau"
-                onClick={goToNextQuestion}
-              />
-            )}
+            {!isShowEndGame &&
+            (!timer.isSubmittable) ?
+              (
+                <GameButton
+                  isEnable={true}
+                  iconClassName="bi bi-arrow-right-circle-fill"
+                  className={classNames('text-white fw-medium')}
+                  title="Câu sau"
+                  onClick={() => {goToNextQuestion()}}
+                /> )
+              : (<GameButton
+                isEnable={true}
+                iconClassName="bi bi-check-circle-fill"
+                className={classNames('text-white fw-medium bg-warning')}
+                title={'Trả lời'}
+                onClick={() => {
+                  timer.stopCounting(false)
+                }}
+              />)
+            }
             {isShowEndGame && (
               <GameButton
                 isEnable={true}
@@ -392,7 +364,7 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
           styles.container
         )}
       >
-        {currentQuestion?.question && (
+        {game.currentQuestion?.question && (
           <div
             className={classNames(
               'd-flex flex-column bg-dark bg-opacity-50 rounded-10px shadow mb-2'
@@ -407,15 +379,15 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
                 alt=""
               />
               <div className="fw-medium fs-20px text-white">
-                {gameSession?.host?.name ?? 'Ẩn danh'}
+                {game.gameSession?.host?.name ?? 'Ẩn danh'}
               </div>
             </div>
             <div className="px-2 pb-2 text-white d-flex gap-3 align-items-center justify-content-between">
               {/*câu hỏi hiện tại*/}
               <div className="fw-medium fs-32px text-primary">
-                {currentQID + 1}/
+                {(game.currentQuestion?.orderPosition ?? 0) + 1}/
                 <span className="text-secondary fs-24px">
-                  {gameSession?.quiz?.questions?.length}
+                  {game.gameSession?.quiz?.questions?.length}
                 </span>
               </div>
 
@@ -436,10 +408,10 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
 
         <QuestionMedia
           //timeout sẽ âm để tránh 1 số lỗi, đừng sửa chỗ này
-          media={currentQuestion?.media ?? null}
+          media={game.currentQuestion?.media ?? null}
           numStreak={0}
           numSubmission={numSubmission}
-          key={currentQID}
+          key={(game.currentQuestion?.orderPosition ?? 0)}
           className={styles.questionMedia}
         />
 
@@ -447,47 +419,35 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
           className={classNames(
             'shadow px-3 pt-2 bg-white mb-2',
             styles.questionTitle,
-            { 'rounded-10px': fromMedium }
+            {'rounded-10px': fromMedium}
           )}
         >
           <div
             dangerouslySetInnerHTML={{
-              __html: currentQuestion?.question ?? '',
+              __html: game.currentQuestion?.question ?? '',
             }}
           />
         </div>
-        {currentQuestion && (
+        {game.currentQuestion && (
           <div
             className={classNames(
               'noselect px-2 py-2 fs-4 fw-bold text-white mb-2 bg-dark bg-opacity-50 d-flex justify-content-between align-items-center',
-              { 'rounded-10px': fromMedium }
+              {'rounded-10px': fromMedium}
             )}
           >
             <div className={''}>
               <i
                 className={cn(
                   'fs-20px text-white me-2',
-                  QuestionTypeDescription[currentQuestion.type].icon
+                  QuestionTypeDescription[game.currentQuestion.type].icon
                 )}
               />
-              {QuestionTypeDescription[currentQuestion.type].title}
+              {QuestionTypeDescription[game.currentQuestion.type].title}
             </div>
-            <GameButton
-              isEnable={timer.isSubmittable}
-              iconClassName="bi bi-check-circle-fill"
-              className={classNames(
-                'text-white fw-medium bg-warning',
-                styles.submitButton
-              )}
-              title={'Trả lời'}
-              onClick={() => {
-                timer.stopCounting(false)
-              }}
-            />
           </div>
         )}
 
-        {currentQuestion?.question && renderAnswersSection()}
+        {game.currentQuestion?.question && renderAnswersSection()}
         {renderHostControlSystem()}
         <div className={styles.blankDiv}></div>
         {getEndGameModal()}

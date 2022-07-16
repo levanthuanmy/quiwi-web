@@ -7,11 +7,11 @@ export class User {
   private static lsKey = "user"
   private static _instance?: User;
 
-  private _user: TUser;
-  get user(): TUser {
+  private _user: TUser | null;
+  get user(): TUser | null {
     return this._user;
   }
-  set user(value: TUser) {
+  set user(value: TUser | null) {
     this._user = value;
     this.writeLS()
   }

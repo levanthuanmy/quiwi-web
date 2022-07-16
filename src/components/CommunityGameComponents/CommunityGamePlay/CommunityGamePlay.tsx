@@ -1,35 +1,36 @@
-import { NextPage } from 'next'
-import React, { Dispatch, SetStateAction, useEffect, useState } from 'react'
+import {NextPage} from 'next'
+import React, {Dispatch, SetStateAction, useEffect, useState} from 'react'
 import styles from './CommunityGamePlay.module.css'
 import CommunityAnswerBoard from '../AnswerBoard/CommunityAnswerBoard'
 import classNames from 'classnames'
-import { TimerProvider } from '../../../hooks/useTimer/useTimer'
-import { FAB, FABAction } from '../../GameComponents/FAB/FAB'
+import {TimerProvider} from '../../../hooks/useTimer/useTimer'
+import {FAB, FABAction} from '../../GameComponents/FAB/FAB'
 import router from 'next/router'
 import MyModal from '../../MyModal/MyModal'
-import { usePracticeGameSession } from '../../../hooks/usePracticeGameSession/usePracticeGameSession'
+import {usePracticeGameSession} from '../../../hooks/usePracticeGameSession/usePracticeGameSession'
 import useScreenSize from '../../../hooks/useScreenSize/useScreenSize'
-import { TStartQuizResponse } from '../../../types/types'
+import {TStartQuizResponse} from '../../../types/types'
 import ExamAnswerBoard from '../ExamComponents/ExamAnswerBoard/ExamAnswerBoard'
-import { useMyleGameSession } from '../../../hooks/usePracticeGameSession/useMyleGameSession'
+import {useMyleGameSession} from '../../../hooks/usePracticeGameSession/useMyleGameSession'
 
 export const ExitContext = React.createContext<{
   showEndGameModal: boolean
   setShowEndGameModal: Dispatch<SetStateAction<boolean>>
 }>({
   showEndGameModal: false,
-  setShowEndGameModal: () => {},
+  setShowEndGameModal: () => {
+  },
 })
 
 const CommunityGamePlay: NextPage = () => {
-  const { clearGameSession, gameSkOn, gameSession, saveGameSession } =
+  const {clearGameSession, gameSkOn, gameSession, saveGameSession} =
     usePracticeGameSession()
   const myleGameSession = useMyleGameSession()
   const [isShowExit, setIsShowExit] = useState<boolean>(false)
   const [isShowHostControl, setIsShowHostControl] = useState<boolean>(true)
   const [exitModal, setExitModal] = useState(false)
   const [endGameData, setEndGameData] = useState<TStartQuizResponse>()
-  const { fromMedium } = useScreenSize()
+  const {fromMedium} = useScreenSize()
 
   const hostAction: FABAction = {
     label: 'Hiện bảng điều khiển',
@@ -109,7 +110,7 @@ const CommunityGamePlay: NextPage = () => {
               <TimerProvider>
                 <div className={'bg-white w-100 h -100'}></div>
                 {myleGameSession.gameSession?.mode === '30EXAM' ? (
-                  <ExamAnswerBoard />
+                  <ExamAnswerBoard/>
                 ) : (
                   <CommunityAnswerBoard
                     isShowHostControl={isShowHostControl}

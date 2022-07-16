@@ -7,39 +7,26 @@ import ItemQuestion from '../../../components/ItemQuestion/ItemQuestion'
 import MyButton from '../../../components/MyButton/MyButton'
 import NavBar from '../../../components/NavBar/NavBar'
 import {get} from '../../../libs/api'
-import {TApiResponse, TQuiz, TUser} from '../../../types/types'
+import {TApiResponse, TQuiz} from '../../../types/types'
 import {useEffect, useState} from 'react'
-import {JsonParse} from '../../../utils/helper'
-import {useLocalStorage} from '../../../hooks/useLocalStorage/useLocalStorage'
-import {usePracticeGameSession} from '../../../hooks/usePracticeGameSession/usePracticeGameSession'
 import _ from 'lodash'
 import MyModal from '../../../components/MyModal/MyModal'
 import LoadingFullScreen from '../../../components/LoadingFullScreen/Loading'
-import {useGameSession} from "../../../hooks/useGameSession/useGameSession";
 
 const QuizDetailPage: NextPage = () => {
   const router = useRouter()
   const query = router.query
-  const practiceGameSession = usePracticeGameSession()
-  const game = useGameSession()
   const {id} = query
-  const [lsUser] = useLocalStorage('user', '')
-  const [user, setUser] = useState<TUser>()
+
   const [forbiddenError, setForbiddenError] = useState('')
-  const [currentQID, setCurrentQID] = useState<number>(-1)
-
-
+  //
   // useEffect(() => {
-  //   console.log("=>(index.tsx:34) lsCurrentQID", lsCurrentQID);
-  // }, [lsCurrentQID]);
-
-  useEffect(() => {
-    window.addEventListener("storage", (e) => {
-      if (e.key == "currentQID") {
-        setCurrentQID(Number(e.newValue))
-      }
-    });
-  }, []);
+  //   window.addEventListener("storage", (e) => {
+  //     if (e.key == "currentQID") {
+  //       setCurrentQID(Number(e.newValue))
+  //     }
+  //   });
+  // }, []);
 
   const {data, isValidating, error} = useSWR<TApiResponse<TQuiz>>(
     id
@@ -55,18 +42,6 @@ const QuizDetailPage: NextPage = () => {
     }
   )
 
-  useEffect(() => {
-    if (!practiceGameSession) return
-    practiceGameSession.gameSkOnce('loading', (data) => {
-      router.push(`/game/play`)
-    })
-  }, [practiceGameSession])
-
-  useEffect(() => {
-    if (lsUser) setUser(JsonParse(lsUser) as TUser)
-    practiceGameSession.gameSkOn('loading', (data) => {
-    })
-  }, [])
 
   useEffect(() => {
     if (error) {

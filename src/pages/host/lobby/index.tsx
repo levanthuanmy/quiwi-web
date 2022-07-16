@@ -36,7 +36,7 @@ const HostPage: NextPage = () => {
   }, [])
 
   useEffect(() => {
-    if (gameModeEnum && isShowGameModeScreen) {
+    if (gameModeEnum && isShowGameModeScreen && user?.id) {
       handleStartQuiz(Number(quizId), gameModeEnum, user.id)
     }
   }, [gameModeEnum, isShowGameModeScreen])

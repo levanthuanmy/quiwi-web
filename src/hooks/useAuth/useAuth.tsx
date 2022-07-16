@@ -7,6 +7,7 @@ import { TUser } from '../../types/types'
 import { JsonParse } from '../../utils/helper'
 import { useLocalStorage } from '../useLocalStorage/useLocalStorage'
 import { SocketManager } from '../useSocket/socketManager'
+import {useUser, useUserManager} from "../useUser/useUser";
 
 type UseAuthValue = {
   isAuth: boolean
@@ -36,8 +37,8 @@ const AuthContext = React.createContext<UseAuthValue>({
 export const AuthProvider = ({ children }: { children?: ReactNode }) => {
   const socketManager = SocketManager()
   const router = useRouter()
+  const userManager = useUserManager()
   const [prevRoute, setPrevRoute] = useLocalStorage('prev-route', '/')
-  const [lsUser, setLsUser] = useLocalStorage('user', '')
   const cookies = new Cookies()
 
   const [isAuth, setIsAuth] = useState<boolean>(false)
@@ -45,19 +46,18 @@ export const AuthProvider = ({ children }: { children?: ReactNode }) => {
   const [signInModalHandler, setSignInModalHandler] = useState<boolean>(false)
 
   useEffect(() => {
-    const _lsUser = JsonParse(lsUser) as TUser
-    if (_lsUser?.token?.accessToken.length) {
+    if (userManager.user?.token?.accessToken.length) {
       const getUser = async () => {
         try {
           const res = await get<any>('/api/users/profile', true)
-          setUserState({ ..._lsUser, ...res?.response?.user })
+          setUserState({ ...userManager.user, ...res?.response?.user })
         } catch (error) {
           console.log('getUser - error', error)
         }
       }
 
-      cookies.set('access-token', _lsUser.token.accessToken)
-      cookies.set('refresh-token', _lsUser.token.refreshToken)
+      cookies.set('access-token', userManager.user.token.accessToken)
+      cookies.set('refresh-token', userManager.user.token.refreshToken)
 
       getUser()
     }
@@ -65,10 +65,10 @@ export const AuthProvider = ({ children }: { children?: ReactNode }) => {
     setIsAuth(
       Boolean(
         cookies.get('access-token')?.length &&
-          _lsUser?.token?.refreshToken?.length
+        userManager.user?.token?.refreshToken?.length
       )
     )
-  }, [lsUser, cookies.get('access-token')])
+  }, [cookies.get('access-token')])
 
   const navigate = async (navigateTo: string) => {
     if (!isAuth) {
@@ -80,10 +80,9 @@ export const AuthProvider = ({ children }: { children?: ReactNode }) => {
   }
 
   const fetchUser = async () => {
-    const _lsUser = JsonParse(lsUser) as TUser
     try {
       const res = await get<any>('/api/users/profile', true)
-      setUserState({ ..._lsUser, ...res?.response?.user })
+      setUserState({ ...userManager.user, ...res?.response?.user })
     } catch (error) {
       console.log('getUser - error', error)
     }
@@ -99,8 +98,8 @@ export const AuthProvider = ({ children }: { children?: ReactNode }) => {
     cookies.remove('access-token')
     cookies.remove('refresh-token')
     console.log('🚪=>(useAuth.tsx:80) Đăng xuất, cookies: ', cookies)
-    setLsUser('')
     socketManager.disconnectAll()
+    userManager.user = null
     setUserState(undefined)
     setIsAuth(false)
     await router.push('/')
@@ -120,7 +119,7 @@ export const AuthProvider = ({ children }: { children?: ReactNode }) => {
       cookies.set('access-token', data.token.accessToken)
       cookies.set('refresh-token', data.token.refreshToken)
       console.log('🔓=>(useAuth.tsx:99) Đăng nhập, cookies: ', cookies)
-      setLsUser(JSON.stringify(data))
+      userManager.user = data
     } catch (error) {
       console.log('setUser - error', error)
     }

@@ -1,6 +1,6 @@
-import axios, { ResponseType } from 'axios'
+import axios, {ResponseType} from 'axios'
 import Cookies from 'universal-cookie'
-import { API_URL } from '../utils/constants'
+import {API_URL} from '../utils/constants'
 
 const headers = {
   'Content-Type': 'application/json; charset=UTF-8',
@@ -19,12 +19,14 @@ const get = async <T>(
   responseType: ResponseType = 'json'
 ): Promise<T> => {
   try {
+    // console.log("=>(api.ts:27) get", path);
     if (isAuth) {
       const cookies = new Cookies()
-      headers['Authorization'] = `Bearer ${cookies.get('access-token')}`
+      if (cookies.get('access-token'))
+        headers['Authorization'] = `Bearer ${cookies.get('access-token')}`
     }
-
-    const resp = await client.get<T>(path, { params, headers, responseType })
+    // console.log("=>(api.ts:27) get", headers);
+    const resp = await client.get<T>(path, {params, headers, responseType})
     return resp.data
   } catch (error: any) {
     console.log('error.config', error.config)
@@ -56,12 +58,14 @@ const post = async <T>(
   headers: Record<string, string> = {}
 ): Promise<T> => {
   try {
+    // console.log("=>(api.ts:27) post", path);
     if (isAuth) {
       const cookies = new Cookies()
-      headers['Authorization'] = `Bearer ${cookies.get('access-token')}`      
+      if (cookies.get('access-token'))
+        headers['Authorization'] = `Bearer ${cookies.get('access-token')}`
     }
-    
-    const resp = await client.post<T>(path, data, { headers, params })
+    // console.log("=>(api.ts:27) post", headers);
+    const resp = await client.post<T>(path, data, {headers, params})
     return resp.data
   } catch (error: any) {
     if (error.response) {
@@ -86,4 +90,4 @@ const post = async <T>(
   }
 }
 
-export { get, post }
+export {get, post}

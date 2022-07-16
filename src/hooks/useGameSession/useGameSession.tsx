@@ -125,7 +125,7 @@ export class GameManager {
 
   get isHost(): boolean {
     if (this.gameSession) {
-      return this.user.id == this.gameSession.hostId
+      return this.user?.id == this.gameSession.hostId
     }
     return false
   }
@@ -188,10 +188,13 @@ export class GameManager {
           this.currentQuestion = data.question?.question
         } else if (data.question as TQuestion) {
           this.currentQuestion = data.question
-          this.gameSession = data.gameLobby
         } else if (data.game?.question as TQuestion) {
           this.currentQuestion = data.game.question
         }
+        if (data.gameLobby) {
+          this.gameSession = data.gameLobby
+        }
+        // console.log("=>(useGameSession.tsx:181)  data.gameLobby",  data.gameLobby);
         // console.log("=>(useGameSession.tsx:181) this.currentQuestion", this.currentQuestion);
       })
     } else {
