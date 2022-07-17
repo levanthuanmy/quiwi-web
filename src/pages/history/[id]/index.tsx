@@ -1,7 +1,7 @@
 import { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
-import { Col, Container, Modal, Row } from 'react-bootstrap'
+import { Breadcrumb, Col, Container, Modal, Row } from 'react-bootstrap'
 
 import useSWR from 'swr'
 import DashboardLayout from '../../../components/DashboardLayout/DashboardLayout'
@@ -67,7 +67,23 @@ const DetailedHistoryPage: NextPage = () => {
             <Row className="flex-wrap pb-2">
               <Col xs={7} md={8}>
                 <div className="d-flex justify-content-between align-items-center">
-                  <h4>Lịch sử</h4>
+                  <h4>
+                    <nav aria-label="breadcrumb">
+                      <ol className="breadcrumb m-0 p-0">
+                        <li className="breadcrumb-item text-primary">
+                          <Link href="/history">Lịch sử</Link>
+                        </li>
+                        <li
+                          className="breadcrumb-item active"
+                          aria-current="page"
+                        >
+                          Chi tiết lịch sử
+                        </li>
+                      </ol>
+                    </nav>
+                  </h4>
+
+                  {/* <h4>Lịch sử</h4> */}
                   <div>
                     <HistoryDropdownButton
                       key={data.response.id}
@@ -101,7 +117,8 @@ const DetailedHistoryPage: NextPage = () => {
                     Tổ chức bởi{' '}
                     <span className="fw-medium">
                       <Link href={`/users/${data.response.hostId}`}>
-                        {data.response.host?.name || data.response.host?.username}
+                        {data.response.host?.name ||
+                          data.response.host?.username}
                       </Link>
                     </span>
                   </div>
