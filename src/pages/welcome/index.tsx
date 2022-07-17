@@ -55,7 +55,7 @@ const WelcomePage: FC = () => {
       <Head>
         <meta charSet="utf-8" />
 
-        <title>Consult - Business Consultancy Agency Template | Home</title>
+        {/* <title>Q - Business Consultancy Agency Template | Home</title> */}
 
         <meta name="description" content="" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -219,7 +219,7 @@ const WelcomePage: FC = () => {
               >
                 <h6 className="welcome">CHÀO MỪNG BẠN</h6>
                 <h3 className="title">
-                  Khám phá nhiều tính năng thú vị của <span></span> chỉ với{' '}
+                  Khám phá nhiều tính năng thú vị của <span>Quiwi</span> chỉ với{' '}
                   <span>một cú nhấp chuột</span>
                   <br />
                   <br />
