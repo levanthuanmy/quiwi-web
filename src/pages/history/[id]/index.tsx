@@ -88,11 +88,11 @@ const DetailedHistoryPage: NextPage = () => {
                 </div>
                 {data.response.isCommunityPlay ? (
                   <div className="ps-2 py-2">
-                    Quiz của{' '}
+                    Quiz này của{' '}
                     <span className="fw-medium">
-                      <Link href={`/users/${data.response.quiz.user?.id}`}>
-                        {data.response.quiz.user?.name ||
-                          data.response.quiz.user?.username}
+                      <Link href={`/users/${data.response.quiz.userId}`}>
+                        {data.response.quiz?.user?.name ||
+                          data.response.quiz?.user?.username}
                       </Link>
                     </span>
                   </div>
@@ -100,8 +100,8 @@ const DetailedHistoryPage: NextPage = () => {
                   <div className="ps-2 py-2">
                     Tổ chức bởi{' '}
                     <span className="fw-medium">
-                      <Link href={`/users/${data.response.host.id}`}>
-                        {data.response.host.name || data.response.host.username}
+                      <Link href={`/users/${data.response.hostId}`}>
+                        {data.response.host?.name || data.response.host?.username}
                       </Link>
                     </span>
                   </div>
