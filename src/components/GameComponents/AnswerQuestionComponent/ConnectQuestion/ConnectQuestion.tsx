@@ -56,13 +56,11 @@ const ConnectQuestion: FC<ConnectQuestionProps> = ({
     []
   )
 
-  // useEffect(() => {
-  //   prepareData()
-  // }, [])
-
   useEffect(() => {
-    prepareData()
-  }, [question])
+    if (isShowSkeleton) {
+        prepareData()
+    }
+  }, [isShowSkeleton])
 
   useEffect(() => {
     setDecorOptions(showAnswer ? orderedCorrectAnswer : displayAnswer)

@@ -41,10 +41,11 @@ const TextQuestion: FC<TextQuestionProps> = ({
   const [isCorrect, setIsCorrect] = useState<boolean>(false)
 
   useEffect(() => {
-    if (question && isSubmitted) {
+    if (isShowSkeleton) {
       setAnswerText(null)
     }
-  }, [question])
+  }, [isShowSkeleton])
+
 
   useEffect(() => {
     if (!isCounting && !isSubmitted && !isHost) {
