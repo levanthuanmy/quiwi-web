@@ -658,9 +658,9 @@ const WelcomePage: FC = () => {
             <div className="row">
               <div className="col-lg-12">
                 <div className="service-btn text-center pt-25 pb-15">
-                  <a className="main-btn main-btn-2" href="/home">
-                    Tìm hiều thêm
-                  </a>
+                  <Link passHref href="/home">
+                    <a className="main-btn main-btn-2">Tìm hiều thêm</a>
+                  </Link>
                 </div>
               </div>
             </div>
