@@ -213,9 +213,19 @@ const GamePage: NextPage = () => {
               <GameMenuBar
                 isShow={isShowChat}
                 isGameEnded={isGameEnded}
+                closeAction={() => {
+                  resetAllFAB()
+                  setIsShowChat(!isShowChat)
+                }}
               />
                 {isShowItem &&
-                    <UsingItemInGame/>
+                    <UsingItemInGame
+                        closeAction={() => {
+                          resetAllFAB()
+                          setIsShowItem(!isShowItem)
+                        }
+                        }
+                    />
                 }
             </div>
           )}

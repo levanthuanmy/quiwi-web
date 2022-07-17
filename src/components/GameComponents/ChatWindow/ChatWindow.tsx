@@ -80,7 +80,7 @@ const ChatWindow: FC<{
 
   handleSocketListener()
   return (
-    <div className={classNames(styles.chatWindow)}>
+    <div className={classNames(styles.chatWindow)} id={"chatWindow"}>
       <div className={styles.chatBox}>
         <div className={`d-flex flex-column gap-1 ${styles.chatList} `}>
           {chatContent.map((item, index) => (

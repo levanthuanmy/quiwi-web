@@ -46,14 +46,15 @@ const PollAnswerSection: FC<PollAnswerSectionProps> = ({
       setAnswerSet(new Set(answers))
       socketSubmit(answerSet)
       return
-    }
-    if (isTimeOut) return
-    // Chọn và bỏ chọn câu hỏi
-    const answers: Set<number> = answerSet
-    answers.has(answerId) ? answers.delete(answerId) : answers.add(answerId)
-    setAnswerSet(new Set(answers))
-    if (!isSubmitted && !isHost) {
-      socketSubmit(answerSet)
+    } else {
+      if (isTimeOut) return
+      // Chọn và bỏ chọn câu hỏi
+      const answers: Set<number> = answerSet
+      answers.has(answerId) ? answers.delete(answerId) : answers.add(answerId)
+      setAnswerSet(new Set(answers))
+      if (!isSubmitted && !isHost) {
+        socketSubmit(answerSet)
+      }
     }
   }
 

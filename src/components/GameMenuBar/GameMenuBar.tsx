@@ -12,15 +12,19 @@ import PlayerLobbyList from "../PlayerLobbyList/PlayerLobbyList";
 import {useSound} from "../../hooks/useSound/useSound";
 import {SOUND_EFFECT} from "../../utils/constants";
 import {useGameSession} from "../../hooks/useGameSession/useGameSession";
+import {Button} from "react-bootstrap";
+import GameButton from "../GameComponents/GameButton/GameButton";
 
 type GameMenuBarProps = {
   user?: TUser
   isShow: boolean
   isGameEnded: boolean
+  closeAction: () => void
 }
 const GameMenuBar: FC<GameMenuBarProps> = ({
   isShow,
   isGameEnded,
+  closeAction
 }) => {
   const game = useGameSession()
   const [chatContent, setChatContent] = useState<MessageProps[]>([])
@@ -54,13 +58,21 @@ const GameMenuBar: FC<GameMenuBarProps> = ({
         className={`${styles.slider} bg-secondary`}
         onMouseDown={(e) => {
           let block = document.getElementById('playerList') as HTMLDivElement
+          let blockChat = document.getElementById('chatWindow') as HTMLDivElement
           let dragX = e.clientY
           // register a mouse move listener if mouse is down
           document.onmousemove = function onMouseMove(e) {
             // e.clientY will be the position of the mouse as it has moved a bit now
             // offsetHeight is the height of the block-1
-            if (block) {
+            if (block && blockChat) {
+              let fullHeight = blockChat.offsetHeight + block.offsetHeight;
+              let tempHeight = block.offsetHeight + e.clientY - dragX
               block.style.height = block.offsetHeight + e.clientY - dragX + 'px'
+              let min = 150
+              tempHeight = Math.max(tempHeight, min)
+              tempHeight = Math.min(tempHeight, fullHeight - min)
+
+                block.style.height = tempHeight + 'px';
               // update variable - till this pos, mouse movement has been handled
               dragX = e.clientY
             }
@@ -90,6 +102,14 @@ const GameMenuBar: FC<GameMenuBarProps> = ({
       )}
     >
       <div className="position-relative  " style={{ height: 8 }}></div>
+      <div
+        className={"position-absolute pe-2 d-flex flex-row-reverse w-100 cursor-pointer"}
+        onClick={closeAction}
+      >
+          <i className="text-secondary bi bi-x-circle fs-4"></i>
+      </div>
+
+      <div className="text-center fs-16px fw-bold text-primary align-self-center">Danh sách người chơi</div>
       {renderItems}
     </div>
   )

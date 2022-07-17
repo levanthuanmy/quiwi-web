@@ -19,7 +19,6 @@ const PlayerList: FC<PlayerListProps> = (props) => {
         styles.playerList
       )}
     >
-      <div className="text-center fs-16px fw-bold text-primary">Danh sách người chơi</div>
       <div className={`${styles.scrollListContainer}`}>
         {/*<div className={`${styles.scrollList} d-flex flex-wrap`}>*/}
           <div className={`${styles.scrollList}`}>

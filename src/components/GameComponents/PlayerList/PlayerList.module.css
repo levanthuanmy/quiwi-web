@@ -6,7 +6,8 @@
 }
 
 .playerList {
-  height: 50%;
+  min-height:10%;
+  height: 20%;
   position: relative;
   min-height: 0;
   padding-left: 4px;

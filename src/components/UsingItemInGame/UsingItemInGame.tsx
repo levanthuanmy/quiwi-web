@@ -1,12 +1,16 @@
 import classNames from 'classnames'
-import { FC, memo, useEffect, useState } from 'react'
+import React, { FC, memo, useEffect, useState } from 'react'
 import { useAuth } from '../../hooks/useAuth/useAuth'
 import { useGameSession } from '../../hooks/useGameSession/useGameSession'
 import { get } from '../../libs/api'
-import { TApiResponse, TItem, TUserItems } from '../../types/types'
+import {TApiResponse, TItem, TUser, TUserItems} from '../../types/types'
 import Item from '../Item/Item'
 
-const UsingItemInGame: FC = () => {
+type UsingItemInGameProps = {
+  closeAction: () => void
+}
+
+const UsingItemInGame: FC<UsingItemInGameProps> = (props) => {
   const authContext = useAuth()
   const [itemsRes, setItemsRes] = useState<Array<TItem>>()
   const game = useGameSession()
@@ -46,7 +50,7 @@ const UsingItemInGame: FC = () => {
         style={{
           bottom: 78,
           right: 12,
-          width: 'min(calc(100vw - 24px), 400px)',
+          width: 'min(calc(100vw - 24px), 426px)',
           height: 300,
         }}
       >
@@ -78,7 +82,12 @@ const UsingItemInGame: FC = () => {
               overflowX: 'hidden',
             }}
           >
-            <div className="d-flex flex-wrap gap-2">
+            <div
+              className="d-flex flex-wrap"
+              style={{
+                gap:8,
+              }}
+            >
               {itemsRes?.map((item, idx) => (
                 <Item
                   key={idx}
@@ -100,6 +109,17 @@ const UsingItemInGame: FC = () => {
                 ></Item>
               ))}
             </div>
+          </div>
+          <div
+            className={`d-flex pt-1 cursor-pointer bg-secondary bg-opacity-10`}
+            style={{
+              left:8,
+              width: 32,
+              height: 300,
+            }}
+            onClick={props.closeAction}
+          >
+            <i className="text-secondary bi bi-x-circle fs-4"></i>
           </div>
         </div>
       </div>
