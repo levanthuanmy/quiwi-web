@@ -1,19 +1,54 @@
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable @next/next/no-sync-scripts */
 /* eslint-disable @next/next/no-css-tags */
+import _ from 'lodash'
 import Head from 'next/head'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 import Script from 'next/script'
 import { FC, useEffect, useState } from 'react'
+import useSWR from 'swr'
+import { get } from '../../libs/api'
+import { TApiResponse, TQuiz } from '../../types/types'
 
 const WelcomePage: FC = () => {
   const [shouldRender, setShouldRender] = useState(false)
+  const [invitationCode, setInvitationCode] = useState<string>('')
+  const [invitationInputError, setInvitationInputError] = useState<string>('')
+
+  const onJoinRoom = async () => {
+    if (invitationCode.trim().length === 0) {
+      setInvitationInputError('Vui lòng nhập mã phòng')
+      return
+    }
+
+    const res: TApiResponse<any> = await get(
+      `/api/games/check-room/${invitationCode}`,
+      false
+    )
+    if (res.response) {
+      await router.push(`/lobby/join?invitationCode=${invitationCode}`)
+    } else {
+      setInvitationInputError('Phòng không tồn tại')
+    }
+  }
+
   useEffect(() => {
     history.scrollRestoration = 'manual'
     // scrollTo(0, 0)
     // client side rendering only
     setShouldRender(true)
   }, [])
+
+  const { data: popularQuizzesResponse, isValidating } = useSWR<
+    TApiResponse<TQuiz[]>
+  >([`api/quizzes/popular-quizzes`, false], get, { revalidateOnFocus: false })
+
+  const popularQuizzes = _.sortBy(popularQuizzesResponse?.response, 'numPlayed')
+    ?.reverse()
+    ?.slice(0, 3)
+
+  const router = useRouter()
 
   return shouldRender ? (
     <>
@@ -57,8 +92,12 @@ const WelcomePage: FC = () => {
             <div className="row">
               <div className="col-lg-12">
                 <nav className="navbar navbar-expand-lg">
-                  <Link passHref href="/welcome">
-                    <img src="/assets/logo-text.png" className="navbar-brand" alt="Logo" />
+                  <Link passHref href="/home">
+                    <img
+                      src="/assets/logo-text.png"
+                      className="navbar-brand"
+                      alt="Logo"
+                    />
                   </Link>
                   <button
                     className="navbar-toggler"
@@ -74,7 +113,7 @@ const WelcomePage: FC = () => {
                     <span className="toggler-icon"></span>
                   </button>
 
-                  <div
+                  {/* <div
                     className="collapse navbar-collapse sub-menu-bar"
                     id="navbarSupportedContent"
                   >
@@ -98,7 +137,7 @@ const WelcomePage: FC = () => {
                         <a href="#contact">Contact</a>
                       </li>
                     </ul>
-                  </div>
+                  </div> */}
                 </nav>
               </div>
             </div>
@@ -138,8 +177,17 @@ const WelcomePage: FC = () => {
                     data-wow-duration="1s"
                     data-wow-delay="0.8s"
                   >
-                    <input type="text" placeholder="Nhập mã phòng" />
-                    <button className="main-btn">THAM GIA NGAY</button>
+                    <input
+                      type="text"
+                      placeholder="Nhập mã phòng"
+                      onChange={(e) => {
+                        setInvitationInputError('')
+                        setInvitationCode(e.target.value)
+                      }}
+                    />
+                    <button className="main-btn" onClick={onJoinRoom}>
+                      THAM GIA NGAY
+                    </button>
                   </div>
                 </div>
               </div>
@@ -175,7 +223,12 @@ const WelcomePage: FC = () => {
                   <span>một cú nhấp chuột</span>
                   <br />
                   <br />
-                  <button className="main-btn">BẮT ĐẦU NGAY</button>
+                  <button
+                    className="main-btn"
+                    onClick={() => router.push('/home')}
+                  >
+                    BẮT ĐẦU NGAY
+                  </button>
                 </h3>
               </div>
             </div>
@@ -504,7 +557,7 @@ const WelcomePage: FC = () => {
               >
                 <h6 className="sub-title">Tính năng nổi trội</h6>
                 <h4 className="title">
-                  The reasons to choose us <span>as your business partner</span>
+                  <span>Bạn không thể bỏ lỡ...</span>
                 </h4>
               </div>
             </div>
@@ -524,10 +577,14 @@ const WelcomePage: FC = () => {
                     />
                   </div>
                   <div className="service-content media-body">
-                    <h4 className="service-title">Hệ thống shop và nhiệm vụ</h4>
+                    <h4 className="service-title">
+                      Hệ thống cửa hàng và nhiệm vụ
+                    </h4>
                     <p className="text">
-                      Lorem Ipsum is simply dummy tex of the printing and
-                      typesetting industry. Lorem Ipsum .
+                      Hệ thống nhiệm vụ cho phép người dùng nhận vô vàn vật phẩm
+                      và Quiwi xu khi hoàn thành. Đồng thời, người dùng còn mua
+                      được nhiều vật phẩm từ cửa hệ thống cửa hàng của chúng
+                      tôi.
                     </p>
                   </div>
                   <div className="shape shape-1">
@@ -555,8 +612,8 @@ const WelcomePage: FC = () => {
                   <div className="service-content media-body">
                     <h4 className="service-title">Đa dạng loại câu hỏi</h4>
                     <p className="text">
-                      Lorem Ipsum is simply dummy tex of the printing and
-                      typesetting industry. Lorem Ipsum .
+                      Bạn có thể tạo ra bộ câu hỏi đa dạng và thú vị với 6 dạng
+                      câu hỏi có thể lựa chọn.
                     </p>
                   </div>
                   <div className="shape shape-3">
@@ -576,10 +633,11 @@ const WelcomePage: FC = () => {
                     />
                   </div>
                   <div className="service-content media-body">
-                    <h4 className="service-title">N</h4>
+                    <h4 className="service-title">Tăng cường tương tác</h4>
                     <p className="text">
-                      Lorem Ipsum is simply dummy tex of the printing and
-                      typesetting industry. Lorem Ipsum .
+                      Người tham gia bộ câu hỏi không chỉ trả lời câu hỏi mà có
+                      cỏ thể trò chuyện, sử dụng biểu cảm với mọi người trong
+                      suốt quá trình diễn ra.
                     </p>
                   </div>
                   <div className="shape shape-4">
@@ -600,8 +658,8 @@ const WelcomePage: FC = () => {
             <div className="row">
               <div className="col-lg-12">
                 <div className="service-btn text-center pt-25 pb-15">
-                  <a className="main-btn main-btn-2" href="#">
-                    All Services
+                  <a className="main-btn main-btn-2" href="/home">
+                    Tìm hiều thêm
                   </a>
                 </div>
               </div>
@@ -610,7 +668,7 @@ const WelcomePage: FC = () => {
         </div>
       </section>
 
-      <section id="portfolio" className="project-masonry-area pt-115">
+      {/* <section id="portfolio" className="project-masonry-area pt-115">
         <div className="container">
           <div className="row align-items-end">
             <div className="col-lg-4">
@@ -1048,9 +1106,9 @@ const WelcomePage: FC = () => {
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
 
-      <div id="brand" className="brand-area">
+      {/* <div id="brand" className="brand-area">
         <div className="container">
           <div className="row">
             <div className="col-lg-12">
@@ -1094,7 +1152,7 @@ const WelcomePage: FC = () => {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
 
       <section id="blog" className="blog-area pt-115">
         <div className="container">
@@ -1105,115 +1163,52 @@ const WelcomePage: FC = () => {
                 data-wow-duration="1s"
                 data-wow-delay="0.3s"
               >
-                <h6 className="sub-title">Our Blog</h6>
+                <h6 className="sub-title">Bộ câu hỏi nổi bật</h6>
                 <h4 className="title">
-                  Letest <span>News.</span>
+                  <span>Đừng chần chừ</span>
                 </h4>
               </div>
             </div>
           </div>
           <div className="row justify-content-center">
-            <div className="col-lg-4 col-md-6 col-sm-8">
-              <div
-                className="single-blog mt-30 wow fadeInUpBig"
-                data-wow-duration="1s"
-                data-wow-delay="0.4s"
-              >
-                <div className="blog-image">
-                  <a href="blog-details.html">
-                    <img src="/template-assets/images/news-1.jpg" alt="news" />
-                  </a>
-                </div>
-                <div className="blog-content">
-                  <h4 className="blog-title">
-                    <a href="blog-details.html">
-                      Nulla eget urna at tortor turpi feugiat tristique in sit.
+            {popularQuizzes?.map((quiz) => (
+              <div key={quiz.id} className="col-lg-4 col-md-6 col-sm-8">
+                <div
+                  className="single-blog mt-30 wow fadeInUpBig"
+                  data-wow-duration="1s"
+                  data-wow-delay="0.4s"
+                >
+                  <div className="blog-image">
+                    <a href={`/quiz/${quiz.id}`}>
+                      <img src={quiz.banner} alt="news" />
                     </a>
-                  </h4>
-                  <div className="blog-author d-flex align-items-center">
-                    <div className="author-image">
-                      <img
-                        src="/template-assets/images/author-1.jpg"
-                        alt="author"
-                      />
-                    </div>
-                    <div className="author-content media-body">
-                      <h6 className="sub-title">Posted by</h6>
-                      <p className="text">Isabela Moreira</p>
+                  </div>
+                  <div className="blog-content">
+                    <h4 className="blog-title">
+                      <a href={`/quiz/${quiz.id}`}>{quiz.title}</a>
+                    </h4>
+                    <div className="blog-author d-flex align-items-center">
+                      <div className="author-image">
+                        <img src={quiz.user?.avatar} alt="author" />
+                      </div>
+                      <div className="author-content media-body">
+                        <h6 className="sub-title">Tạo bởi</h6>
+                        <p className="text">
+                          <a href={`/users/${quiz.user?.id}`}>
+                            {quiz.user?.name}
+                          </a>
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <div className="col-lg-4 col-md-6 col-sm-8">
-              <div
-                className="single-blog mt-30 wow fadeInUpBig"
-                data-wow-duration="1s"
-                data-wow-delay="0.7s"
-              >
-                <div className="blog-image">
-                  <a href="blog-details.html">
-                    <img src="/template-assets/images/news-2.jpg" alt="news" />
-                  </a>
-                </div>
-                <div className="blog-content">
-                  <h4 className="blog-title">
-                    <a href="blog-details.html">
-                      Nulla eget urna at tortor turpi feugiat tristique in sit.
-                    </a>
-                  </h4>
-                  <div className="blog-author d-flex align-items-center">
-                    <div className="author-image">
-                      <img
-                        src="/template-assets/images/author-2.jpg"
-                        alt="author"
-                      />
-                    </div>
-                    <div className="author-content media-body">
-                      <h6 className="sub-title">Posted by</h6>
-                      <p className="text">Elon Musk</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="col-lg-4 col-md-6 col-sm-8">
-              <div
-                className="single-blog mt-30 wow fadeInUpBig"
-                data-wow-duration="1s"
-                data-wow-delay="1s"
-              >
-                <div className="blog-image">
-                  <a href="blog-details.html">
-                    <img src="/template-assets/images/news-3.jpg" alt="news" />
-                  </a>
-                </div>
-                <div className="blog-content">
-                  <h4 className="blog-title">
-                    <a href="blog-details.html">
-                      Nulla eget urna at tortor turpi feugiat tristique in sit.
-                    </a>
-                  </h4>
-                  <div className="blog-author d-flex align-items-center">
-                    <div className="author-image">
-                      <img
-                        src="/template-assets/images/author-3.jpg"
-                        alt="author"
-                      />
-                    </div>
-                    <div className="author-content media-body">
-                      <h6 className="sub-title">Posted by</h6>
-                      <p className="text">Fiona</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
 
-      <section id="contact" className="contact-area pt-120 pb-120">
+      {/* <section id="contact" className="contact-area pt-120 pb-120">
         <div className="container">
           <div className="row justify-content-center">
             <div className="col-lg-4">
@@ -1336,7 +1331,11 @@ const WelcomePage: FC = () => {
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
+
+      <br />
+      <br />
+      <br />
 
       <footer
         id="footer"
@@ -1346,7 +1345,7 @@ const WelcomePage: FC = () => {
         }}
       >
         <div className="container">
-          <div className="footer-widget pt-30 pb-70">
+          {/* <div className="footer-widget pt-30 pb-70">
             <div className="row">
               <div className="col-lg-3 col-sm-6 order-sm-1 order-lg-1">
                 <div className="footer-about pt-40">
@@ -1444,14 +1443,14 @@ const WelcomePage: FC = () => {
                 </div>
               </div>
             </div>
-          </div>
+          </div> */}
           <div className="footer-copyright text-center">
             <p className="text">
-              © 2022 Crafted by
-              <a href="https://uideck.com" rel="nofollow">
+              © 2022 Quiwi JSC. All Rights Reserved.
+              {/* <a href="https://uideck.com" rel="nofollow">
                 UIdeck
               </a>{' '}
-              All Rights Reserved.
+              All Rights Reserved. */}
             </p>
           </div>
         </div>
