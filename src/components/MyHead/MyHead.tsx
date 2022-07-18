@@ -27,7 +27,7 @@ const MyHead: FC = () => {
       <link rel="preconnect" href="https://picsum.photos/600/400" />
       <link rel="dns-prefetch" href="https://picsum.photos/600/400" />
 
-      <title>Quiwi Game</title>
+      <title>Quiwi Game | Vừa Chơi Vừa Học</title>
       <meta
         name="description"
         content="Quiwi là một trang web cho phép bạn tham gia quiz hoặc tạo quiz của chính mình"
@@ -36,8 +36,13 @@ const MyHead: FC = () => {
 
       <meta
         name="keywords"
-        content="quiwi,Quiwi,game,games,quiz,quizzes,qiwi,kiwi,quiqui,wiwi,web"
+        content="quiwi,Quiwi,game,games,quiz,quizzes,qiwi,kiwi,quiqui,wiwi,web,learning,edu,học,câu hỏi"
       ></meta>
+
+      <meta property="og:title" content="Quiwi Game | Vừa Chơi Vừa Học" />
+      <meta property="og:type" content="education.quiz.game" />
+      <meta property="og:url" content="https://web.quiwi.games/" />
+      <meta property="og:image" content="https://web.quiwi.games/assets/logo-text.png" />
 
       {/* google analytics */}
       {/* Global Site Tag (gtag.js) - Google Analytics */}
