@@ -95,7 +95,7 @@ const QuizDetailPage: NextPage = () => {
           show={forbiddenError?.length > 0}
           onHide={() => {
             setForbiddenError('')
-            router.push('/')
+            router.push('/home')
           }}
           size="sm"
           header={<Modal.Title className="text-danger">Thông báo</Modal.Title>}

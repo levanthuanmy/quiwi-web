@@ -44,7 +44,6 @@ const ChangePasswordPage: NextPage = () => {
         console.log(error)
         if (_.get(error, 'code') === 401) {
           setError(_.get(error, 'message'))
-          // setTimeout(() => router.push('/'), 2000)
         }
       }
     }
@@ -240,7 +239,7 @@ const ChangePasswordPage: NextPage = () => {
       show={error?.length > 0}
       onHide={() => {
         setError('')
-        router.push('/')
+        router.push('/home')
       }}
       size="sm"
       header={<Modal.Title className="text-danger">Thông báo</Modal.Title>}

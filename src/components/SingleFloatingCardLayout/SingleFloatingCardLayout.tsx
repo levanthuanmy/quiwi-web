@@ -18,7 +18,7 @@ const SingleFloatingCardLayout: FC<SingleFloatingCardLayoutProps> = ({
           width={133}
           height={39}
           alt="text-logo"
-          onClick={async () => await router.push('/')}
+          onClick={async () => await router.push('/home')}
           className="cursor-pointer"
         />
         {children}

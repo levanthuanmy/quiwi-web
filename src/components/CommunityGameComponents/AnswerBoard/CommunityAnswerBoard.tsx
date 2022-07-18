@@ -240,7 +240,7 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
       const msg = {invitationCode: game.gameSession.invitationCode}
       game.gameSkEmit('game-ended', msg)
       game.clearGameSession()
-      router.push('/')
+      router.push('/home')
     }
   }
 

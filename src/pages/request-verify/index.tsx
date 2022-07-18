@@ -18,7 +18,7 @@ const RequestVerifyPage: NextPage = () => {
     try {
       if (auth.getUser()?.isVerified) {
         setError('Tài khoản đã được xác thực, quay về trang chủ sau 2 giây')
-        setTimeout(() => router.push('/'), 2000)
+        setTimeout(() => router.push('/home'), 2000)
         return
       }
       await get('/api/auth/resend-verify-email', true)
@@ -34,7 +34,7 @@ const RequestVerifyPage: NextPage = () => {
         <Card.Header className="p-4">
           <div
             className="p-2 d-flex justify-content-center align-items-center cursor-pointer"
-            onClick={() => router.push('/')}
+            onClick={() => router.push('/home')}
           >
             <Image src="/assets/logo-text.png" alt="" />
           </div>

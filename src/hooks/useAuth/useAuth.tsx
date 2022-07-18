@@ -38,7 +38,7 @@ export const AuthProvider = ({ children }: { children?: ReactNode }) => {
   const socketManager = SocketManager()
   const router = useRouter()
   const userManager = useUserManager()
-  const [prevRoute, setPrevRoute] = useLocalStorage('prev-route', '/')
+  const [prevRoute, setPrevRoute] = useLocalStorage('prev-route', '/home')
   const cookies = new Cookies()
 
   const [isAuth, setIsAuth] = useState<boolean>(false)
@@ -90,7 +90,7 @@ export const AuthProvider = ({ children }: { children?: ReactNode }) => {
 
   const toPrevRoute = async () => {
     const temp = prevRoute
-    setPrevRoute('/')
+    setPrevRoute('/home')
     await router.push(temp)
   }
 
@@ -102,7 +102,7 @@ export const AuthProvider = ({ children }: { children?: ReactNode }) => {
     userManager.user = null
     setUserState(undefined)
     setIsAuth(false)
-    await router.push('/')
+    await router.push('/home')
   }
 
   const signIn = async () => {

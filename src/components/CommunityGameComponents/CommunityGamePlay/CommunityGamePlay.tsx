@@ -56,7 +56,7 @@ const CommunityGamePlay: NextPage = () => {
   const exitRoom = () => {
     // dùng clear game session là đủ
     clearGameSession()
-    router.push('/')
+    router.push('/home')
   }
 
   function getExitModal() {

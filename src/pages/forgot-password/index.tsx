@@ -82,7 +82,7 @@ const ForgotPasswordPage: NextPage = () => {
         <Card.Header className="p-4">
           <div
             className="p-2 d-flex justify-content-center align-items-center cursor-pointer"
-            onClick={() => router.push('/')}
+            onClick={() => router.push('/home')}
           >
             <Image src="/assets/logo-text.png" alt="" />
           </div>

@@ -32,7 +32,7 @@ const ResetPaswordPage: NextPage = () => {
         setError(
           'Tham số không hợp lệ. Hệ thống tự quay về trang chủ sau 2 giây'
         )
-        setTimeout(() => router.replace('/'), 2000)
+        setTimeout(() => router.replace('/home'), 2000)
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -60,7 +60,7 @@ const ResetPaswordPage: NextPage = () => {
       setInfo(
         'Đặt lại mật khẩu thành công. Hệ thống chuyển sang trang đăng nhập sau 2 giây'
       )
-      setTimeout(() => router.replace('/'), 2000)
+      setTimeout(() => router.replace('/home'), 2000)
     } catch (error) {
       console.log('onSignUp - error', error)
       setError((error as Error).message)
@@ -104,7 +104,7 @@ const ResetPaswordPage: NextPage = () => {
         <Card.Header className="p-4">
           <div
             className="p-2 d-flex justify-content-center align-items-center cursor-pointer"
-            onClick={() => router.push('/')}
+            onClick={() => router.push('/home')}
           >
             <Image src="/assets/logo-text.png" alt="" />
           </div>

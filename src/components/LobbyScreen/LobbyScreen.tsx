@@ -3,50 +3,47 @@
 import classNames from 'classnames'
 import _ from 'lodash'
 import Head from 'next/head'
-import {useRouter} from 'next/router'
-import React, {FC, useEffect, useState} from 'react'
-import {Container, Image, Modal} from 'react-bootstrap'
+import { useRouter } from 'next/router'
+import React, { FC, useEffect, useState } from 'react'
+import { Container, Image, Modal } from 'react-bootstrap'
 import QRCode from 'react-qr-code'
-import {useToasts} from 'react-toast-notifications'
+import { useToasts } from 'react-toast-notifications'
 import Cookies from 'universal-cookie'
-import {useAuth} from '../../hooks/useAuth/useAuth'
-import {useGameSession} from '../../hooks/useGameSession/useGameSession'
-import {useLocalStorage} from '../../hooks/useLocalStorage/useLocalStorage'
+import { useAuth } from '../../hooks/useAuth/useAuth'
+import { useGameSession } from '../../hooks/useGameSession/useGameSession'
+import { useLocalStorage } from '../../hooks/useLocalStorage/useLocalStorage'
 import useScreenSize from '../../hooks/useScreenSize/useScreenSize'
 import * as gtag from '../../libs/gtag'
-import {TPlayer, TStartGameRequest} from '../../types/types'
-import {GAME_MODE_MAPPING} from '../../utils/constants'
+import { TPlayer, TStartGameRequest } from '../../types/types'
+import { GAME_MODE_MAPPING } from '../../utils/constants'
 import MyButton from '../MyButton/MyButton'
 import PlayerLobbyItem from '../PlayerLobbyItem/PlayerLobbyItem'
 import PlayerLobbyList from '../PlayerLobbyList/PlayerLobbyList'
 import BackgroundPicker from './BackgroundPicker/BackgroundPicker'
 import styles from './LobbyScreen.module.css'
-import MyModal from "../MyModal/MyModal";
-import {useSound} from "../../hooks/useSound/useSound";
+import MyModal from '../MyModal/MyModal'
+import { useSound } from '../../hooks/useSound/useSound'
 
-type LobbyScreenProps = {
-
-}
+type LobbyScreenProps = {}
 
 const LobbyScreen: FC<LobbyScreenProps> = () => {
   const game = useGameSession()
   const isHost = game.isHost
-  const invitationCode = game.gameSession?.invitationCode ?? ""
+  const invitationCode = game.gameSession?.invitationCode ?? ''
 
   const [playerList, setPlayerList] = useState<TPlayer[]>([])
   const [lsBg, saveLsBg] = useLocalStorage('bg', '')
   const router = useRouter()
   const [showQR, setShowQR] = useState<boolean>(false)
-  const {isMobile} = useScreenSize()
+  const { isMobile } = useScreenSize()
   const [showBackgroundModal, setShowBackgroundModal] = useState<boolean>(false)
 
-
-  const {addToast} = useToasts()
+  const { addToast } = useToasts()
   const [currentBackground, setCurrentBackground] = useState<string>(lsBg)
   const authContext = useAuth()
   const user = authContext.getUser()
   const sound = useSound()
-  const [isMute, setIsMute] = useState(sound.isMute);
+  const [isMute, setIsMute] = useState(sound.isMute)
 
   useEffect(() => {
     if (!game.gameSession) return
@@ -75,7 +72,7 @@ const LobbyScreen: FC<LobbyScreenProps> = () => {
     })
 
     game.gameSkOnce('host-out', () => {
-      router.push('/')
+      router.push('/home')
     })
 
     game.gameSkOnce('loading', (data) => {
@@ -97,7 +94,6 @@ const LobbyScreen: FC<LobbyScreenProps> = () => {
       if (as !== router.asPath) {
         // Will run when leaving the current page; on back/forward actions
         // Add your logic here, like toggling the modal state
-
       }
       return true
     })
@@ -156,7 +152,7 @@ const LobbyScreen: FC<LobbyScreenProps> = () => {
     addToast(
       <>
         Copy thành công
-        <br/>
+        <br />
         Gửi link mời cho bạn bè để tham gia!
       </>,
       {
@@ -197,7 +193,7 @@ const LobbyScreen: FC<LobbyScreenProps> = () => {
     >
       <div className="bg-dark bg-opacity-50 fw-medium bg-opacity-10 min-vh-100 d-flex flex-column justify-content-center align-items-center">
         <Head>
-          <link rel="preconnect" href="https://fonts.googleapis.com"/>
+          <link rel="preconnect" href="https://fonts.googleapis.com" />
           <link
             rel="preconnect"
             href="https://fonts.gstatic.com"
@@ -214,7 +210,9 @@ const LobbyScreen: FC<LobbyScreenProps> = () => {
             <div className="d-flex w-100 align-items-center gap-3 p-3">
               <Image
                 src={
-                  authContext.isAuth && user?.avatar ? user?.avatar : '/assets/default-avatar.png'
+                  authContext.isAuth && user?.avatar
+                    ? user?.avatar
+                    : '/assets/default-avatar.png'
                 }
                 width="60"
                 height="60"
@@ -239,17 +237,16 @@ const LobbyScreen: FC<LobbyScreenProps> = () => {
                   )}
                 </div>
               </div>
-              <div
-                  className={`flex-grow-1 d-flex justify-content-end`}
-              >
+              <div className={`flex-grow-1 d-flex justify-content-end`}>
                 <i
-                  className={`text-end bg-white rounded-10px px-2 bi ${!isMute ? "bi-volume-up-fill" : "bi-volume-mute-fill"}  text-secondary fs-1 cursor-pointer`}
+                  className={`text-end bg-white rounded-10px px-2 bi ${
+                    !isMute ? 'bi-volume-up-fill' : 'bi-volume-mute-fill'
+                  }  text-secondary fs-1 cursor-pointer`}
                   onClick={() => {
                     sound.turnSound(!sound.isMute)
                     setIsMute(sound.isMute)
                   }}
                 ></i>
-
               </div>
             </div>
 
@@ -267,8 +264,17 @@ const LobbyScreen: FC<LobbyScreenProps> = () => {
                 </div>
               </div>
               {isHost && (
-                <MyButton size="sm" className="text-white text-nowrap"
-                onClick={() => { window.open(`http://${window.location.host}/quiz/creator/${game.gameSession?.quizId}`, "Quiwi", "left=100,top=100,width=620,height=820")}}>
+                <MyButton
+                  size="sm"
+                  className="text-white text-nowrap"
+                  onClick={() => {
+                    window.open(
+                      `http://${window.location.host}/quiz/creator/${game.gameSession?.quizId}`,
+                      'Quiwi',
+                      'left=100,top=100,width=620,height=820'
+                    )
+                  }}
+                >
                   Chi tiết quiz
                 </MyButton>
               )}

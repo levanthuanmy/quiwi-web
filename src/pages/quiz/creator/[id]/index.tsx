@@ -232,7 +232,7 @@ const QuizCreatorPage: NextPage = () => {
         show={showModal}
         onHide={() => setShowModal(false)}
         activeButtonTitle="Quay lại trang chủ"
-        activeButtonCallback={() => router.push('/')}
+        activeButtonCallback={() => router.push('/home')}
       >
         <div className="text-center h3">Quiz không hợp lệ</div>
       </MyModal>

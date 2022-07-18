@@ -23,7 +23,7 @@ const GameNavBar: FC<GameNavBarProps> = (props: GameNavBarProps) => {
         width={133}
         height={39}
         alt="text-logo"
-        onClick={() => router.push('/')}
+        onClick={() => router.push('/home')}
         className="cursor-pointer"
       />
 

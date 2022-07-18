@@ -33,7 +33,7 @@ const VerifyPage: NextPage = () => {
         setInfo(
           'Kích hoạt thành công. Hệ thống sẽ tự quay về trang chủ sau 5 giây'
         )
-        setTimeout(() => router.push('/'), 5000)
+        setTimeout(() => router.push('/home'), 5000)
       } catch (error) {
         setError((error as Error).message)
       }
@@ -42,7 +42,7 @@ const VerifyPage: NextPage = () => {
     if (router.isReady) {
       if (!token) {
         setError('Tham số không hợp lệ')
-        setTimeout(() => router.replace('/'), 2000)
+        setTimeout(() => router.replace('/home'), 2000)
       } else {
         verifyAccount()
       }
@@ -54,7 +54,7 @@ const VerifyPage: NextPage = () => {
     try {
       if (auth.getUser()?.isVerified) {
         setError('Tài khoản đã được xác thực, quay về trang chủ sau 2 giây')
-        setTimeout(() => router.push('/'), 2000)
+        setTimeout(() => router.push('/home'), 2000)
         return
       }
       await get('/api/auth/resend-verify-email', true)
@@ -70,7 +70,7 @@ const VerifyPage: NextPage = () => {
         <Card.Header className="p-4">
           <div
             className="p-2 d-flex justify-content-center align-items-center cursor-pointer"
-            onClick={() => router.push('/')}
+            onClick={() => router.push('/home')}
           >
             <Image src="/assets/logo-text.png" alt="" />
           </div>
