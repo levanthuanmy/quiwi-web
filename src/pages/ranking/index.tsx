@@ -45,7 +45,7 @@ const RankingPage: NextPage = () => {
     TApiResponse<TPaginationResponse<TRankingItem>>
   >(
     [
-      `/api/users/user/ranking/${rankingTabs[currentRankingTab].type}`,
+      q ? `/api/users/user/search-text-rank/${rankingTabs[currentRankingTab].type}?q=${q}` : `/api/users/user/ranking/${rankingTabs[currentRankingTab].type}`,
       true,
       {
         pageIndex,
@@ -75,7 +75,7 @@ const RankingPage: NextPage = () => {
 
             <br />
 
-            <SearchBar pageUrl="/ranking" />
+            <SearchBar pageUrl="ranking" />
 
             <RankingBoard
               rankingList={data?.response.items as TRankingItem[]}
