@@ -21,8 +21,9 @@ import PlayerLobbyItem from '../PlayerLobbyItem/PlayerLobbyItem'
 import PlayerLobbyList from '../PlayerLobbyList/PlayerLobbyList'
 import BackgroundPicker from './BackgroundPicker/BackgroundPicker'
 import styles from './LobbyScreen.module.css'
-import MyModal from '../MyModal/MyModal'
-import { useSound } from '../../hooks/useSound/useSound'
+import MyModal from "../MyModal/MyModal";
+import {useSound} from "../../hooks/useSound/useSound";
+import {useUserSetting} from "../../hooks/useUserSetting/useUserSetting";
 
 type LobbyScreenProps = {}
 
@@ -32,14 +33,15 @@ const LobbyScreen: FC<LobbyScreenProps> = () => {
   const invitationCode = game.gameSession?.invitationCode ?? ''
 
   const [playerList, setPlayerList] = useState<TPlayer[]>([])
-  const [lsBg, saveLsBg] = useLocalStorage('bg', '')
+  const setting = useUserSetting()
   const router = useRouter()
   const [showQR, setShowQR] = useState<boolean>(false)
   const { isMobile } = useScreenSize()
   const [showBackgroundModal, setShowBackgroundModal] = useState<boolean>(false)
 
-  const { addToast } = useToasts()
-  const [currentBackground, setCurrentBackground] = useState<string>(lsBg)
+
+  const {addToast} = useToasts()
+  const [currentBackground, setCurrentBackground] = useState<string>(setting.gameBackgroundUrl)
   const authContext = useAuth()
   const user = authContext.getUser()
   const sound = useSound()
@@ -81,11 +83,11 @@ const LobbyScreen: FC<LobbyScreenProps> = () => {
   }, [])
 
   useEffect(() => {
-    if (lsBg && lsBg.length) {
-      setCurrentBackground(lsBg)
+    if (setting.gameBackgroundUrl && setting.gameBackgroundUrl.length) {
+      setCurrentBackground(setting.gameBackgroundUrl)
     } else {
       setCurrentBackground('/assets/default-game-bg.svg')
-      saveLsBg('/assets/default-game-bg.svg')
+      setting.gameBackgroundUrl = '/assets/default-game-bg.svg'
     }
   }, [])
 
@@ -135,7 +137,7 @@ const LobbyScreen: FC<LobbyScreenProps> = () => {
           },
         })
       }
-      saveLsBg(currentBackground)
+      setting.gameBackgroundUrl = currentBackground
     } catch (error) {
       console.log('handleStartGame - error', error)
     }
@@ -310,10 +312,10 @@ const LobbyScreen: FC<LobbyScreenProps> = () => {
         {renderQrModal()}
 
         <BackgroundPicker
-          show={showBackgroundModal}
-          onHide={() => setShowBackgroundModal(false)}
-          setCurrentBackground={setCurrentBackground}
-        />
+        show={showBackgroundModal}
+        onHide={() => setShowBackgroundModal(false)}
+        setCurrentBackground={setCurrentBackground}
+      />
       </div>
     </div>
   )
