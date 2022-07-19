@@ -106,7 +106,7 @@ const GameModeScreen: FC<GameModeScreenProps> = ({setGameMode}) => {
       backgroundPosition: 'center',
     }}
   >
-    <div className={"d-flex flex-column justify-content-center align-items-center bg-dark rounded-10px pb-5"}>
+    <div className={"d-flex flex-column justify-content-center align-items-center bg-dark rounded-10px pb-3"}>
       {/*<div className={"d-flex flex-column justify-content-center align-items-center"}>*/}
         <div className={cn(styles.modeTitle,"bg-dark text-white m-4", "fs-1")}>Chọn chế độ chơi</div>
       {/*</div>*/}
