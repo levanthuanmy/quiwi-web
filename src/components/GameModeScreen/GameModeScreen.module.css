@@ -9,9 +9,9 @@
 }
 
 .modeItem {
-    margin-left: 20px;
-    margin-right: 20px;
-    margin-bottom: 20px;
+    /*margin-left: 20px;*/
+    /*margin-right: 20px;*/
+    /*margin-bottom: 20px;*/
     background-color: #009883;
     font-size: 40px;
     border-radius: 10px;
@@ -37,7 +37,6 @@
 }
 
 .modeName {
-
     margin: 20px;
     border-radius: 10px;
     font-size: 32px;
@@ -63,7 +62,7 @@
 }
 
 .web {
-    display: flex;
-    gap: 20px;
+margin-left: 100px;
+    margin-right: 100px;
 }
 
