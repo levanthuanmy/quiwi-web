@@ -1,12 +1,13 @@
-import React, { Dispatch, FC, SetStateAction } from 'react'
-import { Col, Image, Row } from 'react-bootstrap'
+import React, {Dispatch, FC, SetStateAction} from 'react'
+import {Col, Image, Row} from 'react-bootstrap'
 import useSWR from 'swr'
-import { useAuth } from '../../../hooks/useAuth/useAuth'
-import { useLocalStorage } from '../../../hooks/useLocalStorage/useLocalStorage'
-import { get } from '../../../libs/api'
-import { TApiResponse, TUserItems } from '../../../types/types'
+import {useAuth} from '../../../hooks/useAuth/useAuth'
+import {useLocalStorage} from '../../../hooks/useLocalStorage/useLocalStorage'
+import {get} from '../../../libs/api'
+import {TApiResponse, TUserItems} from '../../../types/types'
 import MyModal from '../../MyModal/MyModal'
 import styles from './BackgroundPicker.module.css'
+import {useUserSetting} from "../../../hooks/useUserSetting/useUserSetting";
 
 const BackgroundPicker: FC<{
   show: boolean
@@ -15,9 +16,8 @@ const BackgroundPicker: FC<{
 }> = (props) => {
   const authContext = useAuth()
   const user = authContext.getUser()
-  const [lsBg, saveLsBg] = useLocalStorage('bg', '')
-
-  const { data } = useSWR<TApiResponse<TUserItems[]>>(
+  const setting = useUserSetting()
+  const {data} = useSWR<TApiResponse<TUserItems[]>>(
     user ? [`/api/users/user/${user.id}/items?type=Hình nền`] : null,
     get
   )
@@ -38,7 +38,7 @@ const BackgroundPicker: FC<{
           className="mb-3 cursor-pointer"
           onClick={() => {
             props.setCurrentBackground('/assets/default-game-bg.svg')
-            saveLsBg('/assets/default-game-bg.svg')
+            setting.gameBackgroundUrl = '/assets/default-game-bg.svg'
           }}
         >
           <div className="w-100 h-100 overflow-hidden rounded-10px">
@@ -60,7 +60,7 @@ const BackgroundPicker: FC<{
             className="mb-3 cursor-pointer"
             onClick={() => {
               props.setCurrentBackground(item.item.avatar)
-              saveLsBg(item.item.avatar)
+              setting.gameBackgroundUrl = item.item.avatar
             }}
           >
             <div className="w-100 h-100 overflow-hidden rounded-10px">

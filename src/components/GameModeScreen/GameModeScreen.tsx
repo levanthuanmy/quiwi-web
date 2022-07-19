@@ -1,10 +1,12 @@
 import classNames from 'classnames'
-import React, {Dispatch, FC, SetStateAction} from 'react'
+import React, {Dispatch, FC, SetStateAction, useEffect, useState} from 'react'
 import {Image} from 'react-bootstrap'
 import {TGameModeEnum} from '../../types/types'
 import styles from './GameModeScreen.module.css'
 import Slider from "react-slick";
 import useScreenSize from "../../hooks/useScreenSize/useScreenSize";
+import {useUserSetting} from "../../hooks/useUserSetting/useUserSetting";
+import cn from "classnames";
 
 type GameModeScreenProps = {
   setGameMode: (mode: TGameModeEnum) => void
@@ -20,6 +22,8 @@ type TGameModeOption = {
 
 const GameModeScreen: FC<GameModeScreenProps> = ({setGameMode}) => {
   const {isMobile} = useScreenSize();
+  const [bg, setBg] = useState<string>("");
+  const setting = useUserSetting();
   const modes: TGameModeOption[] = [
     {
       mode: '10CLASSIC',
@@ -36,6 +40,11 @@ const GameModeScreen: FC<GameModeScreenProps> = ({setGameMode}) => {
     //   banner: "/assets/grade-sheet.svg"
     // },
   ]
+
+  useEffect(() => {
+    setBg(setting.gameBackgroundUrl)
+
+  }, [])
 
   const selectGameMode = (idx: number) => {
     const mode = modes[idx]
@@ -89,18 +98,30 @@ const GameModeScreen: FC<GameModeScreenProps> = ({setGameMode}) => {
   ))
 
   return <div
-    className="min-vh-100 d-flex flex-column justify-content-center align-items-center bg-secondary bg-opacity-25">
-    <div className={styles.modeTitle}>Chọn chế độ chơi</div>
-    {isMobile &&
-        <Slider {...settings} className={styles.slider}>
-          {renderModes}
-        </Slider>
-    }
-    {!isMobile &&
-        <div className={styles.web}>
-          {renderModes}
-        </div>
-    }
+    className="min-vh-100 d-flex flex-column justify-content-center align-items-center bg-dark"
+    style={{
+      backgroundImage: `url(${bg})`,
+      backgroundSize: 'auto auto',
+      backgroundRepeat: 'repeat',
+      backgroundPosition: 'center',
+    }}
+  >
+    <div className={"d-flex flex-column justify-content-center align-items-center bg-dark rounded-10px pb-5"}>
+      {/*<div className={"d-flex flex-column justify-content-center align-items-center"}>*/}
+        <div className={cn(styles.modeTitle,"bg-dark text-white m-4", "fs-1")}>Chọn chế độ chơi</div>
+      {/*</div>*/}
+
+      {isMobile &&
+          <Slider {...settings} className={cn(styles.slider, "")}>
+            {renderModes}
+          </Slider>
+      }
+      {!isMobile &&
+          <div className={styles.web}>
+            {renderModes}
+          </div>
+      }
+    </div>
   </div>
 }
 

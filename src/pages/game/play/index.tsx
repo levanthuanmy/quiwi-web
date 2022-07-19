@@ -2,7 +2,6 @@ import classNames from 'classnames'
 import {NextPage} from 'next'
 import router from 'next/router'
 import React, {Dispatch, SetStateAction, useEffect, useState} from 'react'
-import {Fade} from 'react-bootstrap'
 import AnswerBoard from '../../../components/GameComponents/AnswerBoard/AnswerBoard'
 import EndGameBoard from '../../../components/GameComponents/EndGameBoard/EndGameBoard'
 import {FAB, FABAction} from '../../../components/GameComponents/FAB/FAB'
@@ -12,13 +11,13 @@ import MyModal from '../../../components/MyModal/MyModal'
 import UsingItemInGame from '../../../components/UsingItemInGame/UsingItemInGame'
 import useExtendQueue from '../../../hooks/useExtendQueue'
 import {TGameLobby, useGameSession} from '../../../hooks/useGameSession/useGameSession'
-import {useLocalStorage} from '../../../hooks/useLocalStorage/useLocalStorage'
 import useScreenSize from '../../../hooks/useScreenSize/useScreenSize'
 import {useSound} from '../../../hooks/useSound/useSound'
 import {TimerProvider} from '../../../hooks/useTimer/useTimer'
 import * as gtag from '../../../libs/gtag'
 import {SOUND_EFFECT} from '../../../utils/constants'
 import styles from './GamePage.module.css'
+import {useUserSetting} from "../../../hooks/useUserSetting/useUserSetting";
 
 export const ExitContext = React.createContext<{
   showEndGameModal: boolean
@@ -40,7 +39,6 @@ const GamePage: NextPage = () => {
   const {fromMedium} = useScreenSize()
   const [endGameData, setEndGameData] = useState<TGameLobby>()
   const sound = useSound()
-  const [lsBg] = useLocalStorage('bg', '')
 
   const {add, size, all} = useExtendQueue()
 
@@ -171,7 +169,7 @@ const GamePage: NextPage = () => {
           'bg-black customScrollbar'
         )}
         style={{
-          backgroundImage: `url(${lsBg}`,
+          backgroundImage: `url(${useUserSetting().gameBackgroundUrl}`,
           // backgroundSize: 'auto 100vh',
           backgroundRepeat: 'repeat',
           backgroundPosition: 'center',
