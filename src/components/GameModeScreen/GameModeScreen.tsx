@@ -158,7 +158,7 @@ const GameModeScreen: FC<GameModeScreenProps> = ({setGameMode}) => {
     <div className={"d-flex flex-column justify-content-center align-items-center bg-dark rounded-10px pb-3"}>
       <div className={cn(styles.modeTitle, "bg-dark text-white mt-3 ms-3 me-3", "fs-1")}>Chọn chế độ chơi</div>
 
-      <div className="text-white d-flex w-100 align-items-center gap-3 bg-black bg-opacity-50 p-3 mb-2 fs-4">
+      <div className="text-white d-flex w-100 align-items-center gap-3 bg-black bg-opacity-50 p-4 mb-3 fs-4">
         <div className="w-100">
           <div className="text-truncate">
             Tên quiz: {quiz?.title}
@@ -175,11 +175,11 @@ const GameModeScreen: FC<GameModeScreenProps> = ({setGameMode}) => {
           </Slider>
       }
       {!isMobile &&
-          <div className={cn(styles.web, "d-flex px-3")}>
+          <div className={cn(styles.web, "d-flex p-1 mx-64px gap-5")}>
             {renderModes}
           </div>
       }
-      <div className="d-flex gap-4 px-4 flex-wrap w-100 mt-3">
+      <div className="d-flex gap-4 px-4 flex-wrap w-100 mt-4 mb-2">
         <div className="flex-fill">
           <MyButton variant="danger" className={cln} onClick={handleLeaveRoom}>
             <i className="bi bi-box-arrow-left fs-24px"/>
