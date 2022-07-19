@@ -3,11 +3,41 @@ import React, { FC } from 'react'
 import { API_URL, GOOGLE_ANALYTICS } from '../../utils/constants'
 
 const MyHead: FC = () => {
+  const logo = '/assets/logo.png'
+  const webUrl = 'https://web.quiwi.games/'
+  const description =
+    'Quiwi là một trang web cho phép bạn tham gia quiz hoặc tạo quiz của chính mình'
   return (
     <Head>
-      <link rel="icon" href="/assets/logo.png" />
-      <link type="image/x-icon" rel="shortcut icon" href="/assets/logo.png" />
-      <link rel="apple-touch-icon" href="/assets/logo.png"></link>
+      <meta charSet="utf-8" />
+      <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1, shrink-to-fit=no"
+      />
+      <meta name="robots" content="index,follow" />
+      <meta
+        name="keywords"
+        content="quiwi,Quiwi,game,games,quiz,quizzes,qiwi,kiwi,quiqui,wiwi,web,learning,edu,học,câu hỏi"
+      ></meta>
+
+      <meta property="og:title" content="Quiwi Game | Vừa Chơi Vừa Học" />
+      <meta property="og:type" content="education.quiz.game" />
+      <meta property="og:url" content={webUrl} />
+      <meta property="og:image" content="/assets/logo-w-bg.jpg" />
+      <meta property="og:description" content={description} />
+      <meta name="twitter:card" content="website" />
+
+      <meta name="description" content={description} />
+      <meta name="author" content="Quiwi" />
+      <meta name="copyright" content="Quiwi" />
+      <meta name="theme-color" content="#009883" />
+
+      <link rel="icon" href={logo} />
+      <link type="image/x-icon" rel="shortcut icon" href={logo} />
+      <link rel="apple-touch-icon" href={logo}></link>
+      <link rel="shortcut icon" type="image" href={logo} sizes="32x32" />
+      <link rel="shortcut icon" type="image" href={logo} sizes="16x16" />
+      <link rel="alternate" href={webUrl} hrefLang="vi-vn" />
 
       <link
         rel="preconnect"
@@ -28,21 +58,7 @@ const MyHead: FC = () => {
       <link rel="dns-prefetch" href="https://picsum.photos/600/400" />
 
       <title>Quiwi Game | Vừa Chơi Vừa Học</title>
-      <meta
-        name="description"
-        content="Quiwi là một trang web cho phép bạn tham gia quiz hoặc tạo quiz của chính mình"
-      />
-      <link rel="canonical" href="https://web.quiwi.games/" />
-
-      <meta
-        name="keywords"
-        content="quiwi,Quiwi,game,games,quiz,quizzes,qiwi,kiwi,quiqui,wiwi,web,learning,edu,học,câu hỏi"
-      ></meta>
-
-      <meta property="og:title" content="Quiwi Game | Vừa Chơi Vừa Học" />
-      <meta property="og:type" content="education.quiz.game" />
-      <meta property="og:url" content="https://web.quiwi.games/" />
-      <meta property="og:image" content="https://web.quiwi.games/assets/logo-text.png" />
+      <link rel="canonical" href={webUrl} />
 
       {/* google analytics */}
       {/* Global Site Tag (gtag.js) - Google Analytics */}
