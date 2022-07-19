@@ -4,7 +4,7 @@ import { API_URL, GOOGLE_ANALYTICS } from '../../utils/constants'
 
 const MyHead: FC = () => {
   const logo = '/assets/logo.png'
-  const webUrl = 'https://web.quiwi.games/'
+  const webUrl = 'https://web.quiwi.games'
   const description =
     'Quiwi là một trang web cho phép bạn tham gia quiz hoặc tạo quiz của chính mình'
   return (
@@ -23,7 +23,7 @@ const MyHead: FC = () => {
       <meta property="og:title" content="Quiwi Game | Vừa Chơi Vừa Học" />
       <meta property="og:type" content="education.quiz.game" />
       <meta property="og:url" content={webUrl} />
-      <meta property="og:image" content="/assets/logo-w-bg.jpg" />
+      <meta property="og:image" content={`${webUrl}/assets/logo-w-bg.jpg`} />
       <meta property="og:description" content={description} />
       <meta name="twitter:card" content="website" />
 
