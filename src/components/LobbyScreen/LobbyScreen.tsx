@@ -312,10 +312,10 @@ const LobbyScreen: FC<LobbyScreenProps> = () => {
         {renderQrModal()}
 
         <BackgroundPicker
-          show={showBackgroundModal}
-          onHide={() => setShowBackgroundModal(false)}
-          setCurrentBackground={setCurrentBackground}
-        />
+        show={showBackgroundModal}
+        onHide={() => setShowBackgroundModal(false)}
+        setCurrentBackground={setCurrentBackground}
+      />
       </div>
     </div>
   )
