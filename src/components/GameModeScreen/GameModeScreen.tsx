@@ -28,13 +28,13 @@ const GameModeScreen: FC<GameModeScreenProps> = ({setGameMode}) => {
       description: 'Cùng chơi và cạnh tranh với người chơi khác',
       banner: "/assets/trophy.svg"
     },
-    {
-      mode: '30EXAM',
-      name: 'Kiểm tra',
-      useFor: 'Dùng cho kiểm tra',
-      description: 'Kiểm tra lại kiến thức của bản thân',
-      banner: "/assets/grade-sheet.svg"
-    },
+    // {
+    //   mode: '30EXAM',
+    //   name: 'Kiểm tra',
+    //   useFor: 'Dùng cho kiểm tra',
+    //   description: 'Kiểm tra lại kiến thức của bản thân',
+    //   banner: "/assets/grade-sheet.svg"
+    // },
   ]
 
   const selectGameMode = (idx: number) => {

@@ -6,6 +6,7 @@ import { Image } from 'react-bootstrap'
 import { ColorHex, CountdownCircleTimer } from 'react-countdown-circle-timer'
 import { useMyleGameSession } from '../../../../hooks/usePracticeGameSession/useMyleGameSession'
 import { useTimer } from '../../../../hooks/useTimer/useTimer'
+import FullScreenLoader from '../../../FullScreenLoader/FullScreenLoader'
 import {
   AnswerSectionFactory,
   QuestionTypeDescription,
@@ -29,7 +30,16 @@ const ExamAnswerBoard: FC = () => {
   let answerSectionFactory: AnswerSectionFactory
   const timer = useTimer()
   const [userAnswers, setUserAnswers] = useState<UserAnswer[]>([]) // answer each question of user that will be submitted to server
-  // const timeEnd = new Date(myleGameSession.gameSession?.deadline?.timeEnd || 0)
+  const timeEnd = myleGameSession.examDeadline?.timeEnd
+
+  const [duration, setDuration] = useState<number>()
+  useEffect(() => {
+    if (timeEnd) {
+      const currentDuration = timeEnd - new Date().getTime()
+      setDuration(currentDuration)
+    }
+  }, [timeEnd])
+
   console.log('userAnswers', userAnswers)
 
   const init = () => {
@@ -117,7 +127,7 @@ const ExamAnswerBoard: FC = () => {
     init()
   }, [questionsLength])
 
-  return (
+  return duration !== undefined ? (
     <>
       <div
         className={classNames(
@@ -173,7 +183,7 @@ const ExamAnswerBoard: FC = () => {
         <CountdownCircleTimer
           strokeLinecap="square"
           isPlaying={true}
-          duration={330}
+          duration={duration / 1000}
           size={180}
           strokeWidth={18}
           onComplete={() => alert('Het gio')}
@@ -260,6 +270,8 @@ const ExamAnswerBoard: FC = () => {
         submit={submit}
       />
     </>
+  ) : (
+    <FullScreenLoader isLoading />
   )
 }
 
