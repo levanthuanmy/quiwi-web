@@ -53,13 +53,6 @@ const WelcomePage: FC = () => {
   return shouldRender ? (
     <>
       <Head>
-        <meta charSet="utf-8" />
-
-        {/* <title>Q - Business Consultancy Agency Template | Home</title> */}
-
-        <meta name="description" content="" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-
         <link
           rel="shortcut icon"
           href="/template-assets/images/favicon.png"
@@ -99,7 +92,7 @@ const WelcomePage: FC = () => {
                       alt="Logo"
                     />
                   </Link>
-                  <button
+                  {/* <button
                     className="navbar-toggler"
                     type="button"
                     data-toggle="collapse"
@@ -111,7 +104,7 @@ const WelcomePage: FC = () => {
                     <span className="toggler-icon"></span>
                     <span className="toggler-icon"></span>
                     <span className="toggler-icon"></span>
-                  </button>
+                  </button> */}
 
                   {/* <div
                     className="collapse navbar-collapse sub-menu-bar"
@@ -171,6 +164,16 @@ const WelcomePage: FC = () => {
                   >
                     Quiwi là nơi bạn có thể tạo và tham gia quiz một cách thoải
                     mái và nhanh chóng.
+                    <br />
+                    <br />
+                    <div
+                      data-wow-duration="1s"
+                      data-wow-delay="0.5s"
+                      className="main-btn"
+                      onClick={() => router.push('/home')}
+                    >
+                      BẮT ĐẦU NGAY
+                    </div>
                   </p>
                   <div
                     className="header-singup wow fadeInUp"
@@ -179,7 +182,7 @@ const WelcomePage: FC = () => {
                   >
                     <input
                       type="text"
-                      placeholder="Nhập mã phòng"
+                      placeholder="Hoặc nhập mã phòng để..."
                       onChange={(e) => {
                         setInvitationInputError('')
                         setInvitationCode(e.target.value)
@@ -659,7 +662,7 @@ const WelcomePage: FC = () => {
               <div className="col-lg-12">
                 <div className="service-btn text-center pt-25 pb-15">
                   <Link passHref href="/home">
-                    <a className="main-btn main-btn-2">Tìm hiều thêm</a>
+                    <a className="main-btn main-btn-2">Tìm hiểu thêm</a>
                   </Link>
                 </div>
               </div>
@@ -818,7 +821,7 @@ const WelcomePage: FC = () => {
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
 
       <section
         data-scroll-index="0"
@@ -833,15 +836,16 @@ const WelcomePage: FC = () => {
                 data-wow-duration="1s"
                 data-wow-delay="0.2s"
               >
-                <h6 className="sub-title">Pricing Plans</h6>
+                <h6 className="sub-title">Phần quà ngay hôm nay</h6>
                 <h4 className="title">
-                  Providing Best Pricing <span>For Your Business.</span>
+                  Tham gia cùng với chúng tôi ngay hôm nay để{' '}
+                  <span>nhận những phần quà hấp dẫn.</span>
                 </h4>
               </div>
             </div>
           </div>
           <div className="row no-gutters justify-content-center">
-            <div className="col-lg-4 col-md-7 col-sm-9">
+            {/* <div className="col-lg-4 col-md-7 col-sm-9">
               <div
                 className="single-pricing text-center pricing-color-1 mt-30 wow fadeIn"
                 data-wow-duration="1s"
@@ -870,8 +874,8 @@ const WelcomePage: FC = () => {
                   </a>
                 </div>
               </div>
-            </div>
-            <div className="col-lg-4 col-md-7 col-sm-9">
+            </div> */}
+            <div className="col-lg-4 col-md-7 col-sm-9 pr-0 pr-md-2">
               <div
                 className="single-pricing text-center pricing-active pricing-color-2 mt-30 wow fadeIn"
                 data-wow-duration="1s"
@@ -879,29 +883,78 @@ const WelcomePage: FC = () => {
               >
                 <div className="pricing-price">
                   <span className="price">
-                    <b>69</b>/m.<span className="symbol">$</span>
+                    <b>Tham gia khảo sát</b>
+                    <br />
+                    Nhận ngay
+                    <span className="text-primary">
+                      <b>5000</b> Quiwi Xu
+                    </span>
                   </span>
                 </div>
-                <div className="pricing-title mt-20">
+                {/* <div className="pricing-title mt-20">
                   <span className="btn">Special</span>
                   <h4 className="title">Standard</h4>
-                </div>
-                <div className="pricing-list pt-20">
+                </div> */}
+                {/* <div className="pricing-list pt-20">
                   <ul>
                     <li>Full Access</li>
                     <li>Unlimited Bandwidth</li>
                     <li>50 gb Space</li>
                     <li>1 Month Support</li>
                   </ul>
-                </div>
-                <div className="pricing-btn pt-70">
-                  <a className="main-btn" href="#">
-                    Sign Up Now !
-                  </a>
+                </div> */}
+                <div className="pt-70">
+                  <div
+                    className="main-btn main-btn-2 text-uppercase"
+                    onClick={() =>
+                      router.push('https://forms.gle/1xT8JA24ARV77iHj6')
+                    }
+                  >
+                    Khảo sát ngay
+                  </div>
                 </div>
               </div>
             </div>
-            <div className="col-lg-4 col-md-7 col-sm-9">
+
+            <div className="col-lg-4 col-md-7 col-sm-9 ps-0 ps-md-2">
+              <div
+                className="single-pricing text-center pricing-active pricing-color-2 mt-30 wow fadeIn"
+                data-wow-duration="1s"
+                data-wow-delay="0.6s"
+              >
+                <div className="pricing-price">
+                  <span className="price">
+                    <b>Đăng kí ngay hôm nay</b>
+                    <br />
+                    Nhận ngay
+                    <span className="text-primary">
+                      <b>5000</b> Quiwi Xu
+                    </span>
+                  </span>
+                </div>
+                {/* <div className="pricing-title mt-20">
+                  <span className="btn">Special</span>
+                  <h4 className="title">Standard</h4>
+                </div> */}
+                {/* <div className="pricing-list pt-20">
+                  <ul>
+                    <li>Full Access</li>
+                    <li>Unlimited Bandwidth</li>
+                    <li>50 gb Space</li>
+                    <li>1 Month Support</li>
+                  </ul>
+                </div> */}
+                <div className="pricing-btn pt-70">
+                  <div
+                    className="main-btn"
+                    onClick={() => router.push('/sign-in')}
+                  >
+                    Đăng kí ngay
+                  </div>
+                </div>
+              </div>
+            </div>
+            {/* <div className="col-lg-4 col-md-7 col-sm-9">
               <div
                 className="single-pricing text-center pricing-color-3 mt-30 wow fadeIn"
                 data-wow-duration="1s"
@@ -930,12 +983,12 @@ const WelcomePage: FC = () => {
                   </a>
                 </div>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </section>
 
-      <section id="testimonial" className="testimonial-area pt-70 pb-120">
+      {/* <section id="testimonial" className="testimonial-area pt-70 pb-120">
         <div className="container">
           <div className="row justify-content-between">
             <div className="col-xl-5 col-lg-6">
@@ -1106,7 +1159,7 @@ const WelcomePage: FC = () => {
             </div>
           </div>
         </div>
-      </section> */}
+      </section>  */}
 
       {/* <div id="brand" className="brand-area">
         <div className="container">
@@ -1189,7 +1242,12 @@ const WelcomePage: FC = () => {
                     </h4>
                     <div className="blog-author d-flex align-items-center">
                       <div className="author-image">
-                        <img src={quiz.user?.avatar} alt="author" />
+                        <img
+                          src={
+                            quiz.user?.avatar ?? '/assets/default-avatar.png'
+                          }
+                          alt="author"
+                        />
                       </div>
                       <div className="author-content media-body">
                         <h6 className="sub-title">Tạo bởi</h6>
