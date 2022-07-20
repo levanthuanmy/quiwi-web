@@ -83,7 +83,7 @@ const SortPage = () => {
 
   return (
     <>
-      <Container fluid="lg" className="pt-80px min-vh-100">
+      <Container fluid="lg" className="mt-80px min-vh-100">
         {questions?.map((question, key) => (
           <ItemQuestion
             key={key}

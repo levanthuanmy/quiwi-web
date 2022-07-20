@@ -46,7 +46,8 @@ const ItemQuestion: FC<ItemQuestionProps> = ({
       }
     },
     hover(item: DragItem, monitor) {
-      if (!ref.current || !index || !move) {
+
+      if (!ref.current || index == undefined || move == undefined) {
         return
       }
       const dragIndex = item.index
@@ -57,21 +58,21 @@ const ItemQuestion: FC<ItemQuestionProps> = ({
       }
 
       const hoverBoundingRect = ref.current?.getBoundingClientRect()
-
-      const hoverMiddleY =
-        (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2
-
-      const clientOffset = monitor.getClientOffset()
-
-      const hoverClientY = (clientOffset as any).y - hoverBoundingRect.top
-
-      if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
-        return
-      }
-
-      if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
-        return
-      }
+console.log("=>(ItemQuestion.tsx:61) hoverBoundingRect", hoverBoundingRect);
+      // const hoverMiddleY =
+      //   (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2
+      //
+      // const clientOffset = monitor.getClientOffset()
+      //
+      // const hoverClientY = (clientOffset as any).y - hoverBoundingRect.top
+      //
+      // if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
+      //   return
+      // }
+      //
+      // if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
+      //   return
+      // }
 
       move(dragIndex, hoverIndex)
 

@@ -15,6 +15,8 @@ import {GAME_MODE_MAPPING} from "../../utils/constants";
 import useSWR from "swr";
 import {get} from "../../libs/api";
 import Cookies from "universal-cookie";
+import QRCode from "react-qr-code";
+import {useToasts} from "react-toast-notifications";
 
 type GameModeScreenProps = {
   setGameMode: (mode: TGameModeEnum) => void
@@ -38,6 +40,7 @@ const GameModeScreen: FC<GameModeScreenProps> = ({setGameMode}) => {
   const setting = useUserSetting();
   const [bg, setBg] = useState<string>("");
   const [showBackgroundModal, setShowBackgroundModal] = useState<boolean>(false)
+  const {addToast} = useToasts()
 
   useEffect(() => {
     if (setting.gameBackgroundUrl && setting.gameBackgroundUrl.length) {
@@ -60,6 +63,7 @@ const GameModeScreen: FC<GameModeScreenProps> = ({setGameMode}) => {
       revalidateOnFocus: false,
     }
   )
+  console.log("=>(GameModeScreen.tsx:64) data", data);
 
   const modes: TGameModeOption[] = [
     {
@@ -155,6 +159,48 @@ const GameModeScreen: FC<GameModeScreenProps> = ({setGameMode}) => {
     {'justify-content-center': isMobile}
   )
 
+  const copyInvitationCode = () => {
+    navigator?.clipboard?.writeText(
+      `http://${window.location.host}/quiz/${id}/play`
+    )
+    console.log(
+      'copyInvitationCode - ',
+      `http://${window.location.host}/quiz/${id}/play`
+    )
+    addToast(
+      <>
+        Copy thành công
+        <br />
+        Gửi link mời cho bạn bè để tham gia!
+      </>,
+      {
+        autoDismiss: true,
+        appearance: 'success',
+      }
+    )
+  }
+
+  function renderInvitationCodeDesktop() {
+    return (
+      <>
+        {/*<div className="text-white p-3 d-flex justify-content-center gap-4 w-100 flex-wrap">*/}
+        {/*  <div className="d-flex flex-column gap-3 text-center align-items-center justify-content-center">*/}
+              <div className="fw-light mt-3 fs-4 fst-italic opacity-50">Chia sẻ Quiz này với bạn bè qua đường dẫn:</div>
+              <div
+                className="d-flex mt-2 w-100 bg-primary opacity-75 bg-opacity-10 rounded-8px p-3 align-items-center gap-3 cursor-pointer"
+                onClick={copyInvitationCode}
+              >
+                <div className="text-truncate w-100">
+                  {`http://${window.location.host}/quiz/${id}/play`}{' '}
+                </div>
+                <div className={`bi bi-clipboard-plus-fill fs-24px`} />
+              </div>
+        {/*  </div>*/}
+        {/*</div>*/}
+      </>
+    )
+  }
+
   return <div
     className="min-vh-100 d-flex flex-column justify-content-center align-items-center bg-dark"
     style={{
@@ -165,7 +211,9 @@ const GameModeScreen: FC<GameModeScreenProps> = ({setGameMode}) => {
     }}
   >
     <div className={"d-flex flex-column justify-content-center align-items-center bg-dark rounded-10px pb-3"}>
-      <div className={cn(styles.modeTitle, "bg-dark text-white mt-3 ms-3 me-3", "fs-1")}>Chọn chế độ chơi</div>
+      <div className={cn(styles.modeTitle, "bg-dark text-white mt-3 ms-3 me-3", "fs-1")}>
+        {quizId ? "Tạo phòng chờ" : "Chọn chế độ cho phòng tự luyện tập"}
+      </div>
 
       <div className="text-white d-flex w-100 align-items-center gap-3 bg-black bg-opacity-50 p-4 mb-3 fs-4">
         <div className="w-100">
@@ -175,6 +223,7 @@ const GameModeScreen: FC<GameModeScreenProps> = ({setGameMode}) => {
           <div className="">
             Số câu: {data?.response?.questions?.length}
           </div>
+          {id && renderInvitationCodeDesktop()}
         </div>
       </div>
 

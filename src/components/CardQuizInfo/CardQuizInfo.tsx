@@ -23,6 +23,7 @@ import MyButton from '../MyButton/MyButton'
 import MyInput from '../MyInput/MyInput'
 import MyModal from '../MyModal/MyModal'
 import QuestionActionButton from '../QuestionActionButton/QuestionActionButton'
+import classNames from "classnames";
 
 type CardQuizInfoProps = {
   quiz: TQuiz | undefined
@@ -168,7 +169,15 @@ const CardQuizInfo: FC<CardQuizInfoProps> = ({
                 ))}
             </div>
             <div>
-              <i className="bi bi-eye-fill me-2 fs-16px" />
+              <i
+                className={classNames(
+                  'me-2 fs-16px',
+                  {
+                    'bi-lock-fill': !quiz?.isPublic,
+                    'bi-globe': quiz?.isPublic,
+                  }
+                )}
+              />
               <TextSkeletonLoading
                 content={quiz?.isPublic ? 'Công khai' : 'Riêng tư'}
                 isValidating={isValidating}
@@ -339,10 +348,14 @@ const CardQuizInfo: FC<CardQuizInfoProps> = ({
                   <Col xs={12} className="fw-medium">
                     Công khai
                   </Col>
+                  <Col xs={12} className="fw-light fst-italic text-secondary fs-6">
+                    Chia sẻ bộ quiz với cộng đồng <span className="fw-bold text-primary">Quiwi!</span>
+                  </Col>
                   <Col>
                     <Field
                       type="switch"
                       name="isPublic"
+                      className={"fs-2"}
                       defaultChecked={quiz?.isPublic ?? false}
                       placeholder="Công khai"
                       as={FormCheck}

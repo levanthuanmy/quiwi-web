@@ -115,6 +115,10 @@ padding-right: 20px;
   padding-top: 80px;
 }
 
+.mt-80px {
+  margin-top: 80px;
+}
+
 /* == nav bar height */
 .nav-bar-pt {
   padding-top: 64px;
