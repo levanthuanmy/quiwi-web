@@ -31,6 +31,7 @@ export type TRankingItem = {
   quantity: number
   rank: number
   username: string
+  name: string
 }
 
 const RankingPage: NextPage = () => {
