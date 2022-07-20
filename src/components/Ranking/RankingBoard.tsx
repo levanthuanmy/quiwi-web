@@ -13,6 +13,7 @@ const RankingBoard: FC<{ rankingList: TRankingItem[] }> = ({ rankingList }) => {
         <tr className="fw-medium">
           <td className="text-center">#</td>
           <td>Tên</td>
+          <td>Tên người dùng</td>
           <td>Số lượng đạt được</td>
         </tr>
         {rankingList?.map((user) => (
@@ -51,10 +52,24 @@ const RankingBoard: FC<{ rankingList: TRankingItem[] }> = ({ rankingList }) => {
                   className="rounded-circle"
                 />
                 <span className={classNames('ps-2 pe-1 fw-medium')}>
-                  {user?.username}
+                  {user?.name}
                 </span>
               </div>
             </td>
+            <td className="pb-1 px-0">
+              <div
+                className={classNames(
+                  'py-3 ps-2 text-nowrap',
+                  {
+                    'text-white bg-primary': user?.isHighlight,
+                    'bg-light': !user?.isHighlight,
+                  }
+                )}
+              >
+                {user?.username}
+              </div>
+            </td>
+
             <td className="pb-1 px-0">
               <div
                 className={classNames('py-3 ps-2 rounded-end-14px', {
