@@ -1,4 +1,5 @@
 import type { NextPage } from 'next'
+import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
 import { Col, Container, Row } from 'react-bootstrap'
@@ -166,7 +167,14 @@ const Home: NextPage = () => {
         <Container fluid="lg" className="p-3">
           {popularQuizzesResponse?.response.length ? (
             <div className="pt-4">
-              <div className="fs-22px fw-medium pb-3">Phổ biến</div>
+              <div className="d-flex justify-content-between pb-3 align-items-center">
+                <div className="fs-22px fw-medium pb-3">Phổ biến</div>
+                <div className="fs-16px text-primary">
+                  <Link href="/explore" passHref={true}>
+                    <span className="cursor-pointer">Xem tất cả {'>>'}</span>
+                  </Link>
+                </div>
+              </div>
               <MySlider>
                 {popularQuizzesResponse?.response?.map((quiz, key) => (
                   <div key={key} className="px-md-2">
@@ -182,7 +190,15 @@ const Home: NextPage = () => {
           {authContext.isAuth && (
             <>
               <div className="pt-4">
+
+              <div className="d-flex justify-content-between pb-3 align-items-center">
                 <div className="fs-22px fw-medium pb-3">Đã tạo gần đây</div>
+                <div className="fs-16px text-primary">
+                  <Link href="/my-lib" passHref={true}>
+                    <span className="cursor-pointer">Xem tất cả {'>>'}</span>
+                  </Link>
+                </div>
+              </div>
                 {recentlyCreatedQuizzesResponse?.response.items ? (
                   recentlyCreatedQuizzesResponse?.response.totalItems === 0 ? (
                     <div className="ms-3 text-muted">
@@ -205,7 +221,15 @@ const Home: NextPage = () => {
               </div>
 
               <div className="pt-4">
-                <h1 className="fs-22px fw-medium pb-3">Đã tham gia gần đây</h1>
+
+              <div className="d-flex justify-content-between pb-3 align-items-center">
+                <div className="fs-22px fw-medium pb-3">Đã tham gia gần đây</div>
+                <div className="fs-16px text-primary">
+                  <Link href="/history" passHref={true}>
+                    <span className="cursor-pointer">Xem tất cả {'>>'}</span>
+                  </Link>
+                </div>
+              </div>
                 {recentlyPlayedQuizzesResponse?.response ? (
                   recentlyPlayedQuizzesResponse?.response.length === 0 ? (
                     <div className="ms-3 text-muted">
