@@ -63,7 +63,6 @@ const GameModeScreen: FC<GameModeScreenProps> = ({setGameMode}) => {
       revalidateOnFocus: false,
     }
   )
-  console.log("=>(GameModeScreen.tsx:64) data", data);
 
   const modes: TGameModeOption[] = [
     {

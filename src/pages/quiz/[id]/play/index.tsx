@@ -21,12 +21,13 @@ const PlayCommunityQuizScreen: NextPage = () => {
   const router = useRouter()
   const { id } = router.query
   const myleGameSession = useMyleGameSession()
-  const [isModeSelecting, setIsModeSelecting] = useState(true)
+  const [isModeSelecting, setIsModeSelecting] = useState(false)
   const user = useUser()
   const [error, setError] = useState('')
 
   useEffect(() => {
     if (myleGameSession.gameSession) setIsModeSelecting(false)
+    else setIsModeSelecting(true)
   }, [])
 
   const modeSelected = (mode: TGameModeEnum) => {

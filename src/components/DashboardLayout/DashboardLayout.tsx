@@ -109,7 +109,7 @@ const DashboardLayout: FC<DashboardLayoutProps> = ({ children }) => {
             }}
           />
           <MyButton
-            className={`fw-medium text-white text-nowrap`}
+            className={`mt-4 fw-medium text-white text-nowrap`}
             onClick={onJoinRoom}
           >
             Tham gia ngay

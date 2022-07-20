@@ -38,6 +38,8 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
   const timer = useTimer()
   const exitContext = useContext(ExitContext)
   const router = useRouter()
+  const query = router.query
+  const {invitationCode} = query
   const user = useUser()
 
 
@@ -55,6 +57,12 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
   const {fromMedium, isMobile} = useScreenSize()
 
   useEffect(() => {
+    if (!invitationCode?.length) {
+      // setLoading("Phòng không tồn tại")
+      // setTimeout(() => {
+      //   exitRoom()
+      // }, 2000)
+    }
     handleSocket()
     resetState()
   }, [])
@@ -78,10 +86,16 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
   }
 
   function resetState() {
-    if (!isNextEmitted && !gameManager.currentQuestion) {
+    if (!isNextEmitted && gameManager.gameSession && !gameManager.currentQuestion) {
       setLoading('Chuẩn bị!')
       sound.playSound(SOUND_EFFECT['READY'])
-    } else setLoading(null)
+    } if (gameManager.gameSession) {
+      if (!gameManager.gameSocket || !gameManager.gameSocket.connected) {
+        setLoading("Đang kết nối lại...")
+      } else {
+        setLoading(null)
+      }
+    }
 
     setIsNextEmitted(true)
     timer.setIsShowSkeleton(true)
@@ -93,9 +107,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
   }
 
   const handleSocket = () => {
-    if (!gameManager.gameSocket) {
-      gameManager.connectGameSocket()
-    }
+
 
     gameManager.gameSkOnce('game-started', (data) => {
       setNumSubmission(0)
@@ -385,25 +397,26 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
         {gameManager.currentQuestion?.question ? (
           <div
             className={classNames(
-              'd-flex flex bg-dark bg-opacity-50 rounded-10px shadow mb-2', {"gap-5 py-2":fromMedium, "py-1":isMobile}
+              'd-flex flex bg-dark bg-opacity-50 rounded-10px shadow mb-2', {"gap-5 py-2": fromMedium, "py-1": isMobile}
             )}
           >
-            <div className={cn("px-2 d-flex align-items-center",{"gap-3":fromMedium})}>
+            <div className={cn("px-2 d-flex align-items-center", {"gap-3": fromMedium})}>
               {(user?.avatar || fromMedium) &&
-              <Image
-                src={`${user?.avatar ?? "/assets/default-avatar.png"}`}
-                width={40}
-                height={40}
-                className="rounded-circle"
-                alt=""
-              />}
+                  <Image
+                      src={`${user?.avatar ?? "/assets/default-avatar.png"}`}
+                      width={40}
+                      height={40}
+                      className="rounded-circle"
+                      alt=""
+                  />}
               {/*{fromMedium &&*/}
-                  <div className="fw-medium fs-20px text-white">
-                    {gameManager.isHost ? gameManager.gameSession?.host?.name : gameManager.player?.nickname}
-                  </div>
+              <div className="fw-medium fs-20px text-white">
+                {gameManager.isHost ? gameManager.gameSession?.host?.name : gameManager.player?.nickname}
+              </div>
               {/*}*/}
             </div>
-            <div className={cn("flex-grow-1 h-100 px-2 text-white d-flex align-items-center justify-content-between",{"gap-3":fromMedium})}>
+            <div
+              className={cn("flex-grow-1 h-100 px-2 text-white d-flex align-items-center justify-content-between", {"gap-3": fromMedium})}>
               {gameManager.currentQuestion && gameManager.isHost ? (
                 <div
                   id="questionProgressBar"
@@ -445,10 +458,10 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
                 <span className="text-white text-primary fs-3">
               {(gameManager.currentQuestion?.orderPosition ?? 0) + 1}/
                 </span>
-              <span className="text-secondary fs-24px">
+                <span className="text-secondary fs-24px">
                   {gameManager.gameSession?.quiz?.questions?.length}
                 </span>
-            </div>
+              </div>
             </div>
           </div>
         ) : (

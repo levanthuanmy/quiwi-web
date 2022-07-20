@@ -11,7 +11,7 @@ import {TApiResponse, TGamePlayBodyRequest, TPlayer,} from '../../types/types'
 import {JsonParse} from '../../utils/helper'
 import {TGameLobby, useGameSession} from '../../hooks/useGameSession/useGameSession'
 
-type TJoinQuizRequest = {
+export type TJoinQuizRequest = {
   userId?: number
   nickname: string
   invitationCode: string

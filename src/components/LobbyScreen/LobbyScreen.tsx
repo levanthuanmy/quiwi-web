@@ -78,7 +78,7 @@ const LobbyScreen: FC<LobbyScreenProps> = () => {
     })
 
     game.gameSkOnce('loading', (data) => {
-      router.push(`/game/play`)
+      router.push(`/game/play?invitationCode=${invitationCode}`)
     })
   }, [])
 

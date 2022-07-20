@@ -1,6 +1,6 @@
 import classNames from 'classnames'
 import {NextPage} from 'next'
-import router from 'next/router'
+import router, {useRouter} from 'next/router'
 import React, {Dispatch, SetStateAction, useEffect, useState} from 'react'
 import AnswerBoard from '../../../components/GameComponents/AnswerBoard/AnswerBoard'
 import EndGameBoard from '../../../components/GameComponents/EndGameBoard/EndGameBoard'
@@ -18,6 +18,12 @@ import * as gtag from '../../../libs/gtag'
 import {SOUND_EFFECT} from '../../../utils/constants'
 import styles from './GamePage.module.css'
 import {useUserSetting} from "../../../hooks/useUserSetting/useUserSetting";
+import Cookies from "universal-cookie";
+import {TApiResponse, TGamePlayBodyRequest, TPlayer} from "../../../types/types";
+import {JsonParse} from "../../../utils/helper";
+import {post} from "../../../libs/api";
+import {useUser} from "../../../hooks/useUser/useUser";
+import {TJoinQuizRequest} from "../../lobby/join";
 
 export const ExitContext = React.createContext<{
   showEndGameModal: boolean
@@ -30,6 +36,7 @@ export const ExitContext = React.createContext<{
 
 const GamePage: NextPage = () => {
   const game = useGameSession()
+  const user = useUser();
   const [isShowChat, setIsShowChat] = useState<boolean>(false)
   const [isGameEnded, setIsGameEnded] = useState<boolean>(false)
   const [isShowExit, setIsShowExit] = useState<boolean>(false)
@@ -95,7 +102,7 @@ const GamePage: NextPage = () => {
   const exitRoom = () => {
     // dùng clear game session là đủ
     game.clearGameSession()
-    router.push('/my-lib')
+    router.push('/home')
   }
 
   function getExitModal() {
@@ -119,7 +126,14 @@ const GamePage: NextPage = () => {
     )
   }
 
-  useEffect(() => {
+  useEffect( () => {
+    if (!game.gameSocket || !game.gameSocket.connected) {
+      game.connectGameSocket()
+      game.gameSkOnce('connect', () => {
+        joinRoom()
+      })
+    }
+
     game.gameSkOn('game-ended', (data) => {
       sound?.playSound(SOUND_EFFECT['COMPLETE_LEVEL'])
       setEndGameData(data)
@@ -159,6 +173,45 @@ const GamePage: NextPage = () => {
       }
     })
   }, [])
+
+  const joinRoom = async () => {
+    if (!game || !game.gameSession) return;
+    const cookies = new Cookies()
+    const accessToken: string = cookies.get('access-token')
+    let joinRoomRequest: TJoinQuizRequest = {
+      nickname: game.nickName,
+      invitationCode: game.gameSession.invitationCode,
+    }
+
+    const body: TGamePlayBodyRequest<TJoinQuizRequest> = {
+      socketId: game.gameSocket!.id,
+      data: joinRoomRequest,
+    }
+
+    if (user?.id) {
+      // joinRoomRequest.token = accessToken
+      joinRoomRequest.userId = user?.id
+    }
+
+    try {
+      const response: TApiResponse<{
+        gameLobby: TGameLobby
+        player: TPlayer
+      }> = await post(
+        'api/games/join-room',
+        {},
+        body,
+        true
+      )
+      const data = response.response
+
+      game.gameSession = data.gameLobby
+      game.player = data.player
+    } catch (error) {
+      console.log('Join quiz - error', error)
+      alert((error as Error).message)
+    }
+  }
 
   const [exitModal, setExitModal] = useState(false)
   return (
