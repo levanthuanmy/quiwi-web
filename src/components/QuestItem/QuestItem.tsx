@@ -40,7 +40,7 @@ const QuestItem: FC<{ quest: TQuest; onClick: () => void }> = ({
     }
   }
 
-  const questGoal = quest.questRequirement[0].goal
+  const questGoal = quest.questRequirement[quest.questRequirement.length - 1].goal
   const current = quest.userQuest[0].process
   const process = (current / questGoal) * 100
 
