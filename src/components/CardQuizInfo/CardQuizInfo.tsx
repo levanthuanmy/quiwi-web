@@ -349,7 +349,7 @@ const CardQuizInfo: FC<CardQuizInfoProps> = ({
                     Công khai
                   </Col>
                   <Col xs={12} className="fw-light fst-italic text-secondary fs-6">
-                    Chia sẻ bộ quiz với cộng đồng <span className="fw-bold text-primary">Quiwi!</span>
+                    * Bật công khai để chia sẻ bộ quiz với cộng đồng <span className="fw-bold text-primary">Quiwi!</span>
                   </Col>
                   <Col>
                     <Field

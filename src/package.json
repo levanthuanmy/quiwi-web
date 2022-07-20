@@ -79,6 +79,7 @@
     "eslint-config-prettier": "^8.5.0",
     "prettier": "2.6.2",
     "react-countdown-circle-timer": "^3.0.9",
+    "react-share": "^4.4.0",
     "react-singleton-hook": "^3.4.0",
     "rxjs": "^7.5.5",
     "slick-carousel": "^1.8.1",
