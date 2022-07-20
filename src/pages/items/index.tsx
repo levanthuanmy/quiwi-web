@@ -43,7 +43,15 @@ const ItemPage: NextPage = () => {
       getItems(getCategoryIdByToggleState(toggleState))
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pageIndex, toggleState, q])
+  }, [pageIndex, q])
+
+  useEffect(() => {
+    setPageIndex(1);
+    if (pageIndex > 0 || q) {
+      getItems(getCategoryIdByToggleState(toggleState))
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [toggleState])
 
   const getItems = async (idCategory: number) => {
     const params = {
