@@ -40,17 +40,14 @@ const QuestItem: FC<{ quest: TQuest; onClick: () => void }> = ({
     }
   }
 
-  const questGoal = quest.questRequirement[quest.questRequirement.length - 1].goal
+  const questGoal =
+    quest.questRequirement[quest.questRequirement.length - 1].goal
   const current = quest.userQuest[0].process
   const process = (current / questGoal) * 100
 
   return (
-    <Row
-      className={classNames(
-        'justify-content-center mx-auto align-items-center'
-      )}
-    >
-      <Col xm={10}>
+    <Row className={classNames('align-items-center')}>
+      <Col xs={12} md={8} xl={9}>
         <div className={classNames('card ', styles.questItem)}>
           <div className={classNames('quest-item px-3 py-2')}>
             <Row className="justify-content-between">
@@ -115,12 +112,25 @@ const QuestItem: FC<{ quest: TQuest; onClick: () => void }> = ({
                 </div>
               </Col>
             </Row>
-
+            <Row className="justify-content-center align-items-center my-1">
+              <Col sm={6} className={classNames('d-md-none', styles.button)}>
+                <MyButton
+                  disabled={
+                    quest.userQuest[0].status === 'INPROGRESS' ||
+                    quest.userQuest[0].isReceivedReward
+                  }
+                  className={classNames('w-100 text-white ')}
+                  onClick={() => doneQuest()}
+                >
+                  {quest.userQuest[0].isReceivedReward ? 'Đã xong' : 'Nhận'}
+                </MyButton>
+              </Col>
+            </Row>
             {/* <p className={classNames("card-text", styles.fontDes)}>{props.props.detail}</p> */}
           </div>
         </div>
       </Col>
-      <Col sm={2} className={classNames('"', styles.button)}>
+      <Col className={classNames('d-none d-md-block', styles.button)}>
         <MyButton
           disabled={
             quest.userQuest[0].status === 'INPROGRESS' ||

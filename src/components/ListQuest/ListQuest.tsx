@@ -18,8 +18,6 @@ const ListQuest: NextPage = () => {
   const router = useRouter()
   const { q } = router.query
 
-  const [itemsResponse, setItemsResponse] =
-    useState<TPaginationResponse<TQuest>>()
   const [doneQuests, setDoneQuests] = useState<TQuest[]>()
   const [inProgressQuests, setInProgressQuests] = useState<TQuest[]>()
   const authContext = useAuth()

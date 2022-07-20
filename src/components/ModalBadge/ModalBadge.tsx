@@ -44,7 +44,7 @@ const ModalBadge: FC<IModalBadge> = (props) => {
           <div
             className={classNames('progress-bar bg-success')}
             role="progressbar"
-            style={{ width: props.userBadge.process / goal + '%' }}
+            style={{ width: (props.userBadge.process / goal) * 100 + '%' }}
           ></div>
         </div>
         <div className={classNames('fs-20px', styles.badgeCount)}>

@@ -208,14 +208,16 @@ const ItemPage: NextPage = () => {
             </Row>
           ) : null}
 
-          <WheelFortuneModal
-            onHide={() => {
-              setShowWheelFortuneModal(false)
-              getUser()
-            }}
-            userSpinningNumber={0}
-            showModal={showWheelFortuneModal}
-          />
+          {userResponse?.user ? (
+            <WheelFortuneModal
+              onHide={() => {
+                setShowWheelFortuneModal(false)
+                getUser()
+              }}
+              userSpinningNumber={0}
+              showModal={showWheelFortuneModal}
+            />
+          ) : null}
         </Container>
       </div>
     </DashboardLayout>
