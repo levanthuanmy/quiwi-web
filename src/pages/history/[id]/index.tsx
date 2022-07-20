@@ -103,15 +103,19 @@ const DetailedHistoryPage: NextPage = () => {
                   {formatDate_HHmmDDMMMYYYY(data.response.createdAt)}
                 </div>
                 {data.response.isCommunityPlay ? (
-                  <div className="ps-2 py-2">
-                    Quiz này của{' '}
-                    <span className="fw-medium">
-                      <Link href={`/users/${data.response.quiz.userId}`}>
-                        {data.response.quiz?.user?.name ||
-                          data.response.quiz?.user?.username}
-                      </Link>
-                    </span>
-                  </div>
+                  data.response.quiz?.userId ? (
+                    <div className="ps-2 py-2">
+                      Quiz này của{' '}
+                      <span className="fw-medium">
+                        <Link
+                          href={`/users/${data.response.quiz?.userId || 0}`}
+                        >
+                          {data.response.quiz?.user?.name ||
+                            data.response.quiz?.user?.username}
+                        </Link>
+                      </span>
+                    </div>
+                  ) : null
                 ) : (
                   <div className="ps-2 py-2">
                     Tổ chức bởi{' '}
