@@ -37,7 +37,7 @@ const JoiningPage: NextPage = () => {
         joinRoom()
       })
     } else {
-      joinRoom()
+      await joinRoom()
     }
   }
 

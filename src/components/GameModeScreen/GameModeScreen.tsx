@@ -14,6 +14,7 @@ import {useRouter} from "next/router";
 import {GAME_MODE_MAPPING} from "../../utils/constants";
 import useSWR from "swr";
 import {get} from "../../libs/api";
+import Cookies from "universal-cookie";
 
 type GameModeScreenProps = {
   setGameMode: (mode: TGameModeEnum) => void
@@ -32,17 +33,26 @@ const GameModeScreen: FC<GameModeScreenProps> = ({setGameMode}) => {
   const router = useRouter()
   const query = router.query
   const {id} = query
+  const {quizId} = query
   const {isMobile} = useScreenSize();
   const setting = useUserSetting();
   const [bg, setBg] = useState<string>("");
   const [showBackgroundModal, setShowBackgroundModal] = useState<boolean>(false)
 
+  useEffect(() => {
+    if (setting.gameBackgroundUrl && setting.gameBackgroundUrl.length) {
+      setBg(setting.gameBackgroundUrl)
+    } else {
+      setBg('/assets/default-game-bg.svg')
+      setting.gameBackgroundUrl = '/assets/default-game-bg.svg'
+    }
+  }, [])
+
   const {data, isValidating, error} = useSWR<TApiResponse<TQuiz>>(
-    id
+    id || quizId
       ? [
-        `/api/quizzes/quiz/${id}`,
-        false,
-        {filter: {relations: ['user', 'quizCategories']}},
+        `/api/quizzes/${quizId ? "my-quizzes" : "quiz"}/${quizId ?? id}`,
+        quizId ? true : false,
       ]
       : null,
     get,
@@ -50,7 +60,6 @@ const GameModeScreen: FC<GameModeScreenProps> = ({setGameMode}) => {
       revalidateOnFocus: false,
     }
   )
-  const quiz = data?.response
 
   const modes: TGameModeOption[] = [
     {
@@ -161,10 +170,10 @@ const GameModeScreen: FC<GameModeScreenProps> = ({setGameMode}) => {
       <div className="text-white d-flex w-100 align-items-center gap-3 bg-black bg-opacity-50 p-4 mb-3 fs-4">
         <div className="w-100">
           <div className="text-truncate">
-            Tên quiz: {quiz?.title}
+            Tên quiz: {data?.response?.title}
           </div>
           <div className="">
-            Số câu: {quiz?.questions?.length}
+            Số câu: {data?.response?.questions?.length}
           </div>
         </div>
       </div>

@@ -78,7 +78,7 @@ const OptionAnswerSection: FC<OptionAnswerSectionProps> = ({
     if (option?.questionAnswers) {
       if (fromMedium) {
         if (option?.questionAnswers.length > 4)
-          return "34%"
+          return (100 / 3) + "%"
         return "50%"
       }
       // if (!isMobile)
@@ -92,7 +92,7 @@ const OptionAnswerSection: FC<OptionAnswerSectionProps> = ({
 
   return (
     /* 4 câu trả lời */
-    <Row className={`${styles.row} px-0 mx-0 py-6 pb-3`}>
+    <Row className={`${styles.row} px-0 mx-0 bg-dark bg-opacity-50 rounded-10px`}>
       {option?.questionAnswers?.map((item, index) => {
         return (
           <Col

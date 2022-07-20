@@ -28,9 +28,9 @@ export class UserSetting {
         const setting = JsonParse(
           ls
         ) as TUserSetting
-        console.log("=>(.tsx:103) doc setting", setting);
         this._isMute = setting.isMute
-        this._gameBackgroundUrl = setting.gameBackgroundUrl
+        if (setting.gameBackgroundUrl.length)
+          this._gameBackgroundUrl = setting.gameBackgroundUrl
       }  // client-side-only code
     }
   }
@@ -50,15 +50,17 @@ export class UserSetting {
   get isMute(): boolean {
     return this._isMute;
   }
+
   set isMute(value: boolean) {
     this._isMute = value;
     this.writeLS()
   }
 
-  private _gameBackgroundUrl: string = "";
+  private _gameBackgroundUrl: string = '/assets/default-game-bg.svg';
   get gameBackgroundUrl(): string {
     return this._gameBackgroundUrl;
   }
+
   set gameBackgroundUrl(value: string) {
     this._gameBackgroundUrl = value;
     this.writeLS()

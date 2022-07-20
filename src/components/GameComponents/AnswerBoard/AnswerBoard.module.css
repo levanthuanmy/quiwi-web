@@ -4,7 +4,6 @@
 }
 
 .hostControl {
-    margin-top: 12px;
     display: flex;
     justify-content: space-between;
     align-items: flex-end;

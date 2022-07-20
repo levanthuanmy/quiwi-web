@@ -33,7 +33,6 @@ const QuizDetailPage: NextPage = () => {
       ? [
         `/api/quizzes/quiz/${id}`,
         false,
-        {filter: {relations: ['user', 'quizCategories']}},
       ]
       : null,
     get,

@@ -21,6 +21,7 @@ import {useToasts} from "react-toast-notifications";
 import {useTimer} from "../../../hooks/useTimer/useTimer";
 import {SOUND_EFFECT} from '../../../utils/constants'
 import {useSound} from "../../../hooks/useSound/useSound";
+import {useUser} from "../../../hooks/useUser/useUser";
 
 
 type AnswerBoardProps = {
@@ -37,6 +38,8 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
   const timer = useTimer()
   const exitContext = useContext(ExitContext)
   const router = useRouter()
+  const user = useUser()
+
 
   let answerSectionFactory: AnswerSectionFactory
 
@@ -49,7 +52,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
   const [numSubmission, setNumSubmission] = useState<number>(0)
   const [viewResultData, setViewResultData] = useState<TViewResult>()
   const {addToast} = useToasts()
-  const {fromMedium} = useScreenSize()
+  const {fromMedium, isMobile} = useScreenSize()
 
   useEffect(() => {
     handleSocket()
@@ -279,7 +282,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
     return (
       <Fade in={isShowHostControl || fromMedium}>
         {isShowHostControl || fromMedium ? (
-          <div className={cn(styles.hostControl, 'px-2 py-2 bg-dark bg-opacity-50')}>
+          <div className={cn(styles.hostControl, 'px-2 my-2 py-1 bg-dark bg-opacity-50')}>
             <GameButton
               isEnable={isShowNext || !timer.isCounting}
               iconClassName="bi bi-bar-chart"
@@ -382,28 +385,25 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
         {gameManager.currentQuestion?.question ? (
           <div
             className={classNames(
-              'd-flex flex-column bg-dark bg-opacity-50 rounded-10px shadow mb-2'
+              'd-flex flex bg-dark bg-opacity-50 rounded-10px shadow mb-2', {"gap-5 py-2":fromMedium, "py-1":isMobile}
             )}
           >
-            <div className="pt-2 px-2 d-flex align-items-center gap-3">
+            <div className={cn("px-2 d-flex align-items-center",{"gap-3":fromMedium})}>
+              {(user?.avatar || fromMedium) &&
               <Image
-                src="/assets/default-avatar.png"
+                src={`${user?.avatar ?? "/assets/default-avatar.png"}`}
                 width={40}
                 height={40}
                 className="rounded-circle"
                 alt=""
-              />
-              <div className="fw-medium fs-20px text-white">
-                {gameManager.isHost ? gameManager.gameSession?.host?.name : gameManager.player?.nickname}
-              </div>
+              />}
+              {/*{fromMedium &&*/}
+                  <div className="fw-medium fs-20px text-white">
+                    {gameManager.isHost ? gameManager.gameSession?.host?.name : gameManager.player?.nickname}
+                  </div>
+              {/*}*/}
             </div>
-            <div className="px-2 pb-2 text-white d-flex gap-3 align-items-center justify-content-between">
-              <div className="fw-medium fs-32px text-primary">
-                {(gameManager.currentQuestion?.orderPosition ?? 0) + 1}/
-                <span className="text-secondary fs-24px">
-                  {gameManager.gameSession?.quiz?.questions?.length}
-                </span>
-              </div>
+            <div className={cn("flex-grow-1 h-100 px-2 text-white d-flex align-items-center justify-content-between",{"gap-3":fromMedium})}>
               {gameManager.currentQuestion && gameManager.isHost ? (
                 <div
                   id="questionProgressBar"
@@ -422,22 +422,33 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
                 </div>
               ) : (
                 <>
-                  <div>
+                  <div className="fs-4">
                     <span className="me-2">🔥</span>
                     {viewResultData?.player?.currentStreak ?? 0}
                   </div>
-                  <div>
-                    <i className="bi bi-award fs-20px text-primary me-2"/>
+                  <div className="fs-4">
+                    <i className="bi bi-award text-primary me-2 "/>
                     {currentPlayerRankingIndex > -1
                       ? currentPlayerRankingIndex + 1
                       : '-'}
                   </div>
-                  <div className="">
+                  <div className="fs-4">
                     <span className="text-primary me-2">Điểm</span>
                     {Math.floor(viewResultData?.player?.score ?? 0)}
                   </div>
                 </>
               )}
+              <div className="fw-medium fs-4 text-primary">
+                <span className="fs-4">
+                Câu:{" "}
+                </span>
+                <span className="text-white text-primary fs-3">
+              {(gameManager.currentQuestion?.orderPosition ?? 0) + 1}/
+                </span>
+              <span className="text-secondary fs-24px">
+                  {gameManager.gameSession?.quiz?.questions?.length}
+                </span>
+            </div>
             </div>
           </div>
         ) : (
@@ -468,7 +479,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
         {gameManager.currentQuestion && (
           <div
             className={classNames(
-              'px-2 py-2 fs-4 fw-bold text-white mb-2 bg-dark bg-opacity-50 d-flex justify-content-between align-items-center',
+              'px-2 py-1 fs-4 fw-bold text-white mb-2 bg-dark bg-opacity-50 d-flex justify-content-between align-items-center',
               {'rounded-10px': fromMedium}
             )}
           >
@@ -491,7 +502,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
         {!gameManager.isHost && gameManager.currentQuestion && (
           <div
             className={classNames(
-              'px-2 py-2 fs-4 fw-bold text-white mb-2 bg-dark bg-opacity-50 d-flex justify-content-end align-items-center',
+              'px-2 my-2 py-1 fs-4 fw-bold text-white mb-2 bg-dark bg-opacity-50 d-flex justify-content-end align-items-center',
               {'rounded-10px': fromMedium}
             )}
           >
