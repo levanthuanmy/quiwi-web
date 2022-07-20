@@ -151,7 +151,11 @@ const GameModeScreen: FC<GameModeScreenProps> = ({setGameMode}) => {
 
   const handleLeaveRoom = () => {
     game.clearGameSession()
-    router.back()
+    if (quizId)
+      router.push(`/quiz/creator/${quizId}`)
+      else
+    router.push(`/quiz/${id}`)
+
   }
 
   const cln = classNames(
@@ -163,10 +167,7 @@ const GameModeScreen: FC<GameModeScreenProps> = ({setGameMode}) => {
     navigator?.clipboard?.writeText(
       `http://${window.location.host}/quiz/${id}/play`
     )
-    console.log(
-      'copyInvitationCode - ',
-      `http://${window.location.host}/quiz/${id}/play`
-    )
+
     addToast(
       <>
         Copy thành công
@@ -241,7 +242,7 @@ const GameModeScreen: FC<GameModeScreenProps> = ({setGameMode}) => {
         <div className="flex-fill">
           <MyButton variant="danger" className={cln} onClick={handleLeaveRoom}>
             <i className="bi bi-box-arrow-left fs-24px"/>
-            {!isMobile && 'THOÁT'}
+            {!isMobile && 'TRỞ VỀ BỘ ĐỀ'}
           </MyButton>
         </div>
 
