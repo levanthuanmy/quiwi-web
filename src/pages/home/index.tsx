@@ -115,8 +115,8 @@ const Home: NextPage = () => {
 
   return (
     <DashboardLayout>
-      <div className={classNames('w-100 min-vh-100 bg-white', styles.bgFancy)}>
-        <div className={classNames('bg-white', styles.bgFancy)}>
+      <div className={classNames('w-100 min-vh-100 bg-light'/*, styles.bgFancy*/)}>
+        <div>
           <Container fluid="lg" className="p-3">
             <Row>
               <Col xs="12" lg="8" className="pe-lg-2 pb-3 pb-lg-0">
