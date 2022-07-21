@@ -180,7 +180,7 @@ const EditProfilePage: NextPage = () => {
                           name="username"
                           placeholder="Tên đăng nhập"
                           as={MyInput}
-                          disabled={!userResponse.user.username.includes('@gmail.com')}
+                          disabled={!userResponse.user.username.includes('@')}
                           // iconClassName="bi bi-person"
                           // className="mb-3"
                         />
