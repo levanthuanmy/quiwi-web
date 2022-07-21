@@ -173,6 +173,22 @@ const EditProfilePage: NextPage = () => {
                   >
                     <Row className="justify-content-center align-items-center py-2">
                       <Col xs={12} lg={4} className="text-lg-end fw-medium">
+                        Tên đăng nhập
+                      </Col>
+                      <Col>
+                        <Field
+                          name="username"
+                          placeholder="Tên đăng nhập"
+                          as={MyInput}
+                          disabled={!userResponse.user.username.includes('@gmail.com')}
+                          // iconClassName="bi bi-person"
+                          // className="mb-3"
+                        />
+                      </Col>
+                    </Row>
+
+                    <Row className="justify-content-center align-items-center py-2">
+                      <Col xs={12} lg={4} className="text-lg-end fw-medium">
                         Họ và Tên
                       </Col>
                       <Col>
@@ -240,23 +256,6 @@ const EditProfilePage: NextPage = () => {
                         ) : null}
                       </Col>
                     </Row>
-
-                    <Row className="justify-content-center align-items-center py-2">
-                      <Col xs={12} lg={4} className="text-lg-end fw-medium">
-                        Tên đăng nhập
-                      </Col>
-                      <Col>
-                        <Field
-                          name="username"
-                          placeholder="Tên đăng nhập"
-                          as={MyInput}
-                          disabled={!userResponse.user.username.includes('@gmail.com')}
-                          // iconClassName="bi bi-person"
-                          // className="mb-3"
-                        />
-                      </Col>
-                    </Row>
-
 
                     {/* <Row className="justify-content-center align-items-center py-2">
                       <Col xs={12} lg={4} className="text-lg-end fw-medium">
