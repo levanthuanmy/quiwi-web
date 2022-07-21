@@ -1,23 +1,37 @@
-import {default as classNames, default as cn} from 'classnames'
-import {useRouter} from 'next/router'
-import React, {FC, memo, useContext, useEffect, useRef, useState} from 'react'
-import {Fade, Image} from 'react-bootstrap'
+import { default as classNames, default as cn } from 'classnames'
+import { useRouter } from 'next/router'
+import React, {
+  FC,
+  memo,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
+import { Fade, Image } from 'react-bootstrap'
 import useScreenSize from '../../../hooks/useScreenSize/useScreenSize'
-import {useSound} from '../../../hooks/useSound/useSound'
-import {useTimer} from '../../../hooks/useTimer/useTimer'
-import {TQuestion, TViewResult} from '../../../types/types'
-import {SOUND_EFFECT} from '../../../utils/constants'
+import { useSound } from '../../../hooks/useSound/useSound'
+import { useTimer } from '../../../hooks/useTimer/useTimer'
+import { TGameRound, TQuestion, TViewResult } from '../../../types/types'
+import { SOUND_EFFECT } from '../../../utils/constants'
 import {
   AnswerSectionFactory,
   QuestionTypeDescription,
 } from '../../GameComponents/AnswerQuestionComponent/AnswerSectionFactory/AnswerSectionFactory'
 import GameButton from '../../GameComponents/GameButton/GameButton'
 import LoadingBoard from '../../GameComponents/LoadingBoard/LoadingBoard'
-import {QuestionMedia} from '../../GameComponents/QuestionMedia/QuestionMedia'
+import { QuestionMedia } from '../../GameComponents/QuestionMedia/QuestionMedia'
 import MyModal from '../../MyModal/MyModal'
-import {ExitContext} from '../CommunityGamePlay/CommunityGamePlay'
+import { ExitContext } from '../CommunityGamePlay/CommunityGamePlay'
 import styles from './CommunityAnswerBoard.module.css'
-import {useMyleGameSession} from "../../../hooks/usePracticeGameSession/useMyleGameSession";
+import { useMyleGameSession } from '../../../hooks/usePracticeGameSession/useMyleGameSession'
+import { useAuth } from '../../../hooks/useAuth/useAuth'
+import { get } from '../../../libs/api'
+import { useToasts } from 'react-toast-notifications'
+import MyButton from '../../MyButton/MyButton'
+import _ from 'lodash'
+import CommunityEndGameBoard from '../CommunityEndGameBoard/CommunityEndGameBoard'
 
 type CommunityAnswerBoardProps = {
   className?: string
@@ -26,11 +40,10 @@ type CommunityAnswerBoardProps = {
 }
 
 const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
-                                                               className,
-                                                               isShowHostControl,
-                                                               setIsShowHostControl,
-                                                             }) => {
-
+  className,
+  isShowHostControl,
+  setIsShowHostControl,
+}) => {
   const game = useMyleGameSession()
   const sound = useSound()
   const exitContext = useContext(ExitContext)
@@ -47,7 +60,7 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
   const [loading, setLoading] = useState<string | null>(null)
   const [viewResultData, setViewResultData] = useState<TViewResult>()
   const [numSubmission, setNumSubmission] = useState<number>(1)
-  const {fromMedium} = useScreenSize()
+  const { fromMedium } = useScreenSize()
 
   let answerSectionFactory: AnswerSectionFactory
 
@@ -59,7 +72,10 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
   function checkEndGame() {
     if (!game.currentQuestion) return
     if (game.gameSession?.quiz?.questions?.length) {
-      setIsShowEndGame(game.currentQuestion?.orderPosition == game.gameSession?.quiz?.questions?.length - 1 && !timer.isCounting)
+      setIsShowEndGame(
+        game.currentQuestion?.orderPosition ==
+          game.gameSession?.quiz?.questions?.length - 1 && !timer.isCounting
+      )
     }
   }
 
@@ -97,7 +113,10 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
 
   useEffect(() => {
     if (submit) {
-      if (game.currentQuestion?.orderPosition ?? 0 >= (game.gameSession?.quiz.questions.length ?? 0) - 1) {
+      if (
+        game.currentQuestion?.orderPosition ??
+        0 >= (game.gameSession?.quiz.questions.length ?? 0) - 1
+      ) {
         setIsShowHostControl(true)
       }
       if (autoNext) {
@@ -225,19 +244,23 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
   const [isNextEmitted, setIsNextEmitted] = useState<boolean>(false)
 
   const goToNextQuestion = () => {
-    console.log("=>(CommunityAnswerBoard.tsx:232) game", game);
+    console.log('=>(CommunityAnswerBoard.tsx:232) game', game)
     if (intervalRef.current) {
       clearInterval(intervalRef.current)
       intervalRef.current = null
     }
     if (!game.gameSession) return
-    const msg = {invitationCode: game.gameSession.invitationCode}
+    const msg = { invitationCode: game.gameSession.invitationCode }
     game.gameSkEmit('next-question', msg)
   }
 
   function endGame() {
+    setShowEndGame(true)
+  }
+
+  const onOutRoomInEndGameBoard = () => {
     if (game.gameSession && game.gameSocket != null) {
-      const msg = {invitationCode: game.gameSession.invitationCode}
+      const msg = { invitationCode: game.gameSession.invitationCode }
       game.gameSkEmit('game-ended', msg)
       game.clearGameSession()
       router.push('/home')
@@ -258,7 +281,8 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
 
         <div className="text-center fw-bold">
           <div className="text-secondary fs-24x">
-            {(game.currentQuestion?.orderPosition ?? 0) + 1 < (game.gameSession?.quiz?.questions?.length ?? 0) ? (
+            {(game.currentQuestion?.orderPosition ?? 0) + 1 <
+            (game.gameSession?.quiz?.questions?.length ?? 0) ? (
               <>
                 {'Quiz mới hoàn thành '}
                 <span className="fw-bolder fs-24x  text-primary">
@@ -284,10 +308,11 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
               </>
             )}
           </div>
-          <div className="text-secondary fs-24x text-warning">
+          {/* community hiện tại chưa có tính năng chat */}
+          {/* <div className="text-secondary fs-24x text-warning">
             Các thành viên trong phòng sẽ không thể chat với nhau nữa, bạn có
             chắc chắn muốn kết thúc phòng?
-          </div>
+          </div> */}
         </div>
       </MyModal>
     )
@@ -297,7 +322,12 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
     return (
       <Fade in={isShowHostControl || fromMedium}>
         {isShowHostControl || fromMedium ? (
-          <div className={cn(styles.hostControl, 'px-2 py-2 flex-end bg-dark bg-opacity-50')}>
+          <div
+            className={cn(
+              styles.hostControl,
+              'px-2 py-2 flex-end bg-dark bg-opacity-50'
+            )}
+          >
             {!isShowEndGame && (
               <GameButton
                 isEnable={true}
@@ -316,17 +346,18 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
                 onClick={() => setAutoNext(!autoNext)}
               />
             )}
-            {!isShowEndGame &&
-            (!timer.isSubmittable) ?
-              (
-                <GameButton
-                  isEnable={true}
-                  iconClassName="bi bi-arrow-right-circle-fill"
-                  className={classNames('text-white fw-medium')}
-                  title="Câu sau"
-                  onClick={() => {goToNextQuestion()}}
-                /> )
-              : (<GameButton
+            {!isShowEndGame && !timer.isSubmittable ? (
+              <GameButton
+                isEnable={true}
+                iconClassName="bi bi-arrow-right-circle-fill"
+                className={classNames('text-white fw-medium')}
+                title="Câu sau"
+                onClick={() => {
+                  goToNextQuestion()
+                }}
+              />
+            ) : (
+              <GameButton
                 isEnable={true}
                 iconClassName="bi bi-check-circle-fill"
                 className={classNames('text-white fw-medium bg-warning')}
@@ -334,8 +365,8 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
                 onClick={() => {
                   timer.stopCounting(false)
                 }}
-              />)
-            }
+              />
+            )}
             {isShowEndGame && (
               <GameButton
                 isEnable={true}
@@ -355,6 +386,9 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
     )
   }
 
+  // END GAME HANDLING
+  const [showEndGame, setShowEndGame] = useState<boolean>(false)
+
   return (
     <>
       <div
@@ -364,99 +398,109 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
           styles.container
         )}
       >
-        {game.currentQuestion?.question && (
-          <div
-            className={classNames(
-              'd-flex flex-column bg-dark bg-opacity-50 rounded-10px shadow mb-2'
-            )}
-          >
-            <div className="pt-2 px-2 d-flex align-items-center gap-3">
-              <Image
-                src="/assets/default-avatar.png"
-                width={40}
-                height={40}
-                className="rounded-circle"
-                alt=""
-              />
-              <div className="fw-medium fs-20px text-white">
-                {game.gameSession?.host?.name ?? 'Ẩn danh'}
-              </div>
-            </div>
-            <div className="px-2 pb-2 text-white d-flex gap-3 align-items-center justify-content-between">
-              {/*câu hỏi hiện tại*/}
-              <div className="fw-medium fs-32px text-primary">
-                {(game.currentQuestion?.orderPosition ?? 0) + 1}/
-                <span className="text-secondary fs-24px">
-                  {game.gameSession?.quiz?.questions?.length}
-                </span>
-              </div>
-
-              {/*streak hiện tại*/}
-              <div className={'fs-32px'}>
-                <span className="me-2">🔥</span>
-                {viewResultData?.player?.currentStreak ?? 0}
-              </div>
-
-              {/*điểm*/}
-              <div className="fs-32px">
-                <span className="text-primary me-2 ">Điểm</span>
-                {Math.floor(viewResultData?.player?.score ?? 0)}
-              </div>
-            </div>
-          </div>
-        )}
-
-        <QuestionMedia
-          //timeout sẽ âm để tránh 1 số lỗi, đừng sửa chỗ này
-          media={game.currentQuestion?.media ?? null}
-          numStreak={0}
-          numSubmission={numSubmission}
-          key={(game.currentQuestion?.orderPosition ?? 0)}
-          className={styles.questionMedia}
-        />
-
-        <div
-          className={classNames(
-            'shadow px-3 pt-2 bg-white mb-2',
-            styles.questionTitle,
-            {'rounded-10px': fromMedium}
-          )}
-        >
-          <div
-            dangerouslySetInnerHTML={{
-              __html: game.currentQuestion?.question ?? '',
-            }}
+        {showEndGame ? (
+          <CommunityEndGameBoard
+            gameSessionHook={game}
+            onOutRoomInEndGameBoard={onOutRoomInEndGameBoard}
+            showEndGame={showEndGame}
           />
-        </div>
-        {game.currentQuestion && (
-          <div
-            className={classNames(
-              'noselect px-2 py-2 fs-4 fw-bold text-white mb-2 bg-dark bg-opacity-50 d-flex justify-content-between align-items-center',
-              {'rounded-10px': fromMedium}
-            )}
-          >
-            <div className={''}>
-              <i
-                className={cn(
-                  'fs-20px text-white me-2',
-                  QuestionTypeDescription[game.currentQuestion.type].icon
+        ) : (
+          <>
+            {game.currentQuestion?.question && (
+              <div
+                className={classNames(
+                  'd-flex flex-column bg-dark bg-opacity-50 rounded-10px shadow mb-2'
                 )}
+              >
+                <div className="pt-2 px-2 d-flex align-items-center gap-3">
+                  <Image
+                    src="/assets/default-avatar.png"
+                    width={40}
+                    height={40}
+                    className="rounded-circle"
+                    alt=""
+                  />
+                  <div className="fw-medium fs-20px text-white">
+                    {game.gameSession?.host?.name ?? 'Ẩn danh'}
+                  </div>
+                </div>
+                <div className="px-2 pb-2 text-white d-flex gap-3 align-items-center justify-content-between">
+                  {/*câu hỏi hiện tại*/}
+                  <div className="fw-medium fs-32px text-primary">
+                    {(game.currentQuestion?.orderPosition ?? 0) + 1}/
+                    <span className="text-secondary fs-24px">
+                      {game.gameSession?.quiz?.questions?.length}
+                    </span>
+                  </div>
+
+                  {/*streak hiện tại*/}
+                  <div className={'fs-32px'}>
+                    <span className="me-2">🔥</span>
+                    {viewResultData?.player?.currentStreak ?? 0}
+                  </div>
+
+                  {/*điểm*/}
+                  <div className="fs-32px">
+                    <span className="text-primary me-2 ">Điểm</span>
+                    {Math.floor(viewResultData?.player?.score ?? 0)}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <QuestionMedia
+              //timeout sẽ âm để tránh 1 số lỗi, đừng sửa chỗ này
+              media={game.currentQuestion?.media ?? null}
+              numStreak={0}
+              numSubmission={numSubmission}
+              key={game.currentQuestion?.orderPosition ?? 0}
+              className={styles.questionMedia}
+            />
+
+            <div
+              className={classNames(
+                'shadow px-3 pt-2 bg-white mb-2',
+                styles.questionTitle,
+                { 'rounded-10px': fromMedium }
+              )}
+            >
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: game.currentQuestion?.question ?? '',
+                }}
               />
-              {QuestionTypeDescription[game.currentQuestion.type].title}
             </div>
-          </div>
+            {game.currentQuestion && (
+              <div
+                className={classNames(
+                  'noselect px-2 py-2 fs-4 fw-bold text-white mb-2 bg-dark bg-opacity-50 d-flex justify-content-between align-items-center',
+                  { 'rounded-10px': fromMedium }
+                )}
+              >
+                <div className={''}>
+                  <i
+                    className={cn(
+                      'fs-20px text-white me-2',
+                      QuestionTypeDescription[game.currentQuestion.type].icon
+                    )}
+                  />
+                  {QuestionTypeDescription[game.currentQuestion.type].title}
+                </div>
+              </div>
+            )}
+
+            {game.currentQuestion?.question && renderAnswersSection()}
+            {renderHostControlSystem()}
+            <div className={styles.blankDiv}></div>
+            {getEndGameModal()}
+
+            <LoadingBoard
+              loading={loading != null}
+              className={'position-fixed top-0 bottom-0 start-0 end-0'}
+              loadingTitle={loading ?? ''}
+            />
+          </>
         )}
-
-        {game.currentQuestion?.question && renderAnswersSection()}
-        {renderHostControlSystem()}
-        <div className={styles.blankDiv}></div>
-        {getEndGameModal()}
-
-        <LoadingBoard
-          loading={loading != null}
-          className={'position-fixed top-0 bottom-0 start-0 end-0'}
-          loadingTitle={loading ?? ''}
-        />
       </div>
     </>
   )
