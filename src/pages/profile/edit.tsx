@@ -23,6 +23,7 @@ type ProfileForm = {
   phoneNumber: string
   gender: string
   email: string
+  username: string
 }
 
 const EditProfilePage: NextPage = () => {
@@ -148,6 +149,7 @@ const EditProfilePage: NextPage = () => {
                     gender: userResponse.user.gender ?? 'MALE',
                     name: userResponse.user.name ?? '',
                     phoneNumber: userResponse.user.phoneNumber ?? '',
+                    username: userResponse.user.username ?? 'Tên đăng nhập'
                   } as ProfileForm
                 }
                 onSubmit={handleUpdateProfile}
@@ -238,6 +240,23 @@ const EditProfilePage: NextPage = () => {
                         ) : null}
                       </Col>
                     </Row>
+
+                    <Row className="justify-content-center align-items-center py-2">
+                      <Col xs={12} lg={4} className="text-lg-end fw-medium">
+                        Tên đăng nhập
+                      </Col>
+                      <Col>
+                        <Field
+                          name="username"
+                          placeholder="Tên đăng nhập"
+                          as={MyInput}
+                          disabled={!userResponse.user.username.includes('@gmail.com')}
+                          // iconClassName="bi bi-person"
+                          // className="mb-3"
+                        />
+                      </Col>
+                    </Row>
+
 
                     {/* <Row className="justify-content-center align-items-center py-2">
                       <Col xs={12} lg={4} className="text-lg-end fw-medium">
