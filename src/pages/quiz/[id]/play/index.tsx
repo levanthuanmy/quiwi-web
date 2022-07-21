@@ -76,7 +76,9 @@ const PlayCommunityQuizScreen: NextPage = () => {
       )
 
       if (response.response) {
+        myleGameSession.clearGameSession()
         myleGameSession.gameSession = response.response
+        console.log('startQuiz - response.response', response.response)
         setIsModeSelecting(false)
       }
     } catch (error) {

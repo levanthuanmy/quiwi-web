@@ -1,22 +1,22 @@
 import classNames from 'classnames'
-import React, {Dispatch, FC, SetStateAction, useEffect, useState} from 'react'
-import {Image} from 'react-bootstrap'
-import {TApiResponse, TGameModeEnum, TQuiz} from '../../types/types'
+import React, { Dispatch, FC, SetStateAction, useEffect, useState } from 'react'
+import { Image } from 'react-bootstrap'
+import { TApiResponse, TGameModeEnum, TQuiz } from '../../types/types'
 import styles from './GameModeScreen.module.css'
-import Slider from "react-slick";
-import useScreenSize from "../../hooks/useScreenSize/useScreenSize";
-import {useUserSetting} from "../../hooks/useUserSetting/useUserSetting";
-import cn from "classnames";
-import MyButton from "../MyButton/MyButton";
-import BackgroundPicker from "../LobbyScreen/BackgroundPicker/BackgroundPicker";
-import {useGameSession} from "../../hooks/useGameSession/useGameSession";
-import {useRouter} from "next/router";
-import {GAME_MODE_MAPPING} from "../../utils/constants";
-import useSWR from "swr";
-import {get} from "../../libs/api";
-import Cookies from "universal-cookie";
-import QRCode from "react-qr-code";
-import {useToasts} from "react-toast-notifications";
+import Slider from 'react-slick'
+import useScreenSize from '../../hooks/useScreenSize/useScreenSize'
+import { useUserSetting } from '../../hooks/useUserSetting/useUserSetting'
+import cn from 'classnames'
+import MyButton from '../MyButton/MyButton'
+import BackgroundPicker from '../LobbyScreen/BackgroundPicker/BackgroundPicker'
+import { useGameSession } from '../../hooks/useGameSession/useGameSession'
+import { useRouter } from 'next/router'
+import { GAME_MODE_MAPPING } from '../../utils/constants'
+import useSWR from 'swr'
+import { get } from '../../libs/api'
+import Cookies from 'universal-cookie'
+import QRCode from 'react-qr-code'
+import { useToasts } from 'react-toast-notifications'
 
 type GameModeScreenProps = {
   setGameMode: (mode: TGameModeEnum) => void
@@ -30,17 +30,17 @@ type TGameModeOption = {
   banner: string
 }
 
-const GameModeScreen: FC<GameModeScreenProps> = ({setGameMode}) => {
+const GameModeScreen: FC<GameModeScreenProps> = ({ setGameMode }) => {
   const game = useGameSession()
   const router = useRouter()
   const query = router.query
-  const {id} = query
-  const {quizId} = query
-  const {isMobile} = useScreenSize();
-  const setting = useUserSetting();
-  const [bg, setBg] = useState<string>("");
+  const { id } = query
+  const { quizId } = query
+  const { isMobile } = useScreenSize()
+  const setting = useUserSetting()
+  const [bg, setBg] = useState<string>('')
   const [showBackgroundModal, setShowBackgroundModal] = useState<boolean>(false)
-  const {addToast} = useToasts()
+  const { addToast } = useToasts()
 
   useEffect(() => {
     if (setting.gameBackgroundUrl && setting.gameBackgroundUrl.length) {
@@ -51,12 +51,12 @@ const GameModeScreen: FC<GameModeScreenProps> = ({setGameMode}) => {
     }
   }, [])
 
-  const {data, isValidating, error} = useSWR<TApiResponse<TQuiz>>(
+  const { data, isValidating, error } = useSWR<TApiResponse<TQuiz>>(
     id || quizId
       ? [
-        `/api/quizzes/${quizId ? "my-quizzes" : "quiz"}/${quizId ?? id}`,
-        quizId ? true : false,
-      ]
+          `/api/quizzes/${quizId ? 'my-quizzes' : 'quiz'}/${quizId ?? id}`,
+          quizId ? true : false,
+        ]
       : null,
     get,
     {
@@ -70,21 +70,14 @@ const GameModeScreen: FC<GameModeScreenProps> = ({setGameMode}) => {
       name: 'Tốc độ',
       useFor: 'Dùng cho lớp học',
       description: 'Cùng chơi và cạnh tranh với người chơi khác',
-      banner: "/assets/trophy.svg"
+      banner: '/assets/trophy.svg',
     },
-    // {
-    //   mode: '30EXAM',
-    //   name: 'Kiểm tra',
-    //   useFor: 'Dùng cho kiểm tra',
-    //   description: 'Kiểm tra lại kiến thức của bản thân',
-    //   banner: "/assets/grade-sheet.svg"
-    // },
     {
-      mode: '10CLASSIC',
-      name: 'Tốc độ',
-      useFor: 'Dùng cho lớp học',
-      description: 'Cùng chơi và cạnh tranh với người chơi khác',
-      banner: "/assets/trophy.svg"
+      mode: '30EXAM',
+      name: 'Kiểm tra',
+      useFor: 'Dùng cho kiểm tra',
+      description: 'Kiểm tra lại kiến thức của bản thân',
+      banner: '/assets/grade-sheet.svg',
     },
   ]
 
@@ -93,8 +86,7 @@ const GameModeScreen: FC<GameModeScreenProps> = ({setGameMode}) => {
   }, [])
 
   useEffect(() => {
-    if (bg.length)
-      setting.gameBackgroundUrl = bg
+    if (bg.length) setting.gameBackgroundUrl = bg
   }, [bg])
 
   const selectGameMode = (idx: number) => {
@@ -109,10 +101,10 @@ const GameModeScreen: FC<GameModeScreenProps> = ({setGameMode}) => {
     slidesToScroll: 1,
     centerPadding: '100px',
     arrows: true,
-  };
+  }
 
   const renderModes = modes.map((mode, idx) => (
-    <div key={idx} className={cn(styles.modeItemContainer, "p-3")}>
+    <div key={idx} className={cn(styles.modeItemContainer, 'p-3')}>
       <div
         onClick={() => {
           selectGameMode(idx)
@@ -120,46 +112,31 @@ const GameModeScreen: FC<GameModeScreenProps> = ({setGameMode}) => {
         className={classNames(styles.modeItem, `fw-bold shadow-sm text-center`)}
       >
         {/*quiz thường dùng để làm gì*/}
-        <div className={styles.modeHeader}>
-          {mode.useFor}
-        </div>
+        <div className={styles.modeHeader}>{mode.useFor}</div>
 
         {/*ảnh minh hoạ*/}
         <div className={styles.modeBanner}>
-          <Image
-            src={mode.banner}
-            width={80}
-            height={160}
-            alt=""
-          />
+          <Image src={mode.banner} width={80} height={160} alt="" />
         </div>
 
         {/*tên*/}
-        <div className={styles.modeName}>
-          {mode.name}
-        </div>
+        <div className={styles.modeName}>{mode.name}</div>
 
         {/*mô tả*/}
-        <div className={styles.modeDescription}>
-          *{mode.description}
-        </div>
-
+        <div className={styles.modeDescription}>*{mode.description}</div>
       </div>
     </div>
   ))
 
   const handleLeaveRoom = () => {
     game.clearGameSession()
-    if (quizId)
-      router.push(`/quiz/creator/${quizId}`)
-      else
-    router.push(`/quiz/${id}`)
-
+    if (quizId) router.push(`/quiz/creator/${quizId}`)
+    else router.push(`/quiz/${id}`)
   }
 
   const cln = classNames(
     'text-white fw-medium d-flex align-items-center gap-2 w-100',
-    {'justify-content-center': isMobile}
+    { 'justify-content-center': isMobile }
   )
 
   const copyInvitationCode = () => {
@@ -185,81 +162,100 @@ const GameModeScreen: FC<GameModeScreenProps> = ({setGameMode}) => {
       <>
         {/*<div className="text-white p-3 d-flex justify-content-center gap-4 w-100 flex-wrap">*/}
         {/*  <div className="d-flex flex-column gap-3 text-center align-items-center justify-content-center">*/}
-              <div className="fw-light mt-3 fs-4 fst-italic opacity-50">Chia sẻ Quiz này với bạn bè qua đường dẫn:</div>
-              <div
-                className="d-flex mt-2 w-100 bg-primary opacity-75 bg-opacity-10 rounded-8px p-3 align-items-center gap-3 cursor-pointer"
-                onClick={copyInvitationCode}
-              >
-                <div className="text-truncate w-100">
-                  {`http://${window.location.host}/quiz/${id}/play`}{' '}
-                </div>
-                <div className={`bi bi-clipboard-plus-fill fs-24px`} />
-              </div>
+        <div className="fw-light mt-3 fs-4 fst-italic opacity-50">
+          Chia sẻ Quiz này với bạn bè qua đường dẫn:
+        </div>
+        <div
+          className="d-flex mt-2 w-100 bg-primary opacity-75 bg-opacity-10 rounded-8px p-3 align-items-center gap-3 cursor-pointer"
+          onClick={copyInvitationCode}
+        >
+          <div className="text-truncate w-100">
+            {`http://${window.location.host}/quiz/${id}/play`}{' '}
+          </div>
+          <div className={`bi bi-clipboard-plus-fill fs-24px`} />
+        </div>
         {/*  </div>*/}
         {/*</div>*/}
       </>
     )
   }
 
-  return <div
-    className="min-vh-100 d-flex flex-column justify-content-center align-items-center bg-dark"
-    style={{
-      backgroundImage: `url(${bg})`,
-      backgroundSize: 'auto auto',
-      backgroundRepeat: 'repeat',
-      backgroundPosition: 'center',
-    }}
-  >
-    <div className={"d-flex flex-column justify-content-center align-items-center bg-dark rounded-10px pb-3"}>
-      <div className={cn(styles.modeTitle, "bg-dark text-white mt-3 ms-3 me-3", "fs-1")}>
-        {quizId ? "Tạo phòng chờ" : "Chọn chế độ cho phòng tự luyện tập"}
-      </div>
-
-      <div className="text-white d-flex w-100 align-items-center gap-3 bg-black bg-opacity-50 p-4 mb-3 fs-4">
-        <div className="w-100">
-          <div className="text-truncate">
-            Tên quiz: {data?.response?.title}
-          </div>
-          <div className="">
-            Số câu: {data?.response?.questions?.length}
-          </div>
-          {id && renderInvitationCodeDesktop()}
-        </div>
-      </div>
-
-      {isMobile &&
-          <Slider {...settings} className={cn(styles.slider, "")}>
-            {renderModes}
-          </Slider>
-      }
-      {!isMobile &&
-          <div className={cn(styles.web, "d-flex p-1 mx-64px gap-5")}>
-            {renderModes}
-          </div>
-      }
-      <div className="d-flex gap-4 px-4 flex-wrap w-100 mt-4 mb-2">
-        <div className="flex-fill">
-          <MyButton variant="danger" className={cln} onClick={handleLeaveRoom}>
-            <i className="bi bi-box-arrow-left fs-24px"/>
-            {!isMobile && 'TRỞ VỀ BỘ ĐỀ'}
-          </MyButton>
+  return (
+    <div
+      className="min-vh-100 d-flex flex-column justify-content-center align-items-center bg-dark"
+      style={{
+        backgroundImage: `url(${bg})`,
+        backgroundSize: 'auto auto',
+        backgroundRepeat: 'repeat',
+        backgroundPosition: 'center',
+      }}
+    >
+      <div
+        className={
+          'd-flex flex-column justify-content-center align-items-center bg-dark rounded-10px pb-3'
+        }
+      >
+        <div
+          className={cn(
+            styles.modeTitle,
+            'bg-dark text-white mt-3 ms-3 me-3',
+            'fs-1'
+          )}
+        >
+          {quizId ? 'Tạo phòng chờ' : 'Chọn chế độ cho phòng tự luyện tập'}
         </div>
 
-        <div className="flex-fill">
-          <MyButton className={cln} onClick={() => setShowBackgroundModal(true)}>
-            <i className="bi bi-image fs-24px"/>
-            {!isMobile && 'CHỌN HÌNH NỀN'}
-          </MyButton>
+        <div className="text-white d-flex w-100 align-items-center gap-3 bg-black bg-opacity-50 p-4 mb-3 fs-4">
+          <div className="w-100">
+            <div className="text-truncate">
+              Tên quiz: {data?.response?.title}
+            </div>
+            <div className="">Số câu: {data?.response?.questions?.length}</div>
+            {id && renderInvitationCodeDesktop()}
+          </div>
+
+          {isMobile && (
+            <Slider {...settings} className={cn(styles.slider, '')}>
+              {renderModes}
+            </Slider>
+          )}
+          {!isMobile && (
+            <div className={cn(styles.web, 'd-flex p-1 mx-64px gap-5')}>
+              {renderModes}
+            </div>
+          )}
+          <div className="d-flex gap-4 px-4 flex-wrap w-100 mt-4 mb-2">
+            <div className="flex-fill">
+              <MyButton
+                variant="danger"
+                className={cln}
+                onClick={handleLeaveRoom}
+              >
+                <i className="bi bi-box-arrow-left fs-24px" />
+                {!isMobile && 'TRỞ VỀ BỘ ĐỀ'}
+              </MyButton>
+            </div>
+
+            <div className="flex-fill">
+              <MyButton
+                className={cln}
+                onClick={() => setShowBackgroundModal(true)}
+              >
+                <i className="bi bi-image fs-24px" />
+                {!isMobile && 'CHỌN HÌNH NỀN'}
+              </MyButton>
+            </div>
+          </div>
         </div>
+
+        <BackgroundPicker
+          show={showBackgroundModal}
+          onHide={() => setShowBackgroundModal(false)}
+          setCurrentBackground={setBg}
+        />
       </div>
     </div>
-
-    <BackgroundPicker
-      show={showBackgroundModal}
-      onHide={() => setShowBackgroundModal(false)}
-      setCurrentBackground={setBg}
-    />
-  </div>
+  )
 }
 
 export default GameModeScreen

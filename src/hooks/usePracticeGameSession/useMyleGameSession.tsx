@@ -46,6 +46,8 @@ export class MyLeGameManager extends GameManager {
     }
   }
 
+  override onListenLoading(data: any) {}
+
   override connectGameSocket() {
     super.connectGameSocket()
     if (!this.gameSocket || this.gameSocket?.disconnected) {

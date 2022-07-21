@@ -1,10 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import classNames from 'classnames'
 import _ from 'lodash'
-import { FC, memo, useEffect, useState } from 'react'
-import { Image } from 'react-bootstrap'
+import { FC, memo, useEffect, useMemo, useState } from 'react'
+import { Col, Image, Row } from 'react-bootstrap'
 import { ColorHex, CountdownCircleTimer } from 'react-countdown-circle-timer'
 import { useMyleGameSession } from '../../../../hooks/usePracticeGameSession/useMyleGameSession'
+import useScreenSize from '../../../../hooks/useScreenSize/useScreenSize'
 import { useTimer } from '../../../../hooks/useTimer/useTimer'
 import FullScreenLoader from '../../../FullScreenLoader/FullScreenLoader'
 import {
@@ -31,16 +32,21 @@ const ExamAnswerBoard: FC = () => {
   const timer = useTimer()
   const [userAnswers, setUserAnswers] = useState<UserAnswer[]>([]) // answer each question of user that will be submitted to server
   const timeEnd = myleGameSession.examDeadline?.timeEnd
+  const { fromMedium } = useScreenSize()
 
-  const [duration, setDuration] = useState<number>()
+  // const [duration, setDuration] = useState<number>()
   useEffect(() => {
     if (timeEnd) {
       const currentDuration = timeEnd - new Date().getTime()
-      setDuration(currentDuration)
+      // setDuration(currentDuration)
+      // timer.setDefaultDuration(currentDuration)
+
+      if (!timer.isCounting) {
+        timer.startCounting(currentDuration / 1000)
+      }
+      // timer.startCounting(currentDuration)
     }
   }, [timeEnd])
-
-  console.log('userAnswers', userAnswers)
 
   const init = () => {
     setUserAnswers(Array(questionsLength).fill({ answerIds: [], answer: '' }))
@@ -114,20 +120,41 @@ const ExamAnswerBoard: FC = () => {
 
   useEffect(() => {
     const configTimerForExamMode = () => {
+      timer.stopCounting(true)
+      timer.stopCountingSound(true)
       timer.setIsShowSkeleton(false)
       timer.setIsSubmittable(true)
-      timer.setIsCounting(true)
+      timer.setIsCounting(false)
       timer.setIsShowAnswer(false)
     }
 
     configTimerForExamMode()
-  }, [timer])
+    return () => configTimerForExamMode()
+  }, [])
 
   useEffect(() => {
     init()
   }, [questionsLength])
 
-  return duration !== undefined ? (
+  const isAnswerQuestionAtIndex = (index: number): boolean => {
+    if (userAnswers[index].answer !== '') {
+      return true
+    }
+    return userAnswers[index].answerIds.length > 0
+  }
+
+  const countAnswer = useMemo(() => {
+    let count = 0
+    for (let index = 0; index < userAnswers.length; index++) {
+      if (isAnswerQuestionAtIndex(index)) {
+        count++
+      }
+    }
+
+    return count
+  }, [userAnswers])
+
+  return timer.duration !== undefined ? (
     <>
       <div
         className={classNames(
@@ -156,62 +183,109 @@ const ExamAnswerBoard: FC = () => {
             </div>
             <div className="px-2 pb-2 text-white d-flex gap-3 align-items-center justify-content-between">
               {/*câu hỏi hiện tại*/}
-              <div className="fw-medium fs-32px text-primary">
-                {currentQuestionIndex + 1}/
-                <span className="text-secondary fs-24px">
-                  {questionsLength}
-                </span>
+              <div className="fw-medium text-primary">
+                Số câu: {questionsLength}
               </div>
-              <div
-                id="questionProgressBar"
-                className="flex-grow-1 bg-secondary rounded-pill"
-                style={{ height: 6 }}
-              >
-                <div
-                  className="bg-primary h-100 rounded-pill transition-all-150ms position-relative"
-                  style={{
-                    width: `${Math.floor(
-                      ((currentQuestionIndex + 1) * 100) / questionsLength
-                    )}%`,
-                  }}
-                />
+              <div className="fw-medium text-primary">
+                Đã trả lời: {countAnswer}
+              </div>
+              <div className="fw-medium text-secondary">
+                Chưa trả lời: {questionsLength - countAnswer}
               </div>
             </div>
           </div>
         }
 
-        <CountdownCircleTimer
-          strokeLinecap="square"
-          isPlaying={true}
-          duration={duration / 1000}
-          size={180}
-          strokeWidth={18}
-          onComplete={() => alert('Het gio')}
-          colors={timerColor}
-          colorsTime={[6, 5, 4, 3, 2.5, 2, 1.5, 1.25, 1, 0.75, 0.5, 0.25, 0]}
-        >
-          {({ remainingTime }) => <FormatTime remainingTime={remainingTime} />}
-        </CountdownCircleTimer>
         {/* hình ảnh */}
-        <div
-          style={{ height: 260 }}
-          className="bg-white w-100 d-flex justify-content-center"
-        >
-          <Image
-            src={currentQuestion?.media ?? '/assets/default-question-image.png'}
-            height="100%"
-            width="auto"
-            alt=""
-            className="mw-100 object-fit-cover"
-          />
-        </div>
+        <Row className="bg-white w-100 m-0 p-0">
+          {/* small screen */}
+          <Col
+            xs="12"
+            className={classNames('align-self-center', {
+              'd-block': !fromMedium,
+              'd-none': fromMedium,
+            })}
+          >
+            Thời gian còn lại
+            {Math.floor(timer.countDown / 60)} : {timer.countDown % 60}
+          </Col>
+
+          <Col
+            xs="auto"
+            className={classNames('align-self-center', {
+              'd-block': fromMedium,
+              'd-none': !fromMedium,
+            })}
+          >
+            <CountdownCircleTimer
+              strokeLinecap="square"
+              isPlaying={true}
+              duration={timer.duration}
+              size={160}
+              strokeWidth={18}
+              onComplete={() => console.log('Het gio')}
+              colors={timerColor}
+              colorsTime={[
+                6, 5, 4, 3, 2.5, 2, 1.5, 1.25, 1, 0.75, 0.5, 0.25, 0,
+              ]}
+            >
+              {() => (
+                <div className="fw-medium fs-24px text-primary">
+                  Câu {currentQuestionIndex + 1}/
+                  <span className="text-secondary fs-20px">
+                    {questionsLength}
+                  </span>
+                </div>
+              )}
+            </CountdownCircleTimer>
+          </Col>
+
+          <Col className="text-center">
+            <Image
+              src={
+                currentQuestion?.media || '/assets/default-question-image.png'
+              }
+              height="260px"
+              width="auto"
+              alt=""
+              className="mw-100 object-fit-scale-down"
+            />
+          </Col>
+
+          <Col
+            xs="auto"
+            className={classNames('align-self-center', {
+              'd-block': fromMedium,
+              'd-none': !fromMedium,
+            })}
+          >
+            <CountdownCircleTimer
+              strokeLinecap="square"
+              isPlaying={true}
+              duration={timer.duration}
+              size={160}
+              strokeWidth={18}
+              onComplete={() => console.log('Het gio')}
+              colors={timerColor}
+              colorsTime={[
+                6, 5, 4, 3, 2.5, 2, 1.5, 1.25, 1, 0.75, 0.5, 0.25, 0,
+              ]}
+            >
+              {({ remainingTime }) => (
+                <FormatTime remainingTime={remainingTime} />
+              )}
+            </CountdownCircleTimer>
+          </Col>
+        </Row>
+
         <div
           className={classNames(
-            'bg-white'
+            'bg-white p-3 pb-0'
             // styles.questionTitle,
             // { 'rounded-10px': fromMedium }
           )}
         >
+          <div className="h4">Câu hỏi:</div>
           <div
             dangerouslySetInnerHTML={{
               __html: currentQuestion?.question ?? '',
@@ -279,19 +353,22 @@ export default ExamAnswerBoard
 
 // eslint-disable-next-line react/display-name
 const FormatTime = memo(({ remainingTime }: { remainingTime: number }) => {
-  const minutes = Math.floor(remainingTime / 60)
-  const seconds = remainingTime % 60
-
+  const { minutes, seconds } = useMemo(() => {
+    return {
+      minutes: Math.floor(remainingTime / 60),
+      seconds: Math.ceil(remainingTime % 60),
+    }
+  }, [remainingTime])
   return (
     <div className="text-center user-select-none">
       {remainingTime > 0 ? (
         <>
-          <div className="text-white fs-20px fw-medium">Còn lại</div>
+          <div className="text-black fs-20px fw-medium">Còn lại</div>
 
-          <div className="text-white fs-32px fw-bold">{`${minutes} : ${seconds}`}</div>
+          <div className="text-black fs-32px fw-bold">{`${minutes} : ${seconds}`}</div>
         </>
       ) : (
-        <div className="text-white fs-32px fw-bold">Hết giờ!</div>
+        <div className="text-black fs-32px fw-bold">Hết giờ!</div>
       )}
     </div>
   )

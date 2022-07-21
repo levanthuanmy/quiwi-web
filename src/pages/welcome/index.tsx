@@ -7,6 +7,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import Script from 'next/script'
 import { FC, useEffect, useState } from 'react'
+import { useToasts } from 'react-toast-notifications'
 import useSWR from 'swr'
 import { get } from '../../libs/api'
 import { TApiResponse, TQuiz } from '../../types/types'
@@ -14,11 +15,13 @@ import { TApiResponse, TQuiz } from '../../types/types'
 const WelcomePage: FC = () => {
   const [shouldRender, setShouldRender] = useState(false)
   const [invitationCode, setInvitationCode] = useState<string>('')
-  const [invitationInputError, setInvitationInputError] = useState<string>('')
+  const { addToast } = useToasts()
 
   const onJoinRoom = async () => {
     if (invitationCode.trim().length === 0) {
-      setInvitationInputError('Vui lòng nhập mã phòng')
+      addToast('Vui lòng nhập mã phòng', {
+        appearance: 'error',
+      })
       return
     }
 
@@ -29,7 +32,9 @@ const WelcomePage: FC = () => {
     if (res.response) {
       await router.push(`/lobby/join?invitationCode=${invitationCode}`)
     } else {
-      setInvitationInputError('Phòng không tồn tại')
+      addToast('Phòng không tồn tại', {
+        appearance: 'error',
+      })
     }
   }
 
@@ -184,7 +189,6 @@ const WelcomePage: FC = () => {
                       type="text"
                       placeholder="Hoặc nhập mã phòng để..."
                       onChange={(e) => {
-                        setInvitationInputError('')
                         setInvitationCode(e.target.value)
                       }}
                     />

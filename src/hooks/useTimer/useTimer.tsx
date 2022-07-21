@@ -115,7 +115,7 @@ export const TimerProvider = memo(({ children }: { children?: ReactNode }) => {
         if (_countDown < 4) {
           sound.playSound(SOUND_EFFECT['ONE_SECOND'])
         }
-        // setCountDown(_countDown)
+        setCountDown(_countDown)
         if (_countDown <= 0) {
           stopCountingSound(true)
         }

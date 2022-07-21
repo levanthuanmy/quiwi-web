@@ -1,3 +1,4 @@
+import classNames from 'classnames'
 import type { NextPage } from 'next'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
@@ -18,6 +19,7 @@ import {
   TQuiz,
   TQuizBodyRequest,
 } from '../../types/types'
+import styles from './HomePage.module.css'
 
 const Home: NextPage = () => {
   const [invitationCode, setInvitationCode] = useState<string>('')
@@ -113,12 +115,12 @@ const Home: NextPage = () => {
 
   return (
     <DashboardLayout>
-      <div className="w-100 bg-secondary bg-opacity-10 min-vh-100">
-        <div className="bg-white">
+      <div className={classNames('w-100 min-vh-100 bg-white', styles.bgFancy)}>
+        <div className={classNames('bg-white', styles.bgFancy)}>
           <Container fluid="lg" className="p-3">
             <Row>
               <Col xs="12" lg="8" className="pe-lg-2 pb-3 pb-lg-0">
-                <div className="border rounded-10px p-3">
+                <div className="border rounded-10px p-3 bg-white shadow">
                   <div className="fs-22px fw-medium pb-4">
                     Tham gia một quiz
                   </div>
@@ -148,7 +150,7 @@ const Home: NextPage = () => {
               </Col>
 
               <Col xs="12" lg="4" className="ps-lg-2">
-                <div className="border rounded-10px p-3">
+                <div className="border rounded-10px p-3 bg-white shadow">
                   <div className="fs-22px fw-medium pb-4 w-100">
                     Tạo một quiz
                   </div>
@@ -253,6 +255,7 @@ const Home: NextPage = () => {
             </>
           )}
         </Container>
+        <br />
       </div>
     </DashboardLayout>
   )

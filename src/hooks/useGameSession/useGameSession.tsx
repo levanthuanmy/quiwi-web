@@ -176,6 +176,10 @@ export class GameManager {
     }
   }
 
+  onListenLoading(data: any) {
+    this.currentQuestion = data.question?.question
+  }
+
   connectGameSocket() {
     if (!this.gameSocket || this.gameSocket?.disconnected) {
       this.sk.connect(this.socketKey)
@@ -185,7 +189,7 @@ export class GameManager {
         console.log('🌎🌎 Event:', event)
         console.log('🌎🌎 Data:', data)
         if (event === 'loading' && data.question?.question) {
-          this.currentQuestion = data.question?.question
+          this.onListenLoading(data)
         } else if (data.question as TQuestion) {
           this.currentQuestion = data.question
         } else if (data.game?.question as TQuestion) {
