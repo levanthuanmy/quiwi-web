@@ -8,19 +8,23 @@ const useScreenSize = () => {
   const [fromExtraLarge, setFromExtraLarge] = useState<boolean>(false)
   useEffect(() => {
     const checkIsMobileScreen = () => {
-      setIsMobile(innerWidth <= 576)
-      setFromSmall(576 < innerWidth)
-      setFromMedium(768 < innerWidth)
-      setFromLarge(992 < innerWidth)
-      setFromExtraLarge(1200 < innerWidth)
+      const width = document.documentElement.clientWidth
+
+      setIsMobile(width <= 576)
+      setFromSmall(576 < width)
+      setFromMedium(768 < width)
+      setFromLarge(992 < width)
+      setFromExtraLarge(1200 < width)
     }
 
     checkIsMobileScreen()
 
+    addEventListener('load', checkIsMobileScreen)
     addEventListener('resize', checkIsMobileScreen)
 
     return () => {
       removeEventListener('resize', checkIsMobileScreen)
+      removeEventListener('load', checkIsMobileScreen)
     }
   }, [])
 
