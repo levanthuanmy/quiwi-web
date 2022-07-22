@@ -222,6 +222,7 @@ const GameModeScreen: FC<GameModeScreenProps> = ({setGameMode}) => {
           <div className="">
             Số câu: {data?.response?.questions?.length}
           </div>
+          {id && renderInvitationCodeDesktop()}
         </div>
       </div>
         {isMobile && (
