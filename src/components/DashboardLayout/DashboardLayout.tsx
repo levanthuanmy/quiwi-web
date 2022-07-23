@@ -112,7 +112,7 @@ const DashboardLayout: FC<DashboardLayoutProps> = ({ children }) => {
             className={`mt-4 fw-medium text-white text-nowrap`}
             onClick={onJoinRoom}
           >
-            Tham gia ngay
+            Vào phòng ngay
           </MyButton>
         </div>
       </MyModal>

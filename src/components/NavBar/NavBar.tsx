@@ -179,7 +179,7 @@ const NavBar: FC<NavBarProps> = ({
               className="text-white fs-14px d-none d-sm-block"
               onClick={onShowJoinQuiz}
             >
-              Tham gia ngay
+              Vào phòng ngay
             </MyButton>
           )}
           {!authContext.isAuth ? (
