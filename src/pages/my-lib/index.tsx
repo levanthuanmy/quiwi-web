@@ -8,7 +8,7 @@ import LoadingFullScreen from '../../components/LoadingFullScreen/Loading'
 import { MyPagination } from '../../components/MyPagination/MyPagination'
 import { get } from '../../libs/api'
 import { TApiResponse, TPaginationResponse, TQuiz } from '../../types/types'
-
+import HelpToolTip from '../../components/HelpToolTip/HelpToolTip'
 const MyLibPage: NextPage = () => {
   const pageSize = 9
   const [pageIndex, setPageIndex] = useState(1)
@@ -37,7 +37,8 @@ const MyLibPage: NextPage = () => {
           ) : (
             <Row>
               <Col xs="12" className="fw-medium mb-3">
-                <h1>Thư viện của bạn</h1>
+                <h1>Quiz đã tạo      
+                </h1>
               </Col>
               {data?.response ? (
                 data.response.totalItems ? (

@@ -13,6 +13,7 @@ import MyInput from '../../components/MyInput/MyInput'
 import { MySlider } from '../../components/MySlider/MySlider'
 import { useAuth } from '../../hooks/useAuth/useAuth'
 import { get, post } from '../../libs/api'
+import HelpToolTip from '../../components/HelpToolTip/HelpToolTip'
 import {
   TApiResponse,
   TPaginationResponse,
@@ -122,9 +123,12 @@ const Home: NextPage = () => {
               <Col xs="12" lg="8" className="pe-lg-2 pb-3 pb-lg-0">
                 <div className="border rounded-10px p-3 bg-white shadow">
                   <div className="fs-22px fw-medium pb-4">
-                    Tham gia một quiz
+                    Tham gia một quiz  
+                    <HelpToolTip>
+                      Nhập mã phòng để có thể tham gia giải quiz cùng với bạn bè
+                    </HelpToolTip>
                   </div>
-
+                  
                   <Row>
                     <Col xs="12" sm="6" className="pe-sm-2 pb-3 pb-sm-0">
                       <MyInput
@@ -143,7 +147,7 @@ const Home: NextPage = () => {
                         onClick={onJoinRoom}
                       >
                         Tham gia ngay
-                      </MyButton>
+                      </MyButton>                   
                     </Col>
                   </Row>
                 </div>
@@ -170,7 +174,10 @@ const Home: NextPage = () => {
           {popularQuizzesResponse?.response.length ? (
             <div className="pt-4">
               <div className="d-flex justify-content-between pb-3 align-items-center">
-                <div className="fs-22px fw-medium pb-3">Phổ biến</div>
+                <div className="fs-22px fw-medium pb-3">Phổ biến
+                <HelpToolTip>
+                      Top các bài quiz được tham gia nhiều nhất
+                    </HelpToolTip></div>
                 <div className="fs-16px text-primary">
                   <Link href="/explore" passHref={true}>
                     <span className="cursor-pointer">Xem tất cả {'>>'}</span>
@@ -194,7 +201,10 @@ const Home: NextPage = () => {
               <div className="pt-4">
 
               <div className="d-flex justify-content-between pb-3 align-items-center">
-                <div className="fs-22px fw-medium pb-3">Đã tạo gần đây</div>
+                <div className="fs-22px fw-medium pb-3">Đã tạo gần đây
+                <HelpToolTip>
+                      Các bài quiz mà bạn đã tạo
+                    </HelpToolTip></div>
                 <div className="fs-16px text-primary">
                   <Link href="/my-lib" passHref={true}>
                     <span className="cursor-pointer">Xem tất cả {'>>'}</span>
@@ -225,7 +235,10 @@ const Home: NextPage = () => {
               <div className="pt-4">
 
               <div className="d-flex justify-content-between pb-3 align-items-center">
-                <div className="fs-22px fw-medium pb-3">Đã tham gia gần đây</div>
+                <div className="fs-22px fw-medium pb-3">Đã tham gia gần đây
+                <HelpToolTip>
+                      Các bài quiz mà bạn đã tham gia
+                    </HelpToolTip></div>
                 <div className="fs-16px text-primary">
                   <Link href="/history" passHref={true}>
                     <span className="cursor-pointer">Xem tất cả {'>>'}</span>

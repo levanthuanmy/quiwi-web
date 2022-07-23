@@ -139,6 +139,31 @@
   overflow: hidden;
 }
 
+.tooltip-color {
+  color: #009883 !important;
+}
+
+.help-tooltip {
+  padding-left: 5px;
+}
+
+.tooltip-des {
+  font-size: 14px;
+  --tooltipBackground: #009883;
+  color: white;
+  max-width: 200px;
+}
+
+.tooltip-arrow {
+  --tooltipBackground: #009883;
+  color: #009883;
+  border-color: #009883;
+}
+
+.inline {
+  display: inline;
+}
+
 @keyframes float {
   from {
     transform: translateY(120vh);
