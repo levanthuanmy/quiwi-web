@@ -130,7 +130,6 @@ const GameModeScreen: FC<GameModeScreenProps> = ({setGameMode}) => {
         {/*mô tả*/}
         <div className={styles.modeDescription}>
           *{mode.description}
-          <HelpToolTip> {mode.instruction} </HelpToolTip>
         </div>
       </div>
     </div>

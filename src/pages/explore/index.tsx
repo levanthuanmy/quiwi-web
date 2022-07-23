@@ -81,8 +81,7 @@ const ExplorePage: NextPage = () => {
         <Container fluid="lg" className="p-3">
           <div className=" fw-medium mb-3">
             <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}} >
-                  <h1>Khám phá</h1>
-                  <HelpToolTip >Bộ câu hỏi cộng đồng, tham gia cá nhân để tích lũy điểm, kiến thức</HelpToolTip>
+                  <h1>Quiz cộng đồng</h1>
                 </div>
             <div className="text-muted fs-14px">
               Tham gia các Quiz cộng đồng để luyện tập, tích lũy kiến thức ❤️
@@ -90,8 +89,14 @@ const ExplorePage: NextPage = () => {
           </div>
           <Row className="align-items-end mb-4 gap-3">
             <Col xs="12">
+              <div className="fw-medium mb-1 bi bi-search d-flex gap-2 align-items-center ">
+                Tìm kiếm quiz
+              </div>
+              <SearchBar pageUrl="explore" inputClassName="border-0" />
+            </Col>
+            <Col xs="12" className='mb-3'>
               <div className="fw-medium mb-1 bi bi-journal-bookmark-fill d-flex gap-2 align-items-center">
-                Thể loại quiz
+                Tìm theo thể loại
               </div>
               <ReactSelect
                 classNamePrefix="filter-select"
@@ -102,12 +107,6 @@ const ExplorePage: NextPage = () => {
                   setCurrentCategoryId(options.map((item) => item.value))
                 }
               />
-            </Col>
-            <Col xs="12">
-              <div className="fw-medium mb-1 bi bi-search d-flex gap-2 align-items-center">
-                Tìm kiếm quiz
-              </div>
-              <SearchBar pageUrl="explore" inputClassName="border-0" />
             </Col>
           </Row>
           {quizResponse?.response && (

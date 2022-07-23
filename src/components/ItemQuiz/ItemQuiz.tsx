@@ -130,10 +130,10 @@ const ItemQuiz: FC<ItemQuizProps> = ({ quiz, exploreMode = false }) => {
       </div>
 
       <div className="p-12px fs-24px line-height-normal text-secondary d-flex align-items-center fw-medium ">
-        <div className="bi bi-arrow-up-short text-truncate d-flex align-items-center w-100 justify-content-center text-primary">
+        <div className="bi bi-hand-thumbs-up-fill text-truncate d-flex align-items-center w-100 justify-content-end text-primary padding-right-20">
           <span className="ps-1 fs-18px">{quiz.numUpvotes}</span>
         </div>
-        <div className="bi bi-arrow-down-short text-truncate d-flex align-items-center w-100 justify-content-center text-danger">
+        <div className="bi bi-hand-thumbs-down-fill text-truncate d-flex align-items-center w-100 justify-content-start text-danger padding-left-20">
           <span className="ps-1 fs-18px">{quiz.numDownvotes}</span>
         </div>
       </div>

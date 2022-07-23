@@ -97,7 +97,7 @@ const ListQuest: NextPage = () => {
             <Col xs={12} sm={12} md={8}>
               <SearchBar
                 pageUrl="quests"
-                inputClassName="border border-primary"
+                inputClassName="border border-primary mb-3"
               />
             </Col>
           </Row>

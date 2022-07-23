@@ -217,36 +217,53 @@ export class AnswerSectionFactory {
 
 export const QuestionTypeDescription: Record<
   TQuestionType,
-  { icon: string; colorClassName: string; title: string }
+  { icon: string; colorClassName: string; title: string, description: string }
 > = {
   '10SG': {
     icon: 'bi bi-check2',
     colorClassName: 'bg-primary',
     title: 'Một đáp án đúng',
+    description: 'Loại câu hỏi chọn một đáp án đúng chỉ hỗ trợ chọn duy nhất một đáp án đúng'
   },
   '20MUL': {
     icon: 'bi bi-check2-all',
     colorClassName: 'bg-info',
     title: 'Nhiều đáp án đúng',
+    description: `Loại câu hỏi chọn nhiều đáp án đúng cho phép 
+    tạo nhiều đáp án đúng. Người chơi phải chọn đúng tất cả thì 
+    mới được cho là đúng`
   },
   '21ODMUL': {
     icon: 'bi bi-pencil-square',
     colorClassName: 'bg-warning',
     title: 'Hoàn tất câu sau',
+    description: `Loại câu hỏi điền vào chỗ trống cho phép tạo 
+    nhiều đáp án đúng. Người chơi chỉ cần điền đúng một trong 
+    các đáp án sẽ được cho là đúng`
   },
   '22POLL': {
     icon: 'bi bi-file-earmark-bar-graph',
     colorClassName: 'bg-danger',
     title: 'Bình chọn ý kiến',
+    description: `Loại câu hỏi bình chọn không có đáp án đúng, 
+    người chơi sẽ chọn và chủ phòng sẽ xem được số lượng câu trả 
+    lời của từng đáp án được chọn`
   },
   '30TEXT': {
     icon: 'bi bi-reception-1',
     colorClassName: 'bg-success',
     title: 'Điền đáp án đúng',
+    description: `Loại câu hỏi nối từ, các đáp án sẽ được tách 
+    câu theo từng từ, người chơi cần nối các từ để tạo thành một 
+    câu, được cho là đúng khi người chơi tạo thành câu đúng hoàn 
+    chỉnh`
   },
   '31ESSAY': {
     icon: 'bi bi-reception-1',
     colorClassName: 'bg-success',
     title: 'Câu trả lời tự do',
+    description: `Loại câu trả lời tự do không có đáp án đúng, 
+    cho phép người chơi nhập tự do các câu trả lời, chủ phòng 
+    sẽ xem được các đáp án được trả lời`
   },
 }

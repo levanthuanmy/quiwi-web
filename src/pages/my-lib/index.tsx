@@ -39,7 +39,6 @@ const MyLibPage: NextPage = () => {
               <Col xs="12" className="fw-medium mb-3">
                 <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}} >
                   <h1>Quiz đã tạo</h1>
-                  <HelpToolTip >Xem tất cả các bộ quiz mà bạn đã tạo</HelpToolTip>
                 </div>
               </Col>
               {data?.response ? (

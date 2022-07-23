@@ -10,6 +10,7 @@ import QuestionActionButton from '../../QuestionActionButton/QuestionActionButto
 import QuestionConfigBtn from '../../QuestionConfigBtn/QuestionConfigBtn'
 import { QuestionTypeDescription } from '../../GameComponents/AnswerQuestionComponent/AnswerSectionFactory/AnswerSectionFactory'
 import HelpToolTip from '../../HelpToolTip/HelpToolTip'
+import { MyTooltip } from '../../MyToolTip/MyTooltip'
 const QuestionEditorSection: FC<{
   type: QuestionType
   questionTypeStyles: Record<
@@ -18,6 +19,7 @@ const QuestionEditorSection: FC<{
       icon: string
       colorClassName: string
       title: string
+      description: string
     }
   >
   handleUploadImage: (evt: any) => Promise<void>
@@ -50,15 +52,7 @@ const QuestionEditorSection: FC<{
         >
           <div className="fw-medium fs-22px">Cài đặt</div>
 
-          <QuestionConfigBtn
-            prefixIcon={<IconQuestion type={type} />}
-            title={
-              <div className="fw-medium text-dark">
-                {questionTypeStyles[type].title}
-              </div>
-            }
-            suffixIcon=""
-          />
+          
 
           <div className="position-relative">
             <input

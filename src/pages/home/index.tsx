@@ -120,17 +120,14 @@ const Home: NextPage = () => {
         <div>
           <Container fluid="lg" className="p-3">
             <Row>
-              <Col xs="12" lg="8" className="pe-lg-2 pb-3 pb-lg-0">
+              <Col xs="12" lg="12" className="pe-lg-2 pb-3 pb-lg-0">
                 <div className="border rounded-10px p-3 bg-white shadow">
                   <div className="fs-22px fw-medium pb-4">
                     Tham gia một quiz  
-                    <HelpToolTip>
-                      Nhập mã phòng để có thể tham gia giải quiz cùng với bạn bè
-                    </HelpToolTip>
                   </div>
                   
                   <Row>
-                    <Col xs="12" sm="6" className="pe-sm-2 pb-3 pb-sm-0">
+                    <Col xs="12" sm="9" className="pe-sm-2 pb-3 pb-sm-0">
                       <MyInput
                         className={'pb-12px'}
                         errorText={invitationInputError}
@@ -152,20 +149,6 @@ const Home: NextPage = () => {
                   </Row>
                 </div>
               </Col>
-
-              <Col xs="12" lg="4" className="ps-lg-2">
-                <div className="border rounded-10px p-3 bg-white shadow">
-                  <div className="fs-22px fw-medium pb-4 w-100">
-                    Tạo một quiz
-                  </div>
-                  <MyButton
-                    className="fw-medium text-white"
-                    onClick={handleToQuizCreator}
-                  >
-                    Tạo mới ngay
-                  </MyButton>
-                </div>
-              </Col>
             </Row>
           </Container>
         </div>
@@ -174,10 +157,7 @@ const Home: NextPage = () => {
           {popularQuizzesResponse?.response.length ? (
             <div className="pt-4">
               <div className="d-flex justify-content-between pb-3 align-items-center">
-                <div className="fs-22px fw-medium pb-3">Phổ biến
-                <HelpToolTip>
-                      Top các bài quiz được tham gia nhiều nhất
-                    </HelpToolTip></div>
+                <div className="fs-22px fw-medium pb-3">Phổ biến</div>
                 <div className="fs-16px text-primary">
                   <Link href="/explore" passHref={true}>
                     <span className="cursor-pointer">Xem tất cả {'>>'}</span>
@@ -201,10 +181,7 @@ const Home: NextPage = () => {
               <div className="pt-4">
 
               <div className="d-flex justify-content-between pb-3 align-items-center">
-                <div className="fs-22px fw-medium pb-3">Đã tạo gần đây
-                <HelpToolTip>
-                      Các bài quiz mà bạn đã tạo
-                    </HelpToolTip></div>
+                <div className="fs-22px fw-medium pb-3">Đã tạo gần đây</div>
                 <div className="fs-16px text-primary">
                   <Link href="/my-lib" passHref={true}>
                     <span className="cursor-pointer">Xem tất cả {'>>'}</span>
@@ -235,10 +212,7 @@ const Home: NextPage = () => {
               <div className="pt-4">
 
               <div className="d-flex justify-content-between pb-3 align-items-center">
-                <div className="fs-22px fw-medium pb-3">Đã tham gia gần đây
-                <HelpToolTip>
-                      Các bài quiz mà bạn đã tham gia
-                    </HelpToolTip></div>
+                <div className="fs-22px fw-medium pb-3">Đã tham gia gần đây</div>
                 <div className="fs-16px text-primary">
                   <Link href="/history" passHref={true}>
                     <span className="cursor-pointer">Xem tất cả {'>>'}</span>

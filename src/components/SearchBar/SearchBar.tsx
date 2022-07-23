@@ -21,7 +21,7 @@ const SearchBar: FC<{
         router.replace(`/${pageUrl}?q=` + _.get(e, 'target[0].value'))
       }}
     >
-      <div className="w-100 mb-3">
+      <div className="w-100">
         <MyInput
           name="q"
           className={classNames(inputClassName)}
