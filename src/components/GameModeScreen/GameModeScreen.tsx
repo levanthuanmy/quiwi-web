@@ -24,7 +24,8 @@ type TGameModeOption = {
   mode: TGameModeEnum
   name: string
   useFor: string
-  description: string
+  traditionalModedescription: string
+  communityModeModedescription: string
   banner: string
   instruction: string
 }
@@ -68,7 +69,8 @@ const GameModeScreen: FC<GameModeScreenProps> = ({setGameMode}) => {
       mode: '10CLASSIC',
       name: 'Tốc độ',
       useFor: 'Dùng cho lớp học',
-      description: 'Cùng chơi và cạnh tranh với người chơi khác',
+      traditionalModedescription: 'Người chơi trả lời từng câu hỏi, chỉ sang câu tiếp theo khi chủ phòng chuyển',
+      communityModeModedescription: `Trả lời theo lượt, giới hạn thời gian trả lời từng câu, trả lời đúng càng nhanh càng nhiều điểm`,
       banner: '/assets/trophy.svg',
       instruction: 'Trả lời nhanh và chính xác để giành vị trí cao nhất trên bảng xếp hạng'
     },
@@ -76,7 +78,8 @@ const GameModeScreen: FC<GameModeScreenProps> = ({setGameMode}) => {
       mode: '30EXAM',
       name: 'Kiểm tra',
       useFor: 'Dùng cho kiểm tra',
-      description: 'Kiểm tra lại kiến thức của bản thân',
+      traditionalModedescription: 'Người chơi trả lời lần lượt câu hỏi, tự động chuyển sang câu tiếp khi trả lời xong',
+      communityModeModedescription: `Làm bài kiểm tra, giới hạn thời gian làm quiz, tính số câu đúng sau khi nộp bài`,
       banner: '/assets/grade-sheet.svg',
       instruction: 'Tập trung làm bài trong khoảng thời gian đặt ra để tự rèn luyện kiến thức của mình'
     },
@@ -129,7 +132,7 @@ const GameModeScreen: FC<GameModeScreenProps> = ({setGameMode}) => {
 
         {/*mô tả*/}
         <div className={styles.modeDescription}>
-          *{mode.description}
+          *{ quizId?   mode.traditionalModedescription : mode.communityModeModedescription}
         </div>
       </div>
     </div>
