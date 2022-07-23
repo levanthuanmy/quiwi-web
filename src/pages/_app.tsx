@@ -2,6 +2,7 @@ import 'slick-carousel/slick/slick.css'
 import 'slick-carousel/slick/slick-theme.css'
 import 'bootstrap-icons/font/bootstrap-icons.css'
 import 'bootstrap/dist/css/bootstrap.min.css'
+import 'react-popper-tooltip/dist/styles.css'
 import type {AppProps} from 'next/app'
 import {SSRProvider} from 'react-bootstrap'
 import MyHead from '../components/MyHead/MyHead'
@@ -23,7 +24,10 @@ import {ToastProvider} from 'react-toast-notifications'
 import * as gtag from '../libs/gtag'
 import SignInModal from '../components/AuthComponents/SignInModal/SignInModal'
 import { GoogleOAuthProvider } from '@react-oauth/google'
-import {useMyleGameSession} from "../hooks/usePracticeGameSession/useMyleGameSession";
+import {useMyleGameSession} from "../hooks/usePracticeGameSession/useMyleGameSession"
+
+// ĐỪNG AUTO FORMAT FILE NÀY
+
 function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter()
   const [shouldLoad, setShouldLoad] = useState<boolean>(false)
