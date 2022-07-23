@@ -222,7 +222,7 @@ const WelcomePage: FC = () => {
                       }}
                     />
                     <button className="main-btn" onClick={onJoinRoom}>
-                      THAM GIA NGAY
+                      VÀO PHÒNG NGAY
                     </button>
                   </div>
                 </div>

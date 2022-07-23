@@ -117,7 +117,7 @@ const Home: NextPage = () => {
   return (
     <DashboardLayout>
       <div className={classNames('w-100 min-vh-100 bg-light'/*, styles.bgFancy*/)}>
-        <div>
+        {/* <div>
           <Container fluid="lg" className="p-3">
             <Row>
               <Col xs="12" lg="12" className="pe-lg-2 pb-3 pb-lg-0">
@@ -151,7 +151,7 @@ const Home: NextPage = () => {
               </Col>
             </Row>
           </Container>
-        </div>
+        </div> */}
 
         <Container fluid="lg" className="p-3">
           {popularQuizzesResponse?.response.length ? (
