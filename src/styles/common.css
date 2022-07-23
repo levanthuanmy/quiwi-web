@@ -140,7 +140,7 @@
 }
 
 .tooltip-color {
-  color: #009883 !important;
+  color: #292525 !important;
 }
 
 .help-tooltip {
@@ -149,10 +149,13 @@
 
 .tooltip-des {
   font-size: 14px;
-  --tooltipBackground: #009883;
+  --tooltipBackground: #00a892;
   color: white;
-  font-weight: 300;
+  font-weight: 400;
   max-width: 250px;
+  border-color: rgb(255, 255, 255);
+  border-width: 2px;
+  text-align: center;
 }
 
 .tooltip-arrow {

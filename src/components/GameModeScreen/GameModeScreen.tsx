@@ -14,6 +14,7 @@ import {useRouter} from 'next/router'
 import useSWR from 'swr'
 import {get} from '../../libs/api'
 import {useToasts} from 'react-toast-notifications'
+import HelpToolTip from '../HelpToolTip/HelpToolTip'
 
 type GameModeScreenProps = {
   setGameMode: (mode: TGameModeEnum) => void
@@ -25,6 +26,7 @@ type TGameModeOption = {
   useFor: string
   description: string
   banner: string
+  instruction: string
 }
 
 const GameModeScreen: FC<GameModeScreenProps> = ({setGameMode}) => {
@@ -68,6 +70,7 @@ const GameModeScreen: FC<GameModeScreenProps> = ({setGameMode}) => {
       useFor: 'Dùng cho lớp học',
       description: 'Cùng chơi và cạnh tranh với người chơi khác',
       banner: '/assets/trophy.svg',
+      instruction: 'Trả lời nhanh và chính xác để giành vị trí cao nhất trên bảng xếp hạng'
     },
     {
       mode: '30EXAM',
@@ -75,6 +78,7 @@ const GameModeScreen: FC<GameModeScreenProps> = ({setGameMode}) => {
       useFor: 'Dùng cho kiểm tra',
       description: 'Kiểm tra lại kiến thức của bản thân',
       banner: '/assets/grade-sheet.svg',
+      instruction: 'Tập trung làm bài trong khoảng thời gian đặt ra để tự rèn luyện kiến thức của mình'
     },
   ]
 
@@ -110,7 +114,6 @@ const GameModeScreen: FC<GameModeScreenProps> = ({setGameMode}) => {
       >
         {/*quiz thường dùng để làm gì*/}
         <div className={styles.modeHeader}>{mode.useFor}</div>
-
         {/*ảnh minh hoạ*/}
         <div className={styles.modeBanner}>
           <Image
@@ -125,7 +128,10 @@ const GameModeScreen: FC<GameModeScreenProps> = ({setGameMode}) => {
         <div className={styles.modeName}>{mode.name}</div>
 
         {/*mô tả*/}
-        <div className={styles.modeDescription}>*{mode.description}</div>
+        <div className={styles.modeDescription}>
+          *{mode.description}
+          <HelpToolTip> {mode.instruction} </HelpToolTip>
+        </div>
       </div>
     </div>
   ))
