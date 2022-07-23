@@ -6,11 +6,16 @@ import Head from 'next/head'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import Script from 'next/script'
-import { FC, useEffect, useState } from 'react'
+import { FC, useEffect, useMemo, useState } from 'react'
 import { useToasts } from 'react-toast-notifications'
 import useSWR from 'swr'
 import { get } from '../../libs/api'
-import { TApiResponse, TQuiz } from '../../types/types'
+import {
+  TApiResponse,
+  TItem,
+  TPaginationResponse,
+  TQuiz,
+} from '../../types/types'
 
 const WelcomePage: FC = () => {
   const [shouldRender, setShouldRender] = useState(false)
@@ -47,11 +52,35 @@ const WelcomePage: FC = () => {
 
   const { data: popularQuizzesResponse, isValidating } = useSWR<
     TApiResponse<TQuiz[]>
-  >([`api/quizzes/popular-quizzes`, false], get, { revalidateOnFocus: false })
+  >([`/api/quizzes/popular-quizzes`, false], get, { revalidateOnFocus: false })
 
-  const popularQuizzes = _.sortBy(popularQuizzesResponse?.response, 'numPlayed')
-    ?.reverse()
-    ?.slice(0, 3)
+  const { data: allQuizzesResponse } = useSWR<
+    TApiResponse<TPaginationResponse<TQuiz>>
+  >([`/api/quizzes`, false], get, { revalidateOnFocus: false })
+
+  const { data: itemsResponse } = useSWR<
+    TApiResponse<TPaginationResponse<TItem>>
+  >([`/api/items`, false], get, { revalidateOnFocus: false })
+
+  const popularQuizzes = useMemo(
+    () =>
+      _.sortBy(popularQuizzesResponse?.response, 'numPlayed')
+        ?.reverse()
+        ?.slice(0, 3),
+    [popularQuizzesResponse]
+  )
+
+  const convertLastNumToZeroes = (input: number) => {
+    return input < 10 ? input : Math.floor(input / 10) * 10
+  }
+
+  const numQuizzes = useMemo(() => {
+    return convertLastNumToZeroes(allQuizzesResponse?.response?.totalItems || 0)
+  }, [allQuizzesResponse])
+
+  const numItems = useMemo(() => {
+    return convertLastNumToZeroes(itemsResponse?.response?.totalItems || 0)
+  }, [itemsResponse])
 
   const router = useRouter()
 
@@ -280,7 +309,7 @@ const WelcomePage: FC = () => {
                         </div>
                         <div className="counter-content media-body">
                           <span className="counter-count">
-                            <span className="counter">50</span>+
+                            <span className="counter">80</span>+
                           </span>
                           <p className="text">Người dùng</p>
                         </div>
@@ -298,7 +327,7 @@ const WelcomePage: FC = () => {
                         </div>
                         <div className="counter-content media-body">
                           <span className="counter-count">
-                            <span className="counter">20</span>+
+                            <span className="counter">{numItems}</span>+
                           </span>
                           <p className="text">Vật phẩm</p>
                         </div>
@@ -316,7 +345,7 @@ const WelcomePage: FC = () => {
                         </div>
                         <div className="counter-content media-body">
                           <span className="counter-count">
-                            <span className="counter">60</span>+
+                            <span className="counter">{numQuizzes}</span>+
                           </span>
                           <p className="text">Bộ câu hỏi</p>
                         </div>
