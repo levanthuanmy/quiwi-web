@@ -37,7 +37,8 @@ const MyLibPage: NextPage = () => {
           ) : (
             <Row>
               <Col xs="12" className="fw-medium mb-3">
-                <h1>Quiz đã tạo      
+                <h1>Quiz đã tạo   <HelpToolTip>
+                  Tất cả các bộ quiz mà bạn đã tạo</HelpToolTip>    
                 </h1>
               </Col>
               {data?.response ? (

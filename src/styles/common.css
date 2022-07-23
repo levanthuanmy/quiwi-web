@@ -151,7 +151,8 @@
   font-size: 14px;
   --tooltipBackground: #009883;
   color: white;
-  max-width: 200px;
+  font-weight: 300;
+  max-width: 250px;
 }
 
 .tooltip-arrow {
