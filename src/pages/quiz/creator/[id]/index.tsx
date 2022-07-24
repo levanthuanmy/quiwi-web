@@ -1,8 +1,9 @@
 import _ from 'lodash'
-import {NextPage} from 'next'
-import {useRouter} from 'next/router'
-import React, {useEffect, useRef, useState} from 'react'
-import {Col, Container, Row} from 'react-bootstrap'
+import { NextPage } from 'next'
+import { useRouter } from 'next/router'
+import { useEffect, useRef, useState } from 'react'
+import { Col, Container, Image, Row } from 'react-bootstrap'
+import { useToasts } from 'react-toast-notifications'
 import AddingQuestionButtons from '../../../../components/AddingQuestionButtons/AddingQuestionButtons'
 import CardQuizInfo from '../../../../components/CardQuizInfo/CardQuizInfo'
 import ItemQuestion from '../../../../components/ItemQuestion/ItemQuestion'
@@ -10,13 +11,11 @@ import MyButton from '../../../../components/MyButton/MyButton'
 import MyModal from '../../../../components/MyModal/MyModal'
 import NavBar from '../../../../components/NavBar/NavBar'
 import QuestionCreator from '../../../../components/QuestionCreator/QuestionCreator'
-import {useAuth} from '../../../../hooks/useAuth/useAuth'
-import {get, post} from '../../../../libs/api'
-import {TApiResponse, TQuestion, TQuiz} from '../../../../types/types'
-import {indexingQuestionsOrderPosition} from '../../../../utils/helper'
+import { useAuth } from '../../../../hooks/useAuth/useAuth'
+import { get, post } from '../../../../libs/api'
 import * as gtag from '../../../../libs/gtag'
-import {useToasts} from 'react-toast-notifications'
-import {FacebookIcon, FacebookMessengerIcon, FacebookMessengerShareButton, FacebookShareButton} from "react-share";
+import { TApiResponse, TQuestion, TQuiz } from '../../../../types/types'
+import { indexingQuestionsOrderPosition } from '../../../../utils/helper'
 
 export type TEditQuestion = {
   isEdit: boolean
@@ -60,7 +59,7 @@ const QuizCreatorPage: NextPage = () => {
         const res = await get<TApiResponse<TQuiz>>(
           `/api/quizzes/my-quizzes/${quizId}`,
           true,
-          {filter: {relations: ['quizCategories']}}
+          { filter: { relations: ['quizCategories'] } }
         )
 
         if (res.response === null) {
@@ -78,11 +77,11 @@ const QuizCreatorPage: NextPage = () => {
 
     quizId && getQuiz()
 
-    gtag.event({action: '[access quiz creator]', params: {quizId}})
+    gtag.event({ action: '[access quiz creator]', params: { quizId } })
   }, [quizId])
 
   const onRemoveQuestion = (questionId: number) => {
-    setShowModalAlert({show: true, questionId})
+    setShowModalAlert({ show: true, questionId })
   }
 
   const onAcceptRemoveAlert = async () => {
@@ -94,7 +93,7 @@ const QuizCreatorPage: NextPage = () => {
       _.remove(questions, (item) => item.id === showModalAlert.questionId)
       questions = [...indexingQuestionsOrderPosition(questions)]
 
-      const body = {...quiz, questions}
+      const body = { ...quiz, questions }
       const res = await post<TApiResponse<TQuiz>>(
         `/api/quizzes/${quizId}`,
         {},
@@ -106,7 +105,7 @@ const QuizCreatorPage: NextPage = () => {
     } catch (error) {
       console.log('onRemoveQuestion - error', error)
     } finally {
-      setShowModalAlert({show: false, questionId: null})
+      setShowModalAlert({ show: false, questionId: null })
     }
   }
 
@@ -125,11 +124,11 @@ const QuizCreatorPage: NextPage = () => {
   }
 
   const onEditQuestion = (questionId: number) => {
-    setIsEditQuestion({isEdit: true, questionId})
+    setIsEditQuestion({ isEdit: true, questionId })
     setIsShowQuestionCreator(true)
   }
 
-  const {addToast} = useToasts()
+  const { addToast } = useToasts()
 
   const handlePlay = () => {
     try {
@@ -147,12 +146,41 @@ const QuizCreatorPage: NextPage = () => {
   }
 
   return (
-    <>
-      <NavBar showMenuBtn={false} isExpand={false} setIsExpand={() => null}/>
-      <Container fluid="lg" className="pt-80px min-vh-100">
-        <div className="pt-5 pb-4 fs-22px fw-medium">Tạo Bộ Câu Hỏi Mới</div>
+    <div className="min-vh-100">
+      <NavBar showMenuBtn={false} isExpand={false} setIsExpand={() => null} />
+      <div
+        className="pt-80px position-relative bg-transparent"
+        style={{ height: 460 }}
+      >
+        <Image
+          src={quiz?.banner || '/assets/default-question-image.png'}
+          className="w-100 h-100 object-fit-cover"
+          alt="banner"
+        />
+        <div className="position-absolute top-0 w-100 h-100 overlay-bot-to-top" />
+        <div
+          className="position-absolute bottom-0 text-white w-100 py-3"
+          style={{ left: 0 }}
+        >
+          <Container fluid="lg" className="h1">
+            {quiz?.title}
+          </Container>
+        </div>
+      </div>
+
+      <div className="border-bottom">
+        <CardQuizInfo
+          quiz={quiz}
+          isValidating={isValidating}
+          setQuiz={setQuiz}
+        />
+      </div>
+
+      <Container fluid="lg" className="">
         <Row className="flex-column-reverse flex-lg-row py-3">
           <Col xs="12" lg="8">
+            <div className="pb-3 fs-22px fw-medium">Danh sách câu hỏi</div>
+
             {quiz?.questions?.map((question, key) => (
               <ItemQuestion
                 key={key}
@@ -163,40 +191,12 @@ const QuizCreatorPage: NextPage = () => {
             ))}
 
             <div ref={addQuestionRef}>
-              <AddingQuestionButtons quizId={quizId}/>
+              <AddingQuestionButtons quizId={quizId} />
             </div>
           </Col>
           <Col xs="12" lg="4" className="mb-3 mb-lg-0 ps-12px ps-lg-0">
-            <CardQuizInfo
-              quiz={quiz}
-              isValidating={isValidating}
-              setQuiz={setQuiz}
-            />
-            {!quiz?.isPublic &&
-                <div className="fw-light fst-italic text-secondary fs-6 mt-3">
-                * Bật công khai để chia sẻ bộ quiz với cộng đồng <span className="fw-bold text-primary">Quiwi!</span>
-            </div>
-            }
-            {quiz?.isPublic &&
-                <div className="mt-3 d-flex gap-3 align-items-center">
-                    <div className={"fs-5"}>Chia sẻ lên:</div>
-                  {/*<div className="mt-3 d-flex justify-content-between gap-2">*/}
-                    <FacebookShareButton
-                      // className={"flex-grow-1 bg-primary bg-opacity-25 rounded-10px p-2"}
-                        url={`https://web.quiwi.games/quiz/${quizId}/play`}
-                    >
-                        <FacebookIcon size={40} round/>
-                    </FacebookShareButton>
-                    <FacebookMessengerShareButton
-                      // className={"flex-grow-1 bg-primary bg-opacity-25 rounded-10px p-2"}
-                        appId={"1126530964938904"}
-                        url={`https://web.quiwi.games/quiz/${quizId}/play`}
-                    >
-                        <FacebookMessengerIcon size={40} round/>
-                    </FacebookMessengerShareButton>
-                  {/*</div>*/}
-                </div>
-            }
+            <div className="fs-22px fw-medium">Tuỳ chọn</div>
+
             <div className="mt-3">
               <MyButton
                 className="text-white w-100 d-flex align-items-center justify-content-between"
@@ -204,7 +204,7 @@ const QuizCreatorPage: NextPage = () => {
                 variant="danger"
               >
                 Xoá quiz này
-                <div className="bi bi-trash"/>
+                <div className="bi bi-trash" />
               </MyButton>
             </div>
             <div className="mt-3">
@@ -214,43 +214,7 @@ const QuizCreatorPage: NextPage = () => {
                 variant="secondary"
               >
                 Thay đổi thứ tự câu hỏi
-                <div className="bi bi-arrow-down-up"/>
-              </MyButton>
-            </div>
-            {quiz?.isPublic &&
-                <div className="mt-3">
-                    <MyButton
-                        className="text-white w-100 d-flex align-items-center justify-content-between"
-                        variant="secondary"
-                        onClick={() => {
-                          navigator?.clipboard?.writeText(
-                            `http://${window.location.host}/quiz/${quizId}/play`
-                          )
-
-                          addToast(
-                            <>
-                              Copy thành công
-                              <br/>
-                              Gửi link mời cho bạn bè để tham gia!
-                            </>,
-                            {
-                              autoDismiss: true,
-                              appearance: 'success',
-                            }
-                          )
-                        }}
-                    >
-                        Copy đường dẫn để chia sẻ bộ quiz này!
-                        <div className="bi bi-clipboard-plus-fill"/>
-                    </MyButton>
-                </div>}
-            <div className="mt-3">
-              <MyButton
-                className="text-white w-100 d-flex align-items-center justify-content-between"
-                onClick={() => addQuestionRef.current?.scrollIntoView()}
-              >
-                Thêm câu hỏi mới
-                <div className="bi bi-plus-lg"/>
+                <div className="bi bi-arrow-down-up" />
               </MyButton>
             </div>
             <div className="mt-3">
@@ -259,7 +223,7 @@ const QuizCreatorPage: NextPage = () => {
                 onClick={handlePlay}
               >
                 Bắt đầu ngay
-                <div className="bi bi-play-fill"/>
+                <div className="bi bi-play-fill" />
               </MyButton>
             </div>
           </Col>
@@ -270,7 +234,7 @@ const QuizCreatorPage: NextPage = () => {
         show={isShowQuestionCreator}
         onHide={() => {
           setIsShowQuestionCreator(false)
-          setIsEditQuestion({isEdit: false, questionId: null})
+          setIsEditQuestion({ isEdit: false, questionId: null })
           router.replace(`/quiz/creator/${quizId}`, undefined, {
             scroll: false,
           })
@@ -292,11 +256,11 @@ const QuizCreatorPage: NextPage = () => {
 
       <MyModal
         show={showModalAlert.show}
-        onHide={() => setShowModalAlert({show: false, questionId: null})}
+        onHide={() => setShowModalAlert({ show: false, questionId: null })}
         activeButtonTitle="Đồng ý"
         activeButtonCallback={() => onAcceptRemoveAlert()}
         inActiveButtonCallback={() =>
-          setShowModalAlert({show: false, questionId: null})
+          setShowModalAlert({ show: false, questionId: null })
         }
         inActiveButtonTitle="Huỷ"
       >
@@ -323,7 +287,7 @@ const QuizCreatorPage: NextPage = () => {
           Bạn không thể hoàn tác lại hành động này
         </div>
       </MyModal>
-    </>
+    </div>
   )
 }
 

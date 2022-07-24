@@ -655,11 +655,21 @@ a {
                                   supported by Chrome, Edge, Opera and Firefox */
 }
 
-
 .h-100vh {
   height: 100vh;
 }
 
 .w-100vw {
   width: 100vw;
+}
+
+.overlay-bot-to-top {
+  background: rgb(0, 0, 0);
+  background: linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.8618040966386554) 0%,
+    rgba(0, 0, 0, 0.5228685224089635) 30%,
+    rgba(0, 0, 0, 0.26516544117647056) 65%,
+    rgba(0, 0, 0, 0) 100%
+  );
 }

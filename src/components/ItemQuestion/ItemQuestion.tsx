@@ -19,6 +19,7 @@ import {
 } from '../../utils/constants'
 import IconQuestion from '../IconQuestion/IconQuestion'
 import MyLeTooltip from '../MyLeTooltip/MyLeTooltip'
+import ScreenHandling from '../MyLeTooltip/ScreenHandling/ScreenHandling'
 import QuestionActionButton from '../QuestionActionButton/QuestionActionButton'
 
 type DragItem = {
@@ -199,20 +200,6 @@ function CustomToggle({
 
   const { isMobile } = useScreenSize()
 
-  const switchMobileScreenBtn = useCallback(
-    (displayNode: ReactNode, contentTooltip: ReactNode) => {
-      return isMobile ? (
-        displayNode
-      ) : (
-        <MyLeTooltip
-          triggerNode={displayNode}
-          contentTooltip={contentTooltip}
-        />
-      )
-    },
-    [isMobile]
-  )
-
   return (
     <>
       <Row className="w-100 m-0 bg-secondary p-12px bg-opacity-10 border-bottom">
@@ -229,37 +216,45 @@ function CustomToggle({
         <Col className="d-flex align-items-center justify-content-end pe-0 gap-2">
           {showActionBtn && (
             <>
-              {switchMobileScreenBtn(
-                <QuestionActionButton
-                  iconClassName="bi bi-trash"
-                  className="bg-danger text-white border-0"
-                  onClick={onRemove}
-                />,
-                'Bấm để xoá câu hỏi'
-              )}
+              <ScreenHandling
+                contentTooltip={'Bấm để xoá câu hỏi'}
+                displayNode={
+                  <QuestionActionButton
+                    iconClassName="bi bi-trash"
+                    className="bg-danger text-white border-0"
+                    onClick={onRemove}
+                  />
+                }
+              />
 
-              {switchMobileScreenBtn(
-                <QuestionActionButton
-                  iconClassName="bi bi-pencil"
-                  className="bg-white"
-                  onClick={onEditQuestion}
-                />,
-                'Bấm để chỉnh sửa câu hỏi'
-              )}
+              <ScreenHandling
+                contentTooltip={'Bấm để chỉnh sửa câu hỏi'}
+                displayNode={
+                  <QuestionActionButton
+                    iconClassName="bi bi-pencil"
+                    className="bg-white"
+                    onClick={onEditQuestion}
+                  />
+                }
+              />
             </>
           )}
 
-          {switchMobileScreenBtn(
-            <QuestionActionButton
-              iconClassName={cn('bi fs-16px', {
-                'bi-eye-fill': !isToggle,
-                'bi-eye-slash-fill': isToggle,
-              })}
-              className="bg-white fs-14px"
-              onClick={decoratedOnClick}
-            />,
-            isToggle ? 'Bấm để hiện câu trả lời' : 'Bấm để ẩn câu trả lời'
-          )}
+          <ScreenHandling
+            contentTooltip={
+              isToggle ? 'Bấm để hiện câu trả lời' : 'Bấm để ẩn câu trả lời'
+            }
+            displayNode={
+              <QuestionActionButton
+                iconClassName={cn('bi fs-16px', {
+                  'bi-eye-fill': !isToggle,
+                  'bi-eye-slash-fill': isToggle,
+                })}
+                className="bg-white fs-14px"
+                onClick={decoratedOnClick}
+              />
+            }
+          />
         </Col>
       </Row>
 
