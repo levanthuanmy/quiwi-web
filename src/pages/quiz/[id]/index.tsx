@@ -73,6 +73,7 @@ const QuizDetailPage: NextPage = () => {
                   key={key}
                   question={question}
                   showActionBtn={false}
+                  fromCommunity
                 />
               ))}
             </Col>

@@ -1,13 +1,6 @@
 import cn from 'classnames'
 import _ from 'lodash'
-import React, {
-  FC,
-  memo,
-  ReactNode,
-  useCallback,
-  useRef,
-  useState,
-} from 'react'
+import { FC, memo, useRef, useState } from 'react'
 import { Accordion, Col, Image, Row, useAccordionButton } from 'react-bootstrap'
 import { useDrag, useDrop } from 'react-dnd'
 import useScreenSize from '../../hooks/useScreenSize/useScreenSize'
@@ -18,7 +11,6 @@ import {
   QUESTION_TYPE_MAPPING_TO_TEXT,
 } from '../../utils/constants'
 import IconQuestion from '../IconQuestion/IconQuestion'
-import MyLeTooltip from '../MyLeTooltip/MyLeTooltip'
 import ScreenHandling from '../MyLeTooltip/ScreenHandling/ScreenHandling'
 import QuestionActionButton from '../QuestionActionButton/QuestionActionButton'
 
@@ -35,6 +27,7 @@ type ItemQuestionProps = {
   showActionBtn?: boolean
   index?: number
   move?: (dragIndex: number, hoverIndex: number) => void
+  fromCommunity?: boolean
 }
 
 const ItemQuestion: FC<ItemQuestionProps> = ({
@@ -44,6 +37,7 @@ const ItemQuestion: FC<ItemQuestionProps> = ({
   showActionBtn = true,
   index,
   move,
+  fromCommunity = false,
 }) => {
   const ref = useRef<any>(null)
 
@@ -131,32 +125,43 @@ const ItemQuestion: FC<ItemQuestionProps> = ({
               )}
             </div>
             <Row>
-              {question.questionAnswers.map(
-                (answer, key) =>
-                  answer.type !== '21PLHDR' && (
-                    <Col key={key} xs="6" className="d-flex align-items-center">
-                      <div
-                        className={cn('bi me-2', {
-                          'text-danger bi-x-circle-fill': !answer.isCorrect,
-                          'text-primary bi-check-circle-fill': answer.isCorrect,
-                        })}
-                      />
-                      <div>
-                        <div>{answer.answer}</div>
-                        {answer.media?.length ? (
-                          <Image
-                            src={answer.media}
-                            alt=""
-                            width="100%"
-                            height="160"
-                            className="object-fit-cover rounded border mt-2"
-                          />
-                        ) : (
-                          <></>
-                        )}
-                      </div>
-                    </Col>
-                  )
+              {question.type === '30TEXT' && fromCommunity ? (
+                <span className="text-primary">
+                  Có {question.questionAnswers.length} câu trả lời đã được ẩn
+                </span>
+              ) : (
+                question.questionAnswers.map(
+                  (answer, key) =>
+                    answer.type !== '21PLHDR' && (
+                      <Col
+                        key={key}
+                        xs="6"
+                        className="d-flex align-items-center"
+                      >
+                        <div
+                          className={cn('bi me-2', {
+                            'text-danger bi-x-circle-fill': !answer.isCorrect,
+                            'text-primary bi-check-circle-fill':
+                              answer.isCorrect,
+                          })}
+                        />
+                        <div>
+                          <div>{answer.answer}</div>
+                          {answer.media?.length ? (
+                            <Image
+                              src={answer.media}
+                              alt=""
+                              width="100%"
+                              height="160"
+                              className="object-fit-cover rounded border mt-2"
+                            />
+                          ) : (
+                            <></>
+                          )}
+                        </div>
+                      </Col>
+                    )
+                )
               )}
             </Row>
           </div>
