@@ -1,12 +1,10 @@
-import { FC, ReactNode } from 'react'
+import React, { FC, ReactNode } from 'react'
 import { usePopperTooltip } from 'react-popper-tooltip'
-import 'react-popper-tooltip/dist/styles.css'
 
-type IToolTip = {
-  description: string
-}
-
-const HelpToolTip: FC<{ children?: ReactNode }> = ({ children }) => {
+const MyLeTooltip: FC<{
+  triggerNode: ReactNode
+  contentTooltip: ReactNode
+}> = ({ triggerNode, contentTooltip }) => {
   const {
     getArrowProps,
     getTooltipProps,
@@ -16,14 +14,8 @@ const HelpToolTip: FC<{ children?: ReactNode }> = ({ children }) => {
   } = usePopperTooltip()
 
   return (
-    <div className="help-tooltip d-inline-flex">
-      <i
-        className="bi bi-question-circle-fill me-2 tooltip-color"
-        style={{
-          fontSize: '13px',
-        }}
-        ref={setTriggerRef}
-      ></i>
+    <>
+      <div ref={setTriggerRef}>{triggerNode}</div>
       {visible && (
         <div
           ref={setTooltipRef}
@@ -32,11 +24,11 @@ const HelpToolTip: FC<{ children?: ReactNode }> = ({ children }) => {
           <div
             {...getArrowProps({ className: 'tooltip-arrow tooltip-arrow' })}
           />
-          {children}
+          {contentTooltip}
         </div>
       )}
-    </div>
+    </>
   )
 }
 
-export default HelpToolTip
+export default MyLeTooltip
