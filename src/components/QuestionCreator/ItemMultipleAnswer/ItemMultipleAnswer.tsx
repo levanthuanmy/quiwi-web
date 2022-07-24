@@ -103,6 +103,7 @@ const ItemMultipleAnswer: FC<ItemMultipleAnswerProps> = ({
     <div className="rounded-10px border bg-secondary bg-opacity-10 overflow-hidden h-100">
       <div className="d-flex p-12px">
         {type !== 'poll' && (
+          <div title="Chọn làm câu trả lời đúng">
           <QuestionActionButton
             iconClassName="bi bi-check-lg"
             className={classNames('me-2', {
@@ -111,8 +112,9 @@ const ItemMultipleAnswer: FC<ItemMultipleAnswerProps> = ({
             })}
             onClick={handleMarkTrueAnswer}
           />
+          </div>
         )}
-        <div className="position-relative">
+        <div className="position-relative" title="Chọn hình ảnh cho câu trả lời">
           <input
             type="file"
             onChange={handleUploadImage}
@@ -125,11 +127,13 @@ const ItemMultipleAnswer: FC<ItemMultipleAnswerProps> = ({
             className="me-2 bg-white"
           />
         </div>
-        <QuestionActionButton
-          iconClassName="bi bi-trash"
-          className="me-2 bg-danger text-white"
-          onClick={onRemove}
-        />
+        <div title="Xoá câu trả lời này">
+          <QuestionActionButton
+            iconClassName="bi bi-trash"
+            className="me-2 bg-danger text-white"
+            onClick={onRemove}
+          />
+        </div>
       </div>
       <Form.Control
         as="textarea"
