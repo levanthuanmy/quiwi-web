@@ -4,7 +4,7 @@
 }
 @media (max-width: 576px) {
   .questionMedia {
-    max-height:40%;
+    max-height: 40%;
     padding-left: 4px;
     padding-right: 4px;
   }
@@ -32,7 +32,6 @@
   /*background: red;*/
   /*position: absolute;*/
   /*margin-left: -260px;*/
-
 }
 
 .timer {
@@ -49,16 +48,15 @@
 
 .value {
   color: white;
-  font-weight:bold;
-  font-size: 60px;
+  font-weight: bold;
+  font-size: 30px;
 }
 
 .valueDanger {
   color: #dc3545;
-  font-weight:bold;
-  font-size: 40px;
+  font-weight: bold;
+  font-size: 30px;
 }
-
 
 .streakContainer {
   height: 32px;
@@ -66,11 +64,10 @@
 }
 
 .questionImage {
-  height: 25vh;
-  min-height: 180px;
-  min-width: 30%;
+  height: 30vh;
+  width: 100%;
   /*width: 0%;*/
-  object-fit: contain;
+  object-fit: scale-down;
 }
 
 @media (max-width: 576px) {
@@ -111,9 +108,8 @@
 }
 
 @media (min-width: 576px) {
-
   .questionTitle {
-    border-radius: 20px;
+    border-radius: 12px;
   }
 
   .timeout {
@@ -132,4 +128,10 @@
     height: 48px;
     margin: 0;
   }
+}
+
+.questionTitle {
+  overflow-y: auto;
+  min-height: 140px;
+  height: 100%;
 }
