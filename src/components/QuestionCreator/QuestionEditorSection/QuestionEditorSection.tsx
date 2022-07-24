@@ -52,7 +52,17 @@ const QuestionEditorSection: FC<{
         >
           <div className="fw-medium fs-22px">Cài đặt</div>
 
-          <div className="position-relative" title="Chọn hình ảnh cho câu hỏi">
+          <QuestionConfigBtn
+            prefixIcon={<IconQuestion type={type} />}
+            title={
+              <div className="fw-medium text-dark">
+                {questionTypeStyles[type].title}
+              </div>
+            }
+            suffixIcon=""
+          />
+
+          <div className="position-relative">
             <input
               type="file"
               onChange={handleUploadImage}

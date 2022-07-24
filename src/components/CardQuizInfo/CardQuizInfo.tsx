@@ -102,9 +102,9 @@ const CardQuizInfo: FC<CardQuizInfoProps> = ({
   }
 
   return (
-    <div className="rounded-10px border bg-white p-12px">
+    <div className="rounded-10px border bg-white overflow-hidden">
       <div
-        className="border rounded-10px overflow-hidden"
+        className="border-bottom overflow-hidden"
         style={{ height: 180 }}
       >
         {quiz?.banner && quiz?.banner?.length ? (
@@ -121,7 +121,7 @@ const CardQuizInfo: FC<CardQuizInfoProps> = ({
           </div>
         )}
       </div>
-      <Row className="d-flex pt-12px">
+      <Row className="d-flex p-12px">
         <Col>
           <div className="fw-medium fs-18px">
             <TextSkeletonLoading
