@@ -2,10 +2,10 @@ import _ from 'lodash'
 import { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { useEffect, useRef, useState } from 'react'
-import { Col, Container, Image, Row } from 'react-bootstrap'
+import { Col, Container, Row } from 'react-bootstrap'
 import { useToasts } from 'react-toast-notifications'
 import AddingQuestionButtons from '../../../../components/AddingQuestionButtons/AddingQuestionButtons'
-import CardQuizInfo from '../../../../components/CardQuizInfo/CardQuizInfo'
+import QuizBannerWithTitle from '../../../../components/CardQuizInfo/QuizBannerWithTitle/QuizBannerWithTitle'
 import ItemQuestion from '../../../../components/ItemQuestion/ItemQuestion'
 import MyButton from '../../../../components/MyButton/MyButton'
 import MyModal from '../../../../components/MyModal/MyModal'
@@ -37,7 +37,6 @@ const QuizCreatorPage: NextPage = () => {
     show: false,
     questionId: null,
   }) // use when removing question
-  const [showQuizModalAlert, setShowQuizModalAlert] = useState<boolean>(false) // use when removing quiz
   const [isEditQuestion, setIsEditQuestion] = useState<TEditQuestion>({
     isEdit: false,
     questionId: null,
@@ -109,20 +108,6 @@ const QuizCreatorPage: NextPage = () => {
     }
   }
 
-  const onAcceptRemoveQuizAlert = async () => {
-    try {
-      await post<TApiResponse<TQuiz>>(
-        `/api/quizzes/${quizId}/delete`,
-        {},
-        {},
-        true
-      )
-      router.back()
-    } catch (error) {
-      console.log('onAcceptRemoveQuizAlert - error', error)
-    }
-  }
-
   const onEditQuestion = (questionId: number) => {
     setIsEditQuestion({ isEdit: true, questionId })
     setIsShowQuestionCreator(true)
@@ -148,33 +133,11 @@ const QuizCreatorPage: NextPage = () => {
   return (
     <div className="min-vh-100">
       <NavBar showMenuBtn={false} isExpand={false} setIsExpand={() => null} />
-      <div
-        className="pt-80px position-relative bg-transparent"
-        style={{ height: 460 }}
-      >
-        <Image
-          src={quiz?.banner || '/assets/default-question-image.png'}
-          className="w-100 h-100 object-fit-cover"
-          alt="banner"
-        />
-        <div className="position-absolute top-0 w-100 h-100 overlay-bot-to-top" />
-        <div
-          className="position-absolute bottom-0 text-white w-100 py-3"
-          style={{ left: 0 }}
-        >
-          <Container fluid="lg" className="h1">
-            {quiz?.title}
-          </Container>
-        </div>
-      </div>
-
-      <div className="border-bottom">
-        <CardQuizInfo
-          quiz={quiz}
-          isValidating={isValidating}
-          setQuiz={setQuiz}
-        />
-      </div>
+      <QuizBannerWithTitle
+        isValidating={isValidating}
+        quiz={quiz}
+        setQuiz={setQuiz}
+      />
 
       <Container fluid="lg" className="">
         <Row className="flex-column-reverse flex-lg-row py-3">
@@ -197,16 +160,6 @@ const QuizCreatorPage: NextPage = () => {
           <Col xs="12" lg="4" className="mb-3 mb-lg-0 ps-12px ps-lg-0">
             <div className="fs-22px fw-medium">Tuỳ chọn</div>
 
-            <div className="mt-3">
-              <MyButton
-                className="text-white w-100 d-flex align-items-center justify-content-between"
-                onClick={() => setShowQuizModalAlert(true)}
-                variant="danger"
-              >
-                Xoá quiz này
-                <div className="bi bi-trash" />
-              </MyButton>
-            </div>
             <div className="mt-3">
               <MyButton
                 className="text-white w-100 d-flex align-items-center justify-content-between"
@@ -266,22 +219,6 @@ const QuizCreatorPage: NextPage = () => {
       >
         <div className="text-center h3">
           Bạn có chắc chắn muốn xoá câu hỏi này
-        </div>
-        <div className="text-center">
-          Bạn không thể hoàn tác lại hành động này
-        </div>
-      </MyModal>
-
-      <MyModal
-        show={showQuizModalAlert}
-        onHide={() => setShowQuizModalAlert(false)}
-        activeButtonTitle="Đồng ý"
-        activeButtonCallback={() => onAcceptRemoveQuizAlert()}
-        inActiveButtonCallback={() => setShowQuizModalAlert(false)}
-        inActiveButtonTitle="Huỷ"
-      >
-        <div className="text-center h3">
-          Bạn có chắc chắn muốn xoá bộ quiz này
         </div>
         <div className="text-center">
           Bạn không thể hoàn tác lại hành động này

@@ -58,6 +58,7 @@ const CardQuizInfo: FC<CardQuizInfoProps> = ({
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [showShare, setShowShare] = useState<boolean>(false)
   const { addToast } = useToasts()
+  const [showQuizModalAlert, setShowQuizModalAlert] = useState<boolean>(false) // use when removing quiz
 
   useEffect(() => {
     if (quiz) {
@@ -125,6 +126,20 @@ const CardQuizInfo: FC<CardQuizInfoProps> = ({
     return `https://web.quiwi.games/quiz/${quizId}/play`
   }, [quizId])
 
+  const onAcceptRemoveQuizAlert = async () => {
+    try {
+      await post<TApiResponse<TQuiz>>(
+        `/api/quizzes/${quizId}/delete`,
+        {},
+        {},
+        true
+      )
+      router.back()
+    } catch (error) {
+      console.log('onAcceptRemoveQuizAlert - error', error)
+    }
+  }
+
   return (
     <Container className="py-3" fluid="lg">
       <Row className="d-flex">
@@ -190,18 +205,30 @@ const CardQuizInfo: FC<CardQuizInfoProps> = ({
         </Col>
         <Col xs="auto" className="d-flex flex-column gap-2">
           {setQuiz && (
-            <ScreenHandling
-              contentTooltip={
-                'Bấm để chỉnh sửa thông tin cơ bản của bộ câu hỏi'
-              }
-              displayNode={
-                <QuestionActionButton
-                  className="bg-primary"
-                  iconClassName="bi bi-pencil-fill text-white"
-                  onClick={() => setShowModal(true)}
-                />
-              }
-            />
+            <>
+              <ScreenHandling
+                contentTooltip={'Bấm để xoá bộ câu hỏi'}
+                displayNode={
+                  <QuestionActionButton
+                    className="bg-danger"
+                    iconClassName="bi bi-trash text-white"
+                    onClick={() => setShowQuizModalAlert(true)}
+                  />
+                }
+              />
+              <ScreenHandling
+                contentTooltip={
+                  'Bấm để chỉnh sửa thông tin cơ bản của bộ câu hỏi'
+                }
+                displayNode={
+                  <QuestionActionButton
+                    className="bg-primary"
+                    iconClassName="bi bi-pencil-fill text-white"
+                    onClick={() => setShowModal(true)}
+                  />
+                }
+              />
+            </>
           )}
           <ScreenHandling
             contentTooltip={
@@ -227,181 +254,200 @@ const CardQuizInfo: FC<CardQuizInfoProps> = ({
       </Row>
 
       {setQuiz ? (
-        <MyModal
-          show={showModal}
-          onHide={() => setShowModal(false)}
-          header={<div className="fs-24px fw-medium">Chỉnh sửa Quiz</div>}
-          fullscreen
-        >
-          <Formik
-            initialValues={{
-              title: quiz?.title ?? '',
-              description: quiz?.description ?? '',
-              isPublic: quiz?.isPublic ?? false,
-            }}
-            onSubmit={async (value, actions) => {
-              try {
-                if (!quiz) return
-
-                const body = {
-                  ...quiz,
-                  ...value,
-                  banner: bannerUrl,
-                  quizCategoryIds: selectedCategories,
-                }
-                const res = await post<TApiResponse<TQuiz>>(
-                  `/api/quizzes/${quizId}`,
-                  {},
-                  body,
-                  true
-                )
-
-                setQuiz(res.response)
-              } catch (error) {
-                console.log('onSaveQuestion - error', error)
-              } finally {
-                actions.setSubmitting(false)
-                setShowModal(false)
-              }
-            }}
+        <>
+          <MyModal
+            show={showModal}
+            onHide={() => setShowModal(false)}
+            header={<div className="fs-24px fw-medium">Chỉnh sửa Quiz</div>}
+            fullscreen
           >
-            {({ handleSubmit, isSubmitting }) => (
-              <Form
-                method="POST"
-                onSubmit={(e) => {
-                  e.preventDefault()
-                  handleSubmit()
-                }}
-              >
-                <div className="fw-medium">Bấm để chọn ảnh mới</div>
-                <div
-                  className="border rounded-10px position-relative overflow-hidden"
-                  style={{ height: 180 }}
+            <Formik
+              initialValues={{
+                title: quiz?.title ?? '',
+                description: quiz?.description ?? '',
+                isPublic: quiz?.isPublic ?? false,
+              }}
+              onSubmit={async (value, actions) => {
+                try {
+                  if (!quiz) return
+
+                  const body = {
+                    ...quiz,
+                    ...value,
+                    banner: bannerUrl,
+                    quizCategoryIds: selectedCategories,
+                  }
+                  const res = await post<TApiResponse<TQuiz>>(
+                    `/api/quizzes/${quizId}`,
+                    {},
+                    body,
+                    true
+                  )
+
+                  setQuiz(res.response)
+                } catch (error) {
+                  console.log('onSaveQuestion - error', error)
+                } finally {
+                  actions.setSubmitting(false)
+                  setShowModal(false)
+                }
+              }}
+            >
+              {({ handleSubmit, isSubmitting }) => (
+                <Form
+                  method="POST"
+                  onSubmit={(e) => {
+                    e.preventDefault()
+                    handleSubmit()
+                  }}
                 >
-                  {isLoading && (
-                    <div className="position-absolute w-100 h-100 bg-black bg-opacity-75 d-flex justify-content-center align-items-center">
-                      <Loading />
-                    </div>
-                  )}
-                  {bannerUrl && bannerUrl.length ? (
-                    <Image
-                      src={bannerUrl}
-                      alt=""
-                      width="100%"
-                      height="100%"
-                      className="object-fit-cover"
-                      loading="eager"
-                    />
-                  ) : (
-                    <div className="py-4 text-center fs-14px text-secondary">
-                      <div className="bi bi-image text-primary fs-32px"></div>
-                      Bấm hoặc kéo thả tại đây để cập nhật ảnh bìa
-                    </div>
-                  )}
-                  <input
-                    type="file"
-                    onChange={handleUploadImage}
-                    className="position-absolute top-0 w-100 h-100 opacity-0 cursor-pointer"
-                    accept="image/png, image/jpeg, image/jpg"
-                    style={{ left: 0 }}
-                  />
-                </div>
-                <div className="d-flex align-items-center gap-2 mt-2">
-                  <MyButton
-                    variant="outline-secondary"
-                    className="bi bi-arrow-clockwise fs-24px"
-                    onClick={() => handleRandomImage()}
-                    disabled={isLoading}
-                  />
-                  <div>Tự động chọn ảnh ngẫu nhiên</div>
-                </div>
-
-                <Row className="justify-content-center align-items-center py-2">
-                  <Col xs={12} className="fw-medium">
-                    Tên
-                  </Col>
-                  <Col>
-                    <Field
-                      type="text"
-                      name="title"
-                      placeholder="Tên"
-                      as={MyInput}
-                    />
-                  </Col>
-                </Row>
-
-                <Row className="justify-content-center align-items-center py-2">
-                  <Col xs={12} className="fw-medium">
-                    Mô tả
-                  </Col>
-                  <Col>
-                    <Field
-                      type="text"
-                      name="description"
-                      placeholder="Mô tả"
-                      as={MyInput}
-                    />
-                  </Col>
-                </Row>
-
-                <Row className="justify-content-center align-items-center py-2 position-relative">
-                  <Col xs={12} className="fw-medium">
-                    Thể loại
-                  </Col>
-                  <Col className="position-relative">
-                    <Select
-                      isMulti
-                      defaultValue={categoryOptions.filter(
-                        (item) =>
-                          _.findIndex(quiz?.quizCategories || [], [
-                            'id',
-                            item.value,
-                          ]) > -1
-                      )}
-                      options={categoryOptions}
-                      onChange={(options) =>
-                        setSelectedCategories(options.map((item) => item.value))
-                      }
-                    />
-                  </Col>
-                </Row>
-
-                <Row className="justify-content-center align-items-center py-2">
-                  <Col xs={12} className="fw-medium">
-                    Công khai
-                  </Col>
-                  <Col
-                    xs={12}
-                    className="fw-light fst-italic text-secondary fs-6"
+                  <div className="fw-medium">Bấm để chọn ảnh mới</div>
+                  <div
+                    className="border rounded-10px position-relative overflow-hidden"
+                    style={{ height: 180 }}
                   >
-                    * Bật công khai để chia sẻ bộ quiz với cộng đồng{' '}
-                    <span className="fw-bold text-primary">Quiwi!</span>
-                  </Col>
-                  <Col>
-                    <Field
-                      type="switch"
-                      name="isPublic"
-                      className={'fs-2'}
-                      defaultChecked={quiz?.isPublic ?? false}
-                      placeholder="Công khai"
-                      as={FormCheck}
+                    {isLoading && (
+                      <div className="position-absolute w-100 h-100 bg-black bg-opacity-75 d-flex justify-content-center align-items-center">
+                        <Loading />
+                      </div>
+                    )}
+                    {bannerUrl && bannerUrl.length ? (
+                      <Image
+                        src={bannerUrl}
+                        alt=""
+                        width="100%"
+                        height="100%"
+                        className="object-fit-cover"
+                        loading="eager"
+                      />
+                    ) : (
+                      <div className="py-4 text-center fs-14px text-secondary">
+                        <div className="bi bi-image text-primary fs-32px"></div>
+                        Bấm hoặc kéo thả tại đây để cập nhật ảnh bìa
+                      </div>
+                    )}
+                    <input
+                      type="file"
+                      onChange={handleUploadImage}
+                      className="position-absolute top-0 w-100 h-100 opacity-0 cursor-pointer"
+                      accept="image/png, image/jpeg, image/jpg"
+                      style={{ left: 0 }}
                     />
-                  </Col>
-                </Row>
+                  </div>
+                  <div className="d-flex align-items-center gap-2 mt-2">
+                    <MyButton
+                      variant="outline-secondary"
+                      className="bi bi-arrow-clockwise fs-24px"
+                      onClick={() => handleRandomImage()}
+                      disabled={isLoading}
+                    />
+                    <div>Tự động chọn ảnh ngẫu nhiên</div>
+                  </div>
 
-                <div className="text-center pt-3">
-                  <MyButton
-                    className="text-white w-100"
-                    type="submit"
-                    disabled={isSubmitting}
-                  >
-                    Lưu thông tin
-                  </MyButton>
-                </div>
-              </Form>
-            )}
-          </Formik>
-        </MyModal>
+                  <Row className="justify-content-center align-items-center py-2">
+                    <Col xs={12} className="fw-medium">
+                      Tên
+                    </Col>
+                    <Col>
+                      <Field
+                        type="text"
+                        name="title"
+                        placeholder="Tên"
+                        as={MyInput}
+                      />
+                    </Col>
+                  </Row>
+
+                  <Row className="justify-content-center align-items-center py-2">
+                    <Col xs={12} className="fw-medium">
+                      Mô tả
+                    </Col>
+                    <Col>
+                      <Field
+                        type="text"
+                        name="description"
+                        placeholder="Mô tả"
+                        as={MyInput}
+                      />
+                    </Col>
+                  </Row>
+
+                  <Row className="justify-content-center align-items-center py-2 position-relative">
+                    <Col xs={12} className="fw-medium">
+                      Thể loại
+                    </Col>
+                    <Col className="position-relative">
+                      <Select
+                        isMulti
+                        defaultValue={categoryOptions.filter(
+                          (item) =>
+                            _.findIndex(quiz?.quizCategories || [], [
+                              'id',
+                              item.value,
+                            ]) > -1
+                        )}
+                        options={categoryOptions}
+                        onChange={(options) =>
+                          setSelectedCategories(
+                            options.map((item) => item.value)
+                          )
+                        }
+                      />
+                    </Col>
+                  </Row>
+
+                  <Row className="justify-content-center align-items-center py-2">
+                    <Col xs={12} className="fw-medium">
+                      Công khai
+                    </Col>
+                    <Col
+                      xs={12}
+                      className="fw-light fst-italic text-secondary fs-6"
+                    >
+                      * Bật công khai để chia sẻ bộ quiz với cộng đồng{' '}
+                      <span className="fw-bold text-primary">Quiwi!</span>
+                    </Col>
+                    <Col>
+                      <Field
+                        type="switch"
+                        name="isPublic"
+                        className={'fs-2'}
+                        defaultChecked={quiz?.isPublic ?? false}
+                        placeholder="Công khai"
+                        as={FormCheck}
+                      />
+                    </Col>
+                  </Row>
+
+                  <div className="text-center pt-3">
+                    <MyButton
+                      className="text-white w-100"
+                      type="submit"
+                      disabled={isSubmitting}
+                    >
+                      Lưu thông tin
+                    </MyButton>
+                  </div>
+                </Form>
+              )}
+            </Formik>
+          </MyModal>
+          <MyModal
+            show={showQuizModalAlert}
+            onHide={() => setShowQuizModalAlert(false)}
+            activeButtonTitle="Đồng ý"
+            activeButtonCallback={() => onAcceptRemoveQuizAlert()}
+            inActiveButtonCallback={() => setShowQuizModalAlert(false)}
+            inActiveButtonTitle="Huỷ"
+          >
+            <div className="text-center h3">
+              Bạn có chắc chắn muốn xoá bộ quiz này
+            </div>
+            <div className="text-center text-danger">
+              Bạn không thể hoàn tác lại hành động này
+            </div>
+          </MyModal>
+        </>
       ) : (
         <></>
       )}
