@@ -5,12 +5,10 @@ import { Col, Dropdown, FloatingLabel, Form, Image, Row } from 'react-bootstrap'
 import { EditorProps } from 'react-draft-wysiwyg'
 import { TQuestion } from '../../../types/types'
 import { RICH_TEXT_TOOLBAR, TIMEOUT_OPTIONS } from '../../../utils/constants'
-import IconQuestion, { QuestionType } from '../../IconQuestion/IconQuestion'
+import HelpToolTip from '../../HelpToolTip/HelpToolTip'
+import { QuestionType } from '../../IconQuestion/IconQuestion'
 import QuestionActionButton from '../../QuestionActionButton/QuestionActionButton'
 import QuestionConfigBtn from '../../QuestionConfigBtn/QuestionConfigBtn'
-import { QuestionTypeDescription } from '../../GameComponents/AnswerQuestionComponent/AnswerSectionFactory/AnswerSectionFactory'
-import HelpToolTip from '../../HelpToolTip/HelpToolTip'
-import { MyTooltip } from '../../MyToolTip/MyTooltip'
 const QuestionEditorSection: FC<{
   type: QuestionType
   questionTypeStyles: Record<
@@ -51,8 +49,6 @@ const QuestionEditorSection: FC<{
           className="mb-3 mb-md-0 d-flex flex-column gap-2 flex-md-nowrap"
         >
           <div className="fw-medium fs-22px">Cài đặt</div>
-
-          
 
           <div className="position-relative">
             <input
@@ -125,10 +121,12 @@ const QuestionEditorSection: FC<{
           </FloatingLabel>
         </Col>
         <Col className="ps-12px ps-md-0">
-          <div className="fw-medium fs-22px mb-2">Soạn câu hỏi
-          <HelpToolTip>
-                      Soạn tiêu đề cho câu hỏi, lưu ý về kích thước tiêu đề
-                    </HelpToolTip></div>
+          <div className="fw-medium fs-22px mb-2">
+            Soạn câu hỏi
+            <HelpToolTip>
+              Soạn tiêu đề cho câu hỏi, lưu ý về kích thước tiêu đề
+            </HelpToolTip>
+          </div>
 
           <Row className="flex-column-reverse flex-md-row border m-0 rounded-10px">
             {newQuestion?.media?.length ? (

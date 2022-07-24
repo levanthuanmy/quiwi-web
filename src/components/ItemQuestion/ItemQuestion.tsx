@@ -1,6 +1,13 @@
 import cn from 'classnames'
 import _ from 'lodash'
-import React, { FC, memo, useRef, useState } from 'react'
+import React, {
+  FC,
+  memo,
+  ReactNode,
+  useCallback,
+  useRef,
+  useState,
+} from 'react'
 import { Accordion, Col, Image, Row, useAccordionButton } from 'react-bootstrap'
 import { useDrag, useDrop } from 'react-dnd'
 import useScreenSize from '../../hooks/useScreenSize/useScreenSize'
@@ -11,6 +18,7 @@ import {
   QUESTION_TYPE_MAPPING_TO_TEXT,
 } from '../../utils/constants'
 import IconQuestion from '../IconQuestion/IconQuestion'
+import MyLeTooltip from '../MyLeTooltip/MyLeTooltip'
 import QuestionActionButton from '../QuestionActionButton/QuestionActionButton'
 
 type DragItem = {
@@ -46,7 +54,6 @@ const ItemQuestion: FC<ItemQuestionProps> = ({
       }
     },
     hover(item: DragItem, monitor) {
-
       if (!ref.current || index == undefined || move == undefined) {
         return
       }
@@ -58,7 +65,10 @@ const ItemQuestion: FC<ItemQuestionProps> = ({
       }
 
       const hoverBoundingRect = ref.current?.getBoundingClientRect()
-console.log("=>(ItemQuestion.tsx:61) hoverBoundingRect", hoverBoundingRect);
+      console.log(
+        '=>(ItemQuestion.tsx:61) hoverBoundingRect',
+        hoverBoundingRect
+      )
       // const hoverMiddleY =
       //   (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2
       //
@@ -189,6 +199,20 @@ function CustomToggle({
 
   const { isMobile } = useScreenSize()
 
+  const switchMobileScreenBtn = useCallback(
+    (displayNode: ReactNode, contentTooltip: ReactNode) => {
+      return isMobile ? (
+        displayNode
+      ) : (
+        <MyLeTooltip
+          triggerNode={displayNode}
+          contentTooltip={contentTooltip}
+        />
+      )
+    },
+    [isMobile]
+  )
+
   return (
     <>
       <Row className="w-100 m-0 bg-secondary p-12px bg-opacity-10 border-bottom">
@@ -197,38 +221,45 @@ function CustomToggle({
             type={MAPPED_QUESTION_TYPE[question.type]}
             className="me-3"
           />
-          <div className="fw-medium">Câu {question.orderPosition + 1} {!isMobile && " - " + QUESTION_TYPE_MAPPING_TO_TEXT[question?.type]}</div>
+          <div className="fw-medium">
+            Câu {question.orderPosition + 1}{' '}
+            {!isMobile && ' - ' + QUESTION_TYPE_MAPPING_TO_TEXT[question?.type]}
+          </div>
         </Col>
         <Col className="d-flex align-items-center justify-content-end pe-0 gap-2">
           {showActionBtn && (
             <>
-              <QuestionActionButton
-                iconClassName="bi bi-trash"
-                className="bg-danger text-white border-0"
-                onClick={onRemove}
-              />
-              <QuestionActionButton
-                iconClassName="bi bi-pencil"
-                className="bg-white"
-                onClick={onEditQuestion}
-              />
+              {switchMobileScreenBtn(
+                <QuestionActionButton
+                  iconClassName="bi bi-trash"
+                  className="bg-danger text-white border-0"
+                  onClick={onRemove}
+                />,
+                'Bấm để xoá câu hỏi'
+              )}
+
+              {switchMobileScreenBtn(
+                <QuestionActionButton
+                  iconClassName="bi bi-pencil"
+                  className="bg-white"
+                  onClick={onEditQuestion}
+                />,
+                'Bấm để chỉnh sửa câu hỏi'
+              )}
             </>
           )}
-          <QuestionActionButton
-            iconClassName={cn('bi fs-16px', {
-              'bi-chevron-down': !isToggle,
-              'bi-chevron-up': isToggle,
-            })}
-            className="bg-primary text-white fs-14px"
-            onClick={decoratedOnClick}
-            title={
-              !isMobile
-                ? isToggle
-                  ? 'Hiện câu trả lời'
-                  : 'Ẩn câu trả lời'
-                : undefined
-            }
-          />
+
+          {switchMobileScreenBtn(
+            <QuestionActionButton
+              iconClassName={cn('bi fs-16px', {
+                'bi-eye-fill': !isToggle,
+                'bi-eye-slash-fill': isToggle,
+              })}
+              className="bg-white fs-14px"
+              onClick={decoratedOnClick}
+            />,
+            isToggle ? 'Bấm để hiện câu trả lời' : 'Bấm để ẩn câu trả lời'
+          )}
         </Col>
       </Row>
 
