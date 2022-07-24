@@ -24,9 +24,10 @@ type TGameModeOption = {
   mode: TGameModeEnum
   name: string
   useFor: string
-  description: string
   banner: string
-  instruction: string
+  desc: string
+  traditionalModedescription: string
+  communityModeModedescription: string
 }
 
 const GameModeScreen: FC<GameModeScreenProps> = ({setGameMode}) => {
@@ -67,18 +68,20 @@ const GameModeScreen: FC<GameModeScreenProps> = ({setGameMode}) => {
     {
       mode: '10CLASSIC',
       name: 'Tốc độ',
-      useFor: 'Dùng cho lớp học',
-      description: 'Cùng chơi và cạnh tranh với người chơi khác',
+      useFor: 'Thi đấu',
+      traditionalModedescription: 'Thi đua với nhau và trả lời từng câu hỏi theo từng vòng',
+      communityModeModedescription: `Tính điểm theo từng câu hỏi`,
       banner: '/assets/trophy.svg',
-      instruction: 'Trả lời nhanh và chính xác để giành vị trí cao nhất trên bảng xếp hạng'
+      desc: 'Cạnh tranh, đua top'
     },
     {
       mode: '30EXAM',
       name: 'Kiểm tra',
-      useFor: 'Dùng cho kiểm tra',
-      description: 'Kiểm tra lại kiến thức của bản thân',
+      useFor: 'Luyện tập',
+      traditionalModedescription: 'Tính điểm theo thời gian trả lời bộ câu hỏi',
+      communityModeModedescription: `Tính điểm theo thời gian trả lời bộ câu hỏi`,
       banner: '/assets/grade-sheet.svg',
-      instruction: 'Tập trung làm bài trong khoảng thời gian đặt ra để tự rèn luyện kiến thức của mình'
+      desc: 'Rèn luyện kiến thức'
     },
   ]
 
@@ -111,6 +114,7 @@ const GameModeScreen: FC<GameModeScreenProps> = ({setGameMode}) => {
           selectGameMode(idx)
         }}
         className={classNames(styles.modeItem, `fw-bold shadow-sm text-center`)}
+        title={mode.desc}
       >
         {/*quiz thường dùng để làm gì*/}
         <div className={styles.modeHeader}>{mode.useFor}</div>
@@ -129,7 +133,7 @@ const GameModeScreen: FC<GameModeScreenProps> = ({setGameMode}) => {
 
         {/*mô tả*/}
         <div className={styles.modeDescription}>
-          *{mode.description}
+          *{ quizId?   mode.traditionalModedescription : mode.communityModeModedescription}
         </div>
       </div>
     </div>

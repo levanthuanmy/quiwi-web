@@ -202,33 +202,39 @@ function CustomToggle({
         <Col className="d-flex align-items-center justify-content-end pe-0 gap-2">
           {showActionBtn && (
             <>
-              <QuestionActionButton
-                iconClassName="bi bi-trash"
-                className="bg-danger text-white border-0"
-                onClick={onRemove}
-              />
-              <QuestionActionButton
-                iconClassName="bi bi-pencil"
-                className="bg-white"
-                onClick={onEditQuestion}
-              />
+              <div title='Xoá câu hỏi này'>
+                <QuestionActionButton
+                  iconClassName="bi bi-trash"
+                  className="bg-danger text-white border-0"
+                  onClick={onRemove}
+                />
+              </div>
+              <div title='Chỉnh sửa câu hỏi này'>
+                <QuestionActionButton
+                  iconClassName="bi bi-pencil"
+                  className="bg-white"
+                  onClick={onEditQuestion}
+                />
+              </div>
             </>
           )}
-          <QuestionActionButton
-            iconClassName={cn('bi fs-16px', {
-              'bi-chevron-down': !isToggle,
-              'bi-chevron-up': isToggle,
-            })}
-            className="bg-primary text-white fs-14px"
-            onClick={decoratedOnClick}
-            title={
-              !isMobile
-                ? isToggle
-                  ? 'Hiện câu trả lời'
-                  : 'Ẩn câu trả lời'
-                : undefined
-            }
-          />
+          <div title='Ẩn / hiện câu trả lời'>
+            <QuestionActionButton
+              iconClassName={cn('bi fs-16px', {
+                'bi-chevron-down': !isToggle,
+                'bi-chevron-up': isToggle,
+              })}
+              className="bg-primary text-white fs-14px"
+              onClick={decoratedOnClick}
+              title={
+                !isMobile
+                  ? isToggle
+                    ? ''
+                    : ''
+                  : undefined
+              }
+            />
+          </div>
         </Col>
       </Row>
 

@@ -52,9 +52,7 @@ const QuestionEditorSection: FC<{
         >
           <div className="fw-medium fs-22px">Cài đặt</div>
 
-          
-
-          <div className="position-relative">
+          <div className="position-relative" title="Chọn hình ảnh cho câu hỏi">
             <input
               type="file"
               onChange={handleUploadImage}
@@ -74,7 +72,10 @@ const QuestionEditorSection: FC<{
             />
           </div>
 
-          <Dropdown id="timeoutDropdown">
+          <Dropdown
+            id="timeoutDropdown"
+            title="Chọn thời gian trả lời cho câu hỏi"
+          >
             <Dropdown.Toggle
               id="dropdown-basic"
               className="w-100 p-0 bg-transparent border-0 shadow-none"
@@ -91,7 +92,6 @@ const QuestionEditorSection: FC<{
                 className="text-start"
               />
             </Dropdown.Toggle>
-
             <Dropdown.Menu className="w-100 rounded-10px shadow-sm">
               {TIMEOUT_OPTIONS.map((item, key) => (
                 <Dropdown.Item
@@ -107,6 +107,7 @@ const QuestionEditorSection: FC<{
           </Dropdown>
 
           <FloatingLabel
+            title="Nhập điểm số cho câu hỏi"
             controlId="floatingInput"
             label="Nhập điểm số (0 - 100)"
             className="fs-14px"
@@ -125,10 +126,12 @@ const QuestionEditorSection: FC<{
           </FloatingLabel>
         </Col>
         <Col className="ps-12px ps-md-0">
-          <div className="fw-medium fs-22px mb-2">Soạn câu hỏi
-          <HelpToolTip>
-                      Soạn tiêu đề cho câu hỏi, lưu ý về kích thước tiêu đề
-                    </HelpToolTip></div>
+          <div className="fw-medium fs-22px mb-2">
+            Soạn câu hỏi
+            <HelpToolTip>
+              Soạn tiêu đề cho câu hỏi, lưu ý về kích thước tiêu đề
+            </HelpToolTip>
+          </div>
 
           <Row className="flex-column-reverse flex-md-row border m-0 rounded-10px">
             {newQuestion?.media?.length ? (

@@ -85,22 +85,29 @@ const ListQuest: NextPage = () => {
   return (
     <DashboardLayout>
       <Container fluid="lg" className={classNames('p-3', styles.disableScroll)}>
+        <Row className="my-3 justify-content-between">
+          <Col
+            xs={12}
+            lg={3}
+            xxl={2}
+            className="fs-22px mb-2 mb-lg-0 fw-medium"
+          >
+            <h1>Nhiệm vụ</h1>
+          </Col>
+          <Col>
+            <SearchBar
+              pageUrl="quests"
+              inputClassName="border border-primary mb-3"
+            />
+          </Col>
+        </Row>
+
         <div className="">
           <MyTabBar
             currentTab={toggleState}
             setCurrentTab={setToggleState}
             tabs={tabOptions}
           />
-          <Row
-            className={classNames('justify-content-center', styles.searchBar)}
-          >
-            <Col xs={12} sm={12} md={8}>
-              <SearchBar
-                pageUrl="quests"
-                inputClassName="border border-primary mb-3"
-              />
-            </Col>
-          </Row>
           <Row
             className={classNames(
               'justify-content-center m-0 my-4',
