@@ -52,7 +52,15 @@ const QuestionEditorSection: FC<{
         >
           <div className="fw-medium fs-22px">Cài đặt</div>
 
-          
+          <QuestionConfigBtn
+            prefixIcon={<IconQuestion type={type} />}
+            title={
+              <div className="fw-medium text-dark">
+                {questionTypeStyles[type].title}
+              </div>
+            }
+            suffixIcon=""
+          />
 
           <div className="position-relative">
             <input
