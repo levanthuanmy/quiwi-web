@@ -450,6 +450,7 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
 
             <QuestionMedia
               //timeout sẽ âm để tránh 1 số lỗi, đừng sửa chỗ này
+              questionTitle={game.currentQuestion?.question ?? ''}
               media={game.currentQuestion?.media ?? null}
               numStreak={0}
               numSubmission={numSubmission}
