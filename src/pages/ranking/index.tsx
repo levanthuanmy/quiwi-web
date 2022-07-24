@@ -40,13 +40,15 @@ const RankingPage: NextPage = () => {
   const router = useRouter()
   const q = router.query?.q?.toString()
   const userId = useAuth().getUser()?.id
-  const pageSize = 7
+  const pageSize = 20
 
   const { data, isValidating } = useSWR<
     TApiResponse<TPaginationResponse<TRankingItem>>
   >(
     [
-      q ? `/api/users/user/search-text-rank/${rankingTabs[currentRankingTab].type}?q=${q}` : `/api/users/user/ranking/${rankingTabs[currentRankingTab].type}`,
+      q
+        ? `/api/users/user/search-text-rank/${rankingTabs[currentRankingTab].type}?q=${q}`
+        : `/api/users/user/ranking/${rankingTabs[currentRankingTab].type}`,
       true,
       {
         pageIndex,
@@ -68,16 +70,28 @@ const RankingPage: NextPage = () => {
       <DashboardLayout>
         <div className="w-100 bg-secondary bg-transparent">
           <Container fluid="lg" className="p-3">
+            <Row className="my-3 justify-content-between">
+              <Col
+                xs={12}
+                lg={3}
+                xxl={3}
+                className="fs-22px mb-2 mb-lg-0 fw-medium"
+              >
+                <h1>Bảng xếp hạng</h1>
+              </Col>
+              <Col>
+                <SearchBar 
+                  pageUrl="ranking"
+                  inputClassName="border border-primary"
+                />
+              </Col>
+            </Row>
             <MyTabBar
               currentTab={currentRankingTab}
               setCurrentTab={setCurrentRankingTab}
               tabs={rankingTabs.map((tab) => tab.showType)}
             />
-
-            <br />
-
-            <SearchBar pageUrl="ranking" />
-
+            <br/>
             <RankingBoard
               rankingList={data?.response.items as TRankingItem[]}
             />

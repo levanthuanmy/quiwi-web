@@ -87,7 +87,7 @@ const AnswerEditorSection: FC<{
                     ])
                   }
                 >
-                  <div className="bi bi-plus-circle-fill fs-1 mb-0 text-primary cursor-pointer" />
+                  <div className="bi bi-plus-circle-fill fs-1 mb-0 text-primary cursor-pointer" title='Thêm câu trả lời'/>
                 </Col>
               )}
             </Row>

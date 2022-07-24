@@ -5,10 +5,12 @@ import { Col, Dropdown, FloatingLabel, Form, Image, Row } from 'react-bootstrap'
 import { EditorProps } from 'react-draft-wysiwyg'
 import { TQuestion } from '../../../types/types'
 import { RICH_TEXT_TOOLBAR, TIMEOUT_OPTIONS } from '../../../utils/constants'
-import HelpToolTip from '../../HelpToolTip/HelpToolTip'
-import { QuestionType } from '../../IconQuestion/IconQuestion'
+import IconQuestion, { QuestionType } from '../../IconQuestion/IconQuestion'
 import QuestionActionButton from '../../QuestionActionButton/QuestionActionButton'
 import QuestionConfigBtn from '../../QuestionConfigBtn/QuestionConfigBtn'
+import { QuestionTypeDescription } from '../../GameComponents/AnswerQuestionComponent/AnswerSectionFactory/AnswerSectionFactory'
+import HelpToolTip from '../../HelpToolTip/HelpToolTip'
+import { MyTooltip } from '../../MyToolTip/MyTooltip'
 const QuestionEditorSection: FC<{
   type: QuestionType
   questionTypeStyles: Record<
@@ -50,6 +52,16 @@ const QuestionEditorSection: FC<{
         >
           <div className="fw-medium fs-22px">Cài đặt</div>
 
+          <QuestionConfigBtn
+            prefixIcon={<IconQuestion type={type} />}
+            title={
+              <div className="fw-medium text-dark">
+                {questionTypeStyles[type].title}
+              </div>
+            }
+            suffixIcon=""
+          />
+
           <div className="position-relative">
             <input
               type="file"
@@ -70,7 +82,10 @@ const QuestionEditorSection: FC<{
             />
           </div>
 
-          <Dropdown id="timeoutDropdown">
+          <Dropdown
+            id="timeoutDropdown"
+            title="Chọn thời gian trả lời cho câu hỏi"
+          >
             <Dropdown.Toggle
               id="dropdown-basic"
               className="w-100 p-0 bg-transparent border-0 shadow-none"
@@ -87,7 +102,6 @@ const QuestionEditorSection: FC<{
                 className="text-start"
               />
             </Dropdown.Toggle>
-
             <Dropdown.Menu className="w-100 rounded-10px shadow-sm">
               {TIMEOUT_OPTIONS.map((item, key) => (
                 <Dropdown.Item
@@ -103,6 +117,7 @@ const QuestionEditorSection: FC<{
           </Dropdown>
 
           <FloatingLabel
+            title="Nhập điểm số cho câu hỏi"
             controlId="floatingInput"
             label="Nhập điểm số (0 - 100)"
             className="fs-14px"
