@@ -85,7 +85,7 @@ const ListQuest: NextPage = () => {
   return (
     <DashboardLayout>
       <Container fluid="lg" className={classNames('p-3', styles.disableScroll)}>
-        <Row className="my-3 justify-content-between">
+        <Row className="my-0 justify-content-between">
           <Col
             xs={12}
             lg={3}

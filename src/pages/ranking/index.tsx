@@ -70,7 +70,7 @@ const RankingPage: NextPage = () => {
       <DashboardLayout>
         <div className="w-100 bg-secondary bg-transparent">
           <Container fluid="lg" className="p-3">
-            <Row className="my-3 justify-content-between">
+            <Row className="my-0 justify-content-between">
               <Col
                 xs={12}
                 lg={3}
