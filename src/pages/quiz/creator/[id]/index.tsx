@@ -152,17 +152,13 @@ const QuizCreatorPage: NextPage = () => {
                 onEditQuestion={() => onEditQuestion(question.id!)}
               />
             ))}
-
-            <div ref={addQuestionRef}>
-              <AddingQuestionButtons quizId={quizId} />
-            </div>
           </Col>
           <Col xs="12" lg="4" className="mb-3 mb-lg-0 ps-12px ps-lg-0">
             <div className="fs-22px fw-medium">Tuỳ chọn</div>
 
             <div className="mt-3">
               <MyButton
-                className="text-white w-100 d-flex align-items-center justify-content-between"
+                className="text-white w-100 d-flex align-items-center justify-content-between text-uppercase fw-medium"
                 onClick={() => router.push(`/quiz/creator/${quizId}/sort`)}
                 variant="secondary"
               >
@@ -170,9 +166,12 @@ const QuizCreatorPage: NextPage = () => {
                 <div className="bi bi-arrow-down-up" />
               </MyButton>
             </div>
+            <div ref={addQuestionRef} className="mt-3">
+              <AddingQuestionButtons quizId={quizId} />
+            </div>
             <div className="mt-3">
               <MyButton
-                className="text-white w-100 d-flex align-items-center justify-content-between"
+                className="text-white w-100 d-flex align-items-center justify-content-between text-uppercase fw-medium"
                 onClick={handlePlay}
               >
                 Bắt đầu ngay

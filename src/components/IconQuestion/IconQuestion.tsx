@@ -18,7 +18,8 @@ export const questionTypeStyles: Record<
     icon: 'bi bi-check2',
     colorClassName: 'bg-primary',
     title: 'Một đáp án đúng',
-    description: 'Loại câu hỏi chọn một đáp án đúng chỉ hỗ trợ chọn duy nhất một đáp án đúng'
+    description:
+      'Loại câu hỏi chọn một đáp án đúng chỉ hỗ trợ chọn duy nhất một đáp án đúng',
   },
   multiple: {
     icon: 'bi bi-check2-all',
@@ -26,7 +27,7 @@ export const questionTypeStyles: Record<
     title: 'Nhiều đáp án đúng',
     description: `Loại câu hỏi chọn nhiều đáp án đúng cho phép 
     tạo nhiều đáp án đúng. Người chơi phải chọn đúng tất cả thì 
-    mới được cho là đúng`
+    mới được cho là đúng`,
   },
   fill: {
     icon: 'bi bi-pencil-square',
@@ -34,7 +35,7 @@ export const questionTypeStyles: Record<
     title: 'Điền vào chỗ trống',
     description: `Loại câu hỏi điền vào chỗ trống cho phép tạo 
     nhiều đáp án đúng. Người chơi chỉ cần điền đúng một trong 
-    các đáp án sẽ được cho là đúng`
+    các đáp án sẽ được cho là đúng`,
   },
   conjunction: {
     icon: 'bi bi-reception-1',
@@ -43,7 +44,7 @@ export const questionTypeStyles: Record<
     description: `Loại câu hỏi nối từ, các đáp án sẽ được tách 
     câu theo từng từ, người chơi cần nối các từ để tạo thành một 
     câu, được cho là đúng khi người chơi tạo thành câu đúng hoàn 
-    chỉnh`
+    chỉnh`,
   },
   poll: {
     icon: 'bi bi-file-earmark-bar-graph',
@@ -51,7 +52,7 @@ export const questionTypeStyles: Record<
     title: 'Bình chọn ý kiến',
     description: `Loại câu hỏi bình chọn không có đáp án đúng, 
     người chơi sẽ chọn và chủ phòng sẽ xem được số lượng câu trả 
-    lời của từng đáp án được chọn`
+    lời của từng đáp án được chọn`,
   },
   essay: {
     icon: 'bi bi-justify-left',
@@ -59,7 +60,7 @@ export const questionTypeStyles: Record<
     title: 'Trả lời tự do',
     description: `Loại câu trả lời tự do không có đáp án đúng, 
     cho phép người chơi nhập tự do các câu trả lời, chủ phòng 
-    sẽ xem được các đáp án được trả lời`
+    sẽ xem được các đáp án được trả lời`,
   },
 }
 
@@ -76,24 +77,22 @@ const IconQuestion: FC<IconQuestionProps> = ({
   showTitle = false,
 }) => {
   return (
-    <>
+    <div className={className} onClick={onClick}>
       <div
         className={classNames(
           'rounded-6px text-white d-flex justify-content-center align-items-center fs-18px cursor-pointer',
           questionTypeStyles[type].colorClassName,
-          styles.container,
-          className
+          styles.container
         )}
-        onClick={onClick}
       >
         <i className={questionTypeStyles[type].icon} />
       </div>
       {showTitle && (
-        <div className="fs-14px fw-medium pt-2">
+        <div className="fs-14px fw-medium pt-2 cursor-pointer">
           {questionTypeStyles[type].title}
         </div>
       )}
-    </>
+    </div>
   )
 }
 
