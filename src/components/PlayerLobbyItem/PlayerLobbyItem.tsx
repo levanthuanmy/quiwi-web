@@ -58,7 +58,7 @@ const PlayerLobbyItem: FC<PlayerLobbyItemProps> = (props: PlayerLobbyItemProps) 
             {' khỏi phòng? '}
           </div>
           <div className="text-secondary fs-24x text-warning">
-            Người chơi bị kick sẽ mất phần thưởng và lịch sử tham dự quiz này
+            Người chơi bị đuổi khỏi phòng sẽ mất phần thưởng và lịch sử tham dự quiz này
           </div>
         </div>
       </MyModal>

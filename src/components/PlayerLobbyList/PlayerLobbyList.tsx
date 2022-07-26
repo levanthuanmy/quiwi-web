@@ -48,15 +48,15 @@ const PlayerLobbyList: FC<PlayerLobbyListProps> = (props: PlayerLobbyListProps) 
           router.push('/my-lib')
         }}
       >
-        <div className="text-center h3 fw-bolder text-danger">Bạn đã bị kick!</div>
+        <div className="text-center h3 fw-bolder text-danger">Bạn đã bị đuổi khỏi phòng!</div>
         <div className="text-center fw-bold">
           <div className="text-secondary fs-24x">
               <span className="fw-bolder fs-24x  text-primary">
-{'Chủ phòng đã kick bạn'}
+{'Chủ phòng đã đuổi khỏi phòng bạn'}
                 </span>
           </div>
           <div className="text-secondary fs-24x text-warning">
-            Bạn sẽ mất phần thưởng và lịch sử tham dự quiz này do bị kick khỏi phòng
+            Bạn sẽ mất phần thưởng và lịch sử tham dự quiz này do bị đuổi khỏi phòng khỏi phòng
           </div>
         </div>
       </MyModal>
