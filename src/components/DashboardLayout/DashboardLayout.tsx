@@ -95,7 +95,7 @@ const DashboardLayout: FC<DashboardLayoutProps> = ({ children }) => {
           setShowModal(false)
           setInvitationInputError('')
         }}
-        header={<Modal.Title>Tham gia một quiz</Modal.Title>}
+        header={<Modal.Title>Tham gia một game</Modal.Title>}
         size="sm"
       >
         <div className="d-flex flex-column gap-3">

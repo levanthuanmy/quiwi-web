@@ -117,13 +117,13 @@ const Home: NextPage = () => {
   return (
     <DashboardLayout>
       <div className={classNames('w-100 min-vh-100 bg-light'/*, styles.bgFancy*/)}>
-        {/* <div>
+        <div>
           <Container fluid="lg" className="p-3">
             <Row>
               <Col xs="12" lg="12" className="pe-lg-2 pb-3 pb-lg-0">
                 <div className="border rounded-10px p-3 bg-white shadow">
                   <div className="fs-22px fw-medium pb-4">
-                    Tham gia một quiz  
+                    Tham gia một game
                   </div>
                   
                   <Row>
@@ -143,7 +143,7 @@ const Home: NextPage = () => {
                         className={`fw-medium text-white w-100`}
                         onClick={onJoinRoom}
                       >
-                        Tham gia ngay
+                        Vào phòng ngay
                       </MyButton>                   
                     </Col>
                   </Row>
@@ -151,7 +151,7 @@ const Home: NextPage = () => {
               </Col>
             </Row>
           </Container>
-        </div> */}
+        </div>
 
         <Container fluid="lg" className="p-3">
           {popularQuizzesResponse?.response.length ? (
