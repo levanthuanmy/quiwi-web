@@ -8,8 +8,6 @@ const HostPollVisualize: FC<{
   answersStatistic?: Record<string, number>
   answers?: TAnswer[]
 }> = ({ answersStatistic, answers }) => {
-console.log('answersStatistic', answersStatistic)
-console.log('answers', answers)
   const answersSubmittedData = useMemo(() => {
     let data: (string | number)[][] = [[0, 0, 0, 0]]
     try {
@@ -34,10 +32,6 @@ console.log('answers', answers)
       ...data,
     ]
   }, [answersStatistic, answers])
-  console.log(
-    'answersSubmittedData - answersSubmittedData',
-    answersSubmittedData
-  )
 
   const options = {
     legend: 'none',
@@ -48,6 +42,12 @@ console.log('answers', answers)
       textPosition: 'none',
     },
     backgroundColor: 'transparent',
+    annotations: {
+      textStyle: {
+        fontSize: 32,
+      },
+      alwaysOutside: true,
+    },
   }
 
   return (

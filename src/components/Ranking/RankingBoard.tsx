@@ -58,13 +58,10 @@ const RankingBoard: FC<{ rankingList: TRankingItem[] }> = ({ rankingList }) => {
             </td>
             <td className="pb-1 px-0">
               <div
-                className={classNames(
-                  'py-3 ps-2 text-nowrap',
-                  {
-                    'text-white bg-primary': user?.isHighlight,
-                    'bg-light': !user?.isHighlight,
-                  }
-                )}
+                className={classNames('py-3 ps-2 text-nowrap', {
+                  'text-white bg-primary': user?.isHighlight,
+                  'bg-light': !user?.isHighlight,
+                })}
               >
                 {user?.username}
               </div>
@@ -77,7 +74,7 @@ const RankingBoard: FC<{ rankingList: TRankingItem[] }> = ({ rankingList }) => {
                   'bg-light': !user?.isHighlight,
                 })}
               >
-                {user?.quantity}
+                {user?.quantity.toLocaleString('en-US')}
               </div>
             </td>
           </tr>

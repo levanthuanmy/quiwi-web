@@ -70,28 +70,18 @@ const RankingPage: NextPage = () => {
       <DashboardLayout>
         <div className="w-100 bg-secondary bg-transparent">
           <Container fluid="lg" className="p-3">
-            <Row className="my-0 justify-content-between">
-              <Col
-                xs={12}
-                lg={3}
-                xxl={3}
-                className="fs-22px mb-2 mb-lg-0 fw-medium"
-              >
-                <h1>Bảng xếp hạng</h1>
-              </Col>
-              <Col>
-                <SearchBar 
-                  pageUrl="ranking"
-                  inputClassName="border border-primary"
-                />
-              </Col>
-            </Row>
+            <h1>Bảng xếp hạng</h1>
+            <SearchBar
+              pageUrl="ranking"
+              inputClassName="border border-primary"
+            />
+            <br />
             <MyTabBar
               currentTab={currentRankingTab}
               setCurrentTab={setCurrentRankingTab}
               tabs={rankingTabs.map((tab) => tab.showType)}
             />
-            <br/>
+            <br />
             <RankingBoard
               rankingList={data?.response.items as TRankingItem[]}
             />
