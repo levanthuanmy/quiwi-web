@@ -76,7 +76,7 @@ function MyApp({ Component, pageProps }: AppProps) {
     '/host/lobby',
     '/lobby',
     '/quiz/[id]/play',
-    '/quiz/creator/[id]'
+    // '/quiz/creator/[id]'
   ])
 
   useEffect(() => {

@@ -21,9 +21,9 @@ import PlayerLobbyItem from '../PlayerLobbyItem/PlayerLobbyItem'
 import PlayerLobbyList from '../PlayerLobbyList/PlayerLobbyList'
 import BackgroundPicker from './BackgroundPicker/BackgroundPicker'
 import styles from './LobbyScreen.module.css'
-import MyModal from "../MyModal/MyModal";
-import {useSound} from "../../hooks/useSound/useSound";
-import {useUserSetting} from "../../hooks/useUserSetting/useUserSetting";
+import MyModal from '../MyModal/MyModal'
+import { useSound } from '../../hooks/useSound/useSound'
+import { useUserSetting } from '../../hooks/useUserSetting/useUserSetting'
 
 type LobbyScreenProps = {}
 
@@ -39,13 +39,15 @@ const LobbyScreen: FC<LobbyScreenProps> = () => {
   const { isMobile } = useScreenSize()
   const [showBackgroundModal, setShowBackgroundModal] = useState<boolean>(false)
 
-
-  const {addToast} = useToasts()
-  const [currentBackground, setCurrentBackground] = useState<string>(setting.gameBackgroundUrl)
+  const { addToast } = useToasts()
+  const [currentBackground, setCurrentBackground] = useState<string>(
+    setting.gameBackgroundUrl
+  )
   const authContext = useAuth()
   const user = authContext.getUser()
   const sound = useSound()
   const [isMute, setIsMute] = useState(sound.isMute)
+  const [showAlertOutRoom, setShowAlertOutRoom] = useState<boolean>(false)
 
   useEffect(() => {
     if (!game.gameSession) return
@@ -312,10 +314,10 @@ const LobbyScreen: FC<LobbyScreenProps> = () => {
         {renderQrModal()}
 
         <BackgroundPicker
-        show={showBackgroundModal}
-        onHide={() => setShowBackgroundModal(false)}
-        setCurrentBackground={setCurrentBackground}
-      />
+          show={showBackgroundModal}
+          onHide={() => setShowBackgroundModal(false)}
+          setCurrentBackground={setCurrentBackground}
+        />
       </div>
     </div>
   )
@@ -424,7 +426,11 @@ const LobbyScreen: FC<LobbyScreenProps> = () => {
     return (
       <div className="d-flex gap-3 px-3 pb-3 flex-wrap w-100">
         <div className="flex-fill">
-          <MyButton variant="danger" className={cn} onClick={handleLeaveRoom}>
+          <MyButton
+            variant="danger"
+            className={cn}
+            onClick={() => setShowAlertOutRoom(true)}
+          >
             <i className="bi bi-box-arrow-left fs-24px" />
             {!isMobile && 'RỜI PHÒNG'}
           </MyButton>
@@ -445,6 +451,22 @@ const LobbyScreen: FC<LobbyScreenProps> = () => {
             </MyButton>
           </div>
         )}
+
+        <MyModal
+          show={showAlertOutRoom}
+          onHide={() => {
+            setShowAlertOutRoom(false)
+          }}
+          header={<Modal.Title>Bạn đang rời khỏi phòng chờ</Modal.Title>}
+          inActiveButtonTitle="Rời khỏi"
+          activeButtonTitle="Ở lại"
+          inActiveButtonCallback={handleLeaveRoom}
+          activeButtonCallback={() => setShowAlertOutRoom(false)}
+        >
+          <div className="d-flex justify-content-center flex-column align-items-center gap-3">
+            <div className="h5">Bạn có chắc chắn muốn rời khỏi phòng</div>
+          </div>
+        </MyModal>
       </div>
     )
   }
