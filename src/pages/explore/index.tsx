@@ -80,9 +80,15 @@ const ExplorePage: NextPage = () => {
       <div className="w-100 bg-secondary bg-opacity-10 min-vh-100">
         <Container fluid="lg" className="p-3">
           <div className=" fw-medium mb-3">
-            <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}} >
-                  <h1>Quiz cộng đồng</h1>
-                </div>
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+              }}
+            >
+              <h1>Quiz cộng đồng</h1>
+            </div>
             <div className="text-muted fs-14px">
               Tham gia các Quiz cộng đồng để luyện tập, tích lũy kiến thức ❤️
             </div>
@@ -94,7 +100,7 @@ const ExplorePage: NextPage = () => {
               </div>
               <SearchBar pageUrl="explore" inputClassName="border-0" />
             </Col>
-            <Col xs="12" className='mb-3'>
+            <Col xs="12" className="mb-3">
               <div className="fw-medium mb-1 bi bi-journal-bookmark-fill d-flex gap-2 align-items-center">
                 Tìm theo thể loại
               </div>

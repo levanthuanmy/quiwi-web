@@ -33,11 +33,17 @@ const MyLibPage: NextPage = () => {
       <div className="w-100 bg-secondary bg-opacity-10 min-vh-100">
         <Container fluid="lg" className="p-3">
           {isValidating ? (
-            'fetching...'
+            <LoadingFullScreen />
           ) : (
             <Row>
               <Col xs="12" className="fw-medium mb-3">
-                <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}} >
+                <div
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                  }}
+                >
                   <h1>Quiz đã tạo</h1>
                 </div>
               </Col>
