@@ -1,38 +1,62 @@
-import { NextPage } from 'next'
-import { useRouter } from 'next/router'
-import { useEffect, useState } from 'react'
-import { Modal } from 'react-bootstrap'
+import {NextPage} from 'next'
+import {useRouter} from 'next/router'
+import React, {useEffect, useState} from 'react'
+import {Modal} from 'react-bootstrap'
 import CommunityGamePlay from '../../../../components/CommunityGameComponents/CommunityGamePlay/CommunityGamePlay'
 import GameModeScreen from '../../../../components/GameModeScreen/GameModeScreen'
 import MyModal from '../../../../components/MyModal/MyModal'
-import { TGameLobby } from '../../../../hooks/useGameSession/useGameSession'
-import { useMyleGameSession } from '../../../../hooks/usePracticeGameSession/useMyleGameSession'
-import { get, post } from '../../../../libs/api'
+import {GameManager, TGameLobby} from '../../../../hooks/useGameSession/useGameSession'
+import {useMyleGameSession} from '../../../../hooks/usePracticeGameSession/useMyleGameSession'
+import {get, post} from '../../../../libs/api'
 import {
-  TApiResponse,
+  TApiResponse, TExamDeadline,
   TGameModeEnum,
-  TGamePlayBodyRequest,
+  TGamePlayBodyRequest, TPlayer, TQuestion,
   TQuiz,
   TStartQuizRequest,
 } from '../../../../types/types'
-import { useUser } from '../../../../hooks/useUser/useUser'
+import {useUser} from '../../../../hooks/useUser/useUser'
 import {
   usePracticeGameSession
 } from "../../../../hooks/usePracticeGameSession/usePracticeGameSession";
+import Cookies from "universal-cookie";
+import {TJoinQuizRequest, TReconnectQuizRequest} from "../../../lobby/join";
+import LoadingBoard from "../../../../components/GameComponents/LoadingBoard/LoadingBoard";
+import {useTimer} from "../../../../hooks/useTimer/useTimer";
 
 const PlayCommunityQuizScreen: NextPage = () => {
   const router = useRouter()
-  const { id } = router.query
+  let id = Number(router.query.id)
   const myLeGameManager = useMyleGameSession()
   const practiceGameManager = usePracticeGameSession()
   const [isModeSelecting, setIsModeSelecting] = useState(false)
   const [gameMode, setMode] = useState<TGameModeEnum | null>(null)
   const user = useUser()
   const [error, setError] = useState('')
-
+  const [loading, setLoading] = useState<string | null>(null)
+  const timer = useTimer()
   useEffect(() => {
-    if (myLeGameManager.gameSession) setIsModeSelecting(false)
-    else setIsModeSelecting(true)
+    let gameManager: GameManager | null = null
+    if (myLeGameManager.gameSession)
+      gameManager = myLeGameManager
+    else if (practiceGameManager.gameSession)
+      gameManager = practiceGameManager
+
+    if (gameManager && gameManager?.gameSession) {
+      console.log("=>(index.tsx:53) Kết nối lại phòng ", gameManager.gameSession.invitationCode, " Mode ", gameManager.gameSession.mode);
+      setLoading('Đang kết nối lại...')
+      if (!gameManager.gameSocket || gameManager.gameSocket.disconnected) {
+        gameManager.connectGameSocket()
+        gameManager.gameSkOnce('connect', () => {
+          joinRoom(gameManager!)
+        })
+      } else {
+        joinRoom(gameManager!)
+      }
+    } else {
+      setLoading(null)
+      setIsModeSelecting(true)
+    }
   }, [])
 
   const modeSelected = (mode: TGameModeEnum) => {
@@ -82,13 +106,62 @@ const PlayCommunityQuizScreen: NextPage = () => {
     }
   }
 
+  const joinRoom = async (gameManager: GameManager) => {
+    if (!gameManager.gameSession) return
+    const cookies = new Cookies()
+    const accessToken: string = cookies.get('access-token')
+    let joinRoomRequest: TReconnectQuizRequest = {
+      invitationCode: gameManager.gameSession.invitationCode,
+    }
+
+    const body: TGamePlayBodyRequest<TReconnectQuizRequest> = {
+      socketId: gameManager.gameSocket!.id,
+      data: joinRoomRequest,
+    }
+
+    if (user?.id) {
+      // joinRoomRequest.token = accessToken
+      joinRoomRequest.userId = user?.id
+    }
+
+    try {
+      const response: TApiResponse<{
+        deadline: TExamDeadline
+        gameLobby: TGameLobby
+        player: TPlayer
+        question: TQuestion
+      }> = await post(
+        '/api/games/reconnect-community-game',
+        {},
+        body,
+        true
+      )
+
+      const data = response.response
+      console.log("console.log(\"=>(index.tsx:138) res1e2 ponse.redfsponse\"", data);
+      gameManager.gameSession = data.gameLobby
+      gameManager.currentQuestion = data.question
+      gameManager.player = data.player
+      gameManager.deadline = data.deadline
+
+      setMode(gameManager.gameSession.mode)
+      setIsModeSelecting(false)
+      setLoading(null)
+    } catch (error) {
+      console.log('Join quiz - error', error)
+      // alert((error as Error).message)
+    }
+  }
+
   const setGameMode = (mode: TGameModeEnum) => {
     modeSelected(mode)
   }
   return (
     <>
-      {isModeSelecting && <GameModeScreen setGameMode={setGameMode} />}
-      {!isModeSelecting && gameMode && <CommunityGamePlay mode={gameMode}/>}
+      {isModeSelecting && <GameModeScreen setGameMode={setGameMode}/>}
+      {!isModeSelecting && gameMode &&
+          <CommunityGamePlay mode={gameMode}/>
+      }
 
       <MyModal
         show={error.length > 0}
@@ -102,6 +175,8 @@ const PlayCommunityQuizScreen: NextPage = () => {
       >
         <div className="text-center">{error}</div>
       </MyModal>
+
+      <LoadingBoard loadingTitle={loading}/>
     </>
   )
 }

@@ -140,11 +140,7 @@ const QuestionMedia: FC<{
             <CountdownCircleTimer
               isPlaying={!timerContext.isShowAnswer}
               duration={timerContext.duration - 0.2}
-              initialRemainingTime={
-                endTime
-                  ? (endTime - new Date().getTime()) / 1000
-                  : timerContext.duration - 0.2
-              }
+              // initialRemainingTime={endTime ? (endTime - new Date().getTime()) / 1000 : timerContext.duration - 0.2}
               size={180}
               strokeWidth={12}
               // isSmoothColorTransition={true}
@@ -214,6 +210,7 @@ const QuestionMedia: FC<{
             <CountdownCircleTimer
               isPlaying={!timerContext.isShowAnswer}
               duration={timerContext.duration - 0.2}
+              // initialRemainingTime={endTime ? (endTime - new Date().getTime()) / 1000 : timerContext.duration - 0.2}
               size={180}
               strokeWidth={12}
               isSmoothColorTransition={true}

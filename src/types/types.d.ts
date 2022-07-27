@@ -406,3 +406,10 @@ export type TAnswerSubmit = {
   answer: string
   questionId?: number
 }
+
+export type TExamDeadline = {
+  duration: number
+  timeStart: number
+  timeLeft: number
+  timeEnd: number
+}

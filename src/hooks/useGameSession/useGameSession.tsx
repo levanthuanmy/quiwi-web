@@ -1,7 +1,7 @@
 import {Socket} from 'socket.io-client'
 import {MessageProps} from '../../components/GameComponents/ChatWindow/Message'
 import {
-  TAnswerSubmit, TDetailPlayer,
+  TAnswerSubmit, TDetailPlayer, TExamDeadline,
   TGameModeEnum,
   TGameRoundStatistic,
   TGameStatus,
@@ -51,6 +51,10 @@ export class GameManager {
 
   get lsSubmitedAnswerKey(): string {
     return this.key + 'recent-submit-question'
+  }
+
+  get lsDeadline(): string {
+    return this.key + 'deadline'
   }
 
   constructor() {
@@ -116,6 +120,17 @@ export class GameManager {
     this.writeGSLS()
   }
 
+
+  protected _deadline: TExamDeadline | null = null
+  get deadline(): TExamDeadline | null {
+    return this._deadline
+  }
+
+  set deadline(value: TExamDeadline | null) {
+    this._deadline = value
+    this.writeGSLS()
+  }
+
   nickName: string = 'Ẩn danh'
 
   sk = SocketManager()
@@ -153,6 +168,11 @@ export class GameManager {
       )
       if (submittedAnswerLs)
         this._submittedAnswer = JsonParse(submittedAnswerLs) as TAnswerSubmit
+
+      const lsdeadline = window.localStorage.getItem(this.lsDeadline)
+      if (lsdeadline) {
+        this._deadline = JSON.parse(lsdeadline) as TExamDeadline
+      }
     }
   }
 
@@ -170,12 +190,19 @@ export class GameManager {
         this.lsSubmitedAnswerKey,
         JSON.stringify(this._submittedAnswer)
       )
+
+      window.localStorage.setItem(
+        this.lsDeadline,
+        JSON.stringify(this._deadline)
+      )
     }
   }
 
   onListenLoading(data: any) {
     if (data.question?.question)
       this.currentQuestion = data.question?.question
+    if (data.game?.question)
+      this.currentQuestion = data.game.question
   }
 
   onListenCurrentQuestion(data: any) {
@@ -193,7 +220,6 @@ export class GameManager {
 
         if (data.gameLobby) {
           this.gameSession = data.gameLobby
-          console.log("=>(useGameSession.tsx:181)  this.gameSession",  this.gameSession);
         }
 
         if (event === 'loading') {
@@ -204,7 +230,6 @@ export class GameManager {
           this.currentQuestion = data.game.question
         }
 
-        console.log("=>(useGameSession.tsx:181) this.currentQuestion", this.currentQuestion);
       })
     } else {
       console.log(
@@ -245,6 +270,7 @@ export class GameManager {
       this.soundManager?.setGameSoundOn(false)
       this.gameSession = null
       this.currentQuestion = null
+      this.deadline = null
       this.submittedAnswer = null
     }
   }
