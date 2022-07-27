@@ -181,6 +181,7 @@ const QuestionEditorSection: FC<{
                     console.log('WYSIWYG error', error)
                   }
                 }}
+                stripPastedStyles={true}
               ></Editor>
             </Col>
           </Row>
