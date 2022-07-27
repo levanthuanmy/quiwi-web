@@ -127,7 +127,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
         if (lastSubmit) {
           addToast(
             <div>
-              <span className={'fw-bolder'}>{lastSubmit.nickname}</span> đã nộp
+              <span className={'fw-bolder'}>{lastSubmit.nickname}</span> đã trả lời
             </div>,
             {
               placement: 'bottom-left',

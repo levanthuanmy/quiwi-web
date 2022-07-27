@@ -59,7 +59,7 @@ const QuestionMedia: FC<{
   const formatNumSubmit = useCallback((numSubmit: number) => {
     return (
       <div className={styles.timer}>
-        <div className={styles.text}>Đã nộp</div>
+        <div className={styles.text}>Đã trả lời</div>
         <div
           className={classNames(
             'text-white fw-medium d-flex gap-2 align-items-center px-3',
@@ -169,7 +169,7 @@ const QuestionMedia: FC<{
         {/* Số người submit */}
         {!fromMedium && (
           <div className="d-flex flex-column gap-2">
-            <div className={cn('text-white', styles.timeoutTitle)}>Đã nộp</div>
+            <div className={cn('text-white', styles.timeoutTitle)}>Đã trả lời</div>
             <div className={'d-flex flex-column gap-3'}>
               <div
                 className={classNames(
