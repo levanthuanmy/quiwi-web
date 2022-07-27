@@ -54,7 +54,6 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
   useEffect(() => {
     handleSocket()
     resetState()
-    console.log("=>(CommunityAnswerBoard.tsx:58) gameManager", gameManager);
   }, [])
 
   function checkEndGame() {
@@ -69,10 +68,25 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
 
 
   function resetState() {
-    setLoading(null)
-    timer.setIsShowSkeleton(true)
-    setIsShowNext(false)
-    setIsNextEmitted(false)
+    if (gameManager?.gameSession) {
+      if (gameManager.gameSession.status == "10PLAYING" && gameManager.deadline && gameManager.deadline.timeLeft > 0) {
+        console.log("=>(CommunityAnswerBoard.tsx:77) startCounting", gameManager);
+        timer.startCounting(gameManager.deadline.timeLeft / 1000)
+        setLoading(null)
+      } else {
+        console.log("=>(CommunityAnswerBoard.tsx:77) gameManager", gameManager);
+        // console.log("=>(Commu1nityAnswerBoard.tsx:73) gameManager", gameManager);
+        // setLoading(null)
+        // timer.setIsShowSkeleton(false)
+        // setIsShowNext(false)
+        // setIsNextEmitted(false)
+      }
+    } else {
+      setLoading(null)
+      timer.setIsShowSkeleton(true)
+      setIsShowNext(false)
+      setIsNextEmitted(false)
+    }
   }
 
   const intervalRef = useRef<NodeJS.Timer | null>(null)
@@ -135,6 +149,7 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
       setTimeout(() => {
         setLoading(null)
       }, 1000)
+      console.log("=>(CommunityAnswerBoard.tsx:151) timer", timer);
       timer.stopCounting(true)
       timer.stopCountingSound(true)
       setViewResultData(data)
@@ -154,7 +169,6 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
     })
 
     gameManager.gameSkOn('loading', (data) => {
-      console.log("=>(ExamAnswerBoard.tsx:75) data", data);
       let question
       if (data?.question?.question) question = data.question.question
       if (data?.game?.question) question = data.game.question
@@ -265,6 +279,7 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
                 className={classNames('text-white fw-medium bg-warning')}
                 title={'Trả lời'}
                 onClick={() => {
+                  console.log("=>(CommunityAnswerBoard.tsx:281) timer", timer);
                   timer.stopCounting(false)
                 }}
               />

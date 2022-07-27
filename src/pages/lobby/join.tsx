@@ -17,6 +17,12 @@ export type TJoinQuizRequest = {
   invitationCode: string
 }
 
+export type TReconnectQuizRequest = {
+  userId?: number
+  invitationCode: string
+}
+
+
 const JoiningPage: NextPage = () => {
   const router = useRouter()
   const invitationCode = router.query?.invitationCode?.toString() || ''

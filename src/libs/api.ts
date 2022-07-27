@@ -58,13 +58,13 @@ const post = async <T>(
   headers: Record<string, string> = {}
 ): Promise<T> => {
   try {
-    // console.log("=>(api.ts:27) post", path);
+    console.log("=>(api.ts:27) post", path);
     if (isAuth) {
       const cookies = new Cookies()
       if (cookies.get('access-token'))
         headers['Authorization'] = `Bearer ${cookies.get('access-token')}`
     }
-    // console.log("=>(api.ts:27) post", headers);
+    console.log("=>(api.ts:27) post", data);
     const resp = await client.post<T>(path, data, {headers, params})
     return resp.data
   } catch (error: any) {

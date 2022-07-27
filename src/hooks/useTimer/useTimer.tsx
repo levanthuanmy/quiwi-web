@@ -59,7 +59,8 @@ export const TimerProvider = memo(({ children }: { children?: ReactNode }) => {
 
   const stopCounting = (stopUI: boolean) => {
     if (intervalRef && intervalRef.current) {
-      if (stopUI) {
+      console.log("=>(useTimer.tsx:88) stopCounting", duration, stopUI) ;
+      if (stopUI || countDown <= 0) {
         clearInterval(intervalRef.current)
         intervalRef.current = null
         setIsShowAnswer(true)
@@ -84,7 +85,10 @@ export const TimerProvider = memo(({ children }: { children?: ReactNode }) => {
   }
 
   const startCounting = (duration: number) => {
+    console.log("=>(useTimer.tsx:88) startCounting", duration);
     if (duration > 0) {
+      clearInterval(intervalRef.current)
+      console.log("=>(useTimer.tsx:88) startCounting", duration);
       let endDate = new Date()
       endDate.setSeconds(endDate.getSeconds() + duration)
       let endTime = Math.round(endDate.getTime())
@@ -99,6 +103,7 @@ export const TimerProvider = memo(({ children }: { children?: ReactNode }) => {
       setTimeout(() => {
         setIsSubmittable(true)
       }, 500)
+
 
       intervalRef.current = setInterval(() => {
         let curr = Math.round(new Date().getTime())
@@ -123,8 +128,10 @@ export const TimerProvider = memo(({ children }: { children?: ReactNode }) => {
     }
   }
 
-  const _value = React.useMemo(
-    () => ({
+  // const _value = React.useMemo(
+  //   () => (
+  const _value = {
+      // {
       isCounting,
       isSubmittable,
       isShowSkeleton,
@@ -139,24 +146,25 @@ export const TimerProvider = memo(({ children }: { children?: ReactNode }) => {
       stopCountingSound,
       startCounting,
       setIsCounting,
-    }),
-    [
-      isCounting,
-      isSubmittable,
-      isShowSkeleton,
-      isShowAnswer,
-      setIsSubmittable,
-      setIsShowSkeleton,
-      setIsShowAnswer,
-      countDown,
-      duration,
-      setDefaultDuration,
-      stopCounting,
-      stopCountingSound,
-      startCounting,
-      setIsCounting,
-    ]
-  )
+    }
+  //   ),
+  //   [
+  //     isCounting,
+  //     isSubmittable,
+  //     isShowSkeleton,
+  //     isShowAnswer,
+  //     setIsSubmittable,
+  //     setIsShowSkeleton,
+  //     setIsShowAnswer,
+  //     countDown,
+  //     duration,
+  //     setDefaultDuration,
+  //     stopCounting,
+  //     stopCountingSound,
+  //     startCounting,
+  //     setIsCounting,
+  //   ]
+  // )
   return (
     <TimerContext.Provider value={_value}>{children}</TimerContext.Provider>
   )

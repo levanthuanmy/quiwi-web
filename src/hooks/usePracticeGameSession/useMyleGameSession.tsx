@@ -1,11 +1,8 @@
 import { GameManager } from '../useGameSession/useGameSession'
 import { TSocketType } from '../useSocket/socketManager'
+import {TExamDeadline} from "../../types/types";
 
-type TExamDeadline = {
-  duration: number
-  timeStart: number
-  timeEnd: number
-}
+
 export class MyLeGameManager extends GameManager {
   override get key(): string {
     return 'MYLE-'
@@ -16,34 +13,6 @@ export class MyLeGameManager extends GameManager {
 
   get lsExamDeadline(): string {
     return this.key + 'deadline'
-  }
-
-  protected _examDeadline: TExamDeadline | null = null
-  get examDeadline(): TExamDeadline | null {
-    return this._examDeadline
-  }
-
-  set examDeadline(value: TExamDeadline | null) {
-    this._examDeadline = value
-    this.writeGSLS()
-  }
-
-  override writeGSLS() {
-    super.writeGSLS()
-    localStorage.setItem(
-      this.lsExamDeadline,
-      JSON.stringify(this._examDeadline)
-    )
-  }
-
-  override readGSLS() {
-    super.readGSLS()
-    if (typeof window !== 'undefined') {
-      const examDeadline = window.localStorage.getItem(this.lsExamDeadline)
-      if (examDeadline) {
-        this._examDeadline = JSON.parse(examDeadline)
-      }
-    }
   }
 
   override onListenLoading(data: any) {
@@ -59,7 +28,6 @@ export class MyLeGameManager extends GameManager {
 
   override clearGameSession() {
     super.clearGameSession()
-    this.examDeadline = null
   }
 
   override connectGameSocket() {

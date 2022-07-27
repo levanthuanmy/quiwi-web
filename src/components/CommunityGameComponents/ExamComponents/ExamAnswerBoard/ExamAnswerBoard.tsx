@@ -52,9 +52,8 @@ const ExamAnswerBoard: FC<ExamAnswerBoardProps> = ({
   const [showEndGame, setShowEndGame] = useState<boolean>(false)
 
   useEffect(() => {
-    console.log("=>(ExamAnswerBoard.tsx:49) asduhjasuidhasuidh");
     handleSocket()
-    setCurrentQuestionIndex(0)
+    setCurrentQuestionIndex(gameManager?.currentQuestion?.orderPosition ?? 0)
   }, [])
 
   useEffect(() => {
@@ -69,14 +68,11 @@ const ExamAnswerBoard: FC<ExamAnswerBoardProps> = ({
     if (!gameManager.gameSocket) return
 
     gameManager.gameSkOnce('game-started', (data) => {
-      console.log("=>(ExamAnswerBoard.tsx:70) data", data);
-      gameManager.examDeadline = data.deadline
-      console.log("=>(ExamAnswerBoard.tsx:68) timeEnd", data);
+      gameManager.deadline = data.deadline
       setUserAnswers(Array(gameManager.gameSession?.quiz.questions.length).fill({answerIds: [], answer: ''}))
-      if (gameManager.examDeadline) {
-        const duration = gameManager.examDeadline?.timeEnd - gameManager.examDeadline?.timeStart;
+      if (gameManager.deadline) {
+        const duration = gameManager.deadline?.timeEnd - gameManager.deadline?.timeStart;
         timer.startCounting(duration / 1000 ?? 0)
-        console.log("=>(ExamAnswerBoard.tsx:68) timeEnd", duration);
         setLoading(null)
       } else {
         setLoading("Load game lỗi, xin vui lòng thoát phòng!")
@@ -87,9 +83,9 @@ const ExamAnswerBoard: FC<ExamAnswerBoardProps> = ({
     gameManager.gameSkOn('loading', (data) => {
       if (data.loading == 4) {
         timer.setIsShowSkeleton(true)
-        gameManager.examDeadline = data.game.deadline
-        if (gameManager.examDeadline) {
-          const duration = gameManager.examDeadline?.timeEnd - gameManager.examDeadline?.timeStart;
+        gameManager.deadline = data.game.deadline
+        if (gameManager.deadline) {
+          const duration = gameManager.deadline?.timeEnd - gameManager.deadline?.timeStart;
           timer.setDefaultDuration(duration / 1000)
         }
         setLoading('Chuẩn bị!')
@@ -329,7 +325,7 @@ const ExamAnswerBoard: FC<ExamAnswerBoardProps> = ({
                 key={gameManager.currentQuestion.orderPosition}
                 className={styles.questionMedia}
                 questionTitle={gameManager.currentQuestion?.question ?? ''}
-                endTime={gameManager.examDeadline?.timeEnd}
+                endTime={gameManager.deadline?.timeEnd}
             />
         }
 
