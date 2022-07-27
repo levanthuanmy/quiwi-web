@@ -16,24 +16,30 @@ import {
   TStartQuizRequest,
 } from '../../../../types/types'
 import { useUser } from '../../../../hooks/useUser/useUser'
+import {
+  usePracticeGameSession
+} from "../../../../hooks/usePracticeGameSession/usePracticeGameSession";
 
 const PlayCommunityQuizScreen: NextPage = () => {
   const router = useRouter()
   const { id } = router.query
-  const myleGameSession = useMyleGameSession()
+  const myLeGameManager = useMyleGameSession()
+  const practiceGameManager = usePracticeGameSession()
   const [isModeSelecting, setIsModeSelecting] = useState(false)
+  const [gameMode, setMode] = useState<TGameModeEnum | null>(null)
   const user = useUser()
   const [error, setError] = useState('')
 
   useEffect(() => {
-    if (myleGameSession.gameSession) setIsModeSelecting(false)
+    if (myLeGameManager.gameSession) setIsModeSelecting(false)
     else setIsModeSelecting(true)
   }, [])
 
   const modeSelected = (mode: TGameModeEnum) => {
-    if (!myleGameSession.gameSocket) {
-      myleGameSession.connectGameSocket()
-      myleGameSession.gameSkOnce('connect', () => {
+    const gameManager = mode === "10CLASSIC" ? practiceGameManager : myLeGameManager
+    if (!gameManager.gameSocket) {
+      gameManager.connectGameSocket()
+      gameManager.gameSkOnce('connect', () => {
         startQuiz(mode)
       })
     } else {
@@ -49,40 +55,29 @@ const PlayCommunityQuizScreen: NextPage = () => {
       }
       if (user?.id) {
         msg.userId = user?.id
+        msg.token = user?.token.accessToken
       }
+
 
       const quizResponse: TApiResponse<TQuiz> = await get(
         `/api/quizzes/quiz/${Number(id)}`,
         false
       )
 
-      const body: TGamePlayBodyRequest<TStartQuizRequest> = {
-        socketId: myleGameSession.gameSocket!.id,
-        data: {
-          ...msg,
-          deadline:
-            (quizResponse?.response?.questions?.reduce(
-              (a, b) => a + b.duration,
-              0
-            ) || 0) / 60,
-        },
+      const body: TStartQuizRequest = {
+        ...msg,
+        deadline:
+          (quizResponse?.response?.questions?.reduce(
+            (a, b) => a + b.duration,
+            0
+          ) || 0) / 60,
       }
-
-      const response: TApiResponse<TGameLobby> = await post(
-        'api/games/start-community-quiz',
-        {},
-        body,
-        true
-      )
-
-      if (response.response) {
-        myleGameSession.clearGameSession()
-        myleGameSession.gameSession = response.response
-        console.log('startQuiz - response.response', response.response)
-        setIsModeSelecting(false)
-      }
+      const gameManager = mode === "10CLASSIC" ? practiceGameManager : myLeGameManager
+      setMode(mode)
+      gameManager.gameSkEmit("start-game", body)
+      setIsModeSelecting(false)
     } catch (error) {
-      console.log('=>(index.tsx:83) error', error)
+      console.log('=>(index.tsx:83) startQuiz error', error)
       setError((error as Error).message)
     }
   }
@@ -93,7 +88,8 @@ const PlayCommunityQuizScreen: NextPage = () => {
   return (
     <>
       {isModeSelecting && <GameModeScreen setGameMode={setGameMode} />}
-      {!isModeSelecting && <CommunityGamePlay />}
+      {!isModeSelecting && gameMode && <CommunityGamePlay mode={gameMode}/>}
+
       <MyModal
         show={error.length > 0}
         onHide={() => setError('')}

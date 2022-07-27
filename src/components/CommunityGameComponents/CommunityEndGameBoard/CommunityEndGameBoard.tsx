@@ -8,9 +8,10 @@ import useScreenSize from '../../../hooks/useScreenSize/useScreenSize'
 import { get } from '../../../libs/api'
 import { TGameRound } from '../../../types/types'
 import MyButton from '../../MyButton/MyButton'
+import {GameManager} from "../../../hooks/useGameSession/useGameSession";
 
 const CommunityEndGameBoard: FC<{
-  gameSessionHook: any
+  gameSessionHook: GameManager
   onOutRoomInEndGameBoard: () => void
   showEndGame: boolean
 }> = ({ gameSessionHook, onOutRoomInEndGameBoard, showEndGame }) => {
@@ -22,7 +23,7 @@ const CommunityEndGameBoard: FC<{
   const handleVoting = async (type: 'UP' | 'DOWN') => {
     try {
       const { isAuth } = auth
-      const { player } = gameSessionHook
+      const player = gameSessionHook.player
       const { id } = router.query
       if (isAuth) {
         await get(`/api/quizzes/vote-quiz-auth/${id}?vote=${type}`, true)
@@ -44,8 +45,8 @@ const CommunityEndGameBoard: FC<{
   }
 
   const mappedEndGameQuestion = useMemo(() => {
-    const gameRounds: TGameRound[] =
-      _.get(gameSessionHook, 'player.gameRounds') || []
+    const gameRounds: TGameRound[] = gameSessionHook.player?.gameRounds || []
+    console.log("=>(CommunityEndGameBoard.tsx:50) gameRounds", gameRounds);
     let result: {
       correctQuestions: Record<number, TGameRound>
       incorrectQuestions: Record<number, TGameRound>

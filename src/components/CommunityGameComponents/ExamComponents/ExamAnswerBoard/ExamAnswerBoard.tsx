@@ -1,13 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import classNames from 'classnames'
 import _ from 'lodash'
-import { FC, memo, useEffect, useMemo, useState } from 'react'
-import { Col, Image, Row } from 'react-bootstrap'
-import { ColorHex, CountdownCircleTimer } from 'react-countdown-circle-timer'
-import { useMyleGameSession } from '../../../../hooks/usePracticeGameSession/useMyleGameSession'
+import React, {FC, memo, useEffect, useMemo, useState} from 'react'
+import {Col, Image, Row} from 'react-bootstrap'
+import {ColorHex, CountdownCircleTimer} from 'react-countdown-circle-timer'
+import {useMyleGameSession} from '../../../../hooks/usePracticeGameSession/useMyleGameSession'
 import useScreenSize from '../../../../hooks/useScreenSize/useScreenSize'
-import { useTimer } from '../../../../hooks/useTimer/useTimer'
-import FullScreenLoader from '../../../FullScreenLoader/FullScreenLoader'
+import {useTimer} from '../../../../hooks/useTimer/useTimer'
 import {
   AnswerSectionFactory,
   QuestionTypeDescription,
@@ -15,45 +14,111 @@ import {
 import MyButton from '../../../MyButton/MyButton'
 import AnswerSheet from '../AnswerSheet/AnswerSheet'
 import styles from './ExamAnswerBoard.module.css'
+import {TQuestion, TViewResult} from "../../../../types/types";
+import LoadingBoard from "../../../GameComponents/LoadingBoard/LoadingBoard";
+import CommunityEndGameBoard from "../../CommunityEndGameBoard/CommunityEndGameBoard";
+import {useRouter} from "next/router";
+import {UserAndProcessInfo} from "../../../GameComponents/UtilComponents/UserAndProcessInfo";
+import {QuestionMedia} from "../../../GameComponents/QuestionMedia/QuestionMedia";
 
 export type UserAnswer = {
   answer: string
   answerIds: number[]
 }
-const ExamAnswerBoard: FC = () => {
-  const myleGameSession = useMyleGameSession()
+
+type ExamAnswerBoardProps = {
+  className?: string
+  isShowHostControl: boolean
+  setIsShowHostControl: React.Dispatch<React.SetStateAction<boolean>>
+}
+
+const ExamAnswerBoard: FC<ExamAnswerBoardProps> = ({
+                                                     className,
+                                                     isShowHostControl,
+                                                     setIsShowHostControl,
+                                                   }) => {
+  const gameManager = useMyleGameSession()
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0)
-  const user = myleGameSession.gameSession?.host
-  const quiz = myleGameSession.gameSession?.quiz
-  const questions = quiz?.questions
-  const questionsLength = questions?.length ?? 0
-  const currentQuestion = _.get(questions, currentQuestionIndex)
   let answerSectionFactory: AnswerSectionFactory
   const timer = useTimer()
+
   const [userAnswers, setUserAnswers] = useState<UserAnswer[]>([]) // answer each question of user that will be submitted to server
-  const timeEnd = myleGameSession.examDeadline?.timeEnd
-  const { fromMedium } = useScreenSize()
 
-  // const [duration, setDuration] = useState<number>()
+  const router = useRouter()
+  const {fromMedium} = useScreenSize()
+  const [loading, setLoading] = useState<string | null>(null)
+  const [viewResultData, setViewResultData] = useState<TViewResult>()
+  const [isShowEndGame, setIsShowEndGame] = useState<boolean>(false)
+  const [showEndGame, setShowEndGame] = useState<boolean>(false)
+
   useEffect(() => {
-    if (timeEnd) {
-      const currentDuration = timeEnd - new Date().getTime()
-      // setDuration(currentDuration)
-      // timer.setDefaultDuration(currentDuration)
+    console.log("=>(ExamAnswerBoard.tsx:49) asduhjasuidhasuidh");
+    handleSocket()
+    setCurrentQuestionIndex(0)
+  }, [])
 
-      if (!timer.isCounting) {
-        timer.startCounting(currentDuration / 1000)
-      }
-      // timer.startCounting(currentDuration)
+  useEffect(() => {
+    const question = gameManager.getQuestionWithID(currentQuestionIndex)
+    if (question) {
+      gameManager.currentQuestion = question
     }
-  }, [timeEnd])
 
-  const init = () => {
-    setUserAnswers(Array(questionsLength).fill({ answerIds: [], answer: '' }))
+  }, [currentQuestionIndex])
+
+  const handleSocket = () => {
+    if (!gameManager.gameSocket) return
+
+    gameManager.gameSkOnce('game-started', (data) => {
+      console.log("=>(ExamAnswerBoard.tsx:70) data", data);
+      gameManager.examDeadline = data.deadline
+      console.log("=>(ExamAnswerBoard.tsx:68) timeEnd", data);
+      setUserAnswers(Array(gameManager.gameSession?.quiz.questions.length).fill({answerIds: [], answer: ''}))
+      if (gameManager.examDeadline) {
+        const duration = gameManager.examDeadline?.timeEnd - gameManager.examDeadline?.timeStart;
+        timer.startCounting(duration / 1000 ?? 0)
+        console.log("=>(ExamAnswerBoard.tsx:68) timeEnd", duration);
+        setLoading(null)
+      } else {
+        setLoading("Load game lỗi, xin vui lòng thoát phòng!")
+      }
+    })
+
+
+    gameManager.gameSkOn('loading', (data) => {
+      if (data.loading == 4) {
+        timer.setIsShowSkeleton(true)
+        gameManager.examDeadline = data.game.deadline
+        if (gameManager.examDeadline) {
+          const duration = gameManager.examDeadline?.timeEnd - gameManager.examDeadline?.timeStart;
+          timer.setDefaultDuration(duration / 1000)
+        }
+        setLoading('Chuẩn bị!')
+        gameManager.submittedAnswer = null
+      } else if (data?.loading) {
+        setLoading(data.loading)
+      }
+    })
+
+    gameManager.gameSkOn('game-ended', (data: TViewResult) => {
+      timer.countDown >= 0 ? setLoading('Đã trả lời!') : setLoading('Hết giờ!')
+      setTimeout(() => {
+        setLoading(null)
+      }, 1000)
+      timer.stopCounting(true)
+      timer.stopCountingSound(true)
+      setViewResultData(data)
+
+      setShowEndGame(true)
+    })
+
+    gameManager.gameSkOn('view-result', (data: TViewResult) => {
+      gameManager.player = data?.player ?? null
+    })
+
   }
 
   const renderAnswersSection = () => {
-    if (!currentQuestion) return
+    if (!gameManager.currentQuestion) return
     if (!answerSectionFactory)
       answerSectionFactory = new AnswerSectionFactory(
         false,
@@ -61,13 +126,14 @@ const ExamAnswerBoard: FC = () => {
         true
       )
     return answerSectionFactory.initAnswerSectionForType(
-      currentQuestion.type,
-      currentQuestion,
+      gameManager.currentQuestion.type,
+      gameManager.currentQuestion,
       (answer) => {
-        updateAnswerAtIndex(currentQuestionIndex, answer)
+        if (gameManager.currentQuestion)
+          updateAnswerAtIndex(gameManager.currentQuestion.orderPosition, answer)
       },
       undefined,
-      getUserAnswersAtIndex(currentQuestionIndex)
+      getUserAnswersAtIndex(gameManager.currentQuestion.orderPosition)
       // answersStatistic
     )
   }
@@ -78,6 +144,11 @@ const ExamAnswerBoard: FC = () => {
 
   const handlePrevQuestion = () => {
     setCurrentQuestionIndex((prev) => prev - 1)
+  }
+
+  const onOutRoomInEndGameBoard = () => {
+    gameManager.clearGameSession()
+    router.push('/home')
   }
 
   const updateAnswerAtIndex = (index: number, answer: any) => {
@@ -112,29 +183,29 @@ const ExamAnswerBoard: FC = () => {
   }
 
   const submit = () => {
-    myleGameSession.gameSkEmit('submit-answer', {
-      invitationCode: myleGameSession.gameSession?.invitationCode,
+    gameManager.gameSkEmit('submit-answer', {
+      invitationCode: gameManager.gameSession?.invitationCode,
       answers: userAnswers,
     })
+    if (gameManager.gameSession && gameManager.gameSocket && gameManager.isHost) {
+      const msg = {invitationCode: gameManager.gameSession.invitationCode}
+      gameManager.gameSkEmit('game-ended', msg)
+    }
   }
 
-  useEffect(() => {
-    const configTimerForExamMode = () => {
-      timer.stopCounting(true)
-      timer.stopCountingSound(true)
-      timer.setIsShowSkeleton(false)
-      timer.setIsSubmittable(true)
-      timer.setIsCounting(false)
-      timer.setIsShowAnswer(false)
-    }
-
-    configTimerForExamMode()
-    return () => configTimerForExamMode()
-  }, [])
-
-  useEffect(() => {
-    init()
-  }, [questionsLength])
+  // useEffect(() => {
+  //   const configTimerForExamMode = () => {
+  //     timer.stopCounting(true)
+  //     timer.stopCountingSound(true)
+  //     timer.setIsShowSkeleton(false)
+  //     timer.setIsSubmittable(true)
+  //     timer.setIsCounting(false)
+  //     timer.setIsShowAnswer(false)
+  //   }
+  //
+  //   configTimerForExamMode()
+  //   return () => configTimerForExamMode()
+  // }, [])
 
   const isAnswerQuestionAtIndex = (index: number): boolean => {
     if (userAnswers[index].answer !== '') {
@@ -154,188 +225,138 @@ const ExamAnswerBoard: FC = () => {
     return count
   }, [userAnswers])
 
-  return timer.duration !== undefined ? (
+  return !showEndGame ? (
     <>
       <div
         className={classNames(
-          'd-flex flex-column position-relative flex-grow-1'
+          'd-flex flex-column position-relative',
+          className
         )}
-        style={{ overflowX: 'hidden' }}
+        style={{overflowX: 'hidden'}}
       >
-        {
-          // currentQuestion?.question &&
-          <div
-            className={classNames(
-              'd-flex flex-column bg-dark bg-opacity-50 rounded-10px shadow mb-2'
-            )}
-          >
-            <div className="pt-2 px-2 d-flex align-items-center gap-3">
-              <Image
-                src={user?.avatar ?? '/assets/default-avatar.png'}
-                width={40}
-                height={40}
-                className="rounded-circle"
-                alt=""
-              />
-              <div className="fw-medium fs-20px text-white">
-                {user?.name ?? 'Ẩn danh'}
-              </div>
-            </div>
-            <div className="px-2 pb-2 text-white d-flex gap-3 align-items-center justify-content-between">
-              {/*câu hỏi hiện tại*/}
-              <div className="fw-medium text-primary">
-                Số câu: {questionsLength}
-              </div>
-              <div className="fw-medium text-primary">
-                Đã trả lời: {countAnswer}
-              </div>
-              <div className="fw-medium text-secondary">
-                Chưa trả lời: {questionsLength - countAnswer}
-              </div>
-            </div>
-          </div>
+        {gameManager.currentQuestion &&
+            <UserAndProcessInfo
+                viewResultData={viewResultData}
+            />
         }
 
         {/* hình ảnh */}
-        <Row className="bg-white w-100 m-0 p-0">
-          {/* small screen */}
-          <Col
-            xs="12"
-            className={classNames('align-self-center', {
-              'd-block': !fromMedium,
-              'd-none': fromMedium,
-            })}
-          >
-            Thời gian còn lại
-            {Math.floor(timer.countDown / 60)} : {timer.countDown % 60}
-          </Col>
+        {/*<Row className="bg-white w-100 m-0 p-0">*/}
+        {/*  /!* small screen *!/*/}
+        {/*  <Col*/}
+        {/*    xs="12"*/}
+        {/*    className={classNames('align-self-center', {*/}
+        {/*      'd-block': !fromMedium,*/}
+        {/*      'd-none': fromMedium,*/}
+        {/*    })}*/}
+        {/*  >*/}
+        {/*    Thời gian còn lại*/}
+        {/*    {Math.floor(timer.countDown / 60)} : {timer.countDown % 60}*/}
+        {/*  </Col>*/}
 
-          <Col
-            xs="auto"
-            className={classNames('align-self-center', {
-              'd-block': fromMedium,
-              'd-none': !fromMedium,
-            })}
-          >
-            <CountdownCircleTimer
-              strokeLinecap="square"
-              isPlaying={true}
-              duration={timer.duration}
-              size={160}
-              strokeWidth={18}
-              onComplete={() => console.log('Het gio')}
-              colors={timerColor}
-              colorsTime={[
-                6, 5, 4, 3, 2.5, 2, 1.5, 1.25, 1, 0.75, 0.5, 0.25, 0,
-              ]}
-            >
-              {() => (
-                <div className="fw-medium fs-24px text-primary">
-                  Câu {currentQuestionIndex + 1}/
-                  <span className="text-secondary fs-20px">
-                    {questionsLength}
-                  </span>
-                </div>
-              )}
-            </CountdownCircleTimer>
-          </Col>
+        {/*  <Col*/}
+        {/*    xs="auto"*/}
+        {/*    className={classNames('align-self-center', {*/}
+        {/*      'd-block': fromMedium,*/}
+        {/*      'd-none': !fromMedium,*/}
+        {/*    })}*/}
+        {/*  >*/}
+        {/*    <CountdownCircleTimer*/}
+        {/*      strokeLinecap="square"*/}
+        {/*      isPlaying={true}*/}
+        {/*      duration={timer.duration}*/}
+        {/*      size={160}*/}
+        {/*      strokeWidth={18}*/}
+        {/*      onComplete={() => console.log('Het gio')}*/}
+        {/*      colors={timerColor}*/}
+        {/*      colorsTime={[*/}
+        {/*        6, 5, 4, 3, 2.5, 2, 1.5, 1.25, 1, 0.75, 0.5, 0.25, 0,*/}
+        {/*      ]}*/}
+        {/*    >*/}
+        {/*      {() => (*/}
+        {/*        <div className="fw-medium fs-24px text-primary">*/}
+        {/*          Câu {currentQuestionIndex + 1}/*/}
+        {/*          <span className="text-secondary fs-20px">*/}
+        {/*            {questionsLength}*/}
+        {/*          </span>*/}
+        {/*        </div>*/}
+        {/*      )}*/}
+        {/*    </CountdownCircleTimer>*/}
+        {/*  </Col>*/}
 
-          <Col className="text-center">
-            <Image
-              src={
-                currentQuestion?.media || '/assets/default-question-image.png'
-              }
-              height="260px"
-              width="auto"
-              alt=""
-              className="mw-100 object-fit-scale-down"
+        {/*  <Col className="text-center">*/}
+        {/*    <Image*/}
+        {/*      src={*/}
+        {/*        currentQuestion?.media || '/assets/default-question-image.png'*/}
+        {/*      }*/}
+        {/*      height="260px"*/}
+        {/*      width="auto"*/}
+        {/*      alt=""*/}
+        {/*      className="mw-100 object-fit-scale-down"*/}
+        {/*    />*/}
+        {/*  </Col>*/}
+
+        {/*  <Col*/}
+        {/*    xs="auto"*/}
+        {/*    className={classNames('align-self-center', {*/}
+        {/*      'd-block': fromMedium,*/}
+        {/*      'd-none': !fromMedium,*/}
+        {/*    })}*/}
+        {/*  >*/}
+        {/*    <CountdownCircleTimer*/}
+        {/*      strokeLinecap="square"*/}
+        {/*      isPlaying={true}*/}
+        {/*      duration={timer.duration}*/}
+        {/*      size={160}*/}
+        {/*      strokeWidth={18}*/}
+        {/*      onComplete={() => console.log('Het gio')}*/}
+        {/*      colors={timerColor}*/}
+        {/*      colorsTime={[*/}
+        {/*        6, 5, 4, 3, 2.5, 2, 1.5, 1.25, 1, 0.75, 0.5, 0.25, 0,*/}
+        {/*      ]}*/}
+        {/*    >*/}
+        {/*      {({remainingTime}) => (*/}
+        {/*        <FormatTime remainingTime={remainingTime}/>*/}
+        {/*      )}*/}
+        {/*    </CountdownCircleTimer>*/}
+        {/*  </Col>*/}
+        {/*</Row>*/}
+        {gameManager.currentQuestion &&
+            <QuestionMedia
+                media={gameManager.currentQuestion.media ?? null}
+                numStreak={0}
+                numSubmission={0}
+                key={gameManager.currentQuestion.orderPosition}
+                className={styles.questionMedia}
+                questionTitle={gameManager.currentQuestion?.question ?? ''}
+                endTime={gameManager.examDeadline?.timeEnd}
             />
-          </Col>
+        }
 
-          <Col
-            xs="auto"
-            className={classNames('align-self-center', {
-              'd-block': fromMedium,
-              'd-none': !fromMedium,
-            })}
-          >
-            <CountdownCircleTimer
-              strokeLinecap="square"
-              isPlaying={true}
-              duration={timer.duration}
-              size={160}
-              strokeWidth={18}
-              onComplete={() => console.log('Het gio')}
-              colors={timerColor}
-              colorsTime={[
-                6, 5, 4, 3, 2.5, 2, 1.5, 1.25, 1, 0.75, 0.5, 0.25, 0,
-              ]}
-            >
-              {({ remainingTime }) => (
-                <FormatTime remainingTime={remainingTime} />
-              )}
-            </CountdownCircleTimer>
-          </Col>
-        </Row>
-
-        <div
-          className={classNames(
-            'bg-white p-3 pb-0'
-            // styles.questionTitle,
-            // { 'rounded-10px': fromMedium }
-          )}
-        >
-          <div className="h4">Câu hỏi:</div>
-          <div
-            dangerouslySetInnerHTML={{
-              __html: currentQuestion?.question ?? '',
-            }}
-          />
-        </div>
-        {currentQuestion && (
-          <div
-            className={classNames(
-              'noselect px-2 py-2 fs-4 fw-bold text-white mb-2 bg-dark bg-opacity-50 d-flex justify-content-between align-items-center'
-              // { 'rounded-10px': fromMedium }
-            )}
-          >
-            <div className={''}>
-              <i
-                className={classNames(
-                  'fs-20px text-white me-2',
-                  QuestionTypeDescription[currentQuestion.type].icon
-                )}
-              />
-              {QuestionTypeDescription[currentQuestion.type].title}
-            </div>
-          </div>
-        )}
-
-        <div style={{ marginLeft: -5, marginRight: -5 }}>
+        <div style={{marginLeft: -5, marginRight: -5}}>
           {renderAnswersSection()}
         </div>
-
-        <div className="d-flex gap-2">
-          <MyButton
-            className="text-white"
-            onClick={handlePrevQuestion}
-            disabled={currentQuestionIndex === 0}
-          >
-            Câu trước
-          </MyButton>
-          <MyButton
-            className="text-white"
-            onClick={handleNextQuestion}
-            disabled={currentQuestionIndex === questionsLength - 1}
-          >
-            Câu sau
-          </MyButton>
-          <MyButton className="text-white" onClick={submit}>
-            Nộp bài
-          </MyButton>
-        </div>
-        {/* {renderHostControlSystem()} */}
-        {/* {getEndGameModal()} */}
+        {gameManager.gameSession &&
+            <div className="d-flex gap-2">
+                <MyButton
+                    className="text-white"
+                    onClick={handlePrevQuestion}
+                    disabled={currentQuestionIndex === 0}
+                >
+                    Câu trước
+                </MyButton>
+                <MyButton
+                    className="text-white"
+                    onClick={handleNextQuestion}
+                    disabled={currentQuestionIndex === (gameManager.gameSession.quiz.questions.length - 1)}
+                >
+                    Câu sau
+                </MyButton>
+                <MyButton className="text-white" onClick={submit}>
+                    Nộp bài
+                </MyButton>
+            </div>
+        }
       </div>
       <AnswerSheet
         userAnswers={userAnswers}
@@ -343,17 +364,23 @@ const ExamAnswerBoard: FC = () => {
         currentQuestionIndex={currentQuestionIndex}
         submit={submit}
       />
+      <LoadingBoard loadingTitle={loading}/>
     </>
   ) : (
-    <FullScreenLoader isLoading />
+    <CommunityEndGameBoard
+      gameSessionHook={gameManager}
+      onOutRoomInEndGameBoard={onOutRoomInEndGameBoard}
+      showEndGame={showEndGame}
+    />
+    // <FullScreenLoader isLoading />
   )
 }
 
 export default ExamAnswerBoard
 
 // eslint-disable-next-line react/display-name
-const FormatTime = memo(({ remainingTime }: { remainingTime: number }) => {
-  const { minutes, seconds } = useMemo(() => {
+const FormatTime = memo(({remainingTime}: { remainingTime: number }) => {
+  const {minutes, seconds} = useMemo(() => {
     return {
       minutes: Math.floor(remainingTime / 60),
       seconds: Math.ceil(remainingTime % 60),

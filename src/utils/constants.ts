@@ -1,5 +1,5 @@
 import { QuestionType } from '../components/IconQuestion/IconQuestion'
-import { TQuestionType } from '../types/types'
+import {TGameModeEnum, TQuestionType } from '../types/types'
 
 export const API_URL = process.env.NEXT_PUBLIC_API_URL
 export const GOOGLE_ANALYTICS = process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS || ''
@@ -42,9 +42,10 @@ export const PROFILE_MENU_OPTIONS = [
   },
 ]
 
-export const GAME_MODE_MAPPING: Record<string, string> = {
+export const GAME_MODE_MAPPING: Record<TGameModeEnum, string> = {
   '10CLASSIC': 'Tốc độ',
   '20MRT': 'Marathon',
+  '30EXAM': 'Kiểm tra',
 }
 
 export const MAPPED_QUESTION_TYPE: Record<TQuestionType, QuestionType> = {

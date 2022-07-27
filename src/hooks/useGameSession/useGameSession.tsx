@@ -1,7 +1,7 @@
-import { Socket } from 'socket.io-client'
-import { MessageProps } from '../../components/GameComponents/ChatWindow/Message'
+import {Socket} from 'socket.io-client'
+import {MessageProps} from '../../components/GameComponents/ChatWindow/Message'
 import {
-  TAnswerSubmit,
+  TAnswerSubmit, TDetailPlayer,
   TGameModeEnum,
   TGameRoundStatistic,
   TGameStatus,
@@ -10,10 +10,10 @@ import {
   TQuiz,
   TUser,
 } from '../../types/types'
-import { JsonParse } from '../../utils/helper'
-import { SocketManager, TSocketType } from '../useSocket/socketManager'
-import { useSound } from '../useSound/useSound'
-import { useUser } from '../useUser/useUser'
+import {JsonParse} from '../../utils/helper'
+import {SocketManager, TSocketType} from '../useSocket/socketManager'
+import {useSound} from '../useSound/useSound'
+import {useUser} from '../useUser/useUser'
 
 export type TGameLobby = {
   nickName: string
@@ -121,7 +121,7 @@ export class GameManager {
   sk = SocketManager()
   soundManager = useSound()
   user = useUser()
-  player: TPlayer | null = null
+  player: TDetailPlayer | null = null
 
   get isHost(): boolean {
     if (this.gameSession) {
@@ -134,7 +134,8 @@ export class GameManager {
     return this.sk.socketOf(this.socketKey)
   }
 
-  set gameSocket(value: Socket | null) {}
+  set gameSocket(value: Socket | null) {
+  }
 
   protected readGSLS() {
     if (typeof window !== 'undefined') {
@@ -156,10 +157,6 @@ export class GameManager {
   }
 
   protected writeGSLS() {
-    // console.log("=>(useGameSession.tsx:154) writeGSLS");
-    // console.log("=>(useGameSession.tsx:156) gameSession", this._gameSession);
-    // console.log("=>(useGameSession.tsx:156) currentQuestion", this._currentQuestion);
-    // console.log("=>(useGameSession.tsx:156) submittedAnswer", this._submittedAnswer);
     if (typeof window !== 'undefined') {
       if (this.gameSession) {
         this.gameSession.nickName = this.nickName
@@ -177,7 +174,12 @@ export class GameManager {
   }
 
   onListenLoading(data: any) {
-    this.currentQuestion = data.question?.question
+    if (data.question?.question)
+      this.currentQuestion = data.question?.question
+  }
+
+  onListenCurrentQuestion(data: any) {
+    this.currentQuestion = data
   }
 
   connectGameSocket() {
@@ -186,20 +188,23 @@ export class GameManager {
       this.soundManager?.setGameSoundOn(true)
       this.gameSocket?.offAny()
       this.gameSocket?.onAny((event, data) => {
-        console.log('🌎🌎 Event:', event)
-        console.log('🌎🌎 Data:', data)
-        if (event === 'loading' && data.question?.question) {
+        console.log(this.key, '🌎🌎 Event:', event)
+        console.log(this.key, '🌎🌎 Data:', data)
+
+        if (data.gameLobby) {
+          this.gameSession = data.gameLobby
+          console.log("=>(useGameSession.tsx:181)  this.gameSession",  this.gameSession);
+        }
+
+        if (event === 'loading') {
           this.onListenLoading(data)
         } else if (data.question as TQuestion) {
           this.currentQuestion = data.question
         } else if (data.game?.question as TQuestion) {
           this.currentQuestion = data.game.question
         }
-        if (data.gameLobby) {
-          this.gameSession = data.gameLobby
-        }
-        // console.log("=>(useGameSession.tsx:181)  data.gameLobby",  data.gameLobby);
-        // console.log("=>(useGameSession.tsx:181) this.currentQuestion", this.currentQuestion);
+
+        console.log("=>(useGameSession.tsx:181) this.currentQuestion", this.currentQuestion);
       })
     } else {
       console.log(
@@ -246,6 +251,37 @@ export class GameManager {
 
   getQuestionWithID(qid: number): TQuestion | null {
     return this.gameSession?.quiz?.questions[qid] || null
+  }
+
+  submitAnswer(answer: any) {
+    if (!this.gameSession) return
+
+    let answerToSubmit: TAnswerSubmit = {
+      invitationCode: this.gameSession.invitationCode,
+      nickname: this.nickName,
+      answerIds: [] as any[],
+      answer: '',
+    }
+
+    if (answer instanceof Set) {
+      console.log('=>(AnswerBoard.tsx:174) submit set "', answer, '"')
+      answerToSubmit.answerIds = Array.from(answer)
+    } else if (answer instanceof Array) {
+      console.log('=>(AnswerBoard.tsx:174) submit array "', answer, '"')
+      answerToSubmit.answerIds = answer
+    } else if (typeof answer === 'string') {
+      console.log('=>(AnswerBoard.tsx:174) submit text "', answer, '"')
+      answerToSubmit.answer = answer
+    } else {
+      console.log('=>(AnswerBoard.tsx:191) not supported "', answer, '"')
+      return
+    }
+
+    if (answerToSubmit.answer || answerToSubmit.answerIds) {
+      this.gameSkEmit('submit-answer', answerToSubmit)
+      answerToSubmit.questionId = this.currentQuestion?.orderPosition
+      this.submittedAnswer = answerToSubmit
+    }
   }
 }
 

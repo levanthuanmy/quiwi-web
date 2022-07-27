@@ -1,5 +1,5 @@
 import {NextPage} from 'next'
-import React, {Dispatch, SetStateAction, useEffect, useState} from 'react'
+import React, {Dispatch, FC, SetStateAction, useEffect, useState} from 'react'
 import styles from './CommunityGamePlay.module.css'
 import CommunityAnswerBoard from '../AnswerBoard/CommunityAnswerBoard'
 import classNames from 'classnames'
@@ -9,7 +9,7 @@ import router from 'next/router'
 import MyModal from '../../MyModal/MyModal'
 import {usePracticeGameSession} from '../../../hooks/usePracticeGameSession/usePracticeGameSession'
 import useScreenSize from '../../../hooks/useScreenSize/useScreenSize'
-import {TStartQuizResponse} from '../../../types/types'
+import {TGameModeEnum, TStartQuizResponse} from '../../../types/types'
 import ExamAnswerBoard from '../ExamComponents/ExamAnswerBoard/ExamAnswerBoard'
 import {useMyleGameSession} from '../../../hooks/usePracticeGameSession/useMyleGameSession'
 
@@ -21,10 +21,15 @@ export const ExitContext = React.createContext<{
   setShowEndGameModal: () => {
   },
 })
+type CommunityGamePlayProps = {
+  className?: string
+  mode: TGameModeEnum
+}
 
-const CommunityGamePlay: NextPage = () => {
-  const {clearGameSession, gameSkOn, gameSession, saveGameSession} =
-    usePracticeGameSession()
+const CommunityGamePlay: NextPage<CommunityGamePlayProps> = (
+  props
+) => {
+  const practiceGameSession = usePracticeGameSession()
   const myleGameSession = useMyleGameSession()
   const [isShowExit, setIsShowExit] = useState<boolean>(false)
   const [isShowHostControl, setIsShowHostControl] = useState<boolean>(true)
@@ -55,7 +60,8 @@ const CommunityGamePlay: NextPage = () => {
 
   const exitRoom = () => {
     // dùng clear game session là đủ
-    clearGameSession()
+    practiceGameSession.clearGameSession()
+    myleGameSession.clearGameSession()
     router.push('/home')
   }
 
@@ -80,12 +86,6 @@ const CommunityGamePlay: NextPage = () => {
     )
   }
 
-  useEffect(() => {
-    gameSkOn('game-ended', (data) => {
-      setEndGameData(data)
-    })
-  }, [])
-
   return (
     <>
       <div
@@ -108,16 +108,22 @@ const CommunityGamePlay: NextPage = () => {
               }}
             >
               <TimerProvider>
-                <div className={'bg-white w-100 h -100'}></div>
-                {myleGameSession.gameSession?.mode === '30EXAM' ? (
-                  <ExamAnswerBoard/>
-                ) : (
-                  <CommunityAnswerBoard
-                    isShowHostControl={isShowHostControl}
-                    setIsShowHostControl={setIsShowHostControl}
-                    className="flex-grow-1"
-                  />
-                )}
+                {/*<div className={'bg-white w-100 h-100'}></div>*/}
+                {props.mode == "30EXAM" ? (
+                    <ExamAnswerBoard
+                      isShowHostControl={isShowHostControl}
+                      setIsShowHostControl={setIsShowHostControl}
+                      className="flex-grow-1"
+                    />
+                  )
+                  :
+                  (
+                    <CommunityAnswerBoard
+                      isShowHostControl={isShowHostControl}
+                      setIsShowHostControl={setIsShowHostControl}
+                      className="flex-grow-1"
+                    />
+                  )}
               </TimerProvider>
             </ExitContext.Provider>
           </div>
@@ -125,7 +131,7 @@ const CommunityGamePlay: NextPage = () => {
         <FAB
           actions={[
             !fromMedium ? hostAction : null,
-            !endGameData ? exitAction : null,
+            exitAction
           ]}
         />
         {getExitModal()}

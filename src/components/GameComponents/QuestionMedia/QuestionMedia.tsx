@@ -27,7 +27,8 @@ const QuestionMedia: FC<{
   numStreak: number
   numSubmission: number
   className?: string
-}> = ({ media, numSubmission, numStreak, className, questionTitle }) => {
+  endTime?: number
+}> = ({ media, numSubmission, numStreak, className, questionTitle , endTime}) => {
   const { fromMedium } = useScreenSize()
   const timerContext = useTimer()
   const formatTime = useCallback(
@@ -122,6 +123,7 @@ const QuestionMedia: FC<{
             <CountdownCircleTimer
               isPlaying={!timerContext.isShowAnswer}
               duration={timerContext.duration - 0.2}
+              initialRemainingTime={endTime ? (endTime - new Date().getTime()) / 1000 : timerContext.duration - 0.2}
               size={180}
               strokeWidth={12}
               // isSmoothColorTransition={true}

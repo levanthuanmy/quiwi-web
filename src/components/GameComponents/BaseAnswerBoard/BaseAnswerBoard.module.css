@@ -1,0 +1,133 @@
+.container {
+    /* border-radius: 4px; */
+    position: relative;
+}
+
+.hostControl {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    border-radius: 10px;
+}
+
+.playerSystem {
+    margin-top: 12px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-end;
+    border-radius: 10px;
+}
+
+@media (max-width: 768px) {
+    .container {
+        /*padding-bottom: 60px;*/
+    }
+
+    .hostControl {
+        padding: 0;
+        background-color: #00000000;
+        flex-direction: column;
+        gap: 12px;
+        position: fixed;
+        right: 4px;
+        bottom: calc(16px + 52px + 8px);
+        z-index: 999;
+    }
+}
+
+.timeoutContainer {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 1rem;
+}
+
+.questionImage {
+    max-height: 320px;
+    min-width: 30%;
+    width: 60%;
+    object-fit: contain;
+}
+
+.answerLayout {
+    flex-grow: 1;
+    position: relative;
+    min-height: 300px;
+    /*// thiennc*/
+    /*background-color: #15e2ef;*/
+}
+
+.submitButton {
+    border-radius:10px;
+}
+
+@media (min-width: 1200px) {
+    .container {
+        border-radius: 20px;
+    }
+
+    .questionImage {
+        width: 100%;
+    }
+}
+
+@media (min-width: 768px) {
+    .timeoutContainer {
+        font-size: 1.5rem;
+        width: 64px;
+        height: 64px;
+        margin: 0;
+    }
+}
+
+.questionTitle {
+    overflow-y: auto;
+    min-height: 140px;
+    max-height: 40%;
+}
+
+/*question title*/
+@media (max-width: 576px) {
+    .questionContainer {
+        min-height: 200px;
+    }
+
+    .questionTitle {
+        border-radius: 0px;
+        /*max-height: 40%;*/
+    }
+}
+
+
+
+.questionTitle::-webkit-scrollbar {
+    width: 8px;
+}
+
+/* Track */
+.questionTitle::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 5px rgba(255, 255, 255, 0);
+    border-radius: 8px;
+}
+
+/* Handle */
+.questionTitle::-webkit-scrollbar-thumb {
+    background: #00988469;
+    border-radius: 8px;
+}
+
+/* Handle on hover */
+.questionTitle::-webkit-scrollbar-thumb:hover {
+    background: #00655878;
+}
+
+
+@media (max-width: 576px) {
+    .blankDiv {
+        height: 20vh;
+    }
+
+}

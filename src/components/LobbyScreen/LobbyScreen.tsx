@@ -3,19 +3,18 @@
 import classNames from 'classnames'
 import _ from 'lodash'
 import Head from 'next/head'
-import { useRouter } from 'next/router'
-import React, { FC, useEffect, useState } from 'react'
-import { Container, Image, Modal } from 'react-bootstrap'
+import {useRouter} from 'next/router'
+import React, {FC, useEffect, useState} from 'react'
+import {Container, Image, Modal} from 'react-bootstrap'
 import QRCode from 'react-qr-code'
-import { useToasts } from 'react-toast-notifications'
+import {useToasts} from 'react-toast-notifications'
 import Cookies from 'universal-cookie'
-import { useAuth } from '../../hooks/useAuth/useAuth'
-import { useGameSession } from '../../hooks/useGameSession/useGameSession'
-import { useLocalStorage } from '../../hooks/useLocalStorage/useLocalStorage'
+import {useAuth} from '../../hooks/useAuth/useAuth'
+import {useGameSession} from '../../hooks/useGameSession/useGameSession'
 import useScreenSize from '../../hooks/useScreenSize/useScreenSize'
 import * as gtag from '../../libs/gtag'
-import { TPlayer, TStartGameRequest } from '../../types/types'
-import { GAME_MODE_MAPPING } from '../../utils/constants'
+import {TPlayer, TStartGameRequest} from '../../types/types'
+import {GAME_MODE_MAPPING} from '../../utils/constants'
 import MyButton from '../MyButton/MyButton'
 import PlayerLobbyItem from '../PlayerLobbyItem/PlayerLobbyItem'
 import PlayerLobbyList from '../PlayerLobbyList/PlayerLobbyList'
@@ -36,7 +35,7 @@ const LobbyScreen: FC<LobbyScreenProps> = () => {
   const setting = useUserSetting()
   const router = useRouter()
   const [showQR, setShowQR] = useState<boolean>(false)
-  const { isMobile } = useScreenSize()
+  const {isMobile} = useScreenSize()
   const [showBackgroundModal, setShowBackgroundModal] = useState<boolean>(false)
 
   const { addToast } = useToasts()
@@ -94,7 +93,7 @@ const LobbyScreen: FC<LobbyScreenProps> = () => {
   }, [])
 
   useEffect(() => {
-    router.beforePopState(({ as }) => {
+    router.beforePopState(({as}) => {
       if (as !== router.asPath) {
         // Will run when leaving the current page; on back/forward actions
         // Add your logic here, like toggling the modal state
@@ -156,7 +155,7 @@ const LobbyScreen: FC<LobbyScreenProps> = () => {
     addToast(
       <>
         Copy thành công
-        <br />
+        <br/>
         Gửi link mời cho bạn bè để tham gia!
       </>,
       {
@@ -195,9 +194,10 @@ const LobbyScreen: FC<LobbyScreenProps> = () => {
       }}
       className="bg-dark"
     >
-      <div className="bg-dark bg-opacity-50 fw-medium bg-opacity-10 min-vh-100 d-flex flex-column justify-content-center align-items-center">
+      <div
+        className="bg-dark bg-opacity-50 fw-medium bg-opacity-10 min-vh-100 d-flex flex-column justify-content-center align-items-center">
         <Head>
-          <link rel="preconnect" href="https://fonts.googleapis.com" />
+          <link rel="preconnect" href="https://fonts.googleapis.com"/>
           <link
             rel="preconnect"
             href="https://fonts.gstatic.com"
@@ -228,8 +228,8 @@ const LobbyScreen: FC<LobbyScreenProps> = () => {
                   {isHost
                     ? user?.name
                     : `${game.gameSession?.nickName} ${
-                        authContext.isAuth ? `(${user?.name})` : ''
-                      }`}
+                      authContext.isAuth ? `(${user?.name})` : ''
+                    }`}
                 </div>
                 <div className="fs-14px text-primary text-wrap">
                   {!authContext.isAuth && (
@@ -301,7 +301,7 @@ const LobbyScreen: FC<LobbyScreenProps> = () => {
                   overflowY: 'auto',
                 }}
               >
-                <PlayerLobbyList players={playerList} />
+                <PlayerLobbyList players={playerList}/>
               </div>
             </div>
 
@@ -330,7 +330,7 @@ const LobbyScreen: FC<LobbyScreenProps> = () => {
             <div className=" h3">Mã mời:</div>
           </div>
           <div className={styles.code}>{invitationCode}</div>
-          <div>hoặc Bấm </div>
+          <div>hoặc Bấm</div>
           <MyButton
             className="bi bi-qr-code-scan fs-24px my-2 text-white"
             onClick={() => {
@@ -376,7 +376,7 @@ const LobbyScreen: FC<LobbyScreenProps> = () => {
                 <div className="text-truncate w-100">
                   {`http://${window.location.host}/lobby/join?invitationCode=${invitationCode}`}{' '}
                 </div>
-                <div className={`bi bi-clipboard-plus-fill fs-24px`} />
+                <div className={`bi bi-clipboard-plus-fill fs-24px`}/>
               </div>
             </div>
           </div>
@@ -411,7 +411,7 @@ const LobbyScreen: FC<LobbyScreenProps> = () => {
             <div className="text-truncate w-100">
               {`http://${window.location.host}/lobby/join?invitationCode=${invitationCode}`}{' '}
             </div>
-            <div className={`bi bi-clipboard-plus-fill fs-24px`} />
+            <div className={`bi bi-clipboard-plus-fill fs-24px`}/>
           </div>
         </div>
       </MyModal>
@@ -421,7 +421,7 @@ const LobbyScreen: FC<LobbyScreenProps> = () => {
   function functionalButtons() {
     const cn = classNames(
       'text-white fw-medium d-flex align-items-center gap-2 w-100',
-      { 'justify-content-center': isMobile }
+      {'justify-content-center': isMobile}
     )
     return (
       <div className="d-flex gap-3 px-3 pb-3 flex-wrap w-100">
@@ -438,7 +438,7 @@ const LobbyScreen: FC<LobbyScreenProps> = () => {
 
         <div className="flex-fill">
           <MyButton className={cn} onClick={() => setShowBackgroundModal(true)}>
-            <i className="bi bi-image fs-24px" />
+            <i className="bi bi-image fs-24px"/>
             {!isMobile && 'CHỌN HÌNH NỀN'}
           </MyButton>
         </div>
@@ -446,7 +446,7 @@ const LobbyScreen: FC<LobbyScreenProps> = () => {
         {isHost && (
           <div className="flex-fill">
             <MyButton className={cn} onClick={handleStartGame}>
-              <i className="bi bi-play-fill fs-24px" />
+              <i className="bi bi-play-fill fs-24px"/>
               BẮT ĐẦU
             </MyButton>
           </div>

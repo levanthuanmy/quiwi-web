@@ -25,6 +25,7 @@ import * as gtag from '../libs/gtag'
 import SignInModal from '../components/AuthComponents/SignInModal/SignInModal'
 import { GoogleOAuthProvider } from '@react-oauth/google'
 import {useMyleGameSession} from "../hooks/usePracticeGameSession/useMyleGameSession"
+import {usePracticeGameSession} from "../hooks/usePracticeGameSession/usePracticeGameSession";
 
 // ĐỪNG AUTO FORMAT FILE NÀY
 
@@ -33,6 +34,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   const [shouldLoad, setShouldLoad] = useState<boolean>(false)
   const gameSession = useGameSession()
   const myleGameSession = useMyleGameSession()
+  const practiceGameSession = usePracticeGameSession()
 
   useEffect(() => {
     const handleRouteChangeStart = () => {
@@ -84,8 +86,8 @@ function MyApp({ Component, pageProps }: AppProps) {
       console.log('🏡 =>', router.pathname)
       gameSession.clearGameSession()
       gameSession.disconnectGameSocket()
-      // practiceGameSession.clearGameSession()
-      // practiceGameSession.disconnectGameSocket()
+      practiceGameSession.clearGameSession()
+      practiceGameSession.disconnectGameSocket()
       myleGameSession.clearGameSession()
       myleGameSession.disconnectGameSocket()
     } else {

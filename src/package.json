@@ -79,6 +79,7 @@
     "eslint-config-next": "12.1.4",
     "eslint-config-prettier": "^8.5.0",
     "prettier": "2.6.2",
+    "react-awesome-qr": "^1.1.0",
     "react-countdown-circle-timer": "^3.0.9",
     "react-share": "^4.4.0",
     "react-singleton-hook": "^3.4.0",

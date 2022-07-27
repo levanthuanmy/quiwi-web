@@ -46,15 +46,27 @@ export class MyLeGameManager extends GameManager {
     }
   }
 
-  override onListenLoading(data: any) {}
+  override onListenLoading(data: any) {
+    if (data.loading == 4) {
+      if (this.gameSession?.quiz.questions[0])
+        this.currentQuestion = this.gameSession.quiz.questions[0]
+    }
+  }
+
+  // override onListenCurrentQuestion(data: any) {
+  //
+  // }
+
+  override clearGameSession() {
+    super.clearGameSession()
+    this.examDeadline = null
+  }
 
   override connectGameSocket() {
     super.connectGameSocket()
     if (!this.gameSocket || this.gameSocket?.disconnected) {
       this.gameSocket?.onAny((event, data) => {
-        if (event === 'game-started' && data.deadline) {
-          this.examDeadline = data.deadline
-        }
+
       })
     }
   }

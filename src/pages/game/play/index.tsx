@@ -1,6 +1,6 @@
 import classNames from 'classnames'
 import {NextPage} from 'next'
-import router, {useRouter} from 'next/router'
+import router from 'next/router'
 import React, {Dispatch, SetStateAction, useEffect, useState} from 'react'
 import AnswerBoard from '../../../components/GameComponents/AnswerBoard/AnswerBoard'
 import EndGameBoard from '../../../components/GameComponents/EndGameBoard/EndGameBoard'
@@ -13,14 +13,13 @@ import useExtendQueue from '../../../hooks/useExtendQueue'
 import {TGameLobby, useGameSession} from '../../../hooks/useGameSession/useGameSession'
 import useScreenSize from '../../../hooks/useScreenSize/useScreenSize'
 import {useSound} from '../../../hooks/useSound/useSound'
-import {TimerProvider} from '../../../hooks/useTimer/useTimer'
+import {TimerProvider, useTimer} from '../../../hooks/useTimer/useTimer'
 import * as gtag from '../../../libs/gtag'
 import {SOUND_EFFECT} from '../../../utils/constants'
 import styles from './GamePage.module.css'
 import {useUserSetting} from "../../../hooks/useUserSetting/useUserSetting";
 import Cookies from "universal-cookie";
 import {TApiResponse, TGamePlayBodyRequest, TPlayer} from "../../../types/types";
-import {JsonParse} from "../../../utils/helper";
 import {post} from "../../../libs/api";
 import {useUser} from "../../../hooks/useUser/useUser";
 import {TJoinQuizRequest} from "../../lobby/join";
@@ -37,12 +36,14 @@ export const ExitContext = React.createContext<{
 const GamePage: NextPage = () => {
   const game = useGameSession()
   const user = useUser();
+  const timer = useTimer();
   const [isShowChat, setIsShowChat] = useState<boolean>(false)
   const [isGameEnded, setIsGameEnded] = useState<boolean>(false)
   const [isShowExit, setIsShowExit] = useState<boolean>(false)
   const [isShowItem, setIsShowItem] = useState<boolean>(false)
 
   const [isShowHostControl, setIsShowHostControl] = useState<boolean>(true)
+  const screenSize = useScreenSize()
   const {fromMedium} = useScreenSize()
   const [endGameData, setEndGameData] = useState<TGameLobby>()
   const sound = useSound()

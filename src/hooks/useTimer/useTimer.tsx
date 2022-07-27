@@ -10,7 +10,7 @@ import React, {
 import { SOUND_EFFECT } from '../../utils/constants'
 import { useSound } from '../useSound/useSound'
 
-type TimerContextValue = {
+export type TimerContextValue = {
   isCounting: boolean
   isSubmittable: boolean
   isShowSkeleton: boolean
@@ -53,7 +53,7 @@ export const TimerProvider = memo(({ children }: { children?: ReactNode }) => {
   const [duration, setDefaultDuration] = useState<number>(0)
   const [isShowSkeleton, setIsShowSkeleton] = useState<boolean>(false)
   const intervalRef = useRef<NodeJS.Timer | null>(null)
-  const intervalRefSound = useRef<NodeJS.Timer | null>(null)
+  // const intervalRefSound = useRef<NodeJS.Timer | null>(null)
 
   const sound = useSound()
 
@@ -73,14 +73,14 @@ export const TimerProvider = memo(({ children }: { children?: ReactNode }) => {
   }
 
   const stopCountingSound = (stopUI: boolean) => {
-    if (intervalRefSound && intervalRefSound.current) {
-      if (stopUI) {
-        clearInterval(intervalRefSound.current)
-        intervalRefSound.current = null
-      }
-
-      setTimeout(() => {}, 500)
-    }
+    // if (intervalRefSound && intervalRefSound.current) {
+    //   if (stopUI) {
+    //     clearInterval(intervalRefSound.current)
+    //     intervalRefSound.current = null
+    //   }
+    //
+    //   setTimeout(() => {}, 500)
+    // }
   }
 
   const startCounting = (duration: number) => {
@@ -109,17 +109,17 @@ export const TimerProvider = memo(({ children }: { children?: ReactNode }) => {
         }
       }, 100)
 
-      intervalRefSound.current = setInterval(() => {
-        let curr = Math.round(new Date().getTime())
-        let _countDown = Math.ceil((endTime - curr) / 1000)
-        if (_countDown < 4) {
-          sound.playSound(SOUND_EFFECT['ONE_SECOND'])
-        }
-        setCountDown(_countDown)
-        if (_countDown <= 0) {
-          stopCountingSound(true)
-        }
-      }, 1000)
+      // intervalRefSound.current = setInterval(() => {
+      //   let curr = Math.round(new Date().getTime())
+      //   let _countDown = Math.ceil((endTime - curr) / 1000)
+      //   if (_countDown < 4) {
+      //     sound.playSound(SOUND_EFFECT['ONE_SECOND'])
+      //   }
+      //   setCountDown(_countDown)
+      //   if (_countDown <= 0) {
+      //     stopCountingSound(true)
+      //   }
+      // }, 1000)
     }
   }
 

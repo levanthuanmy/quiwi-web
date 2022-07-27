@@ -50,7 +50,8 @@ export const AuthProvider = ({ children }: { children?: ReactNode }) => {
       const getUser = async () => {
         try {
           const res = await get<any>('/api/users/profile', true)
-          setUserState({ ...userManager.user, ...res?.response?.user })
+          const user: TUser = { ...userManager.user, ...res?.response?.user };
+          setUserState(user)
         } catch (error) {
           console.log('getUser - error', error)
         }
@@ -112,6 +113,8 @@ export const AuthProvider = ({ children }: { children?: ReactNode }) => {
   const getUser = () => {
     return userState
   }
+
+  useEffect(() => {if (userState) setUser(userState)}, [userState])
 
   const setUser = (data: TUser) => {
     try {

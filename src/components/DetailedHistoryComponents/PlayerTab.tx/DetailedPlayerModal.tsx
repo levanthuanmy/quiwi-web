@@ -14,11 +14,11 @@ const DetailedPlayerModal: FC<{
 }> = ({ player, show, onHide, rank }) => {
   let correctPercentages = 0
 
-  for (const gameRound of player.gameRounds) {
+  for (const gameRound of player?.gameRounds ?? []) {
     if (gameRound.isCorrect) correctPercentages++
   }
   let percentage =
-    Number(correctPercentages / (player.gameRounds.length || 1)) * 100
+    Number(correctPercentages / (player?.gameRounds?.length || 1)) * 100
   return (
     <Modal
       centered
@@ -72,7 +72,7 @@ const DetailedPlayerModal: FC<{
               Điểm
             </Col>
           </Row>
-          {player.gameRounds.map((gameRound, idx) => {
+          {player?.gameRounds?.map((gameRound, idx) => {
             const answers = []
 
             if (!_.isEmpty(gameRound.selectionAnswers)) {
@@ -118,7 +118,7 @@ const DetailedPlayerModal: FC<{
                   {isCorrect}
                 </Col>
                 <Col lg={1} className="d-none d-lg-flex">
-                  {gameRound.score.toFixed(2)}
+                  {gameRound.score?.toFixed(2)}
                 </Col>
               </Row>
             )

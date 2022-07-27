@@ -13,7 +13,7 @@ export const PlayerStatisticList: FC<{
   return (
     <>
       {gameHistory.players.map((player) => {
-        const gameRound = player.gameRounds.find(
+        const gameRound = player?.gameRounds?.find(
           (gameRound) => gameRound.question?.id === questionId
         )
 
@@ -41,7 +41,7 @@ export const PlayerStatisticList: FC<{
             <Col className="d-none d-md-block ">{answers.join(', ')}</Col>
 
             <Col className="text-end d-none d-md-block">
-              {gameRound.score.toFixed(2)}
+              {gameRound.score?.toFixed(2)}
             </Col>
           </Row>
         )
