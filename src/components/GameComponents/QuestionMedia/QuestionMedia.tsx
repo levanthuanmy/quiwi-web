@@ -28,7 +28,14 @@ const QuestionMedia: FC<{
   numSubmission: number
   className?: string
   endTime?: number
-}> = ({ media, numSubmission, numStreak, className, questionTitle , endTime}) => {
+}> = ({
+  media,
+  numSubmission,
+  numStreak,
+  className,
+  questionTitle,
+  endTime,
+}) => {
   const { fromMedium } = useScreenSize()
   const timerContext = useTimer()
   const formatTime = useCallback(
@@ -38,10 +45,20 @@ const QuestionMedia: FC<{
 
       return (
         <div className={styles.timer}>
-          {!timerContext.isShowAnswer || timerContext.isShowSkeleton ? (
+          {/* {!timerContext.isShowAnswer || timerContext.isShowSkeleton ? (
             <>
               <div className={styles.text}>Còn lại</div>
 
+              <div
+                className={cn(styles.value)}
+              >{`${minutes} : ${seconds}`}</div>
+              <div className={styles.text}>giây</div>
+            </>
+          ) : (
+            <div className={cn(styles.valueDanger)}>Hết giờ!</div>
+          )} */}
+          {remainingTime ? (
+            <>
               <div
                 className={cn(styles.value)}
               >{`${minutes} : ${seconds}`}</div>
@@ -123,7 +140,11 @@ const QuestionMedia: FC<{
             <CountdownCircleTimer
               isPlaying={!timerContext.isShowAnswer}
               duration={timerContext.duration - 0.2}
-              initialRemainingTime={endTime ? (endTime - new Date().getTime()) / 1000 : timerContext.duration - 0.2}
+              initialRemainingTime={
+                endTime
+                  ? (endTime - new Date().getTime()) / 1000
+                  : timerContext.duration - 0.2
+              }
               size={180}
               strokeWidth={12}
               // isSmoothColorTransition={true}
@@ -169,7 +190,9 @@ const QuestionMedia: FC<{
         {/* Số người submit */}
         {!fromMedium && (
           <div className="d-flex flex-column gap-2">
-            <div className={cn('text-white', styles.timeoutTitle)}>Đã trả lời</div>
+            <div className={cn('text-white', styles.timeoutTitle)}>
+              Đã trả lời
+            </div>
             <div className={'d-flex flex-column gap-3'}>
               <div
                 className={classNames(

@@ -1,43 +1,42 @@
-import {default as classNames, default as cn} from 'classnames'
-import {useRouter} from 'next/router'
-import {FC, memo, useContext, useEffect, useState} from 'react'
-import {Fade} from 'react-bootstrap'
-import {useToasts} from 'react-toast-notifications'
-import {useGameSession} from '../../../hooks/useGameSession/useGameSession'
+import { default as classNames, default as cn } from 'classnames'
+import { useRouter } from 'next/router'
+import { FC, memo, useContext, useEffect, useState } from 'react'
+import { Fade } from 'react-bootstrap'
+import { useToasts } from 'react-toast-notifications'
+import { useGameSession } from '../../../hooks/useGameSession/useGameSession'
 import useScreenSize from '../../../hooks/useScreenSize/useScreenSize'
-import {useSound} from '../../../hooks/useSound/useSound'
-import {useTimer} from '../../../hooks/useTimer/useTimer'
-import {useUser} from '../../../hooks/useUser/useUser'
-import {ExitContext} from '../../../pages/game/play'
-import {TQuestion, TViewResult} from '../../../types/types'
-import {SOUND_EFFECT} from '../../../utils/constants'
-import {AnswerSectionFactory,} from '../AnswerQuestionComponent/AnswerSectionFactory/AnswerSectionFactory'
+import { useSound } from '../../../hooks/useSound/useSound'
+import { useTimer } from '../../../hooks/useTimer/useTimer'
+import { useUser } from '../../../hooks/useUser/useUser'
+import { ExitContext } from '../../../pages/game/play'
+import { TQuestion, TViewResult } from '../../../types/types'
+import { SOUND_EFFECT } from '../../../utils/constants'
+import { AnswerSectionFactory } from '../AnswerQuestionComponent/AnswerSectionFactory/AnswerSectionFactory'
 import GameButton from '../GameButton/GameButton'
 import GameSessionRanking from '../GameSessionRanking/GameSessionRanking'
 import LoadingBoard from '../LoadingBoard/LoadingBoard'
-import {QuestionMedia} from '../QuestionMedia/QuestionMedia'
+import { QuestionMedia } from '../QuestionMedia/QuestionMedia'
 import styles from './AnswerBoard.module.css'
-import {UserAndProcessInfo} from "../UtilComponents/UserAndProcessInfo";
-import {QuestionType} from "../UtilComponents/QuestionType";
-import {EndGameModal} from "../UtilComponents/EndGameModal";
+import { UserAndProcessInfo } from '../UtilComponents/UserAndProcessInfo'
+import { QuestionType } from '../UtilComponents/QuestionType'
+import { EndGameModal } from '../UtilComponents/EndGameModal'
 
 type AnswerBoardProps = {
   className?: string
   isShowHostControl: boolean
 }
 
-
 const AnswerBoard: FC<AnswerBoardProps> = ({
-                                             className,
-                                             isShowHostControl,
-                                           }) => {
+  className,
+  isShowHostControl,
+}) => {
   const gameManager = useGameSession()
   const sound = useSound()
   const timer = useTimer()
   const exitContext = useContext(ExitContext)
   const router = useRouter()
   const query = router.query
-  const {invitationCode} = query
+  const { invitationCode } = query
   const user = useUser()
 
   let answerSectionFactory: AnswerSectionFactory
@@ -46,12 +45,14 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
   const [isShowEndGame, setIsShowEndGame] = useState<boolean>(false)
   const [showRanking, setShowRanking] = useState<boolean>(false)
   const [rankingData, setRankingData] = useState<any[]>([])
-  const [answersStatistic, setAnswersStatistic] = useState<Record<string, number>>({})
+  const [answersStatistic, setAnswersStatistic] = useState<
+    Record<string, number>
+  >({})
   const [loading, setLoading] = useState<string | null>(null)
   const [numSubmission, setNumSubmission] = useState<number>(0)
   const [viewResultData, setViewResultData] = useState<TViewResult>()
-  const {addToast} = useToasts()
-  const {fromMedium, isMobile} = useScreenSize()
+  const { addToast } = useToasts()
+  const { fromMedium, isMobile } = useScreenSize()
 
   useEffect(() => {
     handleSocket()
@@ -61,7 +62,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
   const displayFirstQuestion = () => {
     if (!gameManager.currentQuestion || !gameManager.gameSession) return
     if (gameManager.currentQuestion.orderPosition != 0) {
-
+      //
     } else {
       console.log(
         '=>(AnswerBoard.tsx:82) gameManager.currentQuestion',
@@ -77,8 +78,8 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
     if (gameManager.gameSession?.quiz?.questions?.length) {
       setIsShowEndGame(
         gameManager.currentQuestion?.orderPosition ==
-        gameManager.gameSession?.quiz?.questions?.length - 1 &&
-        !timer.isCounting
+          gameManager.gameSession?.quiz?.questions?.length - 1 &&
+          !timer.isCounting
       )
     }
   }
@@ -127,7 +128,8 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
         if (lastSubmit) {
           addToast(
             <div>
-              <span className={'fw-bolder'}>{lastSubmit.nickname}</span> đã trả lời
+              <span className={'fw-bolder'}>{lastSubmit.nickname}</span> đã trả
+              lời
             </div>,
             {
               placement: 'bottom-left',
@@ -217,7 +219,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
 
   const viewRanking = () => {
     if (!gameManager.gameSession) return
-    const msg = {invitationCode: gameManager.gameSession.invitationCode}
+    const msg = { invitationCode: gameManager.gameSession.invitationCode }
     gameManager.gameSkEmit('view-ranking', msg)
     setIsShowNext(true)
   }
@@ -248,7 +250,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
 
   const goToNextQuestion = () => {
     if (!gameManager.gameSession) return
-    const msg = {invitationCode: gameManager.gameSession.invitationCode}
+    const msg = { invitationCode: gameManager.gameSession.invitationCode }
     gameManager.gameSkEmit('next-question', msg)
   }
 
@@ -256,10 +258,12 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
     if (
       gameManager.gameSession &&
       gameManager.gameSocket &&
-      gameManager.isHost
+      gameManager.isHost &&
+      gameManager.gameSocket.connected
     ) {
-      const msg = {invitationCode: gameManager.gameSession.invitationCode}
+      const msg = { invitationCode: gameManager.gameSession.invitationCode }
       gameManager.gameSkEmit('game-ended', msg)
+      gameManager.clearGameSession()
     } else {
       gameManager.clearGameSession()
       router.push('/my-lib')
@@ -313,45 +317,49 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
   }
 
   function renderPlayerControlSystem() {
-    return <div
-      className={classNames(
-        'px-2 my-2 py-1 fs-4 fw-bold text-white mb-2 bg-dark bg-opacity-50 d-flex justify-content-end align-items-center',
-        {'rounded-10px': fromMedium}
-      )}
-    >
-      <GameButton
+    return (
+      <div
         className={classNames(
-          'text-white fw-medium bg-warning',
-          styles.submitButton
+          'px-2 my-2 py-1 fs-4 fw-bold text-white mb-2 bg-dark bg-opacity-50 d-flex justify-content-end align-items-center',
+          { 'rounded-10px': fromMedium }
         )}
-        isEnable={
-          timer.isSubmittable &&
-          gameManager.currentQuestion?.type !== '22POLL'
-        }
-        iconClassName="bi bi-check-circle-fill"
-        title={
-          gameManager.currentQuestion?.type !== '22POLL'
-            ? 'Trả lời'
-            : 'Câu trả lời tự nộp'
-        }
-        onClick={() => {
-          timer.stopCounting(false)
-        }}
-      />
-    </div>;
+      >
+        <GameButton
+          className={classNames(
+            'text-white fw-medium bg-warning',
+            styles.submitButton
+          )}
+          isEnable={
+            timer.isSubmittable &&
+            gameManager.currentQuestion?.type !== '22POLL'
+          }
+          iconClassName="bi bi-check-circle-fill"
+          title={
+            gameManager.currentQuestion?.type !== '22POLL'
+              ? 'Trả lời'
+              : 'Câu trả lời tự nộp'
+          }
+          onClick={() => {
+            timer.stopCounting(false)
+          }}
+        />
+      </div>
+    )
   }
 
   function renderRanking() {
-    return <GameSessionRanking
-      show={showRanking}
-      onHide={() => {
-        setShowRanking(false)
-        gameManager.players = [...rankingData]
-      }}
-      rankingData={rankingData}
-      viewResultData={viewResultData as TViewResult}
-      currentQuestion={gameManager.currentQuestion as TQuestion}
-    />;
+    return (
+      <GameSessionRanking
+        show={showRanking}
+        onHide={() => {
+          setShowRanking(false)
+          gameManager.players = [...rankingData]
+        }}
+        rankingData={rankingData}
+        viewResultData={viewResultData as TViewResult}
+        currentQuestion={gameManager.currentQuestion as TQuestion}
+      />
+    )
   }
 
   return (
@@ -363,49 +371,44 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
           styles.container
         )}
       >
+        {gameManager.currentQuestion?.question && (
+          <UserAndProcessInfo viewResultData={viewResultData} />
+        )}
 
-        {gameManager.currentQuestion?.question &&
-            <UserAndProcessInfo
-                viewResultData={viewResultData}
-            />
-        }
+        {gameManager.currentQuestion && (
+          <QuestionMedia
+            media={gameManager.currentQuestion.media ?? null}
+            numStreak={0}
+            numSubmission={numSubmission}
+            key={gameManager.currentQuestion.orderPosition}
+            className={styles.questionMedia}
+            questionTitle={gameManager.currentQuestion?.question ?? ''}
+          />
+        )}
 
-        {gameManager.currentQuestion &&
-            <QuestionMedia
-                media={gameManager.currentQuestion.media ?? null}
-                numStreak={0}
-                numSubmission={numSubmission}
-                key={gameManager.currentQuestion.orderPosition}
-                className={styles.questionMedia}
-                questionTitle={gameManager.currentQuestion?.question ?? ''}
-            />
-        }
+        {gameManager.currentQuestion?.type && (
+          <QuestionType type={gameManager.currentQuestion.type} />
+        )}
 
-        {gameManager.currentQuestion?.type &&
-            <QuestionType type={gameManager.currentQuestion.type}/>
-        }
+        {gameManager.currentQuestion?.question && renderAnswersSection()}
 
-        {gameManager.currentQuestion?.question &&
-          renderAnswersSection()
-        }
-
-        {gameManager.isHost ?
-          renderHostControlSystem() : renderPlayerControlSystem()
-        }
+        {gameManager.isHost
+          ? renderHostControlSystem()
+          : renderPlayerControlSystem()}
 
         <div className={styles.blankDiv}></div>
 
         {renderRanking()}
 
-        {gameManager.isHost &&
-            <EndGameModal
-                showEndGameModal={exitContext.showEndGameModal}
-                onHide={() => exitContext.setShowEndGameModal(false)}
-                activeButtonCallback={endGame}
-            />
-        }
+        {gameManager.isHost && (
+          <EndGameModal
+            showEndGameModal={exitContext.showEndGameModal}
+            onHide={() => exitContext.setShowEndGameModal(false)}
+            activeButtonCallback={endGame}
+          />
+        )}
 
-        <LoadingBoard loadingTitle={loading}/>
+        <LoadingBoard loadingTitle={loading} />
       </div>
     </>
   )

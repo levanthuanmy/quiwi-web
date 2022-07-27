@@ -33,22 +33,34 @@ const HostPollVisualize: FC<{
     ]
   }, [answersStatistic, answers])
 
-  const options = {
-    legend: 'none',
-    vAxis: {
-      gridlines: {
-        color: 'transparent',
+  const options = useMemo(() => {
+    return {
+      legend: 'none',
+      vAxis: {
+        viewWindow: {
+          min: 0,
+          max: (_.max(Object.values(answersStatistic || {})) || 0) + 1,
+        },
+        // ticks: [0, 25, 50, 75, 100],
+        gridlines: {
+          color: 'transparent',
+        },
+        textPosition: 'none',
       },
-      textPosition: 'none',
-    },
-    backgroundColor: 'transparent',
-    annotations: {
-      textStyle: {
-        fontSize: 32,
+      backgroundColor: 'transparent',
+      annotations: {
+        alwaysOutside: true,
+        textStyle: {
+          fontSize: 32,
+        },
       },
-      alwaysOutside: true,
-    },
-  }
+      animation: {
+        startup: true,
+        duration: 200,
+        easing: 'inAndOut',
+      },
+    }
+  }, [answersStatistic])
 
   return (
     <div className="bg-white shadow rounded-10px">
