@@ -22,7 +22,7 @@ import {
 
 const ExplorePage: NextPage = () => {
   const router = useRouter()
-  const pageSize = 9
+  const pageSize = 18
   const [pageIndex, setPageIndex] = useState(1)
   const { q } = router.query
 
@@ -30,6 +30,7 @@ const ExplorePage: NextPage = () => {
   const [currentCategoryId, setCurrentCategoryId] = useState<number[]>()
   const handlePageClick = (selected: { selected: number }) => {
     setPageIndex(Number(selected.selected) + 1)
+    window.scrollTo({top: 0, left: 0, behavior: 'smooth'});
   }
   const {
     data: quizResponse,
@@ -44,6 +45,8 @@ const ExplorePage: NextPage = () => {
           ? { quizCategoryIds: currentCategoryId }
           : undefined,
         q,
+        pageIndex,
+        pageSize
       },
     ],
     get,

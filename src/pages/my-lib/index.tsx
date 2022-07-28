@@ -27,6 +27,7 @@ const MyLibPage: NextPage = () => {
   })
   const handlePageClick = (selected: { selected: number }) => {
     setPageIndex(Number(selected.selected) + 1)
+    window.scrollTo({top: 0, left: 0, behavior: 'smooth'});
   }
   return (
     <DashboardLayout>
