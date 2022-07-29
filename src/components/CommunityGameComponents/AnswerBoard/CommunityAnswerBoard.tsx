@@ -325,6 +325,8 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
           <>
             {gameManager.currentQuestion &&
                 <UserAndProcessInfo
+                    gameManager={gameManager}
+                    showScore={true}
                     viewResultData={viewResultData}
                 />
             }

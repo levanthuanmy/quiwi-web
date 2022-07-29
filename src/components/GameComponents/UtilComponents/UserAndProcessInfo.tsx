@@ -4,19 +4,20 @@ import {Image} from "react-bootstrap";
 import React, {FC} from "react";
 import {useUser} from "../../../hooks/useUser/useUser";
 import useScreenSize from "../../../hooks/useScreenSize/useScreenSize";
-import {useGameSession} from "../../../hooks/useGameSession/useGameSession";
+import {GameManager, useGameSession} from "../../../hooks/useGameSession/useGameSession";
 import {TViewResult} from "../../../types/types";
 
 type QuestionNameProps = {
   viewResultData: TViewResult | undefined
+  gameManager: GameManager
+  showScore?: boolean
 }
 
 export const UserAndProcessInfo: FC<QuestionNameProps> = (props) => {
   const user = useUser()
-  const gameManager = useGameSession()
   const {fromMedium, isMobile} = useScreenSize()
 
-  const currentPlayerRankingIndex = gameManager.gameSession?.players.findIndex(
+  const currentPlayerRankingIndex = props.gameManager.gameSession?.players.findIndex(
     (item) => item.nickname === props.viewResultData?.player?.nickname
   ) ?? -1
 
@@ -38,7 +39,7 @@ export const UserAndProcessInfo: FC<QuestionNameProps> = (props) => {
             />
             :
             <div className="fw-medium fs-20px text-white">
-              {gameManager.isHost ? gameManager.gameSession?.host?.name : gameManager.player?.nickname}
+              {props.gameManager.isHost ? props.gameManager.gameSession?.host?.name : props.gameManager.player?.nickname}
             </div>
         ) : (
           <>
@@ -50,14 +51,14 @@ export const UserAndProcessInfo: FC<QuestionNameProps> = (props) => {
               alt=""
             />
             <div className="fw-medium fs-20px text-white">
-              {gameManager.isHost ? gameManager.gameSession?.host?.name : gameManager.player?.nickname}
+              {props.gameManager.isHost ? props.gameManager.gameSession?.host?.name : props.gameManager.player?.nickname}
             </div>
           </>
         )}
       </div>
       <div
         className={cn("flex-grow-1 h-100 px-2 text-white d-flex align-items-center justify-content-between", {"gap-3": fromMedium})}>
-        {gameManager.currentQuestion && gameManager.isHost ? (
+        {props.gameManager.currentQuestion && props.gameManager.isHost && !props.showScore ? (
           <div
             id="questionProgressBar"
             className="flex-grow-1 bg-secondary rounded-pill"
@@ -67,8 +68,8 @@ export const UserAndProcessInfo: FC<QuestionNameProps> = (props) => {
               className="bg-primary h-100 rounded-pill transition-all-150ms position-relative"
               style={{
                 width: `${Math.floor(
-                  ((gameManager.currentQuestion.orderPosition + 1) * 100) /
-                  Number(gameManager.gameSession?.quiz?.questions?.length)
+                  ((props.gameManager.currentQuestion.orderPosition + 1) * 100) /
+                  Number(props.gameManager.gameSession?.quiz?.questions?.length)
                 )}%`,
               }}
             />
@@ -96,10 +97,10 @@ export const UserAndProcessInfo: FC<QuestionNameProps> = (props) => {
                 Câu:{" "}
                 </span>
           <span className="text-white text-primary fs-3">
-              {(gameManager.currentQuestion?.orderPosition ?? 0) + 1}/
+              {(props.gameManager.currentQuestion?.orderPosition ?? 0) + 1}/
                 </span>
           <span className="text-secondary fs-24px">
-                  {gameManager.gameSession?.quiz?.questions?.length}
+                  {props.gameManager.gameSession?.quiz?.questions?.length}
                 </span>
         </div>
       </div>

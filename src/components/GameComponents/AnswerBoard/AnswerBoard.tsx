@@ -372,7 +372,9 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
         )}
       >
         {gameManager.currentQuestion?.question && (
-          <UserAndProcessInfo viewResultData={viewResultData} />
+          <UserAndProcessInfo
+            gameManager={gameManager}
+            viewResultData={viewResultData} />
         )}
 
         {gameManager.currentQuestion && (

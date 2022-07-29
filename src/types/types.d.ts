@@ -281,7 +281,7 @@ export type TGameRound = {
 }
 
 export type TDetailPlayer = TPlayer & {
-  gameRounds?: TGameRound[]
+  gameRounds: TGameRound[]
 }
 
 export type TGameHistory = {

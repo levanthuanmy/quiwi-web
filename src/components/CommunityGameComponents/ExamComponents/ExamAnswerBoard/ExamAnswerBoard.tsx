@@ -232,6 +232,7 @@ const ExamAnswerBoard: FC<ExamAnswerBoardProps> = ({
       >
         {gameManager.currentQuestion &&
             <UserAndProcessInfo
+                gameManager={gameManager}
                 viewResultData={viewResultData}
             />
         }
