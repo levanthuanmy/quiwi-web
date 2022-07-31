@@ -1,7 +1,7 @@
 import _ from 'lodash'
 import { NextPage } from 'next'
 import { useRouter } from 'next/router'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Col, Container, Row } from 'react-bootstrap'
 import ReactSelect from 'react-select'
 import useSWR from 'swr'
@@ -22,38 +22,61 @@ import {
 
 const ExplorePage: NextPage = () => {
   const router = useRouter()
-  const pageSize = 18
+  const pageSize = 12
   const [pageIndex, setPageIndex] = useState(1)
   const { q } = router.query
 
   const [showCategories, setShowCategories] = useState<boolean>(false)
   const [currentCategoryId, setCurrentCategoryId] = useState<number[]>()
   const handlePageClick = (selected: { selected: number }) => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'smooth' })
     setPageIndex(Number(selected.selected) + 1)
-    window.scrollTo({top: 0, left: 0, behavior: 'smooth'});
   }
-  const {
-    data: quizResponse,
-    isValidating: quizValidating,
-    error: quizError,
-  } = useSWR<TApiResponse<TPaginationResponse<TQuiz>>>(
-    [
-      `/api/quizzes/community`,
-      false,
-      {
-        quizFilter: currentCategoryId?.length
-          ? { quizCategoryIds: currentCategoryId }
-          : undefined,
-        q,
-        pageIndex,
-        pageSize
-      },
-    ],
-    get,
-    {
-      revalidateOnFocus: false,
+  const [quizResponse, setquizResponse] =
+    useState<TApiResponse<TPaginationResponse<TQuiz>>>()
+  // const {
+  //   data: quizResponse,
+  //   isValidating: quizValidating,
+  //   error: quizError,
+  // } = useSWR<TApiResponse<TPaginationResponse<TQuiz>>>(
+  //   [
+  //     `/api/quizzes/community`,
+  //     false,
+  //     {
+  //       quizFilter: currentCategoryId?.length
+  //         ? { quizCategoryIds: currentCategoryId }
+  //         : undefined,
+  //       q,
+  //       pageIndex,
+  //       pageSize,
+  //     },
+  //   ],
+  //   get,
+  //   {
+  //     revalidateOnFocus: false,
+  //   }
+  // )
+
+  useEffect(() => {
+    const getQuizzes = async () => {
+      const res: TApiResponse<TPaginationResponse<TQuiz>> = await get(
+        `/api/quizzes/community`,
+        false,
+        {
+          quizFilter: currentCategoryId?.length
+            ? { quizCategoryIds: currentCategoryId }
+            : undefined,
+          q,
+          pageIndex,
+          pageSize,
+        }
+      )
+      if (res.response) {
+        setquizResponse(res)
+      }
     }
-  )
+    getQuizzes()
+  }, [q, pageIndex, currentCategoryId, pageSize])
 
   const {
     data: categoryResponse,
@@ -74,9 +97,6 @@ const ExplorePage: NextPage = () => {
     }
     return []
   }, [categoryResponse])
-
-  const isValidating = categoriesValidating || quizValidating
-  const isError = categoriesError || quizError
 
   return (
     <DashboardLayout>
@@ -127,7 +147,7 @@ const ExplorePage: NextPage = () => {
               ))}
             </Row>
           )}
-          {(isError || quizResponse?.response?.items?.length === 0) && (
+          {quizResponse?.response?.items?.length === 0 && (
             <div className="fs-4 text-center">
               Chúng tôi không tìm thấy bộ quiz phù hợp
             </div>
@@ -143,7 +163,7 @@ const ExplorePage: NextPage = () => {
             </Row>
           ) : null}
 
-          {isValidating && (
+          {quizResponse == null && (
             <div className="text-center">
               <Loading color="gray" />
             </div>
