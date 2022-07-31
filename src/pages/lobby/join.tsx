@@ -7,7 +7,7 @@ import MyButton from '../../components/MyButton/MyButton'
 import MyInput from '../../components/MyInput/MyInput'
 import {useLocalStorage} from '../../hooks/useLocalStorage/useLocalStorage'
 import {post} from '../../libs/api'
-import {TApiResponse, TGamePlayBodyRequest, TPlayer,} from '../../types/types'
+import {TApiResponse, TDetailPlayer, TGamePlayBodyRequest, TPlayer,} from '../../types/types'
 import {JsonParse} from '../../utils/helper'
 import {TGameLobby, useGameSession} from '../../hooks/useGameSession/useGameSession'
 
@@ -82,7 +82,7 @@ const JoiningPage: NextPage = () => {
 
       gameManager.nickName = data.player.nickname
       gameManager.gameSession = data.gameLobby
-      gameManager.player = data.player
+      gameManager.player = data.player as TDetailPlayer
 
       router.push(`/lobby?quizId=${data.gameLobby.quizId}`)
     } catch (error) {

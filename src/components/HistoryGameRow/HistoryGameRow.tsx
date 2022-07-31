@@ -2,7 +2,7 @@ import classNames from 'classnames'
 import router from 'next/router'
 import { FC } from 'react'
 import { Dropdown } from 'react-bootstrap'
-import { TGameHistory } from '../../types/types'
+import { TGameHistory, TGameModeEnum } from '../../types/types'
 import { GAME_MODE_MAPPING } from '../../utils/constants'
 import { getExcelFile } from '../../utils/exportToExcel'
 import {
@@ -45,7 +45,7 @@ const HistoryGameRow: FC<{
 
       <td className={classNames(styles.cell)}>
         <div className={classNames('py-3  text-center', styles.borderRadiusSm)}>
-          {GAME_MODE_MAPPING[gameHistory.mode] ?? 'Truyền Thống'}
+          {GAME_MODE_MAPPING[gameHistory.mode as TGameModeEnum] ?? 'Truyền Thống'}
         </div>
       </td>
       <td

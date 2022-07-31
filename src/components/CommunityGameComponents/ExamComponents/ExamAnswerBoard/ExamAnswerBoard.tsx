@@ -14,7 +14,7 @@ import {
 import MyButton from '../../../MyButton/MyButton'
 import AnswerSheet from '../AnswerSheet/AnswerSheet'
 import styles from './ExamAnswerBoard.module.css'
-import {TQuestion, TViewResult} from "../../../../types/types";
+import {TDetailPlayer, TQuestion, TViewResult} from "../../../../types/types";
 import LoadingBoard from "../../../GameComponents/LoadingBoard/LoadingBoard";
 import CommunityEndGameBoard from "../../CommunityEndGameBoard/CommunityEndGameBoard";
 import {useRouter} from "next/router";
@@ -108,7 +108,7 @@ const ExamAnswerBoard: FC<ExamAnswerBoardProps> = ({
     })
 
     gameManager.gameSkOn('view-result', (data: TViewResult) => {
-      gameManager.player = data?.player ?? null
+      gameManager.player = (data?.player as TDetailPlayer) ?? null
     })
 
   }

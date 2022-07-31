@@ -19,7 +19,7 @@ import {SOUND_EFFECT} from '../../../utils/constants'
 import styles from './GamePage.module.css'
 import {useUserSetting} from "../../../hooks/useUserSetting/useUserSetting";
 import Cookies from "universal-cookie";
-import {TApiResponse, TGamePlayBodyRequest, TPlayer} from "../../../types/types";
+import {TApiResponse, TDetailPlayer, TGamePlayBodyRequest, TPlayer} from "../../../types/types";
 import {post} from "../../../libs/api";
 import {useUser} from "../../../hooks/useUser/useUser";
 import {TJoinQuizRequest} from "../../lobby/join";
@@ -207,7 +207,7 @@ const GamePage: NextPage = () => {
       const data = response.response
 
       game.gameSession = data.gameLobby
-      game.player = data.player
+      game.player = data.player as TDetailPlayer
     } catch (error) {
       console.log('Join quiz - error', error)
       alert((error as Error).message)
