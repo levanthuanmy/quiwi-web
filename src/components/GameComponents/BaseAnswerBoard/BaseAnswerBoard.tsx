@@ -1,29 +1,32 @@
 import classNames from 'classnames'
 import cn from 'classnames'
-import {useRouter} from 'next/router'
-import React, {FC, memo, useContext, useEffect, useState} from 'react'
-import {useGameSession} from '../../../hooks/useGameSession/useGameSession'
-import {TAnswerSubmit, TQuestion, TViewResult,} from '../../../types/types'
+import { useRouter } from 'next/router'
+import React, { FC, memo, useContext, useEffect, useState } from 'react'
+import { useGameSession } from '../../../hooks/useGameSession/useGameSession'
+import { TAnswerSubmit, TQuestion, TViewResult } from '../../../types/types'
 import GameSessionRanking from '../GameSessionRanking/GameSessionRanking'
-import {QuestionMedia} from '../QuestionMedia/QuestionMedia'
+import { QuestionMedia } from '../QuestionMedia/QuestionMedia'
 import styles from './BaseAnswerBoard.module.css'
 import {
   AnswerSectionFactory,
   QuestionTypeDescription,
 } from '../AnswerQuestionComponent/AnswerSectionFactory/AnswerSectionFactory'
-import {Fade, Image} from 'react-bootstrap'
+import { Fade, Image } from 'react-bootstrap'
 import GameButton from '../GameButton/GameButton'
 import useScreenSize from '../../../hooks/useScreenSize/useScreenSize'
-import MyModal from "../../MyModal/MyModal";
-import {ExitContext} from "../../../pages/game/play";
-import LoadingBoard from "../LoadingBoard/LoadingBoard";
-import {useToasts} from "react-toast-notifications";
-import {TimerContext, TimerContextValue, useTimer} from "../../../hooks/useTimer/useTimer";
-import {SOUND_EFFECT} from '../../../utils/constants'
-import {useSound} from "../../../hooks/useSound/useSound";
-import {useUser} from "../../../hooks/useUser/useUser";
-import UseScreenSize from "../../../hooks/useScreenSize/useScreenSize";
-
+import MyModal from '../../MyModal/MyModal'
+import { ExitContext } from '../../../pages/game/play'
+import LoadingBoard from '../LoadingBoard/LoadingBoard'
+import { useToasts } from 'react-toast-notifications'
+import {
+  TimerContext,
+  TimerContextValue,
+  useTimer,
+} from '../../../hooks/useTimer/useTimer'
+import { SOUND_EFFECT } from '../../../utils/constants'
+import { useSound } from '../../../hooks/useSound/useSound'
+import { useUser } from '../../../hooks/useUser/useUser'
+import UseScreenSize from '../../../hooks/useScreenSize/useScreenSize'
 
 type BaseAnswerBoardProps = {
   className?: string
@@ -31,18 +34,17 @@ type BaseAnswerBoardProps = {
 }
 
 const BaseAnswerBoard: FC<BaseAnswerBoardProps> = ({
-                                             className,
-                                             isShowHostControl,
-                                           }) => {
+  className,
+  isShowHostControl,
+}) => {
   const gameManager = useGameSession()
   const sound = useSound()
   const timer = useTimer()
   const exitContext = useContext(ExitContext)
   const router = useRouter()
   const query = router.query
-  const {invitationCode} = query
+  const { invitationCode } = query
   const user = useUser()
-
 
   let answerSectionFactory: AnswerSectionFactory
 
@@ -50,12 +52,14 @@ const BaseAnswerBoard: FC<BaseAnswerBoardProps> = ({
   const [isShowEndGame, setIsShowEndGame] = useState<boolean>(false)
   const [showRanking, setShowRanking] = useState<boolean>(false)
   const [rankingData, setRankingData] = useState<any[]>([])
-  const [answersStatistic, setAnswersStatistic] = useState<Record<string, number>>({})
+  const [answersStatistic, setAnswersStatistic] = useState<
+    Record<string, number>
+  >({})
   const [loading, setLoading] = useState<string | null>(null)
   const [numSubmission, setNumSubmission] = useState<number>(0)
   const [viewResultData, setViewResultData] = useState<TViewResult>()
-  const {addToast} = useToasts()
-  const {fromMedium, isMobile} = useScreenSize()
+  const { addToast } = useToasts()
+  const { fromMedium, isMobile } = useScreenSize()
 
   useEffect(() => {
     handleSocket()
@@ -67,7 +71,10 @@ const BaseAnswerBoard: FC<BaseAnswerBoardProps> = ({
     if (gameManager.currentQuestion.orderPosition != 0) {
       gameManager.submittedAnswer
     } else {
-      console.log("=>(AnswerBoard.tsx:82) gameManager.currentQuestion", gameManager.currentQuestion);
+      console.log(
+        '=>(AnswerBoard.tsx:82) gameManager.currentQuestion',
+        gameManager.currentQuestion
+      )
       timer.setDefaultDuration(gameManager.currentQuestion.duration)
       setNumSubmission(0)
     }
@@ -76,17 +83,26 @@ const BaseAnswerBoard: FC<BaseAnswerBoardProps> = ({
   function checkEndGame() {
     if (!gameManager.currentQuestion) return
     if (gameManager.gameSession?.quiz?.questions?.length) {
-      setIsShowEndGame(gameManager.currentQuestion?.orderPosition == gameManager.gameSession?.quiz?.questions?.length - 1 && !timer.isCounting)
+      setIsShowEndGame(
+        gameManager.currentQuestion?.orderPosition ==
+          gameManager.gameSession?.quiz?.questions?.length - 1 &&
+          !timer.isCounting
+      )
     }
   }
 
   function resetState() {
-    if (!isNextEmitted && gameManager.gameSession && !gameManager.currentQuestion) {
+    if (
+      !isNextEmitted &&
+      gameManager.gameSession &&
+      !gameManager.currentQuestion
+    ) {
       setLoading('Chuẩn bị!')
       sound.playSound(SOUND_EFFECT['READY'])
-    } if (gameManager.gameSession) {
+    }
+    if (gameManager.gameSession) {
       if (!gameManager.gameSocket || !gameManager.gameSocket.connected) {
-        setLoading("Đang kết nối lại...")
+        setLoading('Đang kết nối lại...')
       } else {
         setLoading(null)
       }
@@ -119,7 +135,8 @@ const BaseAnswerBoard: FC<BaseAnswerBoardProps> = ({
         if (lastSubmit) {
           addToast(
             <div>
-              <span className={'fw-bolder'}>{lastSubmit.nickname}</span> đã trả lời
+              <span className={'fw-bolder'}>{lastSubmit.nickname}</span> đã trả
+              lời
             </div>,
             {
               placement: 'bottom-left',
@@ -150,16 +167,21 @@ const BaseAnswerBoard: FC<BaseAnswerBoardProps> = ({
       timer.stopCounting(true)
       timer.stopCountingSound(true)
       setViewResultData(data)
-      if (data.answersStatistic.length > 0) setAnswersStatistic(data.answersStatistic)
+      if (data.answersStatistic.length > 0)
+        setAnswersStatistic(data.answersStatistic)
 
       setIsShowNext(true)
-      if (data?.player && !gameManager.isHost && typeof window !== 'undefined') {
+      if (
+        data?.player &&
+        !gameManager.isHost &&
+        typeof window !== 'undefined'
+      ) {
         const curStreak = data.player.currentStreak ?? 0
         if (curStreak > 0) {
-          sound?.playRandomCorrectAnswerSound();
+          sound?.playRandomCorrectAnswerSound()
         } else {
-          sound?.playSound(SOUND_EFFECT['INCORRECT_BACKGROUND']);
-          sound?.playSound(SOUND_EFFECT['INCORRECT_ANSWER']);
+          sound?.playSound(SOUND_EFFECT['INCORRECT_BACKGROUND'])
+          sound?.playSound(SOUND_EFFECT['INCORRECT_ANSWER'])
         }
         localStorage.setItem(
           'game-session-player',
@@ -184,7 +206,7 @@ const BaseAnswerBoard: FC<BaseAnswerBoardProps> = ({
         setShowRanking(false)
         setIsNextEmitted(true)
 
-        gameManager.players = [...rankingData];
+        gameManager.players = [...rankingData]
 
         const newQuestion = data.question.question as TQuestion
 
@@ -204,7 +226,7 @@ const BaseAnswerBoard: FC<BaseAnswerBoardProps> = ({
 
   const viewRanking = () => {
     if (!gameManager.gameSession) return
-    const msg = {invitationCode: gameManager.gameSession.invitationCode}
+    const msg = { invitationCode: gameManager.gameSession.invitationCode }
     gameManager.gameSkEmit('view-ranking', msg)
     setIsShowNext(true)
   }
@@ -235,7 +257,10 @@ const BaseAnswerBoard: FC<BaseAnswerBoardProps> = ({
       return
     }
 
-    if (gameManager.currentQuestion && gameManager.currentQuestion.type != '22POLL')
+    if (
+      gameManager.currentQuestion &&
+      gameManager.currentQuestion.type != '22POLL'
+    )
       timer.setIsSubmittable(false)
     if (answerToSubmit.answer || answerToSubmit.answerIds) {
       gameManager.gameSkEmit('submit-answer', answerToSubmit)
@@ -269,13 +294,17 @@ const BaseAnswerBoard: FC<BaseAnswerBoardProps> = ({
 
   const goToNextQuestion = () => {
     if (!gameManager.gameSession) return
-    const msg = {invitationCode: gameManager.gameSession.invitationCode}
+    const msg = { invitationCode: gameManager.gameSession.invitationCode }
     gameManager.gameSkEmit('next-question', msg)
   }
 
   function endGame() {
-    if (gameManager.gameSession && gameManager.gameSocket && gameManager.isHost) {
-      const msg = {invitationCode: gameManager.gameSession.invitationCode}
+    if (
+      gameManager.gameSession &&
+      gameManager.gameSocket &&
+      gameManager.isHost
+    ) {
+      const msg = { invitationCode: gameManager.gameSession.invitationCode }
       gameManager.gameSkEmit('game-ended', msg)
     } else {
       gameManager.clearGameSession()
@@ -287,7 +316,12 @@ const BaseAnswerBoard: FC<BaseAnswerBoardProps> = ({
     return (
       <Fade in={isShowHostControl || fromMedium}>
         {isShowHostControl || fromMedium ? (
-          <div className={cn(styles.hostControl, 'px-2 my-2 py-1 bg-dark bg-opacity-50')}>
+          <div
+            className={cn(
+              styles.hostControl,
+              'px-2 my-2 py-1 bg-dark bg-opacity-50'
+            )}
+          >
             <GameButton
               isEnable={isShowNext || !timer.isCounting}
               iconClassName="bi bi-bar-chart"
@@ -341,34 +375,36 @@ const BaseAnswerBoard: FC<BaseAnswerBoardProps> = ({
         <div className="text-center h3 fw-bolder">Kết thúc game?</div>
 
         <div className="text-center fw-bold">
-          {gameManager.currentQuestion &&
-              <div className="text-secondary fs-24x">
-                {gameManager.currentQuestion.orderPosition + 1 < (gameManager.gameSession?.quiz?.questions?.length ?? 0) ? (
-                  <>
-                    {'Quiz mới hoàn thành '}
-                    <span className="fw-bolder fs-24x  text-primary">
-                  {gameManager.currentQuestion.orderPosition + 1}
-                </span>
-                    {' câu, còn '}
-                    <span className="fw-bolder fs-24x  text-primary">
-                  {gameManager.gameSession?.quiz?.questions?.length}
-                </span>
-                    {' câu chưa hoàn thành!'}
-                  </>
-                ) : (
-                  <>
-                    {'Quiz đã hoàn thành tất cả '}
-                    <span className="fw-bolder fs-24x  text-primary">
-                  {gameManager.currentQuestion.orderPosition + 1}
-                </span>
-                    {' câu trên '}
-                    <span className="fw-bolder fs-24x  text-primary">
-                  {gameManager.gameSession?.quiz?.questions?.length}
-                </span>
-                    {' câu!'}
-                  </>
-                )}
-              </div>}
+          {gameManager.currentQuestion && (
+            <div className="text-secondary fs-24x">
+              {gameManager.currentQuestion.orderPosition + 1 <
+              (gameManager.gameSession?.quiz?.questions?.length ?? 0) ? (
+                <>
+                  {'Quiz mới hoàn thành '}
+                  <span className="fw-bolder fs-24x  text-primary">
+                    {gameManager.currentQuestion.orderPosition + 1}
+                  </span>
+                  {' câu, còn '}
+                  <span className="fw-bolder fs-24x  text-primary">
+                    {gameManager.gameSession?.quiz?.questions?.length}
+                  </span>
+                  {' câu chưa hoàn thành!'}
+                </>
+              ) : (
+                <>
+                  {'Quiz đã hoàn thành tất cả '}
+                  <span className="fw-bolder fs-24x  text-primary">
+                    {gameManager.currentQuestion.orderPosition + 1}
+                  </span>
+                  {' câu trên '}
+                  <span className="fw-bolder fs-24x  text-primary">
+                    {gameManager.gameSession?.quiz?.questions?.length}
+                  </span>
+                  {' câu!'}
+                </>
+              )}
+            </div>
+          )}
           <div className="text-secondary fs-24x text-warning">
             Các thành viên trong phòng sẽ không thể chat với nhau nữa, bạn có
             chắc chắn muốn kết thúc phòng?
@@ -390,38 +426,53 @@ const BaseAnswerBoard: FC<BaseAnswerBoardProps> = ({
         {gameManager.currentQuestion?.question ? (
           <div
             className={classNames(
-              'd-flex flex bg-dark bg-opacity-50 rounded-10px shadow mb-2', {"gap-5 py-2": fromMedium, "py-1": isMobile}
+              'd-flex flex bg-dark bg-opacity-50 rounded-10px shadow mb-2',
+              { 'gap-5 py-2': fromMedium, 'py-1': isMobile }
             )}
           >
-            <div className={cn("px-2 d-flex align-items-center", {"gap-3": fromMedium})}>
-              {(user?.avatar || fromMedium) &&
-                  <Image
-                      src={`${user?.avatar ?? "/assets/default-avatar.png"}`}
-                      width={40}
-                      height={40}
-                      className="rounded-circle"
-                      alt=""
-                  />}
+            <div
+              className={cn('px-2 d-flex align-items-center', {
+                'gap-3': fromMedium,
+              })}
+            >
+              {(user?.avatar || fromMedium) && (
+                <Image
+                  src={`${user?.avatar ?? '/assets/default-avatar.png'}`}
+                  width={40}
+                  height={40}
+                  className="rounded-circle"
+                  alt=""
+                />
+              )}
               {/*{fromMedium &&*/}
               <div className="fw-medium fs-20px text-white">
-                {gameManager.isHost ? gameManager.gameSession?.host?.name : gameManager.player?.nickname}
+                {gameManager.isHost
+                  ? gameManager.gameSession?.host?.name
+                  : gameManager.player?.nickname}
               </div>
               {/*}*/}
             </div>
             <div
-              className={cn("flex-grow-1 h-100 px-2 text-white d-flex align-items-center justify-content-between", {"gap-3": fromMedium})}>
+              className={cn(
+                'flex-grow-1 h-100 px-2 text-white d-flex align-items-center justify-content-between',
+                { 'gap-3': fromMedium }
+              )}
+            >
               {gameManager.currentQuestion && gameManager.isHost ? (
                 <div
                   id="questionProgressBar"
                   className="flex-grow-1 bg-secondary rounded-pill"
-                  style={{height: 6}}
+                  style={{ height: 6 }}
                 >
                   <div
                     className="bg-primary h-100 rounded-pill transition-all-150ms position-relative"
                     style={{
                       width: `${Math.floor(
-                        ((gameManager.currentQuestion.orderPosition + 1) * 100) /
-                        Number(gameManager.gameSession?.quiz?.questions?.length)
+                        ((gameManager.currentQuestion.orderPosition + 1) *
+                          100) /
+                          Number(
+                            gameManager.gameSession?.quiz?.questions?.length
+                          )
                       )}%`,
                     }}
                   />
@@ -433,7 +484,7 @@ const BaseAnswerBoard: FC<BaseAnswerBoardProps> = ({
                     {viewResultData?.player?.currentStreak ?? 0}
                   </div>
                   <div className="fs-4">
-                    <i className="bi bi-award text-primary me-2 "/>
+                    <i className="bi bi-award text-primary me-2 " />
                     {currentPlayerRankingIndex > -1
                       ? currentPlayerRankingIndex + 1
                       : '-'}
@@ -445,11 +496,9 @@ const BaseAnswerBoard: FC<BaseAnswerBoardProps> = ({
                 </>
               )}
               <div className="fw-medium fs-4 text-primary">
-                <span className="fs-4">
-                Câu:{" "}
-                </span>
+                <span className="fs-4">Câu: </span>
                 <span className="text-white text-primary fs-3">
-              {(gameManager.currentQuestion?.orderPosition ?? 0) + 1}/
+                  {(gameManager.currentQuestion?.orderPosition ?? 0) + 1}/
                 </span>
                 <span className="text-secondary fs-24px">
                   {gameManager.gameSession?.quiz?.questions?.length}
@@ -460,20 +509,22 @@ const BaseAnswerBoard: FC<BaseAnswerBoardProps> = ({
         ) : (
           <></>
         )}
-        {gameManager.currentQuestion &&
-            <QuestionMedia
-                media={gameManager.currentQuestion.media ?? null}
-                numStreak={0}
-                numSubmission={numSubmission}
-                key={gameManager.currentQuestion.orderPosition}
-                className={styles.questionMedia}
-            />}
+        {gameManager.currentQuestion && (
+          <QuestionMedia
+            media={gameManager.currentQuestion.media ?? null}
+            numStreak={0}
+            numSubmission={numSubmission}
+            key={gameManager.currentQuestion.orderPosition}
+            className={styles.questionMedia}
+            questionTitle={gameManager.currentQuestion.question || ''}
+          />
+        )}
 
         <div
           className={classNames(
             'noselect shadow px-3 pt-2 bg-white mb-2',
             styles.questionTitle,
-            {'rounded-10px': fromMedium}
+            { 'rounded-10px': fromMedium }
           )}
         >
           <div
@@ -486,14 +537,15 @@ const BaseAnswerBoard: FC<BaseAnswerBoardProps> = ({
           <div
             className={classNames(
               'px-2 py-1 fs-4 fw-bold text-white mb-2 bg-dark bg-opacity-50 d-flex justify-content-between align-items-center',
-              {'rounded-10px': fromMedium}
+              { 'rounded-10px': fromMedium }
             )}
           >
             <div className={''}>
               <i
                 className={cn(
                   'fs-20px text-white me-2',
-                  QuestionTypeDescription[gameManager.currentQuestion.type]?.icon
+                  QuestionTypeDescription[gameManager.currentQuestion.type]
+                    ?.icon
                 )}
               />
               {QuestionTypeDescription[gameManager.currentQuestion.type]?.title}
@@ -509,17 +561,24 @@ const BaseAnswerBoard: FC<BaseAnswerBoardProps> = ({
           <div
             className={classNames(
               'px-2 my-2 py-1 fs-4 fw-bold text-white mb-2 bg-dark bg-opacity-50 d-flex justify-content-end align-items-center',
-              {'rounded-10px': fromMedium}
+              { 'rounded-10px': fromMedium }
             )}
           >
             <GameButton
-              isEnable={timer.isSubmittable && gameManager.currentQuestion?.type !== '22POLL'}
+              isEnable={
+                timer.isSubmittable &&
+                gameManager.currentQuestion?.type !== '22POLL'
+              }
               iconClassName="bi bi-check-circle-fill"
               className={classNames(
                 'text-white fw-medium bg-warning',
                 styles.submitButton
               )}
-              title={gameManager.currentQuestion?.type !== '22POLL' ? 'Trả lời' : 'Câu trả lời tự nộp'}
+              title={
+                gameManager.currentQuestion?.type !== '22POLL'
+                  ? 'Trả lời'
+                  : 'Câu trả lời tự nộp'
+              }
               onClick={() => {
                 timer.stopCounting(false)
               }}
@@ -532,7 +591,7 @@ const BaseAnswerBoard: FC<BaseAnswerBoardProps> = ({
           show={showRanking}
           onHide={() => {
             setShowRanking(false)
-            gameManager.players = [...rankingData];
+            gameManager.players = [...rankingData]
           }}
           rankingData={rankingData}
           viewResultData={viewResultData as TViewResult}
@@ -542,8 +601,8 @@ const BaseAnswerBoard: FC<BaseAnswerBoardProps> = ({
         {gameManager.isHost && getEndGameModal()}
 
         <LoadingBoard
-          loading={loading != null}
-          className={'position-fixed top-0 bottom-0 start-0 end-0'}
+          // loading={Boolean(loading !== null)}
+          // className={'position-fixed top-0 bottom-0 start-0 end-0'}
           loadingTitle={loading ?? ''}
         />
       </div>

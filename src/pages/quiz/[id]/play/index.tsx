@@ -9,7 +9,7 @@ import {GameManager, TGameLobby} from '../../../../hooks/useGameSession/useGameS
 import {useMyleGameSession} from '../../../../hooks/usePracticeGameSession/useMyleGameSession'
 import {get, post} from '../../../../libs/api'
 import {
-  TApiResponse, TExamDeadline,
+  TApiResponse, TDetailPlayer, TExamDeadline,
   TGameModeEnum,
   TGamePlayBodyRequest, TPlayer, TQuestion,
   TQuiz,
@@ -141,7 +141,7 @@ const PlayCommunityQuizScreen: NextPage = () => {
       console.log("console.log(\"=>(index.tsx:138) res1e2 ponse.redfsponse\"", data);
       gameManager.gameSession = data.gameLobby
       gameManager.currentQuestion = data.question
-      gameManager.player = data.player
+      gameManager.player = data.player as TDetailPlayer
       gameManager.deadline = data.deadline
 
       setMode(gameManager.gameSession.mode)

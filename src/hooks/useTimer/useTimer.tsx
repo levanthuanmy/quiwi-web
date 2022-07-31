@@ -87,7 +87,7 @@ export const TimerProvider = memo(({ children }: { children?: ReactNode }) => {
   const startCounting = (duration: number) => {
     console.log("=>(useTimer.tsx:88) startCounting", duration);
     if (duration > 0) {
-      clearInterval(intervalRef.current)
+      clearInterval(Number(intervalRef.current))
       intervalRef.current = null
       console.log("=>(useTimer.tsx:88) startCounting", duration);
       let endDate = new Date()

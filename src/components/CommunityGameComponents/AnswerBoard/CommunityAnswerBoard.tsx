@@ -5,7 +5,7 @@ import {Fade} from 'react-bootstrap'
 import useScreenSize from '../../../hooks/useScreenSize/useScreenSize'
 import {useSound} from '../../../hooks/useSound/useSound'
 import {useTimer} from '../../../hooks/useTimer/useTimer'
-import {TQuestion, TViewResult} from '../../../types/types'
+import {TDetailPlayer, TQuestion, TViewResult} from '../../../types/types'
 import {SOUND_EFFECT} from '../../../utils/constants'
 import {
   AnswerSectionFactory,
@@ -154,7 +154,7 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
       timer.stopCountingSound(true)
       setViewResultData(data)
       setIsShowNext(true)
-      gameManager.player = data?.player ?? null
+      gameManager.player = (data?.player as TDetailPlayer) || null
       if (data?.player && typeof window !== 'undefined') {
         const curStreak = data.player.currentStreak ?? 0
         if (curStreak > 0) {

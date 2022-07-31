@@ -8,7 +8,7 @@ import DashboardLayout from '../../../components/DashboardLayout/DashboardLayout
 import { HistoryDropdownButton } from '../../../components/HistoryDropdownButton/HistoryDropdownButton'
 import Loading from '../../../components/Loading/Loading'
 import { get } from '../../../libs/api'
-import { TApiResponse, TGameHistory } from '../../../types/types'
+import { TApiResponse, TGameHistory, TGameModeEnum } from '../../../types/types'
 import { GAME_MODE_MAPPING } from '../../../utils/constants'
 import { formatDate_HHmmDDMMMYYYY } from '../../../utils/helper'
 
@@ -96,7 +96,7 @@ const DetailedHistoryPage: NextPage = () => {
               </Col>
               <Col className="py-3">
                 <div className="ps-2 pb-2 border-bottom border-secondary">
-                  {GAME_MODE_MAPPING[data.response.mode]}
+                {GAME_MODE_MAPPING[data.response.mode as TGameModeEnum]}
                 </div>
 
                 <div className="ps-2 py-2 border-bottom border-secondary">
