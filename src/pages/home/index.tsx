@@ -127,7 +127,7 @@ const Home: NextPage = () => {
                   </div>
                   
                   <Row>
-                    <Col xs="12" sm="9" className="pe-sm-2 pb-3 pb-sm-0">
+                    <Col xs="12" sm="7" md="8" className="pe-sm-2 pb-3 pb-sm-0">
                       <MyInput
                         className={'pb-12px'}
                         errorText={invitationInputError}
@@ -138,7 +138,7 @@ const Home: NextPage = () => {
                         }}
                       />
                     </Col>
-                    <Col xs="12" sm="4" xl="3" className="ps-sm-2">
+                    <Col xs="12" sm="5" md="4" xl="3" className="ps-sm-2">
                       <MyButton
                         className={`fw-medium text-white w-100`}
                         onClick={onJoinRoom}

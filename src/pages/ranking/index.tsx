@@ -70,11 +70,24 @@ const RankingPage: NextPage = () => {
       <DashboardLayout>
         <div className="w-100 bg-secondary bg-transparent">
           <Container fluid="lg" className="p-3">
-            <h1>Bảng xếp hạng</h1>
-            <SearchBar
-              pageUrl="ranking"
-              inputClassName="border border-primary"
-            />
+            <Row>
+              <Col
+                xs={12}
+                lg={4}
+                xxl={3}
+                className="fs-22px mb-2 mb-lg-0 fw-medium"
+              >
+                <h1>Bảng xếp hạng</h1>
+              </Col>
+
+              <Col>
+                <SearchBar
+                  pageUrl="ranking"
+                  inputClassName="border border-primary"
+                />
+              </Col>
+            </Row>
+
             <br />
             <MyTabBar
               currentTab={currentRankingTab}

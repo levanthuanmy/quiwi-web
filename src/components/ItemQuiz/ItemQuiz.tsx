@@ -42,9 +42,9 @@ const ItemQuiz: FC<ItemQuizProps> = ({ quiz, exploreMode = false }) => {
       <div
         className={classNames('p-12px cursor-pointer', styles.infoContainer)}
       >
-        <div className="fw-medium fs-18px d-flex justify-content-between align-items-center">
+        <div className="fw-medium d-flex justify-content-between align-items-center">
           <div
-            title={exploreMode ? 'Bấm vào để xem chi tiết quiz' : ''}
+            title={exploreMode ? 'Bấm vào để xem chi tiết Quiz' : ''}
             className="w-100"
             onClick={() =>
               exploreMode ? router.push(`/quiz/${quiz.id}`) : null
@@ -119,7 +119,7 @@ const ItemQuiz: FC<ItemQuizProps> = ({ quiz, exploreMode = false }) => {
 
         <MyButton
           title={
-            exploreMode ? 'Bấm để làm quiz này' : 'Bấm để bắt đầu quiz này'
+            exploreMode ? 'Bấm để làm Quiz này' : 'Bấm để bắt đầu tổ chức chơi Quiz này'
           }
           className={classNames(
             'text-white text-nowrap rounded-circle bi bi-play-fill fs-32px shadow d-flex justify-content-center align-items-center',

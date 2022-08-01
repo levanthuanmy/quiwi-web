@@ -46,7 +46,7 @@ const ItemPage: NextPage = () => {
   }, [pageIndex, q])
 
   useEffect(() => {
-    setPageIndex(1);
+    setPageIndex(1)
     if (pageIndex > 0 || q) {
       getItems(getCategoryIdByToggleState(toggleState))
     }
@@ -148,7 +148,7 @@ const ItemPage: NextPage = () => {
             </Col>
             {userResponse?.user?.coin ? (
               <Col xs={12} lg={3} xl={2}>
-                <div className="d-flex rounded-20px align-items-center p-2 fw-medium fs-18px border border-primary bg-primary bg-opacity-10">
+                <div className="d-flex rounded-8px align-items-center p-2 mt-2 m-lg-0 fw-medium fs-18px border border-primary bg-primary bg-opacity-10">
                   <Image
                     alt="avatar"
                     src="/assets/quiwi-coin.png"

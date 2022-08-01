@@ -15,21 +15,21 @@ const MySlider: FC<{ children: ReactNode; showDots?: boolean }> = ({
     arrows: true,
     responsive: [
       {
-        breakpoint: 1200,
+        breakpoint: 1400,
         settings: {
           slidesToShow: 3,
           slidesToScroll: 3,
         },
       },
       {
-        breakpoint: 992,
+        breakpoint: 1200,
         settings: {
           slidesToShow: 2,
           slidesToScroll: 1,
         },
       },
       {
-        breakpoint: 650,
+        breakpoint: 712,
         settings: {
           slidesToShow: 1,
           slidesToScroll: 1,
