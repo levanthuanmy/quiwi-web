@@ -35,6 +35,10 @@ const MultipleChoiceAnswerSection: FC<MultipleChoiceAnswerSectionProps> = ({
     new Set(initSelectedAnswer)
   )
 
+  useEffect(() => {
+    setAnswerSet(new Set(initSelectedAnswer))
+  }, [initSelectedAnswer])
+
   const selectAnswer = (answerId: number) => {
     if (isExam) {
       // Mỹ Lê Exam

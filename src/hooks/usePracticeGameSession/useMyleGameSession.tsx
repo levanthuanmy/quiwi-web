@@ -1,6 +1,7 @@
 import { GameManager } from '../useGameSession/useGameSession'
 import { TSocketType } from '../useSocket/socketManager'
-import {TExamDeadline} from "../../types/types";
+import {TExamDeadline, TQuestion} from "../../types/types";
+import {UserAnswer} from "../../components/CommunityGameComponents/ExamComponents/ExamAnswerBoard/ExamAnswerBoard";
 
 
 export class MyLeGameManager extends GameManager {
@@ -22,12 +23,28 @@ export class MyLeGameManager extends GameManager {
     }
   }
 
-  // override onListenCurrentQuestion(data: any) {
-  //
-  // }
+  playerAnswers: Record<number, any> = {}
+
+  initDefaultAnswer (questions: TQuestion[]) {
+    for (const question of questions) {
+      switch (question.type) {
+        case '10SG':
+        case '20MUL':
+        case '21ODMUL':
+        case '22POLL':
+          this.playerAnswers[question.orderPosition] = []
+          break
+        case '30TEXT':
+        case '31ESSAY':
+          this.playerAnswers[question.orderPosition] = ""
+          break
+      }
+    }
+  }
 
   override clearGameSession() {
     super.clearGameSession()
+    this.playerAnswers = {}
   }
 
   override connectGameSocket() {
@@ -38,6 +55,8 @@ export class MyLeGameManager extends GameManager {
       })
     }
   }
+
+
 }
 
 class MyLeGameManagerSingleton extends MyLeGameManager {

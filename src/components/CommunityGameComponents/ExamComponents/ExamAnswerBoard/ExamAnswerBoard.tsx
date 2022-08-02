@@ -70,9 +70,12 @@ const ExamAnswerBoard: FC<ExamAnswerBoardProps> = ({
     gameManager.gameSkOnce('game-started', (data) => {
       gameManager.deadline = data.deadline
       setUserAnswers(Array(gameManager.gameSession?.quiz.questions.length).fill({answerIds: [], answer: ''}))
+      if (data.gameLobby.quiz.questions as TQuestion[]) {
+        gameManager.initDefaultAnswer(data.gameLobby.quiz.questions)
+      }
       if (gameManager.deadline) {
-        const duration = gameManager.deadline?.timeEnd - gameManager.deadline?.timeStart;
-        timer.startCounting(duration / 1000 ?? 0)
+        const duration = gameManager.deadline?.timeLeft
+        timer.startCounting(((duration / 1000)) ?? 0)
         setLoading(null)
       } else {
         setLoading("Load game lỗi, xin vui lòng thoát phòng!")
@@ -85,8 +88,8 @@ const ExamAnswerBoard: FC<ExamAnswerBoardProps> = ({
         timer.setIsShowSkeleton(true)
         gameManager.deadline = data.game.deadline
         if (gameManager.deadline) {
-          const duration = gameManager.deadline?.timeEnd - gameManager.deadline?.timeStart;
-          timer.setDefaultDuration(duration / 1000)
+          const duration =  gameManager.deadline?.timeLeft;
+          timer.setDefaultDuration(((duration / 1000)) ?? 0)
         }
         setLoading('Chuẩn bị!')
         gameManager.submittedAnswer = null
@@ -148,34 +151,13 @@ const ExamAnswerBoard: FC<ExamAnswerBoardProps> = ({
   }
 
   const updateAnswerAtIndex = (index: number, answer: any) => {
-    if (!userAnswers) return
-
-    setUserAnswers((prev) => {
-      const newUserAnswers = [...prev]
-
-      const typeOfAnswer = typeof answer
-      if (typeOfAnswer === 'string') {
-        newUserAnswers[index] = {
-          answer: answer,
-          answerIds: [...newUserAnswers[index].answerIds],
-        }
-      }
-      if (typeOfAnswer === 'object') {
-        newUserAnswers[index] = {
-          answer: newUserAnswers[index].answer,
-          answerIds: [...answer],
-        }
-      }
-      return newUserAnswers
-    })
+    console.log("=>(ExamAnswerBoard.tsx:155) index", index, " answer ", answer);
+    gameManager.playerAnswers[index] = answer
   }
 
   const getUserAnswersAtIndex = (index: number) => {
-    if (!userAnswers || !userAnswers[index]) return
-    if (userAnswers[index].answer !== '') {
-      return userAnswers[index].answer
-    }
-    return userAnswers[index].answerIds
+    console.log("=>(ExamAnswerBoard.tsx:155) getUserAnswersAtIndex", index, " answer ", gameManager.playerAnswers[index]);
+    return gameManager.playerAnswers[index]
   }
 
   const submit = () => {

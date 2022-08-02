@@ -38,6 +38,11 @@ const TextQuestion: FC<TextQuestionProps> = ({
   const [answerText, setAnswerText] = useState<string | null>(
     initSelectedAnswer
   )
+
+  useEffect(() => {
+    setAnswerText(initSelectedAnswer)
+  }, [initSelectedAnswer])
+
   const [isCorrect, setIsCorrect] = useState<boolean>(false)
 
   useEffect(() => {

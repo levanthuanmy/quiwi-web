@@ -35,6 +35,11 @@ const SingleChoiceAnswerSection: FC<SingpleChoiceAnswerSectionProps> = ({
   initSelectedAnswer
 }) => {
   const [answerSet, setAnswerSet] = useState<Set<number>>(new Set(initSelectedAnswer))
+
+  useEffect(() => {
+    setAnswerSet(new Set(initSelectedAnswer))
+  }, [initSelectedAnswer])
+
   const selectAnswer = (answerId: number) => {
     if (isExam) {
       // Mỹ Lê Exam

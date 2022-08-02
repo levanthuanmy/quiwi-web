@@ -37,6 +37,11 @@ const EssayQuestion: FC<EssayQuestionProps> = ({
   const [answerText, setAnswerText] = useState<string | null>(
     initSelectedAnswer
   )
+
+  useEffect(() => {
+    setAnswerText(initSelectedAnswer)
+  }, [initSelectedAnswer])
+
   const [isCorrect, setIsCorrect] = useState<boolean>(false)
 
   useEffect(() => {
@@ -116,9 +121,11 @@ const EssayQuestion: FC<EssayQuestionProps> = ({
               'w-100 text-center flex-grow-1 customScrollbar',
               styles.answerInput
             )}
+            value={answerText}
             onChange={(t) => {
               setAnswerText(t.target.value)
               if (isExam) {
+                console.log("=>(EssayQuestion.tsx:128) ",t.target.value ?? '' );
                 socketSubmit(t.target.value ?? '')
               }
             }}
