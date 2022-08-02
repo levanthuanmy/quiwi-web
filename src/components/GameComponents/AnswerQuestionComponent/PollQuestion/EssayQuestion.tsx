@@ -121,7 +121,7 @@ const EssayQuestion: FC<EssayQuestionProps> = ({
               'w-100 text-center flex-grow-1 customScrollbar',
               styles.answerInput
             )}
-            value={answerText}
+            value={answerText ?? ""}
             onChange={(t) => {
               setAnswerText(t.target.value)
               if (isExam) {
