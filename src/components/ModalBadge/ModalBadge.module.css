@@ -1,44 +1,39 @@
-.cardStyle {
-    width: 300px;
-}
-
 .layoutImage {
-    padding-top: 20px;
-    padding-bottom: 40px;
-    display: flex;
-    justify-content: center;
+  padding-top: 16px;
+  padding-bottom: 32px;
+  display: flex;
+  justify-content: center;
 }
 
 .closeButtonStyle {
-    align-self: flex-end;
-    height: 30px;
-    width: 30px;
+  align-self: flex-end;
+  height: 24px;
+  width: 24px;
 }
 
 .progress {
-    height: 7px;
-    margin-left: 5%;
-    margin-right: 5%;
+  height: 7px;
+  margin-left: 5%;
+  margin-right: 5%;
 }
 
 .badgeTitle {
-    font-weight: bold;
-    text-align: center;
-    padding-bottom: px;
+  font-weight: bold;
+  text-align: center;
 }
 
 .badgeDes {
-    padding-top: 15px;
-    text-align: center;
-    color: darkgrey;
-    padding-left: 7%;
-    padding-right: 7%;
-    padding-bottom: 60px;
+  padding-top: 0.5rem;
+  text-align: center;
+  color: darkgrey;
+  padding-left: 7%;
+  padding-right: 7%;
+  padding-bottom: 40px;
 }
 
 .badgeCount {
-    font-weight: bold;
-    text-align: center;
-    padding-top: 30px;
-    padding-bottom: 15px;
+  font-weight: bold;
+  text-align: center;
+  padding-top: 30px;
+  padding-bottom: 15px;
 }

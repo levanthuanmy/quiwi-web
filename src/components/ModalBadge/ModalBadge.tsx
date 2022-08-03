@@ -2,11 +2,13 @@ import classNames from 'classnames'
 import { FC } from 'react'
 import { Card, CloseButton, Image } from 'react-bootstrap'
 import { TUserBadge } from '../../types/types'
+import MyButton from '../MyButton/MyButton'
 import styles from './ModalBadge.module.css'
 
 type IModalBadge = {
   onClose: any
   userBadge: TUserBadge
+  setCurrentBadge?: Function
 }
 
 const ModalBadge: FC<IModalBadge> = (props) => {
@@ -18,6 +20,8 @@ const ModalBadge: FC<IModalBadge> = (props) => {
     ) ??
       0) ||
     1
+
+  const status = props.userBadge.status === 'INPROGRESS'
   return (
     <div>
       <Card className={classNames('', styles.cardStyle)}>
@@ -50,6 +54,21 @@ const ModalBadge: FC<IModalBadge> = (props) => {
         <div className={classNames('fs-20px', styles.badgeCount)}>
           {props.userBadge.process} / {goal}
         </div>
+
+        {props.setCurrentBadge ? (
+          <div className="text-center pb-2">
+            <MyButton
+              className="text-white"
+              disabled={status}
+              onClick={() => {
+                if (status) return
+                if (props.setCurrentBadge) props.setCurrentBadge()
+              }}
+            >
+              Đặt làm mặc định
+            </MyButton>
+          </div>
+        ) : null}
       </Card>
     </div>
   )

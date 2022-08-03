@@ -1,7 +1,7 @@
 import dayjs from 'dayjs'
 import { TAnswer, TQuestion } from '../types/types'
 import { Howl } from 'howler'
-import {useLocalStorage} from "../hooks/useLocalStorage/useLocalStorage";
+import { useLocalStorage } from '../hooks/useLocalStorage/useLocalStorage'
 
 export const JsonParse = (input: string | null) => {
   try {
@@ -115,4 +115,20 @@ export function parseQuestionHTMLToRaw(questionHTML: String) {
   const regex = /<[^>]+>/g
 
   return questionHTML.replaceAll(regex, '')
+}
+export function removeZeros(p: string) {
+  while (p[p.length - 1] === '0') {
+    p = p.substring(0, p.length - 1)
+  }
+
+  if (p[p.length - 1] === '.') {
+    p = p.substring(0, p.length - 1)
+  }
+  return p
+}
+export function renderPercentage(num: number) {
+  let p = num.toFixed(2)
+
+  p = removeZeros(p)
+  return p
 }

@@ -1,6 +1,7 @@
 import classNames from 'classnames'
 import React, { FC } from 'react'
 import { Image } from 'react-bootstrap'
+import { removeZeros } from '../../utils/helper'
 import styles from './AvatarSelection.module.css'
 
 type IBadgeItem = {
@@ -37,7 +38,6 @@ const BadgeItem: FC<IBadgeItem> = (props) => {
           className="shadow-sm"
         />
         <div className="text-center fw-medium">{props.title}</div>
-
       </div>
       <div>
         <div className={classNames('fs-14px', styles.badgeDes)}>
@@ -51,7 +51,7 @@ const BadgeItem: FC<IBadgeItem> = (props) => {
           ></div>
         </div>
         <div className={classNames('fs-16px', styles.badgeCount)}>
-          {props.progress}
+          {props.progress}%
         </div>
       </div>
     </div>
