@@ -263,7 +263,6 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
     ) {
       const msg = { invitationCode: gameManager.gameSession.invitationCode }
       gameManager.gameSkEmit('game-ended', msg)
-      gameManager.clearGameSession()
     } else {
       gameManager.clearGameSession()
       router.push('/my-lib')
