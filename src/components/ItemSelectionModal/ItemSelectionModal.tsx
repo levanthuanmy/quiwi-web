@@ -1,18 +1,24 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import classNames from 'classnames'
 import { FC, useEffect, useState } from 'react'
 import { Col, Modal, Row } from 'react-bootstrap'
 import { useAuth } from '../../hooks/useAuth/useAuth'
 import { get } from '../../libs/api'
 import {
-  TApiResponse, TBadge, TUser, TUserBadge, TUserItems,
-  TUserProfile
+  TApiResponse,
+  TBadge,
+  TUser,
+  TUserBadge,
+  TUserItems,
+  TUserProfile,
 } from '../../types/types'
 import MyButton from '../MyButton/MyButton'
 import MyTabBar from '../MyTabBar/MyTabBar'
 import { AvatarList } from './AvatarList'
 import { BackgroundList } from './BackgroundList'
 import { BadgeList } from './BadgeList'
-import { LeftProfileDisplay } from './LeftProfileDisplay'
+import { ProfileDisplay } from './LeftProfileDisplay'
+import styles from './AvatarSelection.module.css'
 type MyModalProps = {
   show: boolean
   onHide: () => void
@@ -150,22 +156,22 @@ const UserItemSelectionModal: FC<MyModalProps> = ({ show, onHide, user }) => {
       fullscreen={true}
     >
       <Modal.Body>
-        <Row className="h-100">
+        <Row className={classNames(styles.profile)}>
           {/* Ở đây sẽ để badge các thứ như liên minh */}
           <Col
-            xs={5}
+            xs={12}
             sm={4}
             lg={3}
             xl={2}
-            className="d-flex align-items-center flex-column justify-content-center border-end border-2 p-4"
+            className="d-flex align-items-center h-100 flex-column justify-content-center p-4"
           >
-            <LeftProfileDisplay
+            <ProfileDisplay
               avatar={user.avatar}
               currentBadge={currentBadge}
               displayName={user.name || user.username}
             />
           </Col>
-          <Col className="w-100">
+          <Col className="w-100 h-100  border-start overflow-scroll border-2">
             <MyTabBar
               currentTab={currentTab}
               setCurrentTab={setCurrentTab}

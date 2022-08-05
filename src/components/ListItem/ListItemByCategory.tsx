@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import classNames from 'classnames'
 import { FC, useEffect, useState } from 'react'
-import { Collapse, Row } from 'react-bootstrap'
+import { Row } from 'react-bootstrap'
 import { TUserItems } from '../../types/types'
 import Item from '../Item/Item'
 import styles from './ListItemByCategory.module.css'

@@ -27,7 +27,7 @@ export const BadgeList: FC<{
           ) || 1
         const progress = (userBadge.process / goals) * 100
         return (
-          <div key={idx} className={classNames(' mx-2 p-2')}>
+          <div key={idx} className={classNames('mx-2 p-2')}>
             <BadgeItem
               onClick={async () => {
                 // setCurrentBadge(userBadge)
