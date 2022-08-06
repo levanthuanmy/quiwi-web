@@ -238,7 +238,7 @@ const CardQuizInfo: FC<CardQuizInfoProps> = ({
             }
             displayNode={
               <QuestionActionButton
-                className={classNames('bg-primary', {
+                className={classNames('bg-info', {
                   'bg-opacity-100': quiz?.isPublic,
                   'bg-opacity-50': !quiz?.isPublic,
                 })}

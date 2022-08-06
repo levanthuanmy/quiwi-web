@@ -1,3 +1,4 @@
+import classNames from 'classnames'
 import _ from 'lodash'
 import { NextPage } from 'next'
 import { useRouter } from 'next/router'
@@ -16,7 +17,7 @@ import { get, post } from '../../../../libs/api'
 import * as gtag from '../../../../libs/gtag'
 import { TApiResponse, TQuestion, TQuiz } from '../../../../types/types'
 import { indexingQuestionsOrderPosition } from '../../../../utils/helper'
-
+import styles from './QuizCreator.module.css'
 export type TEditQuestion = {
   isEdit: boolean
   questionId: number | null
@@ -139,7 +140,7 @@ const QuizCreatorPage: NextPage = () => {
         setQuiz={setQuiz}
       />
 
-      <Container fluid="lg" className="">
+      <Container fluid="lg" className=" position-relative">
         <Row className="flex-column-reverse flex-lg-row py-3">
           <Col xs="12" lg="8">
             <div className="pb-3 fs-22px fw-medium">Danh sách câu hỏi</div>
@@ -153,7 +154,11 @@ const QuizCreatorPage: NextPage = () => {
               />
             ))}
           </Col>
-          <Col xs="12" lg="4" className="mb-3 mb-lg-0 ps-12px ps-lg-0">
+          <Col
+            xs="12"
+            lg="4"
+            className={classNames('mb-3 mb-lg-0 ps-12px ps-lg-0', styles.util)}
+          >
             <div className="fs-22px fw-medium">Tuỳ chọn</div>
 
             <div className="mt-3">
@@ -196,7 +201,16 @@ const QuizCreatorPage: NextPage = () => {
         setQuiz={setQuiz}
         isEditQuestion={isEditQuestion}
       />
-
+      <a
+        type="button"
+        className={classNames(styles.btnFloating, 'bg-primary')}
+        onClick={() => {
+          document.body.scrollTop = 0
+          document.documentElement.scrollTop = 0
+        }}
+      >
+        <i className="bi bi-caret-up"></i>
+      </a>
       <MyModal
         show={showModal}
         onHide={() => setShowModal(false)}

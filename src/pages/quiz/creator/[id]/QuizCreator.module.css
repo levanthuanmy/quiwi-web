@@ -1,0 +1,19 @@
+.util {
+  height: fit-content;
+  top: 48px;
+}
+
+.btnFloating {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  padding: 8px 12px;
+  border-radius: 50%;
+  color: white;
+}
+
+@media (min-width: 992px) {
+  .util {
+    position: sticky;
+  }
+}
