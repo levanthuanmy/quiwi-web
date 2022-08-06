@@ -112,6 +112,7 @@ const ItemQuiz: FC<ItemQuizProps> = ({ quiz, exploreMode = false }) => {
             width="100%"
             height={BANNER_HEIGHT}
             className="object-fit-cover position-absolute"
+            loading="lazy"
           />
         ) : (
           <></>

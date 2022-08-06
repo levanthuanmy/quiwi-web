@@ -50,6 +50,7 @@ const RankingBoard: FC<{ rankingList: TRankingItem[] }> = ({ rankingList }) => {
                   height={20}
                   alt="avatar"
                   className="rounded-circle"
+                  loading="lazy"
                 />
                 <span className={classNames('ps-2 pe-1 fw-medium')}>
                   {user?.name}

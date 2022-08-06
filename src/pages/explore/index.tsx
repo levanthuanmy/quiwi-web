@@ -29,34 +29,13 @@ const ExplorePage: NextPage = () => {
   const [showCategories, setShowCategories] = useState<boolean>(false)
   const [currentCategoryId, setCurrentCategoryId] = useState<number[]>()
   const handlePageClick = (selected: { selected: number }) => {
-    window.scrollTo({ top: 0, left: 0, behavior: 'smooth' })
     setPageIndex(Number(selected.selected) + 1)
+    setTimeout(() => {
+      window.scrollTo({ top: 0, left: 0, behavior: 'smooth' })
+    }, 10)
   }
   const [quizResponse, setquizResponse] =
     useState<TApiResponse<TPaginationResponse<TQuiz>>>()
-  // const {
-  //   data: quizResponse,
-  //   isValidating: quizValidating,
-  //   error: quizError,
-  // } = useSWR<TApiResponse<TPaginationResponse<TQuiz>>>(
-  //   [
-  //     `/api/quizzes/community`,
-  //     false,
-  //     {
-  //       quizFilter: currentCategoryId?.length
-  //         ? { quizCategoryIds: currentCategoryId }
-  //         : undefined,
-  //       q,
-  //       pageIndex,
-  //       pageSize,
-  //     },
-  //   ],
-  //   get,
-  //   {
-  //     revalidateOnFocus: false,
-  //   }
-  // )
-
   useEffect(() => {
     const getQuizzes = async () => {
       const res: TApiResponse<TPaginationResponse<TQuiz>> = await get(
