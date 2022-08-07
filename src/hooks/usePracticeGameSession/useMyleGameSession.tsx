@@ -23,6 +23,30 @@ export class MyLeGameManager extends GameManager {
     }
   }
 
+  getPlayerAnswerArray():UserAnswer[] {
+    let submitAnswers:UserAnswer[] = []
+    if (this.gameSession)
+      for (let i = 0; i < this.gameSession?.quiz.questions.length; i++) {
+        const answerToSubmit = {
+          answerIds: [] as any[],
+          answer: '',
+        }
+        const answer = this.playerAnswers[i]
+        if (answer instanceof Set) {
+          answerToSubmit.answerIds = Array.from(answer)
+        } else if (answer instanceof Array) {
+          answerToSubmit.answerIds = answer
+        } else if (typeof answer === 'string') {
+          answerToSubmit.answer = answer
+        } else {
+          continue
+        }
+        submitAnswers.push(answerToSubmit)
+      }
+
+    return submitAnswers;
+  }
+
   playerAnswers: Record<number, any> = {}
 
   initDefaultAnswer (questions: TQuestion[]) {

@@ -166,31 +166,12 @@ const ExamAnswerBoard: FC<ExamAnswerBoardProps> = ({
   }
 
   const submit = () => {
-    console.log("=>(ExamAnswerBoard.tsx:165) gameManager.playerAnswers", gameManager.playerAnswers);
+
     if (gameManager.gameSession?.quiz.questions) {
-      let submitAnswers = []
-      for (let i = 0; i < gameManager.gameSession?.quiz.questions.length; i++) {
-        const answerToSubmit = {
-          answerIds: [] as any[],
-          answer: '',
-        }
-        const answer = gameManager.playerAnswers[i]
-        if (answer instanceof Set) {
-          answerToSubmit.answerIds = Array.from(answer)
-        } else if (answer instanceof Array) {
-          console.log('=>(AnswerBoard.tsx:174) submit array "', answer, '"')
-          answerToSubmit.answerIds = answer
-        } else if (typeof answer === 'string') {
-          answerToSubmit.answer = answer
-        } else {
-          continue
-        }
-        submitAnswers.push(answerToSubmit)
-      }
-      console.log("=>(ExamAnswerBoard.tsx:186) submitAnswers", submitAnswers);
+
       gameManager.gameSkEmit('submit-answer', {
         invitationCode: gameManager.gameSession?.invitationCode,
-        answers: submitAnswers,
+        answers: gameManager.getPlayerAnswerArray(),
       })
       if (gameManager.gameSession && gameManager.gameSocket && gameManager.isHost) {
         const msg = {invitationCode: gameManager.gameSession.invitationCode}
@@ -366,7 +347,7 @@ const ExamAnswerBoard: FC<ExamAnswerBoardProps> = ({
         }
       </div>
       <AnswerSheet
-        userAnswers={userAnswers}
+        userAnswers={gameManager.getPlayerAnswerArray()}
         setCurrentQuestionIndex={setCurrentQuestionIndex}
         currentQuestionIndex={currentQuestionIndex}
         submit={submit}

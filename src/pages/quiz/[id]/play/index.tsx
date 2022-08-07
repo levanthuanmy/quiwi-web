@@ -138,7 +138,7 @@ const PlayCommunityQuizScreen: NextPage = () => {
       )
 
       const data = response.response
-      console.log("console.log(\"=>(index.tsx:138) res1e2 ponse.redfsponse\"", data);
+      console.log("/api/games/reconnect-community-game response", data);
       gameManager.gameSession = data.gameLobby
       gameManager.currentQuestion = data.question
       gameManager.player = data.player as TDetailPlayer

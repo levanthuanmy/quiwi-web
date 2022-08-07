@@ -19,7 +19,7 @@ const AnswerSheet: FC<{
   const [show, setShow] = useState<boolean>(false)
 
   const isAnswerQuestionAtIndex = (index: number): boolean => {
-    if (userAnswers[index].answer !== '') {
+    if (userAnswers[index].answer.length > 0 || userAnswers[index].answerIds.length > 0) {
       return true
     }
     return userAnswers[index].answerIds.length > 0

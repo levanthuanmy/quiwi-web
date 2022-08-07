@@ -70,11 +70,9 @@ const CommunityAnswerBoard: FC<CommunityAnswerBoardProps> = ({
   function resetState() {
     if (gameManager?.gameSession) {
       if (gameManager.gameSession.status == "10PLAYING" && gameManager.deadline && gameManager.deadline.timeLeft > 0) {
-        console.log("=>(CommunityAnswerBoard.tsx:77) startCounting", gameManager);
         timer.startCounting(gameManager.deadline.timeLeft / 1000)
         setLoading(null)
       } else {
-        console.log("=>(CommunityAnswerBoard.tsx:77) gameManager", gameManager);
         // console.log("=>(Commu1nityAnswerBoard.tsx:73) gameManager", gameManager);
         // setLoading(null)
         // timer.setIsShowSkeleton(false)
