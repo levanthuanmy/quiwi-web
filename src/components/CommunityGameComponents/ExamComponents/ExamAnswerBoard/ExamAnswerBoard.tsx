@@ -50,6 +50,7 @@ const ExamAnswerBoard: FC<ExamAnswerBoardProps> = ({
   const [viewResultData, setViewResultData] = useState<TViewResult>()
   const [isShowEndGame, setIsShowEndGame] = useState<boolean>(false)
   const [showEndGame, setShowEndGame] = useState<boolean>(false)
+  const [currentQuestion, setCurrentQuestion] = useState<TQuestion | null>(null)
 
   useEffect(() => {
     handleSocket()
@@ -57,11 +58,16 @@ const ExamAnswerBoard: FC<ExamAnswerBoardProps> = ({
   }, [])
 
   useEffect(() => {
+    setCurrentQuestionIndex(gameManager?.currentQuestion?.orderPosition ?? 0)
+    setCurrentQuestion(gameManager?.currentQuestion)
+  }, [gameManager.currentQuestion])
+
+  useEffect(() => {
     const question = gameManager.getQuestionWithID(currentQuestionIndex)
     if (question) {
       gameManager.currentQuestion = question
+      setCurrentQuestion(question)
     }
-
   }, [currentQuestionIndex])
 
   const handleSocket = () => {
@@ -70,9 +76,6 @@ const ExamAnswerBoard: FC<ExamAnswerBoardProps> = ({
     gameManager.gameSkOnce('game-started', (data) => {
       gameManager.deadline = data.deadline
       setUserAnswers(Array(gameManager.gameSession?.quiz.questions.length).fill({answerIds: [], answer: ''}))
-      if (data.gameLobby.quiz.questions as TQuestion[]) {
-        gameManager.initDefaultAnswer(data.gameLobby.quiz.questions)
-      }
       if (gameManager.deadline) {
         const duration = gameManager.deadline?.timeLeft
         timer.startCounting(((duration / 1000)) ?? 0)
@@ -88,10 +91,13 @@ const ExamAnswerBoard: FC<ExamAnswerBoardProps> = ({
         timer.setIsShowSkeleton(true)
         gameManager.deadline = data.game.deadline
         if (gameManager.deadline) {
-          const duration =  gameManager.deadline?.timeLeft;
+          const duration = gameManager.deadline?.timeLeft;
           timer.setDefaultDuration(((duration / 1000)) ?? 0)
         }
         setLoading('Chuẩn bị!')
+        if (data.gameLobby.quiz.questions as TQuestion[]) {
+          gameManager.initDefaultAnswer(data.gameLobby.quiz.questions)
+        }
         gameManager.submittedAnswer = null
       } else if (data?.loading) {
         setLoading(data.loading)
@@ -117,7 +123,7 @@ const ExamAnswerBoard: FC<ExamAnswerBoardProps> = ({
   }
 
   const renderAnswersSection = () => {
-    if (!gameManager.currentQuestion) return
+    if (!currentQuestion) return
     if (!answerSectionFactory)
       answerSectionFactory = new AnswerSectionFactory(
         false,
@@ -125,14 +131,14 @@ const ExamAnswerBoard: FC<ExamAnswerBoardProps> = ({
         true
       )
     return answerSectionFactory.initAnswerSectionForType(
-      gameManager.currentQuestion.type,
-      gameManager.currentQuestion,
+      currentQuestion.type,
+      currentQuestion,
       (answer) => {
         if (gameManager.currentQuestion)
-          updateAnswerAtIndex(gameManager.currentQuestion.orderPosition, answer)
+          updateAnswerAtIndex(currentQuestion.orderPosition, answer)
       },
       undefined,
-      getUserAnswersAtIndex(gameManager.currentQuestion.orderPosition)
+      getUserAnswersAtIndex(currentQuestion.orderPosition)
       // answersStatistic
     )
   }
@@ -156,18 +162,40 @@ const ExamAnswerBoard: FC<ExamAnswerBoardProps> = ({
   }
 
   const getUserAnswersAtIndex = (index: number) => {
-    console.log("=>(ExamAnswerBoard.tsx:155) getUserAnswersAtIndex", index, " answer ", gameManager.playerAnswers[index]);
     return gameManager.playerAnswers[index]
   }
 
   const submit = () => {
-    gameManager.gameSkEmit('submit-answer', {
-      invitationCode: gameManager.gameSession?.invitationCode,
-      answers: userAnswers,
-    })
-    if (gameManager.gameSession && gameManager.gameSocket && gameManager.isHost) {
-      const msg = {invitationCode: gameManager.gameSession.invitationCode}
-      gameManager.gameSkEmit('game-ended', msg)
+    console.log("=>(ExamAnswerBoard.tsx:165) gameManager.playerAnswers", gameManager.playerAnswers);
+    if (gameManager.gameSession?.quiz.questions) {
+      let submitAnswers = []
+      for (let i = 0; i < gameManager.gameSession?.quiz.questions.length; i++) {
+        const answerToSubmit = {
+          answerIds: [] as any[],
+          answer: '',
+        }
+        const answer = gameManager.playerAnswers[i]
+        if (answer instanceof Set) {
+          answerToSubmit.answerIds = Array.from(answer)
+        } else if (answer instanceof Array) {
+          console.log('=>(AnswerBoard.tsx:174) submit array "', answer, '"')
+          answerToSubmit.answerIds = answer
+        } else if (typeof answer === 'string') {
+          answerToSubmit.answer = answer
+        } else {
+          continue
+        }
+        submitAnswers.push(answerToSubmit)
+      }
+      console.log("=>(ExamAnswerBoard.tsx:186) submitAnswers", submitAnswers);
+      gameManager.gameSkEmit('submit-answer', {
+        invitationCode: gameManager.gameSession?.invitationCode,
+        answers: submitAnswers,
+      })
+      if (gameManager.gameSession && gameManager.gameSocket && gameManager.isHost) {
+        const msg = {invitationCode: gameManager.gameSession.invitationCode}
+        gameManager.gameSkEmit('game-ended', msg)
+      }
     }
   }
 
@@ -212,7 +240,7 @@ const ExamAnswerBoard: FC<ExamAnswerBoardProps> = ({
         )}
         style={{overflowX: 'hidden'}}
       >
-        {gameManager.currentQuestion &&
+        {currentQuestion &&
             <UserAndProcessInfo
                 gameManager={gameManager}
                 viewResultData={viewResultData}
@@ -300,14 +328,14 @@ const ExamAnswerBoard: FC<ExamAnswerBoardProps> = ({
         {/*    </CountdownCircleTimer>*/}
         {/*  </Col>*/}
         {/*</Row>*/}
-        {gameManager.currentQuestion &&
+        {currentQuestion &&
             <QuestionMedia
-                media={gameManager.currentQuestion.media ?? null}
+                media={currentQuestion.media ?? null}
                 numStreak={0}
                 numSubmission={0}
-                key={gameManager.currentQuestion.orderPosition}
+                key={currentQuestion.orderPosition}
                 className={styles.questionMedia}
-                questionTitle={gameManager.currentQuestion?.question ?? ''}
+                questionTitle={currentQuestion?.question ?? ''}
                 endTime={gameManager.deadline?.timeEnd}
             />
         }

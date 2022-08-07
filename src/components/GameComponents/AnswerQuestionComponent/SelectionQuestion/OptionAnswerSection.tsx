@@ -53,7 +53,6 @@ const OptionAnswerSection: FC<OptionAnswerSectionProps> = ({
   }
 
   const getIconForPlayer = (answer: TAnswer): string => {
-    console.log("=>(OptionAnswerSection.tsx:57) selectedAnswers", selectedAnswers, answer);
     if (!showAnswer) {
       if (answer.id && selectedAnswers && selectedAnswers?.has(answer.id))
         return `bi-check-${baseIcon}`

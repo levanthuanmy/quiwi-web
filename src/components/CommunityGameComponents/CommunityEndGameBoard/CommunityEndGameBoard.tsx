@@ -46,7 +46,6 @@ const CommunityEndGameBoard: FC<{
 
   const mappedEndGameQuestion = useMemo(() => {
     const gameRounds: TGameRound[] = gameSessionHook.player?.gameRounds || []
-    console.log("=>(CommunityEndGameBoard.tsx:50) gameRounds", gameRounds);
     let result: {
       correctQuestions: Record<number, TGameRound>
       incorrectQuestions: Record<number, TGameRound>
