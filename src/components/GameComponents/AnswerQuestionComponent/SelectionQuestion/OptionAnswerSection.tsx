@@ -2,7 +2,7 @@ import classNames from 'classnames'
 import React, {FC} from 'react'
 import {Col, Image, Row} from 'react-bootstrap'
 import {TAnswer, TQuestion} from '../../../../types/types'
-import styles from './SingleChoiceAnswerSection.module.css'
+import styles from './OptionAnswerSection.module.css'
 import useScreenSize from "../../../../hooks/useScreenSize/useScreenSize";
 import {ANSWER_COLORS} from "../../../../utils/constants";
 
@@ -14,7 +14,7 @@ type OptionAnswerSectionProps = {
   showAnswer: boolean
   isHost: boolean
   baseIcon: string
-  isShowSkeleton:boolean
+  isShowSkeleton: boolean
   numOfVote?: number[]
 }
 
@@ -135,7 +135,7 @@ const OptionAnswerSection: FC<OptionAnswerSectionProps> = ({
                   color: getBackgroundColorForAnswer(item, index),
                 }}
               >
-                <div className={styles.alphaBetText}>{numOfVote ? numOfVote[index] ?? 0: alphabet[index]}</div>
+                <div className={styles.alphaBetText}>{numOfVote ? numOfVote[index] ?? 0 : alphabet[index]}</div>
               </div>
               <div
                 className={`text-white d-flex gap-3 align-items-center justify-content-center flex-grow-1 h-100 fw-semiBold ${
@@ -144,7 +144,7 @@ const OptionAnswerSection: FC<OptionAnswerSectionProps> = ({
                     : styles.selectionTextSmall
                 }`}
               >
-                <div className={"flex-grow-1"}>
+                <div className={classNames("flex-grow-1 customScrollbar", styles.textAnswer)}>
                   {isShowSkeleton ? "" : item.answer}
                 </div>
                 {item.media?.length > 0 && !isShowSkeleton && (

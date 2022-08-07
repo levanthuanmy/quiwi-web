@@ -60,6 +60,12 @@
     /*background-color: #15e2ef;*/
 }
 
+@media (max-width: 768px) {
+    .answerLayout {
+        min-height: 60vh;
+    }
+}
+
 .submitButton {
     border-radius:10px;
 }
