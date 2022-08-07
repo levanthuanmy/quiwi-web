@@ -24,11 +24,13 @@ import { EndGameModal } from '../UtilComponents/EndGameModal'
 type AnswerBoardProps = {
   className?: string
   isShowHostControl: boolean
+  setIsShowChat: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 const AnswerBoard: FC<AnswerBoardProps> = ({
   className,
   isShowHostControl,
+  setIsShowChat,
 }) => {
   const gameManager = useGameSession()
   const sound = useSound()
@@ -148,6 +150,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
       setIsNextEmitted(false)
       timer.startCounting(data.question.duration ?? 0)
       setLoading(null)
+      setIsShowChat(false)
     })
 
     gameManager.gameSkOn('view-result', (data: TViewResult) => {
@@ -373,7 +376,8 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
         {gameManager.currentQuestion?.question && (
           <UserAndProcessInfo
             gameManager={gameManager}
-            viewResultData={viewResultData} />
+            viewResultData={viewResultData}
+          />
         )}
 
         {gameManager.currentQuestion && (

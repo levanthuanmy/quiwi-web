@@ -1,42 +1,49 @@
 import classNames from 'classnames'
-import {NextPage} from 'next'
+import { NextPage } from 'next'
 import router from 'next/router'
-import React, {Dispatch, SetStateAction, useEffect, useState} from 'react'
+import React, { Dispatch, SetStateAction, useEffect, useState } from 'react'
+import Cookies from 'universal-cookie'
 import AnswerBoard from '../../../components/GameComponents/AnswerBoard/AnswerBoard'
 import EndGameBoard from '../../../components/GameComponents/EndGameBoard/EndGameBoard'
-import {FAB, FABAction} from '../../../components/GameComponents/FAB/FAB'
+import { FAB, FABAction } from '../../../components/GameComponents/FAB/FAB'
 import FlyingAnimation from '../../../components/GameComponents/FlyingAnimation/FlyingAnimation'
 import GameMenuBar from '../../../components/GameMenuBar/GameMenuBar'
 import MyModal from '../../../components/MyModal/MyModal'
 import UsingItemInGame from '../../../components/UsingItemInGame/UsingItemInGame'
 import useExtendQueue from '../../../hooks/useExtendQueue'
-import {TGameLobby, useGameSession} from '../../../hooks/useGameSession/useGameSession'
+import {
+  TGameLobby,
+  useGameSession
+} from '../../../hooks/useGameSession/useGameSession'
 import useScreenSize from '../../../hooks/useScreenSize/useScreenSize'
-import {useSound} from '../../../hooks/useSound/useSound'
-import {TimerProvider, useTimer} from '../../../hooks/useTimer/useTimer'
+import { useSound } from '../../../hooks/useSound/useSound'
+import { TimerProvider, useTimer } from '../../../hooks/useTimer/useTimer'
+import { useUser } from '../../../hooks/useUser/useUser'
+import { useUserSetting } from '../../../hooks/useUserSetting/useUserSetting'
+import { post } from '../../../libs/api'
 import * as gtag from '../../../libs/gtag'
-import {SOUND_EFFECT} from '../../../utils/constants'
+import {
+  TApiResponse,
+  TDetailPlayer,
+  TGamePlayBodyRequest,
+  TPlayer
+} from '../../../types/types'
+import { SOUND_EFFECT } from '../../../utils/constants'
+import { TJoinQuizRequest } from '../../lobby/join'
 import styles from './GamePage.module.css'
-import {useUserSetting} from "../../../hooks/useUserSetting/useUserSetting";
-import Cookies from "universal-cookie";
-import {TApiResponse, TDetailPlayer, TGamePlayBodyRequest, TPlayer} from "../../../types/types";
-import {post} from "../../../libs/api";
-import {useUser} from "../../../hooks/useUser/useUser";
-import {TJoinQuizRequest} from "../../lobby/join";
 
 export const ExitContext = React.createContext<{
   showEndGameModal: boolean
   setShowEndGameModal: Dispatch<SetStateAction<boolean>>
 }>({
   showEndGameModal: false,
-  setShowEndGameModal: () => {
-  },
+  setShowEndGameModal: () => {},
 })
 
 const GamePage: NextPage = () => {
   const game = useGameSession()
-  const user = useUser();
-  const timer = useTimer();
+  const user = useUser()
+  const timer = useTimer()
   const [isShowChat, setIsShowChat] = useState<boolean>(false)
   const [isGameEnded, setIsGameEnded] = useState<boolean>(false)
   const [isShowExit, setIsShowExit] = useState<boolean>(false)
@@ -44,11 +51,11 @@ const GamePage: NextPage = () => {
 
   const [isShowHostControl, setIsShowHostControl] = useState<boolean>(true)
   const screenSize = useScreenSize()
-  const {fromMedium} = useScreenSize()
+  const { fromMedium } = useScreenSize()
   const [endGameData, setEndGameData] = useState<TGameLobby>()
   const sound = useSound()
 
-  const {add, size, all} = useExtendQueue()
+  const { add, size, all } = useExtendQueue()
 
   const fabs: FABAction[] = [
     {
@@ -127,7 +134,7 @@ const GamePage: NextPage = () => {
     )
   }
 
-  useEffect( () => {
+  useEffect(() => {
     if (!game.gameSocket || !game.gameSocket.connected) {
       game.connectGameSocket()
       game.gameSkOnce('connect', () => {
@@ -160,11 +167,11 @@ const GamePage: NextPage = () => {
 
     game.gameSkOn('use-item', (data) => {
       try {
-        const {item} = data?.itemUsing || {}
+        const { item } = data?.itemUsing || {}
         switch (item?.itemCategory?.name) {
           case 'Biểu cảm': {
             add(
-              <FlyingAnimation key={size + item?.avatar} src={item?.avatar}/>
+              <FlyingAnimation key={size + item?.avatar} src={item?.avatar} />
             )
             break
           }
@@ -173,10 +180,11 @@ const GamePage: NextPage = () => {
         console.log('gameSkOn - error', error)
       }
     })
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const joinRoom = async () => {
-    if (!game || !game.gameSession) return;
+    if (!game || !game.gameSession) return
     const cookies = new Cookies()
     const accessToken: string = cookies.get('access-token')
     let joinRoomRequest: TJoinQuizRequest = {
@@ -198,12 +206,7 @@ const GamePage: NextPage = () => {
       const response: TApiResponse<{
         gameLobby: TGameLobby
         player: TPlayer
-      }> = await post(
-        'api/games/join-room',
-        {},
-        body,
-        true
-      )
+      }> = await post('api/games/join-room', {}, body, true)
       const data = response.response
 
       game.gameSession = data.gameLobby
@@ -238,7 +241,7 @@ const GamePage: NextPage = () => {
           {/*<div className={classNames("")}>*/}
           <div className={classNames(styles.answerBoard, '')}>
             {endGameData ? (
-              <EndGameBoard className="flex-grow-1"/>
+              <EndGameBoard className="flex-grow-1" />
             ) : (
               <ExitContext.Provider
                 value={{
@@ -251,6 +254,7 @@ const GamePage: NextPage = () => {
                   <AnswerBoard
                     className="flex-grow-1"
                     isShowHostControl={isShowHostControl}
+                    setIsShowChat={setIsShowChat}
                   />
                 </TimerProvider>
               </ExitContext.Provider>
@@ -270,15 +274,14 @@ const GamePage: NextPage = () => {
                   setIsShowChat(!isShowChat)
                 }}
               />
-                {isShowItem &&
-                    <UsingItemInGame
-                        closeAction={() => {
-                          resetAllFAB()
-                          setIsShowItem(!isShowItem)
-                        }
-                        }
-                    />
-                }
+              {isShowItem && (
+                <UsingItemInGame
+                  closeAction={() => {
+                    resetAllFAB()
+                    setIsShowItem(!isShowItem)
+                  }}
+                />
+              )}
             </div>
           )}
         </div>

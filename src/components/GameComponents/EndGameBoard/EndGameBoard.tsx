@@ -1,36 +1,37 @@
 import classNames from 'classnames'
-import React, {FC, memo, useEffect, useState} from 'react'
-import {Image} from 'react-bootstrap'
+import React, { FC, memo, useEffect, useState } from 'react'
+import { Image } from 'react-bootstrap'
 import Confetti from 'react-confetti'
-import {useToasts} from 'react-toast-notifications'
-import {useWindowSize} from 'react-use'
-import {useAuth} from '../../../hooks/useAuth/useAuth'
-import {useGameSession} from '../../../hooks/useGameSession/useGameSession'
-import {useLocalStorage} from '../../../hooks/useLocalStorage/useLocalStorage'
-import {get} from '../../../libs/api'
-import {TPlayer} from '../../../types/types'
-import {SOUND_EFFECT} from '../../../utils/constants'
-import {JsonParse} from '../../../utils/helper'
+import { useToasts } from 'react-toast-notifications'
+import { useWindowSize } from 'react-use'
+import { useAuth } from '../../../hooks/useAuth/useAuth'
+import { useGameSession } from '../../../hooks/useGameSession/useGameSession'
+import { useLocalStorage } from '../../../hooks/useLocalStorage/useLocalStorage'
+import { get } from '../../../libs/api'
+import { TPlayer } from '../../../types/types'
+import { SOUND_EFFECT } from '../../../utils/constants'
+import { JsonParse } from '../../../utils/helper'
 import MyButton from '../../MyButton/MyButton'
 import styles from './EndGameBoard.module.css'
-import {useSound} from "../../../hooks/useSound/useSound";
+import { useSound } from '../../../hooks/useSound/useSound'
 
 type EndGameBoardProps = {
   className?: string
 }
 
-const EndGameBoard: FC<EndGameBoardProps> = ({className}) => {
-  const {width, height} = useWindowSize();
+const EndGameBoard: FC<EndGameBoardProps> = ({ className }) => {
+  const { width, height } = useWindowSize()
   const gameManager = useGameSession()
-  const {isAuth} = useAuth()
+  const { isAuth } = useAuth()
   const [isVote, setIsVote] = useState<boolean>(false)
-  const {addToast} = useToasts()
+  const { addToast } = useToasts()
   const sound = useSound()
   const player = gameManager.player
 
   useEffect(() => {
-    sound?.playSound(SOUND_EFFECT['END_GAME']);
-    sound?.playSound(SOUND_EFFECT['CONGRATULATION_RANKING']);
+    sound?.playSound(SOUND_EFFECT['END_GAME'])
+    sound?.playSound(SOUND_EFFECT['CONGRATULATION_RANKING'])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const renderList = () => {
@@ -99,10 +100,7 @@ const EndGameBoard: FC<EndGameBoardProps> = ({className}) => {
       )}
     >
       <div className={`${styles.rankingChart} p-5`}>
-        <Confetti
-          width={width}
-          height={height}
-        />
+        <Confetti width={width} height={height} />
         <div className="fs-1 fw-bold text-center">
           <Image
             src={`/assets/congrat-ribbon.png`}
@@ -110,13 +108,13 @@ const EndGameBoard: FC<EndGameBoardProps> = ({className}) => {
             width="174"
             height="83"
           />
-          <br/>
+          <br />
           Tổng kết
         </div>
         <div className="d-flex align-items-end">{renderList()}</div>
 
-        {!gameManager.isHost && (
-          !isVote ? (
+        {!gameManager.isHost &&
+          (!isVote ? (
             <div className="bg-light p-3 px-4 rounded-10px border text-center">
               <div className="h2">Đánh giá quiz</div>
               <div className="p-12px line-height-normal text-secondary d-flex align-items-center gap-3">
@@ -136,12 +134,11 @@ const EndGameBoard: FC<EndGameBoardProps> = ({className}) => {
             <div className="bg-light p-3 px-4 rounded-10px border text-center">
               <div className="h2">
                 Phản hồi của bạn đã được ghi nhận.
-                <br/>
+                <br />
                 Cảm ơn bạn đã tham gia quiz này.
               </div>
             </div>
-          )
-        )}
+          ))}
       </div>
     </div>
   )
@@ -155,24 +152,24 @@ const ItemChart: FC<{
   point: number
   name: string
   // eslint-disable-next-line react/display-name
-}> = memo(({position, point, name}) => {
+}> = memo(({ position, point, name }) => {
   const game = useGameSession()
   point = Math.round(point)
   name = name.length > 4 ? name.substring(0, 4) + '...' : name
 
   const medalImage: Record<TPositionRanking, { image: string; color: string }> =
     {
-      '1st': {image: '/assets/gold-medal.png', color: 'gold'},
-      '2nd': {image: '/assets/silver-medal.png', color: 'silver'},
-      '3rd': {image: '/assets/bronze-medal.png', color: 'brown'},
+      '1st': { image: '/assets/gold-medal.png', color: 'gold' },
+      '2nd': { image: '/assets/silver-medal.png', color: 'silver' },
+      '3rd': { image: '/assets/bronze-medal.png', color: 'brown' },
     }
 
   const getSize = () => {
     if (!game.gameSession) return
-    if (position === '1st') return {height: 300, width: 100}
+    if (position === '1st') return { height: 300, width: 100 }
     else {
       return {
-        height: Math.floor((point / game.players[0].score) * 300),
+        height: Math.max(Math.floor((point / game.players[0].score) * 300 + 80), 150),
         width: 90,
       }
     }
@@ -180,21 +177,22 @@ const ItemChart: FC<{
 
   return (
     <div
-      className={classNames(
-        'd-flex flex-column text-center justify-content-end'
-      )}
+      className={classNames('position-relative text-center')}
       style={getSize()}
     >
-      <Image
-        src={medalImage[position].image}
-        alt=""
-        width="80"
-        height="90"
-        className="align-self-center"
-      />
-      <div className={styles.rankingName}>{name}</div>
+      <div className={classNames(styles.ranking)}>
+        <Image
+          src={medalImage[position].image}
+          alt=""
+          width="80"
+          height="90"
+          className="align-self-center"
+        />
+        <div className={styles.rankingName}>{name}</div>
+      </div>
+
       <div
-        className={styles.rankingScore}
+        className={classNames(styles.rankingScore, styles.pillar)}
         style={{
           backgroundColor: medalImage[position].color,
         }}

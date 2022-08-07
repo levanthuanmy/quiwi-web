@@ -102,11 +102,19 @@
   flex-direction: column;
   gap: 2rem;
 
-
   align-items: center;
   justify-content: center;
 
   /* gap: 20px; */
+}
+
+.ranking {
+  position: absolute;
+  text-align: center;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 0;
+  animation: goup 1.2s ease ;
 }
 
 .rankingName {
@@ -119,4 +127,31 @@
 .rankingScore {
   flex-grow: 1;
   color: white;
+}
+
+.pillar {
+  animation: increase 1.2s ease-in;
+  width: 100%;
+  position: absolute;
+  bottom: 0%;
+  height: calc(100% - 126px);
+  min-height: 20px;
+}
+
+@keyframes goup {
+  from {
+    top: 50%;
+  }
+  to {
+    top: 0
+  }
+}
+@keyframes increase {
+  from {
+    height: 0%;
+    bottom: 0%;
+  }
+  to {
+    bottom: 0%;
+  }
 }
