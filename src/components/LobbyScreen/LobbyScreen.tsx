@@ -52,27 +52,27 @@ const LobbyScreen: FC<LobbyScreenProps> = () => {
     if (!game.gameSession) return
     setPlayerList(game.gameSession.players)
 
-    game.gameSkOn('new-player', (data: { newPlayer: TPlayer }) => {
-      let newPlayerList: TPlayer[] = [...game.players, data.newPlayer]
-      setPlayerList(newPlayerList)
-      game.players = newPlayerList
-      addToast(`${data.newPlayer.nickname} đã tham gia phòng`, {
-        appearance: 'success',
-        autoDismiss: true,
-      })
+    game.gameSkOn('new-player', (data) => {
+      handlePlayerLeftJoin(data.player as TPlayer | null, data.players as TPlayer[] | null)
     })
 
     game.gameSkOn('player-left', (data) => {
-      let _players = [...playerList]
-      _.remove(_players, (player) => player.id === data.id)
-      setPlayerList(_players)
-      game.players = [..._players]
-
-      addToast(`${data?.player?.nickname} đã rời phòng`, {
-        appearance: 'error',
-        autoDismiss: true,
-      })
+      handlePlayerLeftJoin(data.player as TPlayer | null, data.players as TPlayer[] | null, false)
     })
+
+    const handlePlayerLeftJoin = (player: TPlayer | null, players : TPlayer[] | null, isJoin:Boolean = true) => {
+      if (players) {
+        setPlayerList(players)
+        game.players = players
+      }
+
+      if (player) {
+        addToast(isJoin ? `${player.nickname} đã tham gia phòng` : `${player.nickname} đã rời phòng`, {
+          appearance: isJoin ? 'success' : 'error',
+          autoDismiss: true,
+        })
+      }
+    }
 
     game.gameSkOnce('host-out', () => {
       router.push('/home')

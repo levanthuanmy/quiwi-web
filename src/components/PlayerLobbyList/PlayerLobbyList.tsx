@@ -33,7 +33,6 @@ const PlayerLobbyList: FC<PlayerLobbyListProps> = (props: PlayerLobbyListProps) 
     game.gameSkOn('player-kicked', (data) => {
       sound.playSound(SOUND_EFFECT['INCORRECT_BACKGROUND'])
       setIsKicked(true)
-      console.log("=>(PlayerLobbyItem.tsx:36) isKicked", isKicked);
     })
   }, []);
 
