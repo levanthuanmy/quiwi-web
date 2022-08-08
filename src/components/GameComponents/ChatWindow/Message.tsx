@@ -19,7 +19,7 @@ export type MessageProps = {
   id?: string
   player?: TPlayer
   voteFromHost: number
-  playerNickName?: string
+  playerNickname?: string
   socketId: string
   user?: TUser
   userId?: number
