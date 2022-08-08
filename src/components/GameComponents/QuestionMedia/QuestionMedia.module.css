@@ -4,7 +4,7 @@
 }
 @media (max-width: 576px) {
   .questionMedia {
-    max-height: 40%;
+    /* max-height: 40%; */
     padding-left: 4px;
     padding-right: 4px;
   }

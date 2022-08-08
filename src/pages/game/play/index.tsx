@@ -2,6 +2,7 @@ import classNames from 'classnames'
 import { NextPage } from 'next'
 import router from 'next/router'
 import React, { Dispatch, SetStateAction, useEffect, useState } from 'react'
+import { Image } from 'react-bootstrap'
 import Cookies from 'universal-cookie'
 import AnswerBoard from '../../../components/GameComponents/AnswerBoard/AnswerBoard'
 import EndGameBoard from '../../../components/GameComponents/EndGameBoard/EndGameBoard'
@@ -13,7 +14,7 @@ import UsingItemInGame from '../../../components/UsingItemInGame/UsingItemInGame
 import useExtendQueue from '../../../hooks/useExtendQueue'
 import {
   TGameLobby,
-  useGameSession
+  useGameSession,
 } from '../../../hooks/useGameSession/useGameSession'
 import useScreenSize from '../../../hooks/useScreenSize/useScreenSize'
 import { useSound } from '../../../hooks/useSound/useSound'
@@ -26,7 +27,9 @@ import {
   TApiResponse,
   TDetailPlayer,
   TGamePlayBodyRequest,
-  TPlayer
+  TItem,
+  TPlayer,
+  TUsingItems,
 } from '../../../types/types'
 import { SOUND_EFFECT } from '../../../utils/constants'
 import { TJoinQuizRequest } from '../../lobby/join'
@@ -54,7 +57,8 @@ const GamePage: NextPage = () => {
   const { fromMedium } = useScreenSize()
   const [endGameData, setEndGameData] = useState<TGameLobby>()
   const sound = useSound()
-
+  const [showUsingItem, setShowUsingItem] = useState<boolean>(false)
+  const [currentUsingItem, setCurrentUsingItem] = useState<TItem>()
   const { add, size, all } = useExtendQueue()
 
   const fabs: FABAction[] = [
@@ -167,7 +171,7 @@ const GamePage: NextPage = () => {
 
     game.gameSkOn('use-item', (data) => {
       try {
-        const { item } = data?.itemUsing || {}
+        const { item, player }: TUsingItems = data?.itemUsing || {}
         switch (item?.itemCategory?.name) {
           case 'Biểu cảm': {
             add(
@@ -175,12 +179,20 @@ const GamePage: NextPage = () => {
             )
             break
           }
+          case 'Đạo cụ': {
+            if (player.nickname === game.nickName) {
+              setCurrentUsingItem(item)
+              setShowUsingItem(true)
+            }
+            break
+          }
         }
       } catch (error) {
         console.log('gameSkOn - error', error)
       }
     })
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const joinRoom = async () => {
@@ -254,7 +266,12 @@ const GamePage: NextPage = () => {
                   <AnswerBoard
                     className="flex-grow-1"
                     isShowHostControl={isShowHostControl}
-                    setIsShowChat={setIsShowChat}
+                    onNextQuestionCallback={() => {
+                      setShowUsingItem(false)
+                      setIsShowChat(false)
+                    }}
+                    currentUsingItem={currentUsingItem}
+                    showUsingItem={showUsingItem}
                   />
                 </TimerProvider>
               </ExitContext.Provider>

@@ -413,3 +413,8 @@ export type TExamDeadline = {
   timeLeft: number
   timeEnd: number
 }
+
+export type TUsingItems = {
+  item: TItem
+  player: TPlayer
+}

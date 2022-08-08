@@ -1,36 +1,40 @@
 import { default as classNames, default as cn } from 'classnames'
 import { useRouter } from 'next/router'
 import { FC, memo, useContext, useEffect, useState } from 'react'
-import { Fade } from 'react-bootstrap'
+import { Fade, Image } from 'react-bootstrap'
 import { useToasts } from 'react-toast-notifications'
 import { useGameSession } from '../../../hooks/useGameSession/useGameSession'
 import useScreenSize from '../../../hooks/useScreenSize/useScreenSize'
 import { useSound } from '../../../hooks/useSound/useSound'
 import { useTimer } from '../../../hooks/useTimer/useTimer'
-import { useUser } from '../../../hooks/useUser/useUser'
 import { ExitContext } from '../../../pages/game/play'
-import { TQuestion, TViewResult } from '../../../types/types'
+import { TItem, TQuestion, TViewResult } from '../../../types/types'
 import { SOUND_EFFECT } from '../../../utils/constants'
+import ScreenHandling from '../../MyLeTooltip/ScreenHandling/ScreenHandling'
 import { AnswerSectionFactory } from '../AnswerQuestionComponent/AnswerSectionFactory/AnswerSectionFactory'
 import GameButton from '../GameButton/GameButton'
 import GameSessionRanking from '../GameSessionRanking/GameSessionRanking'
 import LoadingBoard from '../LoadingBoard/LoadingBoard'
 import { QuestionMedia } from '../QuestionMedia/QuestionMedia'
-import styles from './AnswerBoard.module.css'
-import { UserAndProcessInfo } from '../UtilComponents/UserAndProcessInfo'
-import { QuestionType } from '../UtilComponents/QuestionType'
 import { EndGameModal } from '../UtilComponents/EndGameModal'
+import { QuestionType } from '../UtilComponents/QuestionType'
+import { UserAndProcessInfo } from '../UtilComponents/UserAndProcessInfo'
+import styles from './AnswerBoard.module.css'
 
 type AnswerBoardProps = {
   className?: string
   isShowHostControl: boolean
-  setIsShowChat: React.Dispatch<React.SetStateAction<boolean>>
+  onNextQuestionCallback: () => void
+  showUsingItem: boolean
+  currentUsingItem?: TItem
 }
 
 const AnswerBoard: FC<AnswerBoardProps> = ({
   className,
   isShowHostControl,
-  setIsShowChat,
+  onNextQuestionCallback,
+  showUsingItem,
+  currentUsingItem,
 }) => {
   const gameManager = useGameSession()
   const sound = useSound()
@@ -38,8 +42,6 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
   const exitContext = useContext(ExitContext)
   const router = useRouter()
   const query = router.query
-  const { invitationCode } = query
-  const user = useUser()
 
   let answerSectionFactory: AnswerSectionFactory
 
@@ -54,7 +56,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
   const [numSubmission, setNumSubmission] = useState<number>(0)
   const [viewResultData, setViewResultData] = useState<TViewResult>()
   const { addToast } = useToasts()
-  const { fromMedium, isMobile } = useScreenSize()
+  const { fromMedium, isMobile, fromSmall } = useScreenSize()
 
   useEffect(() => {
     handleSocket()
@@ -150,7 +152,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
       setIsNextEmitted(false)
       timer.startCounting(data.question.duration ?? 0)
       setLoading(null)
-      setIsShowChat(false)
+      onNextQuestionCallback()
     })
 
     gameManager.gameSkOn('view-result', (data: TViewResult) => {
@@ -388,6 +390,30 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
             key={gameManager.currentQuestion.orderPosition}
             className={styles.questionMedia}
             questionTitle={gameManager.currentQuestion?.question ?? ''}
+            usingItemDom={
+              <ScreenHandling
+                displayNode={
+                  <div
+                    className={classNames(
+                      styles.usingItemBox,
+                      styles.glowAnimation
+                    )}
+                    style={{ display: showUsingItem ? 'block' : 'none' }}
+                  >
+                    <div className="w-100 h-100 d-flex rounded-pill overflow-hidden">
+                      <Image
+                        src={currentUsingItem?.avatar || '/assets/logo.png'}
+                        width={fromSmall ? 40 : 30}
+                        height={fromSmall ? 40 : 30}
+                        alt=""
+                        roundedCircle
+                      />
+                    </div>
+                  </div>
+                }
+                contentTooltip={currentUsingItem?.name}
+              />
+            }
           />
         )}
 

@@ -1,5 +1,5 @@
 import { default as classNames, default as cn } from 'classnames'
-import { FC, useCallback } from 'react'
+import { FC, ReactNode, useCallback } from 'react'
 import { Image } from 'react-bootstrap'
 import { ColorHex, CountdownCircleTimer } from 'react-countdown-circle-timer'
 import useScreenSize from '../../../hooks/useScreenSize/useScreenSize'
@@ -28,6 +28,7 @@ const QuestionMedia: FC<{
   numSubmission: number
   className?: string
   endTime?: number
+  usingItemDom?: ReactNode
 }> = ({
   media,
   numSubmission,
@@ -35,8 +36,9 @@ const QuestionMedia: FC<{
   className,
   questionTitle,
   endTime,
+  usingItemDom,
 }) => {
-  const { fromMedium } = useScreenSize()
+  const { fromMedium, fromSmall } = useScreenSize()
   const timerContext = useTimer()
   const formatTime = useCallback(
     (remainingTime: number) => {
@@ -101,58 +103,75 @@ const QuestionMedia: FC<{
           styles.questionMedia
         )}
       >
-        {/* Timeout */}
-        {!fromMedium && (
-          <div className="d-flex flex-column gap-2">
-            <div className={cn('text-white', styles.timeoutTitle)}>
-              Đếm ngược
-            </div>
-            <div
-              className={classNames(
-                'text-white fw-medium',
-                styles.timeoutContainer
-              )}
-              style={{
-                backgroundColor:
-                  timerContext.countDown <= 0
-                    ? '#e2352a'
-                    : timerContext.countDown % 2 == 0
-                    ? '#007f6d'
-                    : '#7f955f',
-                transition: 'all .8s ease',
-                WebkitTransition: 'all .8s ease',
-                MozTransition: 'all .8s ease',
-              }}
-            >
-              <i className="bi bi-stopwatch"></i>
-              <div className={classNames(styles.timeout)}>
-                {Math.floor(timerContext.countDown / 60)} :{' '}
-                {Math.ceil(timerContext.countDown % 60)}
+        <div className="position-relative">
+          <div
+            style={{
+              position: 'absolute',
+              top: fromSmall ? '-50px' : '-35px', // this is magic number bro, don't ask me later 🤕
+              left: 0,
+              right: 0,
+            }}
+            className="d-flex justify-content-center"
+          >
+            {usingItemDom}
+          </div>
+          {/* Timeout */}
+          {!fromMedium && (
+            <div className="d-flex flex-column gap-2">
+              <div className={cn('text-white', styles.timeoutTitle)}>
+                Đếm ngược
+              </div>
+              <div
+                className={classNames(
+                  'text-white fw-medium',
+                  styles.timeoutContainer
+                )}
+                style={{
+                  backgroundColor:
+                    timerContext.countDown <= 0
+                      ? '#e2352a'
+                      : timerContext.countDown % 2 == 0
+                      ? '#007f6d'
+                      : '#7f955f',
+                  transition: 'all .8s ease',
+                  WebkitTransition: 'all .8s ease',
+                  MozTransition: 'all .8s ease',
+                }}
+              >
+                <i className="bi bi-stopwatch"></i>
+                <div className={classNames(styles.timeout)}>
+                  {Math.floor(timerContext.countDown / 60)} :{' '}
+                  {Math.ceil(timerContext.countDown % 60)}
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {fromMedium && (
-          <div
-            className={cn(styles.outsizeTimer, 'd-flex align-items-center ')}
-          >
-            <CountdownCircleTimer
-              isPlaying={!timerContext.isShowAnswer}
-              duration={timerContext.duration - 0.2}
-              initialRemainingTime={endTime ? (endTime - new Date().getTime()) / 1000 : timerContext.duration - 0.2}
-              size={180}
-              strokeWidth={12}
-              // isSmoothColorTransition={true}
-              colors={timerColor}
-              colorsTime={[
-                6, 5, 4, 3, 2.5, 2, 1.5, 1.25, 1, 0.75, 0.5, 0.25, 0,
-              ]}
+          {fromMedium && (
+            <div
+              className={cn(styles.outsizeTimer, 'd-flex align-items-center ')}
             >
-              {({ remainingTime }) => formatTime(remainingTime)}
-            </CountdownCircleTimer>
-          </div>
-        )}
+              <CountdownCircleTimer
+                isPlaying={!timerContext.isShowAnswer}
+                duration={timerContext.duration - 0.2}
+                initialRemainingTime={
+                  endTime
+                    ? (endTime - new Date().getTime()) / 1000
+                    : timerContext.duration - 0.2
+                }
+                size={180}
+                strokeWidth={12}
+                // isSmoothColorTransition={true}
+                colors={timerColor}
+                colorsTime={[
+                  6, 5, 4, 3, 2.5, 2, 1.5, 1.25, 1, 0.75, 0.5, 0.25, 0,
+                ]}
+              >
+                {({ remainingTime }) => formatTime(remainingTime)}
+              </CountdownCircleTimer>
+            </div>
+          )}
+        </div>
 
         <div
           id="imgContainer"
@@ -210,7 +229,11 @@ const QuestionMedia: FC<{
             <CountdownCircleTimer
               isPlaying={!timerContext.isShowAnswer}
               duration={timerContext.duration - 0.2}
-              initialRemainingTime={endTime ? (endTime - new Date().getTime()) / 1000 : timerContext.duration - 0.2}
+              initialRemainingTime={
+                endTime
+                  ? (endTime - new Date().getTime()) / 1000
+                  : timerContext.duration - 0.2
+              }
               size={180}
               strokeWidth={12}
               isSmoothColorTransition={true}
