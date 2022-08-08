@@ -169,7 +169,7 @@ const ItemChart: FC<{
     if (position === '1st') return { height: 300, width: 100 }
     else {
       return {
-        height: Math.max(Math.floor((point / game.players[0].score) * 300 + 80), 150),
+        height: Math.max(Math.floor((point / (game.players[0].score + 1)) * 300), 150),
         width: 90,
       }
     }

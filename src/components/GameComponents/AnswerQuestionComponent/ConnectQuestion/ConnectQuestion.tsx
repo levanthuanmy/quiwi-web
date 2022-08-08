@@ -58,6 +58,9 @@ const ConnectQuestion: FC<ConnectQuestionProps> = ({
   )
 
   useEffect(() => {
+    console.log("=>(ConnectQuestion.tsx:62) isPrepare", isPrepare);
+    // if (!isPrepare) {
+  useEffect(() => {
     if (isShowSkeleton && !isExam) {
       prepareData()
     }
