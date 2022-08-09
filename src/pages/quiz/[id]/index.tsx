@@ -1,35 +1,30 @@
+import _ from 'lodash'
 import { NextPage } from 'next'
 import { useRouter } from 'next/router'
+import { useEffect, useState } from 'react'
 import { Col, Container, Modal, Row } from 'react-bootstrap'
+import { useToasts } from 'react-toast-notifications'
 import useSWR from 'swr'
-import CardQuizInfo from '../../../components/CardQuizInfo/CardQuizInfo'
+import QuizBannerWithTitle from '../../../components/CardQuizInfo/QuizBannerWithTitle/QuizBannerWithTitle'
 import ItemQuestion from '../../../components/ItemQuestion/ItemQuestion'
+import LoadingFullScreen from '../../../components/LoadingFullScreen/Loading'
 import MyButton from '../../../components/MyButton/MyButton'
+import MyModal from '../../../components/MyModal/MyModal'
 import NavBar from '../../../components/NavBar/NavBar'
+import { useAuth } from '../../../hooks/useAuth/useAuth'
 import { get } from '../../../libs/api'
 import { TApiResponse, TQuiz } from '../../../types/types'
-import React, { useEffect, useState } from 'react'
-import _ from 'lodash'
-import MyModal from '../../../components/MyModal/MyModal'
-import LoadingFullScreen from '../../../components/LoadingFullScreen/Loading'
-import { useToasts } from 'react-toast-notifications'
-import {
-  FacebookIcon,
-  FacebookMessengerIcon,
-  FacebookMessengerShareButton,
-  FacebookShareButton,
-  InstapaperIcon,
-  InstapaperShareButton,
-} from 'react-share'
-import QuizBannerWithTitle from '../../../components/CardQuizInfo/QuizBannerWithTitle/QuizBannerWithTitle'
 
 const QuizDetailPage: NextPage = () => {
   const router = useRouter()
   const query = router.query
   const { id } = query
   const { addToast } = useToasts()
+  const auth = useAuth()
+  const user = auth.getUser()
 
   const [forbiddenError, setForbiddenError] = useState('')
+  const [errorMessage, setError] = useState('')
   //
   // useEffect(() => {
   //   window.addEventListener("storage", (e) => {
@@ -38,6 +33,24 @@ const QuizDetailPage: NextPage = () => {
   //     }
   //   });
   // }, []);
+
+  const cloneQuiz = async () => {
+    try {
+      if (quiz && auth.isAuth && user) {
+        const res = await get<TApiResponse<TQuiz>>(
+          `/api/quizzes/quiz/${quiz.id}/clone`,
+          true
+        )
+        if (res.response) {
+          router.push(`/quiz/${res.response.id}`)
+        } else {
+          setError(_.get(res, 'message', 'Có lỗi xảy ra'))
+        }
+      }
+    } catch (error) {
+      setError(_.get(error, 'message', 'Có lỗi xảy ra'))
+    }
+  }
 
   const { data, isValidating, error } = useSWR<TApiResponse<TQuiz>>(
     id ? [`/api/quizzes/quiz/${id}`, false] : null,
@@ -91,6 +104,17 @@ const QuizDetailPage: NextPage = () => {
                   <div className="bi bi-play-fill" />
                 </MyButton>
               </div>
+              {auth.isAuth ? (
+                <div>
+                  <MyButton
+                    className="text-white w-100 mt-2 d-flex align-items-center justify-content-between"
+                    onClick={cloneQuiz}
+                  >
+                    Tải về thư viện của mình
+                    <div className="bi bi-play-fill" />
+                  </MyButton>
+                </div>
+              ) : null}
             </Col>
           </Row>
         ) : null}
@@ -106,6 +130,17 @@ const QuizDetailPage: NextPage = () => {
           header={<Modal.Title className="text-danger">Thông báo</Modal.Title>}
         >
           <div className="text-center fw-medium fs-16px">{forbiddenError}</div>
+        </MyModal>
+
+        <MyModal
+          show={errorMessage?.length > 0}
+          onHide={() => {
+            setError('')
+          }}
+          size="sm"
+          header={<Modal.Title className="text-danger">Thông báo</Modal.Title>}
+        >
+          <div className="text-center fw-medium fs-16px">{errorMessage}</div>
         </MyModal>
       </Container>
     </>
