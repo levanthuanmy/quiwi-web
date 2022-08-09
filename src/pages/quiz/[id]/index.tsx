@@ -6,7 +6,7 @@ import CardQuizInfo from '../../../components/CardQuizInfo/CardQuizInfo'
 import ItemQuestion from '../../../components/ItemQuestion/ItemQuestion'
 import MyButton from '../../../components/MyButton/MyButton'
 import NavBar from '../../../components/NavBar/NavBar'
-import { get } from '../../../libs/api'
+import { get, post } from '../../../libs/api'
 import { TApiResponse, TQuiz } from '../../../types/types'
 import React, { useEffect, useState } from 'react'
 import _ from 'lodash'
@@ -22,12 +22,15 @@ import {
   InstapaperShareButton,
 } from 'react-share'
 import QuizBannerWithTitle from '../../../components/CardQuizInfo/QuizBannerWithTitle/QuizBannerWithTitle'
+import { useAuth } from '../../../hooks/useAuth/useAuth'
 
 const QuizDetailPage: NextPage = () => {
   const router = useRouter()
   const query = router.query
   const { id } = query
   const { addToast } = useToasts()
+  const auth = useAuth()
+  const user = auth.getUser()
 
   const [forbiddenError, setForbiddenError] = useState('')
   //
@@ -38,6 +41,49 @@ const QuizDetailPage: NextPage = () => {
   //     }
   //   });
   // }, []);
+
+  const cloneQuiz = async () => {
+    try {
+      if (quiz && auth.isAuth && user) {
+        const newQuiz: TQuiz = quiz
+
+        _.set(newQuiz, 'id', undefined)
+        newQuiz.numDownvotes = 0
+        newQuiz.numPlayed = 0
+        newQuiz.numUpvotes = 0
+        newQuiz.userId = user.id
+        newQuiz.user = user
+        newQuiz.isPublic = false
+        newQuiz.isLocked = false
+        for (const question of newQuiz.questions) {
+          _.set(question, 'id', undefined)
+          _.set(question, 'quizId', undefined)
+          _.set(question, 'updatedAt', undefined)
+          _.set(question, 'createdAt', undefined)
+          for (const answer of question.questionAnswers) {
+            _.set(answer, 'id', undefined)
+            _.set(answer, 'questionId', undefined)
+            _.set(answer, 'updatedAt', undefined)
+            _.set(answer, 'createdAt', undefined)
+          }
+        }
+
+        const res = await post<TApiResponse<TQuiz>>(
+          `/api/quizzes`,
+          {},
+          newQuiz,
+          true
+        )
+        if (res.response) {
+          router.push(`quiz/${res.response.id}`)
+        } else {
+          setForbiddenError(_.get(res, 'message', 'Có lỗi xảy ra'))
+        }
+      }
+    } catch (error) {
+      setForbiddenError(_.get(error, 'message', 'Có lỗi xảy ra'))
+    }
+  }
 
   const { data, isValidating, error } = useSWR<TApiResponse<TQuiz>>(
     id ? [`/api/quizzes/quiz/${id}`, false] : null,
@@ -91,6 +137,17 @@ const QuizDetailPage: NextPage = () => {
                   <div className="bi bi-play-fill" />
                 </MyButton>
               </div>
+              {auth.isAuth ? (
+                <div>
+                  <MyButton
+                    className="text-white w-100 mt-2 d-flex align-items-center justify-content-between"
+                    onClick={cloneQuiz}
+                  >
+                    Tải về thư viện của mình
+                    <div className="bi bi-play-fill" />
+                  </MyButton>
+                </div>
+              ) : null}
             </Col>
           </Row>
         ) : null}
