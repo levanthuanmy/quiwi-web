@@ -7,7 +7,7 @@ import {useRouter} from 'next/router'
 import React, {FC, useEffect, useState} from 'react'
 import {Container, Image, Modal} from 'react-bootstrap'
 import QRCode from 'react-qr-code'
-import {useToasts} from 'react-toast-notifications'
+import {AppearanceTypes, useToasts} from 'react-toast-notifications'
 import Cookies from 'universal-cookie'
 import {useAuth} from '../../hooks/useAuth/useAuth'
 import {useGameSession} from '../../hooks/useGameSession/useGameSession'
@@ -21,8 +21,8 @@ import PlayerLobbyList from '../PlayerLobbyList/PlayerLobbyList'
 import BackgroundPicker from './BackgroundPicker/BackgroundPicker'
 import styles from './LobbyScreen.module.css'
 import MyModal from '../MyModal/MyModal'
-import { useSound } from '../../hooks/useSound/useSound'
-import { useUserSetting } from '../../hooks/useUserSetting/useUserSetting'
+import {useSound} from '../../hooks/useSound/useSound'
+import {useUserSetting} from '../../hooks/useUserSetting/useUserSetting'
 
 type LobbyScreenProps = {}
 
@@ -38,7 +38,7 @@ const LobbyScreen: FC<LobbyScreenProps> = () => {
   const {isMobile} = useScreenSize()
   const [showBackgroundModal, setShowBackgroundModal] = useState<boolean>(false)
 
-  const { addToast } = useToasts()
+  const {addToast} = useToasts()
   const [currentBackground, setCurrentBackground] = useState<string>(
     setting.gameBackgroundUrl
   )
@@ -47,28 +47,50 @@ const LobbyScreen: FC<LobbyScreenProps> = () => {
   const sound = useSound()
   const [isMute, setIsMute] = useState(sound.isMute)
   const [showAlertOutRoom, setShowAlertOutRoom] = useState<boolean>(false)
+  const [preIsAuth, setPreIsAuth] = useState(authContext.isAuth)
+
+  useEffect(() => {
+    if (!preIsAuth && authContext.isAuth) {
+      if (authContext.getUser()?.id) {
+        let msg = {
+          invitationCode,
+          userId: authContext.getUser()?.id,
+          token: authContext.getUser()?.token.accessToken,
+          nickname: game.gameSession?.nickName,
+        }
+
+        game.gameSkEmit("user-login", msg)
+        setPreIsAuth(authContext.isAuth)
+      }
+    }
+  }, [authContext.isAuth])
 
   useEffect(() => {
     if (!game.gameSession) return
     setPlayerList(game.gameSession.players)
 
     game.gameSkOn('new-player', (data) => {
-      handlePlayerLeftJoin(data.player as TPlayer | null, data.players as TPlayer[] | null)
+      handlePlayerLeftJoin(data.newPlayer as TPlayer | null, data.players as TPlayer[] | null, " đã tham gia phòng", "success")
     })
 
     game.gameSkOn('player-left', (data) => {
-      handlePlayerLeftJoin(data.player as TPlayer | null, data.players as TPlayer[] | null, false)
+      handlePlayerLeftJoin(data.player as TPlayer | null, data.players as TPlayer[] | null, " đã rời phòng!", "error")
     })
 
-    const handlePlayerLeftJoin = (player: TPlayer | null, players : TPlayer[] | null, isJoin:Boolean = true) => {
+    game.gameSkOn('user-login', (data) => {
+      handlePlayerLeftJoin(data.player as TPlayer | null, data.players as TPlayer[] | null, " đã đăng nhập!", "info")
+    })
+
+
+    const handlePlayerLeftJoin = (player: TPlayer | null, players: TPlayer[] | null, toastText: string = "", notifType: AppearanceTypes = "success") => {
       if (players) {
         setPlayerList(players)
         game.players = players
       }
 
       if (player) {
-        addToast(isJoin ? `${player.nickname} đã tham gia phòng` : `${player.nickname} đã rời phòng`, {
-          appearance: isJoin ? 'success' : 'error',
+        addToast(`${player.nickname} ` + toastText, {
+          appearance: notifType,
           autoDismiss: true,
         })
       }
@@ -214,8 +236,8 @@ const LobbyScreen: FC<LobbyScreenProps> = () => {
             <div className="d-flex w-100 align-items-center gap-3 p-3">
               <Image
                 src={
-                  authContext.isAuth && user?.avatar
-                    ? user?.avatar
+                  authContext.isAuth && authContext.getUser()?.avatar
+                    ? authContext.getUser()?.avatar
                     : '/assets/default-avatar.png'
                 }
                 width="60"
@@ -431,7 +453,7 @@ const LobbyScreen: FC<LobbyScreenProps> = () => {
             className={cn}
             onClick={() => setShowAlertOutRoom(true)}
           >
-            <i className="bi bi-box-arrow-left fs-24px" />
+            <i className="bi bi-box-arrow-left fs-24px"/>
             {!isMobile && 'RỜI PHÒNG'}
           </MyButton>
         </div>
