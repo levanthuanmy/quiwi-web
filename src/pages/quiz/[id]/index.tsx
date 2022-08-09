@@ -1,28 +1,19 @@
+import _ from 'lodash'
 import { NextPage } from 'next'
 import { useRouter } from 'next/router'
+import { useEffect, useState } from 'react'
 import { Col, Container, Modal, Row } from 'react-bootstrap'
-import useSWR from 'swr'
-import CardQuizInfo from '../../../components/CardQuizInfo/CardQuizInfo'
-import ItemQuestion from '../../../components/ItemQuestion/ItemQuestion'
-import MyButton from '../../../components/MyButton/MyButton'
-import NavBar from '../../../components/NavBar/NavBar'
-import { get, post } from '../../../libs/api'
-import { TApiResponse, TQuiz } from '../../../types/types'
-import React, { useEffect, useState } from 'react'
-import _ from 'lodash'
-import MyModal from '../../../components/MyModal/MyModal'
-import LoadingFullScreen from '../../../components/LoadingFullScreen/Loading'
 import { useToasts } from 'react-toast-notifications'
-import {
-  FacebookIcon,
-  FacebookMessengerIcon,
-  FacebookMessengerShareButton,
-  FacebookShareButton,
-  InstapaperIcon,
-  InstapaperShareButton,
-} from 'react-share'
+import useSWR from 'swr'
 import QuizBannerWithTitle from '../../../components/CardQuizInfo/QuizBannerWithTitle/QuizBannerWithTitle'
+import ItemQuestion from '../../../components/ItemQuestion/ItemQuestion'
+import LoadingFullScreen from '../../../components/LoadingFullScreen/Loading'
+import MyButton from '../../../components/MyButton/MyButton'
+import MyModal from '../../../components/MyModal/MyModal'
+import NavBar from '../../../components/NavBar/NavBar'
 import { useAuth } from '../../../hooks/useAuth/useAuth'
+import { get } from '../../../libs/api'
+import { TApiResponse, TQuiz } from '../../../types/types'
 
 const QuizDetailPage: NextPage = () => {
   const router = useRouter()
@@ -33,6 +24,7 @@ const QuizDetailPage: NextPage = () => {
   const user = auth.getUser()
 
   const [forbiddenError, setForbiddenError] = useState('')
+  const [errorMessage, setError] = useState('')
   //
   // useEffect(() => {
   //   window.addEventListener("storage", (e) => {
@@ -45,43 +37,18 @@ const QuizDetailPage: NextPage = () => {
   const cloneQuiz = async () => {
     try {
       if (quiz && auth.isAuth && user) {
-        const newQuiz: TQuiz = quiz
-
-        _.set(newQuiz, 'id', undefined)
-        newQuiz.numDownvotes = 0
-        newQuiz.numPlayed = 0
-        newQuiz.numUpvotes = 0
-        newQuiz.userId = user.id
-        newQuiz.user = user
-        newQuiz.isPublic = false
-        newQuiz.isLocked = false
-        for (const question of newQuiz.questions) {
-          _.set(question, 'id', undefined)
-          _.set(question, 'quizId', undefined)
-          _.set(question, 'updatedAt', undefined)
-          _.set(question, 'createdAt', undefined)
-          for (const answer of question.questionAnswers) {
-            _.set(answer, 'id', undefined)
-            _.set(answer, 'questionId', undefined)
-            _.set(answer, 'updatedAt', undefined)
-            _.set(answer, 'createdAt', undefined)
-          }
-        }
-
-        const res = await post<TApiResponse<TQuiz>>(
-          `/api/quizzes`,
-          {},
-          newQuiz,
+        const res = await get<TApiResponse<TQuiz>>(
+          `/api/quizzes/quiz/${quiz.id}/clone`,
           true
         )
         if (res.response) {
-          router.push(`quiz/${res.response.id}`)
+          router.push(`/quiz/${res.response.id}`)
         } else {
-          setForbiddenError(_.get(res, 'message', 'Có lỗi xảy ra'))
+          setError(_.get(res, 'message', 'Có lỗi xảy ra'))
         }
       }
     } catch (error) {
-      setForbiddenError(_.get(error, 'message', 'Có lỗi xảy ra'))
+      setError(_.get(error, 'message', 'Có lỗi xảy ra'))
     }
   }
 
@@ -163,6 +130,17 @@ const QuizDetailPage: NextPage = () => {
           header={<Modal.Title className="text-danger">Thông báo</Modal.Title>}
         >
           <div className="text-center fw-medium fs-16px">{forbiddenError}</div>
+        </MyModal>
+
+        <MyModal
+          show={errorMessage?.length > 0}
+          onHide={() => {
+            setError('')
+          }}
+          size="sm"
+          header={<Modal.Title className="text-danger">Thông báo</Modal.Title>}
+        >
+          <div className="text-center fw-medium fs-16px">{errorMessage}</div>
         </MyModal>
       </Container>
     </>
