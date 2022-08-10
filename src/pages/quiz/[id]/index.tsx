@@ -42,7 +42,7 @@ const QuizDetailPage: NextPage = () => {
           true
         )
         if (res.response) {
-          router.push(`/quiz/${res.response.id}`)
+          router.push(`/quiz/creator/${res.response.id}`)
         } else {
           setError(_.get(res, 'message', 'Có lỗi xảy ra'))
         }
