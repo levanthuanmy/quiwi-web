@@ -3,8 +3,8 @@ import 'slick-carousel/slick/slick-theme.css'
 import 'bootstrap-icons/font/bootstrap-icons.css'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'react-popper-tooltip/dist/styles.css'
-import type {AppProps} from 'next/app'
-import {SSRProvider} from 'react-bootstrap'
+import type { AppProps } from 'next/app'
+import { SSRProvider } from 'react-bootstrap'
 import MyHead from '../components/MyHead/MyHead'
 import '../styles/global.scss'
 import '../styles/common.css'
@@ -13,19 +13,19 @@ import '../styles/sizing.css'
 import '../styles/border.css'
 import '../styles/typography.css'
 import '../styles/custom-arrow-react-slick.css'
-import {AuthProvider} from '../hooks/useAuth/useAuth'
-import {useRouter} from 'next/router'
-import {useEffect, useState} from 'react'
+import { AuthProvider } from '../hooks/useAuth/useAuth'
+import { useRouter } from 'next/router'
+import { useEffect, useState } from 'react'
 import FullScreenLoader from '../components/FullScreenLoader/FullScreenLoader'
-import {DndProvider} from 'react-dnd'
-import {HTML5Backend} from 'react-dnd-html5-backend'
-import {useGameSession} from '../hooks/useGameSession/useGameSession'
-import {ToastProvider} from 'react-toast-notifications'
+import { DndProvider } from 'react-dnd'
+import { HTML5Backend } from 'react-dnd-html5-backend'
+import { useGameSession } from '../hooks/useGameSession/useGameSession'
+import { ToastProvider, useToasts } from 'react-toast-notifications'
 import * as gtag from '../libs/gtag'
 import SignInModal from '../components/AuthComponents/SignInModal/SignInModal'
 import { GoogleOAuthProvider } from '@react-oauth/google'
-import {useMyleGameSession} from "../hooks/usePracticeGameSession/useMyleGameSession"
-import {usePracticeGameSession} from "../hooks/usePracticeGameSession/usePracticeGameSession";
+import { useMyleGameSession } from '../hooks/usePracticeGameSession/useMyleGameSession'
+import { usePracticeGameSession } from '../hooks/usePracticeGameSession/usePracticeGameSession'
 
 // ĐỪNG AUTO FORMAT FILE NÀY
 
@@ -45,8 +45,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       setShouldLoad(false)
     }
 
-    const handleRouteChangeError = () => {
-    }
+    const handleRouteChangeError = () => {}
 
     router.events.on('routeChangeStart', handleRouteChangeStart)
     router.events.on('routeChangeComplete', handleRouteChangeComplete)
@@ -99,9 +98,17 @@ function MyApp({ Component, pageProps }: AppProps) {
     <SSRProvider>
       <DndProvider backend={HTML5Backend}>
         <AuthProvider>
-          <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID as string}> 
-            <ToastProvider autoDismiss newestOnTop autoDismissTimeout={4000}>
+          <GoogleOAuthProvider
+            clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID as string}
+          >
+            <ToastProvider
+              autoDismiss
+              placement="top-left"
+              newestOnTop
+              autoDismissTimeout={3000}
+            >
               <MyHead />
+              <ToastLimitation />
               <Component {...pageProps} />
               <FullScreenLoader isLoading={shouldLoad} />
               <SignInModal />
@@ -114,3 +121,13 @@ function MyApp({ Component, pageProps }: AppProps) {
 }
 
 export default MyApp
+
+const ToastLimitation = () => {
+  const { toastStack, removeToast } = useToasts()
+  useEffect(() => {
+    if (toastStack.length > 3) {
+      removeToast(toastStack[0].id)
+    }
+  }, [toastStack])
+  return <></>
+}
