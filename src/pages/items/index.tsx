@@ -175,24 +175,23 @@ const ItemPage: NextPage = () => {
               />
             </Col>
           </Row>
-          <Row>
-            <Image
-              alt="wheel"
-              src="/assets/wheel.webp"
-              onClick={() => {
-                setShowWheelFortuneModal(true)
-              }}
-              roundedCircle={true}
-              rounded={true}
-              fluid={true}
-              style={{
-                position: 'absolute',
-                right: 1,
-                height: '100px',
-                width: '200px',
-              }}
-            />
-          </Row>
+          <Image
+            alt="wheel"
+            src="/assets/wheel.webp"
+            onClick={() => {
+              setShowWheelFortuneModal(true)
+            }}
+            style={{
+              position: 'fixed',
+              bottom: 16,
+              right: 16,
+              objectFit: 'scale-down',
+              zIndex: 1,
+            }}
+            className="bg-white rounded-circle border border-3 shadow cursor-pointer border-primary"
+            width="60"
+            height="60"
+          />
           <Row className="">
             {itemCategoriesResponse && itemsResponse ? (
               itemsResponse?.items.map((item, idx) => (
