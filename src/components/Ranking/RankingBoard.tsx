@@ -1,87 +1,56 @@
 import classNames from 'classnames'
 import { useRouter } from 'next/router'
 import React, { FC, memo } from 'react'
-import { Image, Table } from 'react-bootstrap'
+import { Col, Image, Row, Table } from 'react-bootstrap'
 import { TRankingItem } from '../../pages/ranking'
 
 const RankingBoard: FC<{ rankingList: TRankingItem[] }> = ({ rankingList }) => {
   const router = useRouter()
 
   return (
-    <Table borderless>
-      <tbody>
-        <tr className="fw-medium">
-          <td className="text-center">#</td>
-          <td>Tên</td>
-          <td>Tên người dùng</td>
-          <td>Số lượng đạt được</td>
-        </tr>
-        {rankingList?.map((user) => (
-          <tr
-            key={user.id}
-            className={classNames('cursor-pointer')}
-            onClick={() => {
-              router.push(user?.isHighlight ? `/profile` : `/users/${user?.id}`)
-            }}
+    <>
+      <Row className="mb-3 align-items-center fw-bold h5">
+        <Col xs={1}>#</Col>
+        <Col xs="7" md="5">
+          Tên
+        </Col>
+        <Col md="3" className="d-none d-md-block">
+          Định danh
+        </Col>
+        <Col xs="4" md="3">
+          Số lượng đạt được
+        </Col>
+      </Row>
+      {rankingList?.map((user) => (
+        <Row key={user.rank} className="mb-3 align-items-center bg-light py-2 mx-0 rounded-8px shadow-sm">
+          <Col xs={1} className="fw-bold fs-5">
+            {user.rank}
+          </Col>
+          <Col
+            xs="7"
+            md="5"
+            className="d-flex align-items-center gap-2 fw-bold"
           >
-            <td className="pb-1 px-0">
-              <div
-                className={classNames(
-                  'text-center py-3 fw-medium rounded-start-14px',
-                  {
-                    'text-white bg-primary': user?.isHighlight,
-                    'bg-light': !user?.isHighlight,
-                  }
-                )}
-              >
-                {user?.rank}
-              </div>
-            </td>
-            <td className="pb-1 px-0">
-              <div
-                className={classNames('py-3 ps-2 text-nowrap', {
-                  'text-white bg-primary': user?.isHighlight,
-                  'bg-light': !user?.isHighlight,
-                })}
-              >
-                <Image
-                  src={user.avatar || '/assets/default-avatar.png'}
-                  width={20}
-                  height={20}
-                  alt="avatar"
-                  className="rounded-circle"
-                  loading="lazy"
-                />
-                <span className={classNames('ps-2 pe-1 fw-medium')}>
-                  {user?.name}
-                </span>
-              </div>
-            </td>
-            <td className="pb-1 px-0">
-              <div
-                className={classNames('py-3 ps-2 text-nowrap', {
-                  'text-white bg-primary': user?.isHighlight,
-                  'bg-light': !user?.isHighlight,
-                })}
-              >
-                {user?.username}
-              </div>
-            </td>
-
-            <td className="pb-1 px-0">
-              <div
-                className={classNames('py-3 ps-2 rounded-end-14px', {
-                  'text-white bg-primary': user?.isHighlight,
-                  'bg-light': !user?.isHighlight,
-                })}
-              >
-                {user?.quantity.toLocaleString('en-US')}
-              </div>
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </Table>
+            <Image
+              src={user.avatar || '/assets/default-avatar.png'}
+              width={60}
+              height={60}
+              alt="avatar"
+              style={{ objectFit: 'scale-down' }}
+              className="rounded-circle bg-info"
+              loading="lazy"
+            />
+            {user.name}
+          </Col>
+          <Col md="3" className="d-none d-md-block text-truncate">
+            {user.username}
+          </Col>
+          <Col xs="4" md="3">
+            {user.quantity.toLocaleString('en-US')}
+          </Col>
+        </Row>
+      ))}
+    </>
   )
 }
 
