@@ -145,6 +145,12 @@ const GameModeScreen: FC<GameModeScreenProps> = ({setGameMode}) => {
     else router.push(`/quiz/${id}`)
   }
 
+  const handleBackToHome = () => {
+    game.clearGameSession()
+     
+     router.push(`/home`)
+  }
+
   const cln = classNames(
     'text-white fw-medium d-flex align-items-center gap-2 w-100',
     {'justify-content-center': isMobile}
@@ -245,13 +251,24 @@ const GameModeScreen: FC<GameModeScreenProps> = ({setGameMode}) => {
           </div>
         )}
         <div className="d-flex gap-4 px-4 flex-wrap w-100 mt-4 mb-2">
+        <div className="flex-fill">
+            <MyButton
+              variant="danger"
+              className={cln}
+              onClick={handleBackToHome}
+            >
+              <i className="bi bi-box-arrow-left fs-24px"/>
+              {!isMobile && 'TRỞ VỀ TRANG CHỦ'}
+            </MyButton>
+          </div>
+
           <div className="flex-fill">
             <MyButton
               variant="danger"
               className={cln}
               onClick={handleLeaveRoom}
             >
-              <i className="bi bi-box-arrow-left fs-24px"/>
+              <i className="bi bi-file-earmark-text fs-24px"/>
               {!isMobile && 'TRỞ VỀ BỘ ĐỀ'}
             </MyButton>
           </div>

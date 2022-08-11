@@ -4,11 +4,13 @@ import ReactPaginate from 'react-paginate'
 export const MyPagination: FC<{
   handlePageClick: (selected: { selected: number }) => void
   totalPages: number
-}> = ({ handlePageClick, totalPages }) => {
+  forcePage?: number
+}> = ({ handlePageClick, totalPages, forcePage }) => {
   return (
     <ReactPaginate
       breakLabel="..."
       nextLabel=">"
+      forcePage={forcePage}
       onPageChange={handlePageClick}
       pageRangeDisplayed={5}
       pageClassName="page-item"

@@ -33,55 +33,70 @@ const tabs = [
 const HistoryPage: NextPage = () => {
   const router = useRouter()
 
-  const { q, pageIndex } = router.query
+  const { q } = router.query
 
   const pageSize = 8
   const [currentTab, setCurrentTab] = useState<number>(0)
+  const [pageIndex, setPageIndex] = useState(1)
+  const [historyResponse, setHistoryResponse] =
+    useState<TPaginationResponse<TGameHistory>>()
   // const [pageIndex, setPageIndex] = useState(1)
-  const params: Record<string, any> = {
-    filter: {},
-    pageIndex: pageIndex ?? 1,
-    pageSize: pageSize,
-    q,
-  }
-  const getAPILink = () => {
-    switch (currentTab) {
-      case 0:
-        return `/api/games/hosted-game-history`
-      case 1:
-        return `/api/games/joined-game-history`
-      case 2:
-        return `/api/games/joined-community-game-history`
-    }
-  }
 
-  const { data, isValidating } = useSWR<
-    TApiResponse<TPaginationResponse<TGameHistory>>
-  >([getAPILink(), true, params], get, {
-    revalidateOnFocus: false,
-  })
+  useEffect(() => {
+    const params: Record<string, any> = {
+      filter: {},
+      pageIndex: pageIndex ?? 1,
+      pageSize: pageSize,
+      q,
+    }
+    const getAPILink = () => {
+      switch (currentTab) {
+        case 0:
+          return `/api/games/hosted-game-history`
+        case 1:
+          return `/api/games/joined-game-history`
+        case 2:
+          return `/api/games/joined-community-game-history`
+        default:
+          return `/api/games/hosted-game-history`
+      }
+    }
+    const getData = async () => {
+      try {
+        const res = await get<TApiResponse<TPaginationResponse<TGameHistory>>>(
+          getAPILink(),
+          true,
+          params
+        )
+
+        if (res.code < 400) {
+          setHistoryResponse(res.response)
+        }
+      } catch (error) {
+        console.log('==== ~ getData ~ error', error)
+      }
+    }
+    getData()
+  }, [pageIndex, currentTab, q])
 
   const [pageCount, setPageCount] = useState(0)
 
   useEffect(() => {
     // setPageIndex(1)
-    setPageCount(0)
-    router.replace(`/history?pageIndex=1${q ? `&q=${q}` : ''}`)
+    setPageIndex(1)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentTab])
 
   useEffect(() => {
-    if (data?.response) {
-      setPageCount(data.response.totalPages)
+    if (historyResponse) {
+      setPageCount(historyResponse.totalPages)
     }
-  }, [data])
+  }, [historyResponse])
 
   // Invoke when user click to request another page.
   const handlePageClick = (selected: { selected: number }) => {
-    // setPageIndex(Number(selected.selected) + 1)
-    router.replace(
-      `/history?pageIndex=${Number(selected.selected) + 1}&${q ? `q=${q}` : ''}`
-    )
+    console.log('==== ~ handlePageClick ~ selected', selected)
+    setPageIndex(Number(selected.selected) + 1)
   }
 
   return (
@@ -107,7 +122,7 @@ const HistoryPage: NextPage = () => {
 
           <br />
           {pageCount === 0 ? (
-            data?.response ? (
+            historyResponse ? (
               <Alert
                 variant="primary"
                 className="text-center w-75 mx-auto fs-16px py-4 fw-medium mt-2"
@@ -131,7 +146,7 @@ const HistoryPage: NextPage = () => {
                     </th>
                     <th className="d-none d-md-table-cell"></th>
                   </tr>
-                  {data?.response?.items.map((game) => (
+                  {historyResponse?.items.map((game) => (
                     <HistoryGameRow key={game.id} gameHistory={game} />
                   ))}
                 </tbody>
@@ -142,6 +157,7 @@ const HistoryPage: NextPage = () => {
                     <MyPagination
                       handlePageClick={handlePageClick}
                       totalPages={pageCount}
+                      forcePage={pageIndex - 1}
                     />
                   </Col>
                 </Row>

@@ -26,7 +26,6 @@ const ExplorePage: NextPage = () => {
   const [pageIndex, setPageIndex] = useState(1)
   const { q } = router.query
 
-  const [showCategories, setShowCategories] = useState<boolean>(false)
   const [currentCategoryId, setCurrentCategoryId] = useState<number[]>()
   const handlePageClick = (selected: { selected: number }) => {
     setPageIndex(Number(selected.selected) + 1)
@@ -56,6 +55,11 @@ const ExplorePage: NextPage = () => {
     }
     getQuizzes()
   }, [q, pageIndex, currentCategoryId, pageSize])
+
+  useEffect(() => {
+    setPageIndex(1)
+    console.log('diadia')
+  }, [q])
 
   const {
     data: categoryResponse,
