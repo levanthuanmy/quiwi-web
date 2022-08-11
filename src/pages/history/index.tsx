@@ -104,7 +104,7 @@ const HistoryPage: NextPage = () => {
       <div className="w-100 bg-white bg-opacity-10 min-vh-100">
         <Container fluid="lg">
           <Row className="my-3 justify-content-between">
-            <Col xs={2} className=" fw-medium">
+            <Col xs={12} className=" fw-medium mb-2 mb-lg-0">
               <h1> Lịch sử</h1>
             </Col>
             <Col>
