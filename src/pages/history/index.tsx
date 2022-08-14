@@ -89,13 +89,12 @@ const HistoryPage: NextPage = () => {
 
   useEffect(() => {
     if (historyResponse) {
-      setPageCount(historyResponse.totalPages)
+      setPageCount(historyResponse.totalPages ?? 0)
     }
   }, [historyResponse])
 
   // Invoke when user click to request another page.
   const handlePageClick = (selected: { selected: number }) => {
-    console.log('==== ~ handlePageClick ~ selected', selected)
     setPageIndex(Number(selected.selected) + 1)
   }
 
@@ -127,7 +126,7 @@ const HistoryPage: NextPage = () => {
                 variant="primary"
                 className="text-center w-75 mx-auto fs-16px py-4 fw-medium mt-2"
               >
-                Chưa có dữ liệu
+                Bạn chưa tham gia hoặc tổ chức game Quiz nào
               </Alert>
             ) : (
               <LoadingFullScreen />
