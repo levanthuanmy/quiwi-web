@@ -6,6 +6,7 @@ import { Alert, Col, Container, Row, Table } from 'react-bootstrap'
 import useSWR from 'swr'
 import DashboardLayout from '../../components/DashboardLayout/DashboardLayout'
 import { HistoryGameRow } from '../../components/HistoryGameRow/HistoryGameRow'
+import Loading from '../../components/Loading/Loading'
 import LoadingFullScreen from '../../components/LoadingFullScreen/Loading'
 import { MyPagination } from '../../components/MyPagination/MyPagination'
 import MyTabBar from '../../components/MyTabBar/MyTabBar'
@@ -40,6 +41,8 @@ const HistoryPage: NextPage = () => {
   const [pageIndex, setPageIndex] = useState(1)
   const [historyResponse, setHistoryResponse] =
     useState<TPaginationResponse<TGameHistory>>()
+
+  const [isLoading, setIsLoading] = useState(true)
   // const [pageIndex, setPageIndex] = useState(1)
 
   useEffect(() => {
@@ -62,6 +65,7 @@ const HistoryPage: NextPage = () => {
       }
     }
     const getData = async () => {
+      setIsLoading(true)
       try {
         const res = await get<TApiResponse<TPaginationResponse<TGameHistory>>>(
           getAPILink(),
@@ -74,6 +78,8 @@ const HistoryPage: NextPage = () => {
         }
       } catch (error) {
         console.log('==== ~ getData ~ error', error)
+      } finally {
+        setIsLoading(false)
       }
     }
     getData()
@@ -120,17 +126,17 @@ const HistoryPage: NextPage = () => {
           />
 
           <br />
-          {pageCount === 0 ? (
-            historyResponse ? (
-              <Alert
-                variant="primary"
-                className="text-center w-75 mx-auto fs-16px py-4 fw-medium mt-2"
-              >
-                Bạn chưa tham gia hoặc tổ chức game Quiz nào
-              </Alert>
-            ) : (
-              <LoadingFullScreen />
-            )
+          {isLoading || historyResponse == null ? (
+            <div className="text-center">
+              <Loading color="#009883" />
+            </div>
+          ) : pageCount === 0 ? (
+            <Alert
+              variant="primary"
+              className="text-center w-75 mx-auto fs-16px py-4 fw-medium mt-2"
+            >
+              Bạn chưa tham gia hoặc tổ chức game Quiz nào
+            </Alert>
           ) : (
             <div>
               <Table borderless className={classNames(styles.table)}>
