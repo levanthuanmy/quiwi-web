@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import classNames from 'classnames'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
@@ -171,7 +172,7 @@ const NavBar: FC<NavBarProps> = ({
               className="text-white fs-14px d-none d-sm-block"
               onClick={onToQuizCreator}
             >
-              Tạo quiz
+              Tạo Quiz
             </MyButton>
           )}
           {onShowJoinQuiz && (

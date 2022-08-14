@@ -148,7 +148,7 @@ const ExplorePage: NextPage = () => {
 
           {quizResponse == null && (
             <div className="text-center">
-              <Loading color="gray" />
+              <Loading color="#009883" />
             </div>
           )}
         </Container>

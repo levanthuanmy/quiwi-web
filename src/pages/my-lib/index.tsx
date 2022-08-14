@@ -4,6 +4,7 @@ import { Alert, Col, Container, Row } from 'react-bootstrap'
 import useSWR from 'swr'
 import DashboardLayout from '../../components/DashboardLayout/DashboardLayout'
 import ItemQuiz from '../../components/ItemQuiz/ItemQuiz'
+import Loading from '../../components/Loading/Loading'
 import LoadingFullScreen from '../../components/LoadingFullScreen/Loading'
 import { MyPagination } from '../../components/MyPagination/MyPagination'
 import { get } from '../../libs/api'
@@ -74,7 +75,9 @@ const MyLibPage: NextPage = () => {
                 </Alert>
               )
             ) : (
-              <LoadingFullScreen />
+              <div className="text-center mt-5 d-flex justify-content-center align-items-center">
+                <Loading  color='#009883'/>
+              </div>
             )}
           </Row>
 

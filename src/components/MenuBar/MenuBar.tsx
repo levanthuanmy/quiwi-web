@@ -105,7 +105,7 @@ const MenuBar: FC<MenuBarProps> = ({
               className="text-white w-100 d-block d-sm-none"
               onClick={onToQuizCreator}
             >
-              Tạo quiz
+              Tạo Quiz
             </MyButton>
           )}
           {onShowJoinQuiz && (
