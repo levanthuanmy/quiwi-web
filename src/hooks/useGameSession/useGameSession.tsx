@@ -14,6 +14,7 @@ import {JsonParse} from '../../utils/helper'
 import {SocketManager, TSocketType} from '../useSocket/socketManager'
 import {useSound} from '../useSound/useSound'
 import {useUser} from '../useUser/useUser'
+import {SOUND_EFFECT} from "../../utils/constants";
 
 export type TGameLobby = {
   nickName: string
@@ -223,6 +224,7 @@ export class GameManager {
         }
 
         if (event === 'loading') {
+          this.soundManager.playSound(SOUND_EFFECT['BELL'])
           this.onListenLoading(data)
         } else if (data.question as TQuestion) {
           this.currentQuestion = data.question

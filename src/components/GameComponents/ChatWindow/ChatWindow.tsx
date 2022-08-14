@@ -20,26 +20,14 @@ const ChatWindow: FC<{
 }> = ({chatContent, setChatContent, isDisabled}) => {
   const [chatValue, setChatValue] = useState<string>('')
   const game = useGameSession()
-  const [lsPlayer, setLsPlayer] = useLocalStorage('game-session-player', '')
-  const [player, setPLayer] = useState<TPlayer>()
-  const authContext = useAuth()
-  const user = authContext.getUser()
 
-  useEffect(() => {
-    if (lsPlayer) {
-      setPLayer(JsonParse(lsPlayer))
-    }
-  }, [lsPlayer])
+  const authContext = useAuth()
 
   const sendMessage = (message: SendMessageProps) => {
     if (message.message?.length ?? 0 > 0) {
       setChatValue('')
       game.gameSkEmit('chat', message)
     }
-  }
-
-  const showError = (error: Error) => {
-    alert(JSON.stringify(error))
   }
 
   const handleSocketListener = () => {
@@ -52,11 +40,8 @@ const ChatWindow: FC<{
       }
       setChatContent([...cache])
     })
-
-    // socket?.on("error", (error: Error) =>{
-    //   showError(error)
-    // })
   }
+
   const updateVoteForMessage = (voteChange: number, messageIndex: number) => {
     if (messageIndex < chatContent.length) {
       game.gameSkEmit('vote', {

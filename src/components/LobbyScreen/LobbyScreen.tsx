@@ -28,7 +28,6 @@ type LobbyScreenProps = {}
 
 const LobbyScreen: FC<LobbyScreenProps> = () => {
   const game = useGameSession()
-  const isHost = game.isHost
   const invitationCode = game.gameSession?.invitationCode ?? ''
 
   const [playerList, setPlayerList] = useState<TPlayer[]>([])
@@ -247,7 +246,7 @@ const LobbyScreen: FC<LobbyScreenProps> = () => {
               />
               <div className="text-white h3 text-truncate">
                 <div>
-                  {isHost
+                  {game.isHost
                     ? user?.name
                     : `${game.gameSession?.nickName} ${
                       authContext.isAuth ? `(${user?.name})` : ''
@@ -289,7 +288,7 @@ const LobbyScreen: FC<LobbyScreenProps> = () => {
                   {GAME_MODE_MAPPING[game.gameSession?.mode || '10CLASSIC']}
                 </div>
               </div>
-              {isHost && (
+              {game.isHost && (
                 <MyButton
                   size="sm"
                   className="text-white text-nowrap"
@@ -465,7 +464,7 @@ const LobbyScreen: FC<LobbyScreenProps> = () => {
           </MyButton>
         </div>
 
-        {isHost && (
+        {game.isHost && (
           <div className="flex-fill">
             <MyButton className={cn} onClick={handleStartGame}>
               <i className="bi bi-play-fill fs-24px"/>

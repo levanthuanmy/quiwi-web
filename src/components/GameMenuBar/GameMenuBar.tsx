@@ -1,7 +1,7 @@
 import classNames from 'classnames'
-import React, { FC, useState } from 'react'
+import React, {FC, useEffect, useState} from 'react'
 import { SocketManager } from '../../hooks/useSocket/socketManager'
-import { TStartQuizResponse, TUser } from '../../types/types'
+import {TPlayer, TStartQuizResponse, TUser} from '../../types/types'
 import ChatWindow from '../GameComponents/ChatWindow/ChatWindow'
 import { MessageProps } from '../GameComponents/ChatWindow/Message'
 import PlayerList from '../GameComponents/PlayerList/PlayerList'
@@ -28,7 +28,6 @@ const GameMenuBar: FC<GameMenuBarProps> = ({
 }) => {
   const game = useGameSession()
   const [chatContent, setChatContent] = useState<MessageProps[]>([])
-  const socket = SocketManager().socketOf('GAMES')
   const { addToast } = useToasts()
   const sound = useSound()
   const receivedMessage = (message: MessageProps) => {
@@ -36,8 +35,10 @@ const GameMenuBar: FC<GameMenuBarProps> = ({
       setChatContent([...chatContent, message])
     }
   }
-  socket?.off('chat')
-  socket?.on('chat', (data: MessageProps) => {
+
+  const [players, setPlayers] = useState<Array<TPlayer>>([])
+
+  game.gameSkOn('chat', (data: MessageProps) => {
     sound.playSound(SOUND_EFFECT['NOTIFICATION'])
     receivedMessage(data)
     addToast(
@@ -51,9 +52,13 @@ const GameMenuBar: FC<GameMenuBarProps> = ({
     )
   })
 
+  useEffect(() => {
+    setPlayers(game.players)
+  },[game.players])
+
   const renderItems = (
     <>
-      <PlayerList playerList={game.players} />
+      <PlayerList playerList={players} />
       <div
         className={`${styles.slider} bg-secondary`}
         onMouseDown={(e) => {
