@@ -195,6 +195,7 @@ const ProfilePage: NextPage = () => {
             key={authUser.id}
             user={authUser}
             userProfile={userResponse}
+            getUserProfile={getUserProfile}
           />
         ) : null}
       </Container>

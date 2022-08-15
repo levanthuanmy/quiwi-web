@@ -24,6 +24,7 @@ type MyModalProps = {
   onHide: () => void
   user: TUser
   userProfile: TUserProfile
+  getUserProfile?: () => Promise<void>
 }
 
 const tabs = [
@@ -37,7 +38,7 @@ const tabs = [
     showType: 'Ảnh nền',
   },
 ]
-const UserItemSelectionModal: FC<MyModalProps> = ({ show, onHide, user }) => {
+const UserItemSelectionModal: FC<MyModalProps> = ({ show, onHide, user, getUserProfile }) => {
   const [avatarItems, setAvatarItems] = useState<TUserItems[]>()
   const [backgroundItems, setBackgroundItems] = useState<TUserItems[]>()
   const [badges, setBadges] = useState<TUserBadge[]>()
@@ -65,7 +66,7 @@ const UserItemSelectionModal: FC<MyModalProps> = ({ show, onHide, user }) => {
     } catch (error) {
       console.log('==== ~ getAvatarItems ~ error', error)
 
-      alert((error as Error).message)
+      // alert((error as Error).message)
     }
   }
 
@@ -131,7 +132,9 @@ const UserItemSelectionModal: FC<MyModalProps> = ({ show, onHide, user }) => {
 
       const res = await get(`/api/users/set-badge/${userBadge.badge.id}`, true)
       console.log('==== ~ setCurrentBadge ~ res', res)
+
       // setCurrentBadge(userBadge.badge)
+      getUserProfile && getUserProfile()
       await auth.fetchUser()
     } catch (error) {
       console.log('==== ~ setCurrentBadge ~ error', error)
