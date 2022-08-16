@@ -13,7 +13,7 @@ import {
 import {JsonParse} from '../../utils/helper'
 import {SocketManager, TSocketType} from '../useSocket/socketManager'
 import {useSound} from '../useSound/useSound'
-import {useUser} from '../useUser/useUser'
+import {useUser, useUserManager} from '../useUser/useUser'
 import {SOUND_EFFECT} from "../../utils/constants";
 
 export type TGameLobby = {
@@ -136,12 +136,12 @@ export class GameManager {
 
   sk = SocketManager()
   soundManager = useSound()
-  user = useUser()
+  userManager = useUserManager()
   player: TDetailPlayer | null = null
 
   get isHost(): boolean {
     if (this.gameSession) {
-      return this.user?.id == this.gameSession.hostId
+      return this.userManager.user?.id == this.gameSession.hostId
     }
     return false
   }

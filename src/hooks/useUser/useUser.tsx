@@ -4,11 +4,12 @@ import {TUser} from "../../types/types";
 
 
 export class User {
-  private static lsKey = "user"
+  private static lsKey = "LSuser"
   private static _instance?: User;
 
   private _user: TUser | null;
   get user(): TUser | null {
+    this.readLS()
     return this._user;
   }
   set user(value: TUser | null) {
