@@ -9,7 +9,7 @@ export class User {
 
   private _user: TUser | null;
   get user(): TUser | null {
-    this.readLS()
+    if (!this._user) this.readLS()
     return this._user;
   }
   set user(value: TUser | null) {
