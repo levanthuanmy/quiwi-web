@@ -1,5 +1,5 @@
 import classNames from 'classnames'
-import { useRouter } from 'next/router'
+import { Router, useRouter } from 'next/router'
 import React, { FC, memo } from 'react'
 import { Col, Image, Row, Table } from 'react-bootstrap'
 import { TRankingItem } from '../../pages/ranking'
@@ -22,7 +22,11 @@ const RankingBoard: FC<{ rankingList: TRankingItem[] }> = ({ rankingList }) => {
         </Col>
       </Row>
       {rankingList?.map((user) => (
-        <Row key={user.rank} className="mb-3 align-items-center bg-light py-2 mx-0 rounded-8px shadow-sm">
+        <Row
+          key={user.rank}
+          className="mb-3 align-items-center bg-light py-2 mx-0 rounded-8px shadow-sm cursor-pointer"
+          onClick={() => router.push(`/users/${user.id}`)}
+        >
           <Col xs={1} className="fw-bold fs-5">
             {user.rank}
           </Col>
