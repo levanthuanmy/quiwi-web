@@ -108,8 +108,7 @@ const PlayCommunityQuizScreen: NextPage = () => {
 
   const joinRoom = async (gameManager: GameManager) => {
     if (!gameManager.gameSession) return
-    const cookies = new Cookies()
-    const accessToken: string = cookies.get('access-token')
+
     let joinRoomRequest: TReconnectQuizRequest = {
       invitationCode: gameManager.gameSession.invitationCode,
     }
@@ -120,7 +119,6 @@ const PlayCommunityQuizScreen: NextPage = () => {
     }
 
     if (user?.id) {
-      // joinRoomRequest.token = accessToken
       joinRoomRequest.userId = user?.id
     }
 
