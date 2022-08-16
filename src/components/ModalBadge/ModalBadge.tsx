@@ -13,7 +13,7 @@ type IModalBadge = {
 
 const ModalBadge: FC<IModalBadge> = (props) => {
   const badge = props.userBadge.badge
-  const goal = props.userBadge?.badge?.badgeRequirements ? props.userBadge.badge.badgeRequirements[0].goal : 1
+  const goal = props.userBadge?.badge?.badgeRequirements ? props.userBadge.badge.badgeRequirements[props.userBadge.badge.badgeRequirements.length - 1].goal : 1
 
   const status = props.userBadge.status === 'INPROGRESS'
   return (
