@@ -59,7 +59,17 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
   const { fromMedium, isMobile, fromSmall } = useScreenSize()
 
   useEffect(() => {
-    handleSocket()
+    if (!gameManager.gameSocket || gameManager.gameSocket?.disconnected) {
+      console.log("=>(AnswerBoard.tsx:64) mất kết nối");
+      gameManager.connectGameSocket()
+      gameManager.gameSkOnce('reconnect', () => {
+        console.log("=>(AnswerBoard.tsx:64) kết nối lại");
+        handleSocket()
+      })
+    } else {
+      console.log("=>(AnswerBoard.tsx:64) có sẵn kết nối");
+      handleSocket()
+    }
     resetState()
   }, [])
 

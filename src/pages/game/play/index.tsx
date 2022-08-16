@@ -204,6 +204,10 @@ const GamePage: NextPage = () => {
       invitationCode: game.gameSession.invitationCode,
     }
 
+    if (user?.id) {
+      joinRoomRequest.userId = user.id
+    }
+
     const body: TGamePlayBodyRequest<TJoinQuizRequest> = {
       socketId: game.gameSocket!.id,
       data: joinRoomRequest,
@@ -218,7 +222,7 @@ const GamePage: NextPage = () => {
       const response: TApiResponse<{
         gameLobby: TGameLobby
         player: TPlayer
-      }> = await post('api/games/join-room', {}, body, true)
+      }> = await post('api/games/reconnect-game', {}, body, !!user?.id)
       const data = response.response
 
       game.gameSession = data.gameLobby
