@@ -62,7 +62,7 @@ const AnswerBoard: FC<AnswerBoardProps> = ({
     if (!gameManager.gameSocket || gameManager.gameSocket?.disconnected) {
       console.log("=>(AnswerBoard.tsx:64) mất kết nối");
       gameManager.connectGameSocket()
-      gameManager.gameSkOnce('connect', () => {
+      gameManager.gameSkOnce('reconnect', () => {
         console.log("=>(AnswerBoard.tsx:64) kết nối lại");
         handleSocket()
       })
