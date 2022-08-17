@@ -8,16 +8,14 @@ import useSWR from 'swr'
 import DashboardLayout from '../../components/DashboardLayout/DashboardLayout'
 import ItemQuiz from '../../components/ItemQuiz/ItemQuiz'
 import Loading from '../../components/Loading/Loading'
-import LoadingFullScreen from '../../components/LoadingFullScreen/Loading'
 import { MyPagination } from '../../components/MyPagination/MyPagination'
 import SearchBar from '../../components/SearchBar/SearchBar'
 import { get } from '../../libs/api'
-import HelpToolTip from '../../components/HelpToolTip/HelpToolTip'
 import {
   TApiResponse,
   TPaginationResponse,
   TQuiz,
-  TQuizCategory,
+  TQuizCategory
 } from '../../types/types'
 
 const ExplorePage: NextPage = () => {
