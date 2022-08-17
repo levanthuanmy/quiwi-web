@@ -15,7 +15,7 @@ import {
   TApiResponse,
   TPaginationResponse,
   TQuiz,
-  TQuizCategory
+  TQuizCategory,
 } from '../../types/types'
 
 const ExplorePage: NextPage = () => {
@@ -100,9 +100,13 @@ const ExplorePage: NextPage = () => {
           <Row className="align-items-end mb-4 gap-3">
             <Col xs="12">
               <div className="fw-medium mb-1 bi bi-search d-flex gap-2 align-items-center ">
-                Tìm kiếm quiz
+                Tìm kiếm Quiz
               </div>
-              <SearchBar pageUrl="explore" inputClassName="border-0" />
+              <SearchBar
+                pageUrl="explore"
+                inputClassName="border-0"
+                placeholder="Tìm kiếm theo tên Quiz, mô tả Quiz hoặc tên người tạo"
+              />
             </Col>
             <Col xs="12" className="mb-3">
               <div className="fw-medium mb-1 bi bi-journal-bookmark-fill d-flex gap-2 align-items-center">

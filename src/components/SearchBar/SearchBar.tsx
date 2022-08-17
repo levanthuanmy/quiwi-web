@@ -9,7 +9,8 @@ import MyInput from '../MyInput/MyInput'
 const SearchBar: FC<{
   pageUrl: string
   inputClassName?: string
-}> = ({ pageUrl, inputClassName = '' }) => {
+  placeholder?: string
+}> = ({ pageUrl, inputClassName = '', placeholder = 'Tìm kiếm...' }) => {
   return (
     <Form
       className="d-flex w-100 gap-3"
@@ -25,7 +26,7 @@ const SearchBar: FC<{
         <MyInput
           name="q"
           className={classNames(inputClassName)}
-          placeholder="Tìm kiếm..."
+          placeholder={placeholder}
           onClick={(e: any) => e?.target?.select()}
         />
       </div>

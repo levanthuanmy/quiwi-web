@@ -9,6 +9,7 @@ type MyInputProps = React.DetailedHTMLProps<
   iconClassName?: string
   handleIconClick?: () => void | undefined
   errorText?: string
+  placeholder?: string
 }
 const MyInput: FC<MyInputProps> = (props: MyInputProps) => {
   const { iconClassName, handleIconClick, errorText, ...inputProps } = props

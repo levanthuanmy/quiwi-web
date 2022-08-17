@@ -3,14 +3,8 @@ import ExcelJS from 'exceljs'
 import _ from 'lodash'
 import { TDetailPlayer, TGameHistory } from '../types/types'
 import { QUESTION_TYPE_MAPPING_TO_TEXT } from './constants'
-import { formatDate_DDMMMMYYYY } from './helper'
+import { formatDate_DDMMMMYYYY, renderPercentage } from './helper'
 import { getAnswerResultText } from './statistic-calculation'
-const alignCenterSetting = {
-  alignment: {
-    vertical: 'center',
-    horizontal: 'center',
-  },
-}
 
 // include correct answers percentage, timeout submission
 const calculateScorePercentages = (game: TGameHistory) => {
@@ -25,14 +19,10 @@ const calculateScorePercentages = (game: TGameHistory) => {
   }
 
   return {
-    correctAnswersPercentage: (
-      (countCorrectAnswers / (game.gameRoundStatistics.length || 1)) *
-      100
-    ).toFixed(2),
-    timeoutSubmissionPercentage: (
-      (countTimeoutSubmission / (game.gameRoundStatistics.length || 1)) *
-      100
-    ).toFixed(2),
+    correctAnswersPercentage:
+      countCorrectAnswers / (game.gameRoundStatistics.length || 1),
+    timeoutSubmissionPercentage:
+      countTimeoutSubmission / (game.gameRoundStatistics.length || 1),
   }
 }
 
@@ -81,9 +71,13 @@ const getHeader = (
 const setValueForCell = (
   sheet: ExcelJS.Worksheet,
   cell: string,
-  value: string
+  value: any,
+  isPercentage?: boolean
 ) => {
   sheet.getCell(cell).value = value
+  if (isPercentage) {
+    sheet.getCell(cell).numFmt = '0.00%'
+  }
 }
 
 const setThinBorderForCell = (sheet: ExcelJS.Worksheet, cell: string) => {
@@ -115,9 +109,10 @@ const setWidthForColumn = (
 const createCellWithThinBorder = (
   sheet: ExcelJS.Worksheet,
   cell: string,
-  value: string
+  value: any,
+  isPercentage?: boolean
 ) => {
-  setValueForCell(sheet, cell, value)
+  setValueForCell(sheet, cell, value, isPercentage)
   setThinBorderForCell(sheet, cell)
 }
 
@@ -166,10 +161,19 @@ const generateOverviewInformation = (
   const percentages = calculateScorePercentages(game)
 
   createCellWithThinBorder(sheet, 'A8', 'Sô phần trăm trả lời đúng')
-  createCellWithThinBorder(sheet, 'E8', percentages.correctAnswersPercentage)
-
+  createCellWithThinBorder(
+    sheet,
+    'E8',
+    +percentages.correctAnswersPercentage,
+    true
+  )
   createCellWithThinBorder(sheet, 'A9', 'Sô phần trăm chưa trả lời (trễ giờ)')
-  createCellWithThinBorder(sheet, 'E9', percentages.timeoutSubmissionPercentage)
+  createCellWithThinBorder(
+    sheet,
+    'E9',
+    +percentages.timeoutSubmissionPercentage,
+    true
+  )
 
   getHeader(sheet, 'A11', 'Chuyển sang các Sheet sau để xem kết quả từng câu')
 }
@@ -183,19 +187,25 @@ const generateOverviewInformation = (
 const getPlayerFinalScore = (player: TDetailPlayer, rank: number) => {
   const rs = []
 
-  rs.push((rank + 1).toString())
+  rs.push(rank + 1)
   rs.push(player.nickname)
-  rs.push(player['score'].toFixed(2))
+
+  rs.push(+player['score'].toFixed(2))
   let correctAnswer = 0
   const totalAnswers = player.gameRounds.length
+  let rawPlayerScore = 0
+  let totalScoreQuestions = 0
   for (const gameRound of player.gameRounds) {
     if (gameRound.isCorrect) {
       correctAnswer++
+      rawPlayerScore += gameRound.question!.score
     }
+    totalScoreQuestions += gameRound.question!.score
   }
 
-  rs.push(correctAnswer.toString())
-  rs.push((totalAnswers - correctAnswer).toString())
+  rs.push(correctAnswer)
+  rs.push(totalAnswers - correctAnswer)
+  rs.push(+renderPercentage((rawPlayerScore / totalScoreQuestions) * 10))
   return rs
 }
 
@@ -234,6 +244,9 @@ const generateFinalScoreSheet = (
       {
         name: 'Câu trả lời sai',
       },
+      {
+        name: 'Thang điểm 10',
+      },
     ],
     rows: game.players.map((player, index) =>
       getPlayerFinalScore(player, index)
@@ -264,8 +277,8 @@ const getPlayerScoreForEachQuestion = (
     player.nickname,
     gameRound?.answer || answers?.join(', ') || '',
     isCorrect,
-    gameRound.score.toFixed(2),
-    gameRound.currentScore.toFixed(2),
+    +gameRound.score.toFixed(2),
+    +gameRound.currentScore.toFixed(2),
     gameRound.currentStreak,
   ]
 
@@ -304,7 +317,7 @@ const generateSheetForEachQuestion = (
    * Lấy trả lời đúng hiển thị trên hàng
    */
   const answers: string[] = []
-  
+
   /**
    * Thông số người chọn các câu choices
    */
@@ -334,9 +347,8 @@ const generateSheetForEachQuestion = (
     }
   }
   const correctAnswersPercentage =
-    ((gameRoundStatistic?.numberOfCorrectAnswers ?? 0) /
-      (game.players.length || 1)) *
-    100
+    (gameRoundStatistic?.numberOfCorrectAnswers ?? 0) /
+    (game.players.length || 1)
 
   getTitle(sheet, game.quiz.title)
 
@@ -349,11 +361,11 @@ const generateSheetForEachQuestion = (
     QUESTION_TYPE_MAPPING_TO_TEXT[question?.type ?? '10SG']
   )
   createCellWithThinBorder(sheet, 'A4', 'Thời gian trả lời câu hỏi')
-  createCellWithThinBorder(sheet, 'E4', question.duration.toString())
+  createCellWithThinBorder(sheet, 'E4', question.duration)
   createCellWithThinBorder(sheet, 'A5', 'Câu trả lời đúng là')
   createCellWithThinBorder(sheet, 'E5', answers.join(', '))
   createCellWithThinBorder(sheet, 'A6', 'Phần trăm trả lời đúng')
-  createCellWithThinBorder(sheet, 'E6', correctAnswersPercentage.toFixed(2))
+  createCellWithThinBorder(sheet, 'E6', correctAnswersPercentage, true)
 
   const answerText = ['Câu trả lời', '', '', '']
 
@@ -375,7 +387,7 @@ const generateSheetForEachQuestion = (
     for (const answer of answersStatistics) {
       answerText.push(answer.answer)
       correctText.push(answer.isCorrect ? 'Đúng' : 'Sai')
-      numChoiceText.push(answer.numOfAnswers.toString())
+      numChoiceText.push(answer.numOfAnswers)
     }
   }
 
@@ -403,7 +415,7 @@ const generateSheetForEachQuestion = (
   }
 
   sheet.addTable({
-    name: 'PlayerScore',
+    name: 'PlayerScore_' + index,
     ref: 'A14',
     headerRow: true,
     totalsRow: false,
@@ -492,11 +504,8 @@ const getExcelFile = async (game: TGameHistory) => {
 
   workbook.creator = 'QuiwiGame'
 
-  // await workbook.xlsx.writeFile(`${formatDate_DDMMYYYY(game.createdAt)} ${game.quiz.title}.xlsx`)
-
   // write to a new buffer
   const buffer = await workbook.xlsx.writeBuffer()
-  console.log(buffer)
 
   return buffer
 }
