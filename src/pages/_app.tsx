@@ -15,7 +15,7 @@ import '../styles/typography.css'
 import '../styles/custom-arrow-react-slick.css'
 import { AuthProvider } from '../hooks/useAuth/useAuth'
 import { useRouter } from 'next/router'
-import { useEffect, useState } from 'react'
+import { memo, useEffect, useState } from 'react'
 import FullScreenLoader from '../components/FullScreenLoader/FullScreenLoader'
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
@@ -26,6 +26,7 @@ import SignInModal from '../components/AuthComponents/SignInModal/SignInModal'
 import { GoogleOAuthProvider } from '@react-oauth/google'
 import { useMyleGameSession } from '../hooks/usePracticeGameSession/useMyleGameSession'
 import { usePracticeGameSession } from '../hooks/usePracticeGameSession/usePracticeGameSession'
+import useScreenSize from '../hooks/useScreenSize/useScreenSize'
 
 // ĐỪNG AUTO FORMAT FILE NÀY
 
@@ -122,12 +123,15 @@ function MyApp({ Component, pageProps }: AppProps) {
 
 export default MyApp
 
-const ToastLimitation = () => {
+// eslint-disable-next-line react/display-name
+const ToastLimitation = memo(() => {
   const { toastStack, removeToast } = useToasts()
+  const {isMobile} = useScreenSize()
   useEffect(() => {
-    if (toastStack.length > 3) {
+    const limitNumber = isMobile ? 1 : 3
+    if (toastStack.length > limitNumber) {
       removeToast(toastStack[0].id)
     }
-  }, [toastStack])
+  }, [toastStack, isMobile])
   return <></>
-}
+})

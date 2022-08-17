@@ -95,7 +95,7 @@ const JoiningPage: NextPage = () => {
     <div
       className="bg-secondary fw-medium bg-opacity-25 min-vh-100 d-flex flex-column justify-content-center align-items-center">
       <div className="bg-white px-3 py-5 rounded-20px shadow-sm">
-        <div className="mb-5 text-center">
+        <div className="mb-5 text-center" onClick={() => router.push('/home')}>
           <Image
             src="/assets/logo-text.png"
             width={133}
