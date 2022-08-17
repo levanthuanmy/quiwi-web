@@ -11,6 +11,7 @@ const UserItemPage: FC<{
   itemCategories: TPaginationResponse<TItemCategory>
   userItems: TUserItems[]
 }> = ({ itemCategories, userItems }) => {
+console.log('itemCategories', itemCategories)
   return (
     <div>
       <div className="w-100">
