@@ -3,7 +3,7 @@ import _ from 'lodash'
 import { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { useEffect, useRef, useState } from 'react'
-import { Col, Container, Row } from 'react-bootstrap'
+import { Col, Container, Modal, Row } from 'react-bootstrap'
 import { useToasts } from 'react-toast-notifications'
 import AddingQuestionButtons from '../../../../components/AddingQuestionButtons/AddingQuestionButtons'
 import QuizBannerWithTitle from '../../../../components/CardQuizInfo/QuizBannerWithTitle/QuizBannerWithTitle'
@@ -44,6 +44,7 @@ const QuizCreatorPage: NextPage = () => {
   })
   const addQuestionRef = useRef<any>(null)
   const authContext = useAuth()
+  const [errorMessage, setError] = useState('')
 
   useEffect(() => {
     const questionType = router.query?.type?.toString()
@@ -131,6 +132,24 @@ const QuizCreatorPage: NextPage = () => {
     }
   }
 
+  const cloneQuiz = async () => {
+    try {
+      if (quiz && authContext.isAuth && authContext.getUser()) {
+        const res = await get<TApiResponse<TQuiz>>(
+          `/api/quizzes/quiz/${quiz.id}/clone`,
+          true
+        )
+        if (res.response) {
+          router.push(`/quiz/creator/${res.response.id}`)
+        } else {
+          setError(_.get(res, 'message', 'Có lỗi xảy ra'))
+        }
+      }
+    } catch (error) {
+      setError(_.get(error, 'message', 'Có lỗi xảy ra'))
+    }
+  }
+
   return (
     <div className="min-vh-100">
       <NavBar showMenuBtn={false} isExpand={false} setIsExpand={() => null} />
@@ -174,6 +193,17 @@ const QuizCreatorPage: NextPage = () => {
             <div ref={addQuestionRef} className="mt-3">
               <AddingQuestionButtons quizId={quizId} />
             </div>
+
+            <div className="mt-3">
+              <MyButton
+                className="text-white w-100 d-flex align-items-center justify-content-between text-uppercase fw-medium"
+                onClick={cloneQuiz}
+              >
+                Tải về thư viện của mình
+                <div className="bi bi-play-fill" />
+              </MyButton>
+            </div>
+
             <div className="mt-3">
               <MyButton
                 className="text-white w-100 d-flex align-items-center justify-content-between text-uppercase fw-medium"
@@ -236,6 +266,17 @@ const QuizCreatorPage: NextPage = () => {
         <div className="text-center">
           Bạn không thể hoàn tác lại hành động này
         </div>
+      </MyModal>
+
+      <MyModal
+        show={errorMessage?.length > 0}
+        onHide={() => {
+          setError('')
+        }}
+        size="sm"
+        header={<Modal.Title className="text-danger">Thông báo</Modal.Title>}
+      >
+        <div className="text-center fw-medium fs-16px">{errorMessage}</div>
       </MyModal>
     </div>
   )

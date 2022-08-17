@@ -3,7 +3,6 @@ import { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { Col, Container, Modal, Row } from 'react-bootstrap'
-import { useToasts } from 'react-toast-notifications'
 import useSWR from 'swr'
 import QuizBannerWithTitle from '../../../components/CardQuizInfo/QuizBannerWithTitle/QuizBannerWithTitle'
 import ItemQuestion from '../../../components/ItemQuestion/ItemQuestion'
@@ -19,7 +18,6 @@ const QuizDetailPage: NextPage = () => {
   const router = useRouter()
   const query = router.query
   const { id } = query
-  const { addToast } = useToasts()
   const auth = useAuth()
   const user = auth.getUser()
 
