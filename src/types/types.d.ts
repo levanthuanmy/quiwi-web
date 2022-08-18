@@ -418,3 +418,15 @@ export type TUsingItems = {
   item: TItem
   player: TPlayer
 }
+
+export type TPlayerLeaderboard = {
+  nickname: string
+  userId?: number
+  user?: TUser
+  score: number
+  correctPercent: number
+}
+
+export type GameLeaderboard = {
+  players: TPlayerLeaderboard[]
+}

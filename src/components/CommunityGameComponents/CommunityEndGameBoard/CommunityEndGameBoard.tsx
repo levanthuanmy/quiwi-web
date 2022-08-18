@@ -2,13 +2,13 @@ import classNames from 'classnames'
 import _ from 'lodash'
 import router from 'next/router'
 import { FC, useEffect, useMemo, useState } from 'react'
-import { Table } from 'react-bootstrap'
 import { useToasts } from 'react-toast-notifications'
 import { useAuth } from '../../../hooks/useAuth/useAuth'
 import { GameManager } from '../../../hooks/useGameSession/useGameSession'
 import useScreenSize from '../../../hooks/useScreenSize/useScreenSize'
 import { get } from '../../../libs/api'
-import { TApiResponse, TGameRound, TPlayer } from '../../../types/types'
+import { GameLeaderboard, TApiResponse, TGameRound, TPlayerLeaderboard } from '../../../types/types'
+import { renderPercentage } from '../../../utils/helper'
 import MyButton from '../../MyButton/MyButton'
 
 const CommunityEndGameBoard: FC<{
@@ -21,7 +21,7 @@ const CommunityEndGameBoard: FC<{
   const { addToast } = useToasts()
   const { fromMedium } = useScreenSize()
 
-  const [leaderboard, setLeaderboard] = useState<TPlayer[]>()
+  const [leaderboard, setLeaderboard] = useState<GameLeaderboard>()
 
   const handleVoting = async (type: 'UP' | 'DOWN') => {
     try {
@@ -51,7 +51,7 @@ const CommunityEndGameBoard: FC<{
     const getLeaderboard = async () => {
       const { id } = router.query
       try {
-        const res = await get<TApiResponse<TPlayer[]>>(
+        const res = await get<TApiResponse<GameLeaderboard>>(
           `api/games/leaderboard/${id}`,
           false,
           {
@@ -167,13 +167,13 @@ const CommunityEndGameBoard: FC<{
             </thead>
 
             <tbody>
-              {leaderboard?.map((p, index) => {
+              {leaderboard?.players.map((p, index) => {
                 return (
                   <div className="d-table-hover d-table-row my-3" key={index}>
                     <td className="d-table-cell">{index + 1}</td>
                     <td className="d-table-cell">{p.nickname}</td>
                     <td className="d-table-cell">{p.score.toFixed(2)}</td>
-                    <td className="d-table-cell">{p.score.toFixed(2)}</td>
+                    <td className="d-table-cell">{renderPercentage(p.correctPercent*100)}</td>
                   </div>
                 )
               })}
