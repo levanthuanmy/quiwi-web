@@ -1,14 +1,15 @@
 import classNames from 'classnames'
 import _ from 'lodash'
 import router from 'next/router'
-import React, { FC, useMemo, useState } from 'react'
+import { FC, useEffect, useMemo, useState } from 'react'
+import { Table } from 'react-bootstrap'
 import { useToasts } from 'react-toast-notifications'
 import { useAuth } from '../../../hooks/useAuth/useAuth'
+import { GameManager } from '../../../hooks/useGameSession/useGameSession'
 import useScreenSize from '../../../hooks/useScreenSize/useScreenSize'
 import { get } from '../../../libs/api'
-import { TGameRound } from '../../../types/types'
+import { TApiResponse, TGameRound, TPlayer } from '../../../types/types'
 import MyButton from '../../MyButton/MyButton'
-import {GameManager} from "../../../hooks/useGameSession/useGameSession";
 
 const CommunityEndGameBoard: FC<{
   gameSessionHook: GameManager
@@ -19,6 +20,8 @@ const CommunityEndGameBoard: FC<{
   const [isVote, setIsVote] = useState<boolean>(false)
   const { addToast } = useToasts()
   const { fromMedium } = useScreenSize()
+
+  const [leaderboard, setLeaderboard] = useState<TPlayer[]>()
 
   const handleVoting = async (type: 'UP' | 'DOWN') => {
     try {
@@ -43,6 +46,30 @@ const CommunityEndGameBoard: FC<{
       })
     }
   }
+
+  useEffect(() => {
+    const getLeaderboard = async () => {
+      const { id } = router.query
+      try {
+        const res = await get<TApiResponse<TPlayer[]>>(
+          `api/games/leaderboard/${id}`,
+          false,
+          {
+            mode: gameSessionHook.gameSession?.mode,
+          }
+        )
+        console.log('==== ~ getLeaderboard ~ res', res)
+        setLeaderboard(res.response)
+      } catch (error) {
+        addToast('Có lỗi trong quá trình thực hiện. Vui lòng thử lại sau.', {
+          appearance: 'error',
+          autoDismiss: true,
+        })
+      }
+    }
+    getLeaderboard()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const mappedEndGameQuestion = useMemo(() => {
     const gameRounds: TGameRound[] = gameSessionHook.player?.gameRounds || []
@@ -73,83 +100,84 @@ const CommunityEndGameBoard: FC<{
 
     return result
   }, [showEndGame, gameSessionHook])
+
+  // let totalScore = gameSessionHook.gameSession?.quiz.questions.reduce((p, c) => p+c.score, 0)
   return (
     <div
       className={classNames(
-        'bg-white d-flex flex-column gap-3 align-items-center p-3 text-center',
+        ' d-flex flex-column gap-3 align-items-center p-5 text-center bg-white ',
         {
           'rounded-8px': fromMedium,
         }
       )}
     >
-      <div className="h1 py-5">Chúc mừng bạn đã hoàn thành bộ câu hỏi</div>
+      {/* <div className="h1 py-5">Chúc mừng bạn đã hoàn thành bộ câu hỏi</div> */}
+      <div className=" text-center   ">
+        <div className="text-center">
+          <div className="h2">Kết quả của bạn</div>
+          <div className="d-table shadow overflow-hidden text-start mb-5 mx-auto ">
+            <div className="d-table-row">
+              <div className="d-table-cell py-1 bg-primary bg-opacity-10 px-3 fs-18px fw-medium">
+                Tổng điểm
+              </div>
+              <div className="d-table-cell ps-3 pe-2 text-primary fs-20px fw-bold fs-18px fw-medium">
+                {Math.round(_.get(gameSessionHook, 'player.score'))}
+              </div>
+            </div>
 
-      <div className="h2">Kết quả của bạn</div>
-      <div className="d-table shadow rounded-8px overflow-hidden text-start mb-5">
-        <div className="d-table-row">
-          <div className="d-table-cell py-1 bg-primary bg-opacity-10 px-3 fs-18px fw-medium">
-            Tổng điểm
-          </div>
-          <div className="d-table-cell ps-3 pe-2 text-primary fs-20px fw-bold fs-18px fw-medium">
-            {Math.round(_.get(gameSessionHook, 'player.score'))}
+            <div className="d-table-row">
+              <div className="d-table-cell py-1 bg-primary bg-opacity-10 px-3 fs-18px fw-medium">
+                Số câu đúng
+              </div>
+              <div className="d-table-cell ps-3 pe-2 fs-18px fw-medium">
+                {_.get(mappedEndGameQuestion, 'numCorrect')}
+              </div>
+            </div>
+
+            <div className="d-table-row">
+              <div className="d-table-cell py-1 bg-primary bg-opacity-10 px-3 fs-18px fw-medium">
+                Số câu sai
+              </div>
+              <div className="d-table-cell ps-3 pe-2 fs-18px fw-medium">
+                {_.get(mappedEndGameQuestion, 'numIncorrect')}
+              </div>
+            </div>
+
+            <div className="d-table-row">
+              <div className="d-table-cell py-1 bg-primary bg-opacity-10 px-3 fs-18px fw-medium">
+                Đúng liên tục nhiều nhất
+              </div>
+              <div className="d-table-cell ps-3 pe-2 fs-18px fw-medium">
+                {_.get(gameSessionHook, 'player.maxStreak')}
+              </div>
+            </div>
           </div>
         </div>
 
-        <div className="d-table-row">
-          <div className="d-table-cell py-1 bg-primary bg-opacity-10 px-3 fs-18px fw-medium">
-            Số câu đúng
-          </div>
-          <div className="d-table-cell ps-3 pe-2 fs-18px fw-medium">
-            {_.get(mappedEndGameQuestion, 'numCorrect')}
-          </div>
-        </div>
+        <div className="mb-5">
+          <div className="h2">Bảng xếp hạng</div>
+          <div className="d-table shadow">
+            <thead className="bg-primary bg-opacity-10">
+              <div className="d-table-row ">
+                <th className="d-table-cell py-2 px-3 ">#</th>
+                <th className="d-table-cell py-2 px-3">Tên người chơi</th>
+                <th className="d-table-cell py-2 px-3">Số điểm</th>
+                <th className="d-table-cell py-2 px-3">Số phần trăm đúng</th>
+              </div>
+            </thead>
 
-        {/* {_.get(mappedEndGameQuestion, 'numCorrect') > 0 && (
-                <div className="d-table-row">
-                  <div className="d-table-cell py-1 bg-primary bg-opacity-10 px-3 fs-18px fw-medium">
-                    Các câu đúng
+            <tbody>
+              {leaderboard?.map((p, index) => {
+                return (
+                  <div className="d-table-hover d-table-row my-3" key={index}>
+                    <td className="d-table-cell">{index + 1}</td>
+                    <td className="d-table-cell">{p.nickname}</td>
+                    <td className="d-table-cell">{p.score.toFixed(2)}</td>
+                    <td className="d-table-cell">{p.score.toFixed(2)}</td>
                   </div>
-                  <div className="d-table-cell ps-3 pe-2 text-wrap text-break">
-                    {Object.keys(
-                      _.get(mappedEndGameQuestion, 'correctQuestions')
-                    ).map((item, key) => (
-                      <span key={item}>
-                        {item}
-                        {key !== mappedEndGameQuestion.numCorrect - 1 && ', '}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )} */}
-
-        <div className="d-table-row">
-          <div className="d-table-cell py-1 bg-primary bg-opacity-10 px-3 fs-18px fw-medium">
-            Số câu sai
-          </div>
-          <div className="d-table-cell ps-3 pe-2 fs-18px fw-medium">
-            {_.get(mappedEndGameQuestion, 'numIncorrect')}
-          </div>
-        </div>
-
-        {/* {_.get(mappedEndGameQuestion, 'numIncorrect') > 0 && (
-                <div className="d-table-row">
-                  <div className="d-table-cell py-1 bg-primary bg-opacity-10 px-3 fs-18px fw-medium">
-                    Các câu sai
-                  </div>
-                  <div className="d-table-cell ps-3 pe-2">
-                    {Object.keys(
-                      _.get(mappedEndGameQuestion, 'incorrectQuestions')
-                    )}
-                  </div>
-                </div>
-              )} */}
-
-        <div className="d-table-row">
-          <div className="d-table-cell py-1 bg-primary bg-opacity-10 px-3 fs-18px fw-medium">
-            Đúng liên tục nhiều nhất
-          </div>
-          <div className="d-table-cell ps-3 pe-2 fs-18px fw-medium">
-            {_.get(gameSessionHook, 'player.maxStreak')}
+                )
+              })}
+            </tbody>
           </div>
         </div>
       </div>
@@ -157,15 +185,15 @@ const CommunityEndGameBoard: FC<{
       {!isVote ? (
         <div className="">
           <div className="h2">Đánh giá quiz</div>
-          <div className="p-12px line-height-normal text-secondary d-flex align-items-center gap-3">
+          <div className="p-12px justify-content-center line-height-normal text-secondary d-flex align-items-center gap-3">
             <MyButton
               variant="outline-danger"
-              className="bi bi-arrow-down-short fs-48px d-flex align-items-center justify-content-center"
+              className="bi bi-arrow-down-short fs-32px d-flex align-items-center justify-content-center"
               onClick={() => handleVoting('DOWN')}
             />
             <MyButton
               variant="outline-success"
-              className="bi bi-arrow-up-short fs-48px d-flex align-items-center justify-content-center"
+              className="bi bi-arrow-up-short fs-32px d-flex align-items-center justify-content-center"
               onClick={() => handleVoting('UP')}
             />
           </div>
@@ -181,7 +209,7 @@ const CommunityEndGameBoard: FC<{
       )}
 
       <MyButton
-        className="text-white mt-4 text-uppercase"
+        className="text-white mt-4  text-uppercase"
         onClick={onOutRoomInEndGameBoard}
       >
         Rời phòng
