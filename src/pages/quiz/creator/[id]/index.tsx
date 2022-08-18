@@ -2,8 +2,8 @@ import classNames from 'classnames'
 import _ from 'lodash'
 import { NextPage } from 'next'
 import { useRouter } from 'next/router'
-import { useEffect, useRef, useState } from 'react'
-import { Col, Container, Modal, Row } from 'react-bootstrap'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { Accordion, Card, Col, Container, Modal, Row } from 'react-bootstrap'
 import { useToasts } from 'react-toast-notifications'
 import AddingQuestionButtons from '../../../../components/AddingQuestionButtons/AddingQuestionButtons'
 import QuizBannerWithTitle from '../../../../components/CardQuizInfo/QuizBannerWithTitle/QuizBannerWithTitle'
@@ -15,7 +15,12 @@ import QuestionCreator from '../../../../components/QuestionCreator/QuestionCrea
 import { useAuth } from '../../../../hooks/useAuth/useAuth'
 import { get, post } from '../../../../libs/api'
 import * as gtag from '../../../../libs/gtag'
-import { TApiResponse, TQuestion, TQuiz } from '../../../../types/types'
+import {
+  TApiResponse,
+  TQuestion,
+  TQuiz,
+  TQuizSecretKey,
+} from '../../../../types/types'
 import { indexingQuestionsOrderPosition } from '../../../../utils/helper'
 import styles from './QuizCreator.module.css'
 export type TEditQuestion = {
@@ -42,6 +47,7 @@ const QuizCreatorPage: NextPage = () => {
     isEdit: false,
     questionId: null,
   })
+  const [secretKey, setSecretKey] = useState<TQuizSecretKey | null>()
   const addQuestionRef = useRef<any>(null)
   const authContext = useAuth()
   const [errorMessage, setError] = useState('')
@@ -76,7 +82,23 @@ const QuizCreatorPage: NextPage = () => {
       }
     }
 
+    const getSecretKey = async () => {
+      try {
+        const res = await get<TApiResponse<TQuizSecretKey>>(
+          `api/quizzes/my-quizzes/${quizId}/secret-key`,
+          true
+        )
+
+        if (res.response) {
+          setSecretKey(res.response)
+        }
+      } catch (error) {
+        console.log('==== ~ getSecretKey ~ error', error)
+      }
+    }
+
     quizId && getQuiz()
+    quizId && getSecretKey()
 
     gtag.event({ action: '[access quiz creator]', params: { quizId } })
   }, [quizId])
@@ -149,6 +171,35 @@ const QuizCreatorPage: NextPage = () => {
       setError(_.get(error, 'message', 'Có lỗi xảy ra'))
     }
   }
+  const INVITATION_LINK = useMemo(() => {
+    if (typeof window !== 'undefined') {
+      return `http://${window.location.host}/quiz/${quizId}?invitationCode=${secretKey?.secretKey}`
+    }
+    return `https://web.quiwi.games/quiz/${quizId}?invitationCode=${secretKey?.secretKey}`
+  }, [quizId, secretKey?.secretKey])
+  const copyCodeToClipboard = () => {
+    const link = navigator?.clipboard?.writeText(INVITATION_LINK)
+
+    addToast(<>Sao chép thành công, có thể gửi cho người khác.</>, {
+      autoDismiss: true,
+      appearance: 'success',
+    })
+  }
+
+  const genSecretKey = async () => {
+    try {
+      const res = await get<TApiResponse<TQuizSecretKey>>(
+        `api/quizzes/my-quizzes/${quizId}/gen-key`,
+        true
+      )
+
+      if (res.response) {
+        setSecretKey(res.response)
+      }
+    } catch (error) {
+      console.log('==== ~ genSecretKey ~ error', error)
+    }
+  }
 
   return (
     <div className="min-vh-100">
@@ -181,6 +232,53 @@ const QuizCreatorPage: NextPage = () => {
             <div className="fs-22px fw-medium">Tuỳ chọn</div>
 
             <div className="mt-3">
+              <Accordion defaultActiveKey="1">
+                <Accordion.Item eventKey="1">
+                  <Accordion.Button className="h-50px shadow-sm bg-primary text-white">
+                    MÃ MỜI XEM QUIZ
+                  </Accordion.Button>
+                  <Accordion.Body>
+                    <div>
+                      Với mã mời này, người khác có thể tham gia vào xem và chơi
+                      ngay cả khi Quiz ở chế độ riêng tư.
+                      <br></br>
+                      <span className="text-muted ">
+                        <i>*Sẽ tự hết hạn sau 3 ngày</i>
+                      </span>
+                    </div>
+                    <div
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'row',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <div className="text-primary fw-medium fs-24px">
+                        {secretKey?.secretKey ?? 'Chưa có mã mời'}
+                      </div>
+                    </div>
+                    <br />
+
+                    {secretKey?.secretKey && (
+                      <MyButton
+                        onClick={() => copyCodeToClipboard()}
+                        className="text-white mx-auto w-50 text-center mb-3 d-flex align-items-center justify-content-center text-uppercase fw-medium"
+                      >
+                        Sao chép link mời
+                      </MyButton>
+                    )}
+                    <MyButton
+                      onClick={() => genSecretKey()}
+                      className="text-white mx-auto w-50 text-center d-flex align-items-center justify-content-center text-uppercase fw-medium"
+                    >
+                      Tạo mã mời mới
+                    </MyButton>
+                  </Accordion.Body>
+                </Accordion.Item>
+              </Accordion>
+            </div>
+
+            <div className="mt-3">
               <MyButton
                 className="text-white w-100 d-flex align-items-center justify-content-between text-uppercase fw-medium"
                 onClick={() => router.push(`/quiz/creator/${quizId}/sort`)}
@@ -199,8 +297,8 @@ const QuizCreatorPage: NextPage = () => {
                 className="text-white w-100 d-flex align-items-center justify-content-between text-uppercase fw-medium"
                 onClick={cloneQuiz}
               >
-                Tải về thư viện của mình
-                <div className="bi bi-play-fill" />
+                Tạo một bản sao
+                <div className="bi bi-plus-lg fs-18px" />
               </MyButton>
             </div>
 

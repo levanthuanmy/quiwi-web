@@ -197,6 +197,10 @@ export type TNewPlayerResponse = {
   }
 }
 
+export type TQuizSecretKey = {
+  secretKey: string
+}
+
 export type TGamePlayBodyRequest<T> = {
   socketId: string
   data: T

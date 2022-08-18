@@ -17,7 +17,8 @@ import { TApiResponse, TQuiz } from '../../../types/types'
 const QuizDetailPage: NextPage = () => {
   const router = useRouter()
   const query = router.query
-  const { id } = query
+  const { id, invitationCode } = query
+  console.log('==== ~ invitationCode', invitationCode)
   const auth = useAuth()
   const user = auth.getUser()
 
@@ -51,7 +52,15 @@ const QuizDetailPage: NextPage = () => {
   }
 
   const { data, isValidating, error } = useSWR<TApiResponse<TQuiz>>(
-    id ? [`/api/quizzes/quiz/${id}`, false] : null,
+    id
+      ? [
+          `/api/quizzes/quiz/${id}`,
+          false,
+          {
+            secretKey: invitationCode,
+          },
+        ]
+      : null,
     get,
     {
       revalidateOnFocus: false,
@@ -102,7 +111,7 @@ const QuizDetailPage: NextPage = () => {
                   <div className="bi bi-play-fill" />
                 </MyButton>
               </div>
-              {auth.isAuth ? (
+              {auth.isAuth && quiz?.isPublic ? (
                 <div>
                   <MyButton
                     className="text-white w-100 mt-2 d-flex align-items-center justify-content-between"
