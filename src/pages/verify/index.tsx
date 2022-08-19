@@ -13,8 +13,17 @@ const VerifyPage: NextPage = () => {
   const router = useRouter()
   const [error, setError] = useState('')
   const [info, setInfo] = useState('')
-  const { token } = router.query
+  // const token = (router.query['token'] as string | null)?.replace(/' '/g, '+')
+  const queryString = router.asPath.split('?')
+  const queryObj = queryString[1]
+    .split('&')
+    .reduce<Map<string, string>>((prev, curr) => {
+      const [key, value] = curr.split('=')
+      prev.set(key, value)
+      return prev
+    }, new Map())
 
+  const token = queryObj.get('token')
   const auth = useAuth()
 
   useEffect(() => {
