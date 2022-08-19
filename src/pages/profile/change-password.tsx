@@ -103,10 +103,15 @@ const ChangePasswordPage: NextPage = () => {
       <DashboardLayout>
         <Container className=" min-vh-100 position-relative">
           <Row className="border my-3">
-            <Col xs={3} md={4} className="border-end menu text-center p-0">
+            <Col
+              xs={2}
+              sm={3}
+              md={4}
+              className="border-end menu text-center p-0"
+            >
               <LeftProfileMenuBar />
             </Col>
-            <Col className="p-4">
+            <Col className="p-sm-4 p-3">
               <Row className=" justify-content-center align-items-center">
                 <Col xs={2} lg={4} className="text-lg-end">
                   <Image
