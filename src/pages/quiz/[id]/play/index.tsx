@@ -1,32 +1,37 @@
-import {NextPage} from 'next'
-import {useRouter} from 'next/router'
-import React, {useEffect, useState} from 'react'
-import {Modal} from 'react-bootstrap'
+import { NextPage } from 'next'
+import { useRouter } from 'next/router'
+import { useEffect, useState } from 'react'
+import { Modal } from 'react-bootstrap'
 import CommunityGamePlay from '../../../../components/CommunityGameComponents/CommunityGamePlay/CommunityGamePlay'
+import LoadingBoard from '../../../../components/GameComponents/LoadingBoard/LoadingBoard'
 import GameModeScreen from '../../../../components/GameModeScreen/GameModeScreen'
 import MyModal from '../../../../components/MyModal/MyModal'
-import {GameManager, TGameLobby} from '../../../../hooks/useGameSession/useGameSession'
-import {useMyleGameSession} from '../../../../hooks/usePracticeGameSession/useMyleGameSession'
-import {get, post} from '../../../../libs/api'
 import {
-  TApiResponse, TDetailPlayer, TExamDeadline,
+  GameManager,
+  TGameLobby,
+} from '../../../../hooks/useGameSession/useGameSession'
+import { useMyleGameSession } from '../../../../hooks/usePracticeGameSession/useMyleGameSession'
+import { usePracticeGameSession } from '../../../../hooks/usePracticeGameSession/usePracticeGameSession'
+import { useTimer } from '../../../../hooks/useTimer/useTimer'
+import { useUser } from '../../../../hooks/useUser/useUser'
+import { get, post } from '../../../../libs/api'
+import {
+  TApiResponse,
+  TDetailPlayer,
+  TExamDeadline,
   TGameModeEnum,
-  TGamePlayBodyRequest, TPlayer, TQuestion,
+  TGamePlayBodyRequest,
+  TPlayer,
+  TQuestion,
   TQuiz,
   TStartQuizRequest,
 } from '../../../../types/types'
-import {useUser} from '../../../../hooks/useUser/useUser'
-import {
-  usePracticeGameSession
-} from "../../../../hooks/usePracticeGameSession/usePracticeGameSession";
-import Cookies from "universal-cookie";
-import {TJoinQuizRequest, TReconnectQuizRequest} from "../../../lobby/join";
-import LoadingBoard from "../../../../components/GameComponents/LoadingBoard/LoadingBoard";
-import {useTimer} from "../../../../hooks/useTimer/useTimer";
+import { TReconnectQuizRequest } from '../../../lobby/join'
 
 const PlayCommunityQuizScreen: NextPage = () => {
   const router = useRouter()
   let id = Number(router.query.id)
+  const { invitationCode } = router.query
   const myLeGameManager = useMyleGameSession()
   const practiceGameManager = usePracticeGameSession()
   const [isModeSelecting, setIsModeSelecting] = useState(false)
@@ -35,15 +40,19 @@ const PlayCommunityQuizScreen: NextPage = () => {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState<string | null>(null)
   const timer = useTimer()
+
   useEffect(() => {
     let gameManager: GameManager | null = null
-    if (myLeGameManager.gameSession)
-      gameManager = myLeGameManager
-    else if (practiceGameManager.gameSession)
-      gameManager = practiceGameManager
+    if (myLeGameManager.gameSession) gameManager = myLeGameManager
+    else if (practiceGameManager.gameSession) gameManager = practiceGameManager
 
     if (gameManager && gameManager?.gameSession) {
-      console.log("=>(index.tsx:53) Kết nối lại phòng ", gameManager.gameSession.invitationCode, " Mode ", gameManager.gameSession.mode);
+      console.log(
+        '=>(index.tsx:53) Kết nối lại phòng ',
+        gameManager.gameSession.invitationCode,
+        ' Mode ',
+        gameManager.gameSession.mode
+      )
       setLoading('Đang kết nối lại...')
       if (!gameManager.gameSocket || gameManager.gameSocket.disconnected) {
         gameManager.connectGameSocket()
@@ -57,10 +66,12 @@ const PlayCommunityQuizScreen: NextPage = () => {
       setLoading(null)
       setIsModeSelecting(true)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const modeSelected = (mode: TGameModeEnum) => {
-    const gameManager = mode === "10CLASSIC" ? practiceGameManager : myLeGameManager
+    const gameManager =
+      mode === '10CLASSIC' ? practiceGameManager : myLeGameManager
     if (!gameManager.gameSocket) {
       gameManager.connectGameSocket()
       gameManager.gameSkOnce('connect', () => {
@@ -82,10 +93,12 @@ const PlayCommunityQuizScreen: NextPage = () => {
         msg.token = user?.token.accessToken
       }
 
-
       const quizResponse: TApiResponse<TQuiz> = await get(
         `/api/quizzes/quiz/${Number(id)}`,
-        false
+        false,
+        {
+          secretKey: invitationCode,
+        }
       )
 
       const body: TStartQuizRequest = {
@@ -96,9 +109,10 @@ const PlayCommunityQuizScreen: NextPage = () => {
             0
           ) || 0) / 60,
       }
-      const gameManager = mode === "10CLASSIC" ? practiceGameManager : myLeGameManager
+      const gameManager =
+        mode === '10CLASSIC' ? practiceGameManager : myLeGameManager
       setMode(mode)
-      gameManager.gameSkEmit("start-game", body)
+      gameManager.gameSkEmit('start-game', body)
       setIsModeSelecting(false)
     } catch (error) {
       console.log('=>(index.tsx:83) startQuiz error', error)
@@ -128,15 +142,10 @@ const PlayCommunityQuizScreen: NextPage = () => {
         gameLobby: TGameLobby
         player: TPlayer
         question: TQuestion
-      }> = await post(
-        '/api/games/reconnect-community-game',
-        {},
-        body,
-        true
-      )
+      }> = await post('/api/games/reconnect-community-game', {}, body, true)
 
       const data = response.response
-      console.log("/api/games/reconnect-community-game response", data);
+      console.log('/api/games/reconnect-community-game response', data)
       gameManager.gameSession = data.gameLobby
       gameManager.currentQuestion = data.question
       gameManager.player = data.player as TDetailPlayer
@@ -156,10 +165,8 @@ const PlayCommunityQuizScreen: NextPage = () => {
   }
   return (
     <>
-      {isModeSelecting && <GameModeScreen setGameMode={setGameMode}/>}
-      {!isModeSelecting && gameMode &&
-          <CommunityGamePlay mode={gameMode}/>
-      }
+      {isModeSelecting && <GameModeScreen setGameMode={setGameMode} />}
+      {!isModeSelecting && gameMode && <CommunityGamePlay mode={gameMode} />}
 
       <MyModal
         show={error.length > 0}
@@ -174,7 +181,7 @@ const PlayCommunityQuizScreen: NextPage = () => {
         <div className="text-center">{error}</div>
       </MyModal>
 
-      <LoadingBoard loadingTitle={loading}/>
+      <LoadingBoard loadingTitle={loading} />
     </>
   )
 }

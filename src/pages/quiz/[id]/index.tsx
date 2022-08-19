@@ -18,7 +18,6 @@ const QuizDetailPage: NextPage = () => {
   const router = useRouter()
   const query = router.query
   const { id, invitationCode } = query
-  console.log('==== ~ invitationCode', invitationCode)
   const auth = useAuth()
   const user = auth.getUser()
 
@@ -104,7 +103,13 @@ const QuizDetailPage: NextPage = () => {
                 <MyButton
                   className="text-white w-100 d-flex align-items-center justify-content-between"
                   onClick={() => {
-                    router.push(`/quiz/${id}/play`)
+                    router.push(
+                      `/quiz/${id}/play${
+                        invitationCode
+                          ? `?invitationCode=${invitationCode}`
+                          : ''
+                      }`
+                    )
                   }}
                 >
                   Chơi ngay
