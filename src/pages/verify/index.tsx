@@ -16,8 +16,8 @@ const VerifyPage: NextPage = () => {
   // const token = (router.query['token'] as string | null)?.replace(/' '/g, '+')
   const queryString = router.asPath.split('?')
   const queryObj = queryString[1]
-    .split('&')
-    .reduce<Map<string, string>>((prev, curr) => {
+    ?.split('&')
+    ?.reduce<Map<string, string>>((prev, curr) => {
       const [key, value] = curr.split('=')
       prev.set(key, value)
       return prev
