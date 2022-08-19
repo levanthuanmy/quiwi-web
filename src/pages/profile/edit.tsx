@@ -149,7 +149,7 @@ const EditProfilePage: NextPage = () => {
                     gender: userResponse.user.gender ?? 'MALE',
                     name: userResponse.user.name ?? '',
                     phoneNumber: userResponse.user.phoneNumber ?? '',
-                    username: userResponse.user.username ?? 'Tên đăng nhập'
+                    username: userResponse.user.username ?? 'Tên đăng nhập',
                   } as ProfileForm
                 }
                 onSubmit={handleUpdateProfile}
@@ -273,8 +273,36 @@ const EditProfilePage: NextPage = () => {
                         </Field>
                       </Col>
                     </Row> */}
-
-                    <div className="text-center pt-3">
+                    <Row className="justify-content-center align-items-center">
+                      <Col
+                        xs={12}
+                        md={6}
+                        className={classNames(
+                          ' text-center',
+                          !userResponse.user.isVerified && 'text-md-end'
+                        )}
+                      >
+                        <MyButton
+                          className="text-white"
+                          type="submit"
+                          disabled={isSubmitting}
+                        >
+                          Lưu thông tin
+                        </MyButton>
+                      </Col>
+                      {!userResponse.user.isVerified ? (
+                        <Col className=" text-md-start text-center mt-2 mt-md-0">
+                          <MyButton
+                            className="text-white"
+                            type="button"
+                            onClick={() => router.push('/request-verify')}
+                          >
+                            Xác thực tài khoản
+                          </MyButton>
+                        </Col>
+                      ) : null}
+                    </Row>
+                    {/* <div className="text-center pt-3">
                       <MyButton
                         className="text-white"
                         type="submit"
@@ -291,7 +319,7 @@ const EditProfilePage: NextPage = () => {
                           Xác thực tài khoản
                         </MyButton>
                       ) : null}
-                    </div>
+                    </div> */}
                   </Form>
                 )}
               </Formik>

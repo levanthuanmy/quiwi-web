@@ -73,6 +73,9 @@ const ItemQuiz: FC<ItemQuizProps> = ({ quiz, exploreMode = false }) => {
             <div
               title={quiz.user?.name}
               className="bi bi-person-fill text-truncate d-flex align-items-center justify-content-center"
+              onClick={() => {
+                router.push(`/users/${quiz.user?.id}`)
+              }}
             >
               <span className="ps-1">{quiz.user?.name}</span>
             </div>
@@ -120,7 +123,9 @@ const ItemQuiz: FC<ItemQuizProps> = ({ quiz, exploreMode = false }) => {
 
         <MyButton
           title={
-            exploreMode ? 'Bấm để làm Quiz này' : 'Bấm để bắt đầu tổ chức chơi Quiz này'
+            exploreMode
+              ? 'Bấm để làm Quiz này'
+              : 'Bấm để bắt đầu tổ chức chơi Quiz này'
           }
           className={classNames(
             'text-white text-nowrap rounded-circle bi bi-play-fill fs-32px shadow d-flex justify-content-center align-items-center',

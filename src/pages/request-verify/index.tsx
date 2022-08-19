@@ -73,7 +73,9 @@ const RequestVerifyPage: NextPage = () => {
 
       <MyModal
         show={info?.length > 0}
-        onHide={() => {}}
+        onHide={() => {
+          setInfo('')
+        }}
         size="lg"
         header={<Modal.Title className="text-primary">Thông báo</Modal.Title>}
       >

@@ -1,7 +1,6 @@
 import _ from 'lodash'
-import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { FC, useEffect, useState } from 'react'
+import { FC, useState } from 'react'
 import { Button, Col, Image } from 'react-bootstrap'
 import { TFollowUsers, TPaginationResponse } from '../../types/types'
 import FollowUserModal from '../FollowUsersModal/FollowUserModal'
