@@ -18,8 +18,19 @@
   }
 }
 
-.accordionHeader .accordion-button {
-  color: #ffffff;
-  background-color: #29008a !important;
-  box-shadow: inset 0 -1px 0 rgb(0 0 0 / 13%);
+.accordion .accordion-item {
+  border-radius: 8px !important;
+}
+
+.accordionItem {
+  border-radius: 9px !important;
+}
+
+.accordionButton[aria-expanded='false'] {
+  border-radius: 8px !important;
+}
+
+.accordionButton[aria-expanded='true'] {
+  border-top-left-radius: 8px !important;
+  border-top-right-radius: 8px !important;
 }

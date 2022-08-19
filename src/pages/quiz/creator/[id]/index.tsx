@@ -178,7 +178,7 @@ const QuizCreatorPage: NextPage = () => {
     return `https://web.quiwi.games/quiz/${quizId}?invitationCode=${secretKey?.secretKey}`
   }, [quizId, secretKey?.secretKey])
   const copyCodeToClipboard = () => {
-    const link = navigator?.clipboard?.writeText(INVITATION_LINK)
+    navigator?.clipboard?.writeText(INVITATION_LINK)
 
     addToast(<>Sao chép thành công, có thể gửi cho người khác.</>, {
       autoDismiss: true,
@@ -232,9 +232,15 @@ const QuizCreatorPage: NextPage = () => {
             <div className="fs-22px fw-medium">Tuỳ chọn</div>
 
             <div className="mt-3">
-              <Accordion defaultActiveKey="1">
-                <Accordion.Item eventKey="1">
-                  <Accordion.Button className="h-50px shadow-sm bg-primary text-white">
+              <Accordion className={styles.accordion}>
+                <Accordion.Item eventKey="0" className={styles.accordionItem}>
+                  <Accordion.Button
+                    className={classNames(
+                      'h-50px shadow-sm bg-primary text-white fw-medium ',
+                      styles.accordionButton
+                    )}
+                    
+                  >
                     MÃ MỜI XEM QUIZ
                   </Accordion.Button>
                   <Accordion.Body>
