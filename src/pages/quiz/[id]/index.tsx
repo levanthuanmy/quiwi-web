@@ -8,6 +8,7 @@ import QuizBannerWithTitle from '../../../components/CardQuizInfo/QuizBannerWith
 import ItemQuestion from '../../../components/ItemQuestion/ItemQuestion'
 import LoadingFullScreen from '../../../components/LoadingFullScreen/Loading'
 import MyButton from '../../../components/MyButton/MyButton'
+import MyInput from '../../../components/MyInput/MyInput'
 import MyModal from '../../../components/MyModal/MyModal'
 import NavBar from '../../../components/NavBar/NavBar'
 import { useAuth } from '../../../hooks/useAuth/useAuth'
@@ -23,6 +24,10 @@ const QuizDetailPage: NextPage = () => {
 
   const [forbiddenError, setForbiddenError] = useState('')
   const [errorMessage, setError] = useState('')
+  const [showModal, setShowModal] = useState(false)
+  const [numQues, setNumQues] = useState('')
+  const [invitationInputError, setInvitationInputError] = useState<string>('')
+
   //
   // useEffect(() => {
   //   window.addEventListener("storage", (e) => {
@@ -43,6 +48,28 @@ const QuizDetailPage: NextPage = () => {
           router.push(`/quiz/creator/${res.response.id}`)
         } else {
           setError(_.get(res, 'message', 'Có lỗi xảy ra'))
+        }
+      }
+    } catch (error) {
+      setError(_.get(error, 'message', 'Có lỗi xảy ra'))
+    }
+  }
+
+  const cloneQuizRandomQuestion = async () => {
+    try {
+      if (numQues === '' || isNaN(Number(numQues))) {
+        setInvitationInputError('Vui lòng nhập số')
+      } else {
+        if (quiz && auth.isAuth && user) {
+          const res = await get<TApiResponse<TQuiz>>(
+            `/api/quizzes/quiz/${quiz.id}/clone/${numQues}`,
+            true
+          )
+          if (res.response) {
+            router.push(`/quiz/creator/${res.response.id}`)
+          } else {
+            setError(_.get(res, 'message', 'Có lỗi xảy ra'))
+          }
         }
       }
     } catch (error) {
@@ -127,6 +154,19 @@ const QuizDetailPage: NextPage = () => {
                   </MyButton>
                 </div>
               ) : null}
+              {auth.isAuth && quiz?.isPublic ? (
+                <div>
+                  <MyButton
+                    className="text-white w-100 mt-2 d-flex align-items-center justify-content-between"
+                    onClick={() => {
+                      setShowModal(true)
+                    }}
+                  >
+                    Tải về thư viện với số câu hỏi random
+                    <div className="bi bi-play-fill" />
+                  </MyButton>
+                </div>
+              ) : null}
             </Col>
           </Row>
         ) : null}
@@ -153,6 +193,35 @@ const QuizDetailPage: NextPage = () => {
           header={<Modal.Title className="text-danger">Thông báo</Modal.Title>}
         >
           <div className="text-center fw-medium fs-16px">{errorMessage}</div>
+        </MyModal>
+        <MyModal
+          show={showModal}
+          onHide={() => {
+            setShowModal(false)
+            setInvitationInputError('')
+          }}
+          header={<Modal.Title>Chọn số câu để tải</Modal.Title>}
+          size="sm"
+        >
+          <div className="d-flex flex-column gap-3">
+            <MyInput
+              className={'pb-12px'}
+              placeholder={String(quiz?.questions.length)}
+              errorText={invitationInputError}
+              onChange={(e) => {
+                isNaN(Number(e.target.value))
+                  ? setInvitationInputError('Vui lòng nhập số')
+                  : setInvitationInputError('')
+                setNumQues(e.target.value)
+              }}
+            />
+            <MyButton
+              className={`mt-4 fw-medium text-white text-nowrap`}
+              onClick={cloneQuizRandomQuestion}
+            >
+              Tải quiz ngay
+            </MyButton>
+          </div>
         </MyModal>
       </Container>
     </>
