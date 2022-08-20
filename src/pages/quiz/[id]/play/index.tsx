@@ -1,10 +1,12 @@
 import { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
-import { Modal } from 'react-bootstrap'
+import { Form, Image, Modal } from 'react-bootstrap'
 import CommunityGamePlay from '../../../../components/CommunityGameComponents/CommunityGamePlay/CommunityGamePlay'
 import LoadingBoard from '../../../../components/GameComponents/LoadingBoard/LoadingBoard'
 import GameModeScreen from '../../../../components/GameModeScreen/GameModeScreen'
+import MyButton from '../../../../components/MyButton/MyButton'
+import MyInput from '../../../../components/MyInput/MyInput'
 import MyModal from '../../../../components/MyModal/MyModal'
 import {
   GameManager,
@@ -12,7 +14,6 @@ import {
 } from '../../../../hooks/useGameSession/useGameSession'
 import { useMyleGameSession } from '../../../../hooks/usePracticeGameSession/useMyleGameSession'
 import { usePracticeGameSession } from '../../../../hooks/usePracticeGameSession/usePracticeGameSession'
-import { useTimer } from '../../../../hooks/useTimer/useTimer'
 import { useUser } from '../../../../hooks/useUser/useUser'
 import { get, post } from '../../../../libs/api'
 import {
@@ -35,11 +36,12 @@ const PlayCommunityQuizScreen: NextPage = () => {
   const myLeGameManager = useMyleGameSession()
   const practiceGameManager = usePracticeGameSession()
   const [isModeSelecting, setIsModeSelecting] = useState(false)
+  const [isNicknameStep, setIsNicknameStep] = useState(false)
   const [gameMode, setMode] = useState<TGameModeEnum | null>(null)
   const user = useUser()
   const [error, setError] = useState('')
   const [loading, setLoading] = useState<string | null>(null)
-  const timer = useTimer()
+  const [nickname, _setNickName] = useState<string>(user?.username || '')
 
   useEffect(() => {
     let gameManager: GameManager | null = null
@@ -53,6 +55,12 @@ const PlayCommunityQuizScreen: NextPage = () => {
         ' Mode ',
         gameManager.gameSession.mode
       )
+
+      // if (gameManager.gameSession.quizId !== id) {
+      //   gameManager.clearGameSession()
+
+      //   setLoading('Chưa tham gia phòng chờ nào...')
+      // } else {
       setLoading('Đang kết nối lại...')
       if (!gameManager.gameSocket || gameManager.gameSocket.disconnected) {
         gameManager.connectGameSocket()
@@ -62,9 +70,11 @@ const PlayCommunityQuizScreen: NextPage = () => {
       } else {
         joinRoom(gameManager!)
       }
+      // }
     } else {
       setLoading(null)
-      setIsModeSelecting(true)
+      setIsNicknameStep(true)
+      // setIsModeSelecting(true)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -87,6 +97,7 @@ const PlayCommunityQuizScreen: NextPage = () => {
       const msg: TStartQuizRequest = {
         quizId: Number(id),
         mode,
+        nickname,
       }
       if (user?.id) {
         msg.userId = user?.id
@@ -153,11 +164,21 @@ const PlayCommunityQuizScreen: NextPage = () => {
 
       setMode(gameManager.gameSession.mode)
       setIsModeSelecting(false)
+      setIsNicknameStep(false)
       setLoading(null)
     } catch (error) {
       console.log('Join quiz - error', error)
       // alert((error as Error).message)
     }
+  }
+  const handeleSetNickname = async () => {
+    if (!nickname) {
+      alert('Vui lòng nhập tên hiển thị')
+      return
+    }
+
+    setIsModeSelecting(true)
+    setIsNicknameStep(false)
   }
 
   const setGameMode = (mode: TGameModeEnum) => {
@@ -165,6 +186,48 @@ const PlayCommunityQuizScreen: NextPage = () => {
   }
   return (
     <>
+      {isNicknameStep && (
+        <div className="bg-secondary fw-medium bg-opacity-25 min-vh-100 d-flex flex-column justify-content-center align-items-center">
+          <div className="bg-white px-3 py-5 rounded-20px shadow-sm">
+            <div
+              className="mb-5 text-center cursor-pointer"
+              onClick={() => router.push('/home')}
+            >
+              <Image
+                src="/assets/logo-text.png"
+                width={133}
+                height={39}
+                alt="text-logo"
+              />
+            </div>
+
+            <Form.Label className="mb-3 text-center">
+              Nhập tên hiển thị của bạn (tối đa 16 ký tự)
+            </Form.Label>
+
+            <MyInput
+              onChange={(e) => {
+                _setNickName(e.target.value)
+              }}
+              onSubmit={handeleSetNickname}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  handeleSetNickname()
+                }
+              }}
+              defaultValue={nickname}
+              maxLength={16}
+              placeholder="Nhập tên hiển thị"
+            />
+            <MyButton
+              onClick={handeleSetNickname}
+              className="mt-3 text-white w-100"
+            >
+              Vào ngay
+            </MyButton>
+          </div>
+        </div>
+      )}
       {isModeSelecting && <GameModeScreen setGameMode={setGameMode} />}
       {!isModeSelecting && gameMode && <CommunityGamePlay mode={gameMode} />}
 

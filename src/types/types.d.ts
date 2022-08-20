@@ -65,6 +65,7 @@ export type TStartQuizRequest = {
   mode: TGameModeEnum
   deadline?: number
   token?: string
+  nickname?: string
 }
 
 export type TStartQuizResponse = {

@@ -23,7 +23,7 @@ const VerifyPage: NextPage = () => {
       return prev
     }, new Map())
 
-  const token = queryObj.get('token')
+  const token = queryObj?.get('token') ?? ""
   const auth = useAuth()
 
   useEffect(() => {
