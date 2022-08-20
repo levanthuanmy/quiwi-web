@@ -4,15 +4,15 @@ import { FC } from 'react'
 import { TGameHistory, TGameModeEnum } from '../../types/types'
 import { GAME_MODE_MAPPING } from '../../utils/constants'
 import {
-  formatDate_DDMMMMYYYY, formatDate_HHmmDDMMMYYYY
+  formatDate_DDMMMMYYYY,
+  formatDate_HHmmDDMMMYYYY,
 } from '../../utils/helper'
 import { HistoryDropdownButton } from '../HistoryDropdownButton/HistoryDropdownButton'
 import styles from './HistoryGameRow.module.css'
 
 const HistoryGameRow: FC<{
   gameHistory: TGameHistory
-  secretKey?: string
-}> = ({ gameHistory, secretKey }) => {
+}> = ({ gameHistory }) => {
   return (
     <tr className="bg-light rounded-14px">
       <td
@@ -22,7 +22,7 @@ const HistoryGameRow: FC<{
           'cursor-pointer text-wrap px-0'
         )}
         onClick={() => {
-          router.push(`/history/${gameHistory.id}?invitationCode=${secretKey}`)
+          router.push(`/history/${gameHistory.id}`)
         }}
       >
         <div className={classNames('ps-3 py-3 fw-medium rounded-start-14px')}>
@@ -43,7 +43,8 @@ const HistoryGameRow: FC<{
 
       <td className={classNames(styles.cell)}>
         <div className={classNames('py-3  text-center', styles.borderRadiusSm)}>
-          {GAME_MODE_MAPPING[gameHistory.mode as TGameModeEnum] ?? 'Truyền Thống'}
+          {GAME_MODE_MAPPING[gameHistory.mode as TGameModeEnum] ??
+            'Truyền Thống'}
         </div>
       </td>
       <td
@@ -63,4 +64,3 @@ const HistoryGameRow: FC<{
 }
 
 export { HistoryGameRow }
-

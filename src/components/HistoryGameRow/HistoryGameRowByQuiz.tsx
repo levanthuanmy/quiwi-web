@@ -4,9 +4,7 @@ import { FC } from 'react'
 import { TGameHistory, TGameModeEnum } from '../../types/types'
 import { GAME_MODE_MAPPING } from '../../utils/constants'
 import {
-  formatDate_DDMMMMYYYY,
-  formatDate_HHmmDDMMMYYYY,
-  renderPercentage,
+  formatDate_DDMMMMYYYY, renderPercentage
 } from '../../utils/helper'
 import styles from './HistoryGameRow.module.css'
 

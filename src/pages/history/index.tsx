@@ -3,11 +3,9 @@ import { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { Alert, Col, Container, Row, Table } from 'react-bootstrap'
-import useSWR from 'swr'
 import DashboardLayout from '../../components/DashboardLayout/DashboardLayout'
 import { HistoryGameRow } from '../../components/HistoryGameRow/HistoryGameRow'
 import Loading from '../../components/Loading/Loading'
-import LoadingFullScreen from '../../components/LoadingFullScreen/Loading'
 import { MyPagination } from '../../components/MyPagination/MyPagination'
 import MyTabBar from '../../components/MyTabBar/MyTabBar'
 import SearchBar from '../../components/SearchBar/SearchBar'
@@ -15,7 +13,7 @@ import { get } from '../../libs/api'
 import {
   TApiResponse,
   TGameHistory,
-  TPaginationResponse,
+  TPaginationResponse
 } from '../../types/types'
 import styles from './HistoryPage.module.css'
 

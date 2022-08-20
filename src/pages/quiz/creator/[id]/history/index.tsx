@@ -4,17 +4,15 @@ import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { Container, Modal, Table } from 'react-bootstrap'
 import QuizBannerWithTitle from '../../../../../components/CardQuizInfo/QuizBannerWithTitle/QuizBannerWithTitle'
-import { HistoryGameRow } from '../../../../../components/HistoryGameRow/HistoryGameRow'
 import { HistoryGameRowByQuiz } from '../../../../../components/HistoryGameRow/HistoryGameRowByQuiz'
 import Loading from '../../../../../components/Loading/Loading'
-import MyButton from '../../../../../components/MyButton/MyButton'
 import MyModal from '../../../../../components/MyModal/MyModal'
 import NavBar from '../../../../../components/NavBar/NavBar'
 import { get } from '../../../../../libs/api'
 import {
   GameHistoryByQuiz,
   TApiResponse,
-  TQuiz,
+  TQuiz
 } from '../../../../../types/types'
 
 import styles from '../QuizCreator.module.css'
