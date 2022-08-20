@@ -1,3 +1,5 @@
+import { TGameLobby } from '../hooks/useGameSession/useGameSession'
+
 export interface TUser {
   avatar: string
   coin: number
@@ -66,6 +68,7 @@ export type TStartQuizRequest = {
   deadline?: number
   token?: string
   nickname?: string
+  secretKey?: string
 }
 
 export type TStartQuizResponse = {
@@ -435,3 +438,5 @@ export type TPlayerLeaderboard = {
 export type GameLeaderboard = {
   players: TPlayerLeaderboard[]
 }
+
+export type GameHistoryByQuiz = Record<string, TGameHistory[]>

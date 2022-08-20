@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router'
 import React, { Dispatch, FC, SetStateAction } from 'react'
 import { Container, Image } from 'react-bootstrap'
 import { TQuiz } from '../../../types/types'
@@ -8,6 +9,7 @@ const QuizBannerWithTitle: FC<{
   setQuiz?: Dispatch<SetStateAction<TQuiz | undefined>>
   isValidating: boolean
 }> = ({ quiz, setQuiz, isValidating }) => {
+  const router = useRouter()
   return (
     <>
       <div
@@ -24,7 +26,11 @@ const QuizBannerWithTitle: FC<{
           className="position-absolute bottom-0 text-white w-100 py-3"
           style={{ left: 0 }}
         >
-          <Container fluid="lg" className="h1">
+          <Container
+            fluid="lg"
+            className="h1  cursor-pointer"
+            onClick={() => router.push(`/quiz/creator/${quiz?.id}`)}
+          >
             {quiz?.title}
           </Container>
         </div>

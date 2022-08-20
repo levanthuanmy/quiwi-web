@@ -98,6 +98,7 @@ const PlayCommunityQuizScreen: NextPage = () => {
         quizId: Number(id),
         mode,
         nickname,
+        secretKey: invitationCode as string
       }
       if (user?.id) {
         msg.userId = user?.id

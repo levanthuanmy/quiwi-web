@@ -3,6 +3,11 @@
   top: 48px;
 }
 
+.table {
+  margin: auto auto;
+  max-width: 75%;
+}
+
 .btnFloating {
   position: fixed;
   bottom: 24px;

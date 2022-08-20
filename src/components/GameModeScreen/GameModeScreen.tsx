@@ -1,20 +1,18 @@
-import classNames from 'classnames'
-import cn from 'classnames'
-import React, {FC, useEffect, useState} from 'react'
-import {Image} from 'react-bootstrap'
-import {TApiResponse, TGameModeEnum, TQuiz} from '../../types/types'
-import styles from './GameModeScreen.module.css'
+import { default as classNames, default as cn } from 'classnames'
+import { useRouter } from 'next/router'
+import { FC, useEffect, useState } from 'react'
+import { Image } from 'react-bootstrap'
 import Slider from 'react-slick'
-import useScreenSize from '../../hooks/useScreenSize/useScreenSize'
-import {useUserSetting} from '../../hooks/useUserSetting/useUserSetting'
-import MyButton from '../MyButton/MyButton'
-import BackgroundPicker from '../LobbyScreen/BackgroundPicker/BackgroundPicker'
-import {useGameSession} from '../../hooks/useGameSession/useGameSession'
-import {useRouter} from 'next/router'
+import { useToasts } from 'react-toast-notifications'
 import useSWR from 'swr'
-import {get} from '../../libs/api'
-import {useToasts} from 'react-toast-notifications'
-import HelpToolTip from '../HelpToolTip/HelpToolTip'
+import { useGameSession } from '../../hooks/useGameSession/useGameSession'
+import useScreenSize from '../../hooks/useScreenSize/useScreenSize'
+import { useUserSetting } from '../../hooks/useUserSetting/useUserSetting'
+import { get } from '../../libs/api'
+import { TApiResponse, TGameModeEnum, TQuiz } from '../../types/types'
+import BackgroundPicker from '../LobbyScreen/BackgroundPicker/BackgroundPicker'
+import MyButton from '../MyButton/MyButton'
+import styles from './GameModeScreen.module.css'
 
 type GameModeScreenProps = {
   setGameMode: (mode: TGameModeEnum) => void
@@ -34,7 +32,7 @@ const GameModeScreen: FC<GameModeScreenProps> = ({setGameMode}) => {
   const game = useGameSession()
   const router = useRouter()
   const query = router.query
-  const {id} = query
+  const {id, invitationCode} = query
   const {quizId} = query
   const {isMobile, fromMedium} = useScreenSize();
   const setting = useUserSetting();
@@ -56,6 +54,9 @@ const GameModeScreen: FC<GameModeScreenProps> = ({setGameMode}) => {
       ? [
         `/api/quizzes/${quizId ? 'my-quizzes' : 'quiz'}/${quizId ?? id}`,
         quizId ? true : false,
+        {
+          secretKey: invitationCode
+        }
       ]
       : null,
     get,
