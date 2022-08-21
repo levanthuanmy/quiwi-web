@@ -12,7 +12,7 @@ import { get } from '../../../../../libs/api'
 import {
   GameHistoryByQuiz,
   TApiResponse,
-  TQuiz
+  TQuiz,
 } from '../../../../../types/types'
 
 import styles from '../QuizCreator.module.css'
@@ -25,7 +25,6 @@ export type TEditQuestion = {
 const QuizHistoryGamePage: NextPage = () => {
   const router = useRouter()
   const quizId = Number(router.query?.id)
-  const [showModal, setShowModal] = useState<boolean>(false)
 
   const [history, setHistory] = useState<GameHistoryByQuiz>()
   const [quiz, setQuiz] = useState<TQuiz>()
@@ -45,9 +44,6 @@ const QuizHistoryGamePage: NextPage = () => {
           { filter: { relations: ['quizCategories'] } }
         )
 
-        if (res.response === null) {
-          setShowModal(true)
-        }
         if (res.response) {
           setQuiz(res.response)
         }
@@ -67,7 +63,6 @@ const QuizHistoryGamePage: NextPage = () => {
             filter: { relations: ['quizCategories'] },
           }
         )
-        console.log('==== ~ getQuiz ~ res', res)
         setHistory(res.response)
         // if (res.response === null) {
         //   setShowModal(true)
@@ -96,7 +91,7 @@ const QuizHistoryGamePage: NextPage = () => {
         setQuiz={setQuiz}
       />
       {history ? (
-        <Container fluid="lg" className=" position-relative pt-3">
+        <Container fluid="lg" className=" position-relative pt-3 mb-5 ">
           {!isDetailed ? (
             <Table borderless className={classNames(styles.table)}>
               <tbody>
@@ -133,7 +128,7 @@ const QuizHistoryGamePage: NextPage = () => {
           ) : chosenHistory ? (
             <>
               <div
-                className="text-primary fw-medium fs-18px cursor-pointer mb-3"
+                className="text-primary fw-medium fs-18px cursor-pointer mb-2"
                 onClick={() => {
                   setIsDetailed(false)
                   setChosenHistory(null)
@@ -141,21 +136,18 @@ const QuizHistoryGamePage: NextPage = () => {
               >
                 Quay lại
               </div>
+              <h4 className="pb-2">Mã mời: {chosenHistory}</h4>
               <Table borderless className={classNames(styles.table)}>
                 <tbody>
                   <tr>
-                    <th className={classNames('ps-3')}>Tên bài</th>
                     <th className="ps-0">Tên người chơi</th>
-                    <th className="ps-0">Ngày làm</th>
+                    <th className="ps-0 d-none d-lg-table-cell">Ngày làm</th>
                     <th className="ps-0">Điểm tổng</th>
-                    <th className="ps-0">Chế độ chơi</th>
+                    <th className="ps-0">Điểm trên thang 10</th>
+                    <th className="ps-0 d-none d-lg-table-cell">Chế độ chơi</th>
                   </tr>
                   {history[chosenHistory].map((game) => (
-                    <HistoryGameRowByQuiz
-                      key={game.id}
-                      gameHistory={game}
-                      secretKey={chosenHistory}
-                    />
+                    <HistoryGameRowByQuiz key={game.id} gameHistory={game} />
                   ))}
                 </tbody>
               </Table>

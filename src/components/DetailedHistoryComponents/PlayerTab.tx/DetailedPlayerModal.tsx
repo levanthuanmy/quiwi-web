@@ -3,7 +3,8 @@ import { FC } from 'react'
 import { Col, Modal, Row } from 'react-bootstrap'
 import { TDetailPlayer } from '../../../types/types'
 import { QUESTION_TYPE_MAPPING_TO_TEXT } from '../../../utils/constants'
-import { parseQuestionHTMLToRaw } from '../../../utils/helper'
+import { getPlayerFinalScore } from '../../../utils/exportToExcel2'
+import { parseQuestionHTMLToRaw, renderPercentage } from '../../../utils/helper'
 import Pie from '../../Pie/Pie'
 
 const DetailedPlayerModal: FC<{
@@ -12,13 +13,12 @@ const DetailedPlayerModal: FC<{
   onHide: () => void
   rank: number
 }> = ({ player, show, onHide, rank }) => {
-  let correctPercentages = 0
+  const data = getPlayerFinalScore(player, rank)
+  const correctAnswers = data[3]
 
-  for (const gameRound of player?.gameRounds ?? []) {
-    if (gameRound.isCorrect) correctPercentages++
-  }
-  let percentage =
-    Number(correctPercentages / (player?.gameRounds?.length || 1)) * 100
+  const percentage =
+    (Number(correctAnswers) / (player?.gameRounds?.length || 1)) * 100
+  const finalScoreOn10 = data[5]
   return (
     <Modal
       centered
@@ -40,7 +40,7 @@ const DetailedPlayerModal: FC<{
       </Modal.Header>
 
       <Modal.Body className="pt-2 pb-3">
-        <Row className=" ">
+        <Row className="align-items-center">
           <Col xs={5} lg={4} className="text-center">
             <Pie percentage={percentage} colour="#009883" />
           </Col>
@@ -50,7 +50,15 @@ const DetailedPlayerModal: FC<{
             </div>
 
             <div className="ps-2 py-2  border-bottom border-secondary">
-              <b>Tổng điểm:</b> {player.score.toFixed(2)}
+              <b>Số câu đúng:</b> {correctAnswers} / {player?.gameRounds?.length} câu
+            </div>
+
+            <div className="ps-2 py-2  border-bottom border-secondary">
+              <b>Tổng điểm:</b> {renderPercentage(player.score)}
+            </div>
+
+            <div className="ps-2 py-2  border-bottom border-secondary">
+              <b>Tổng điểm trên thang 10:</b> {finalScoreOn10}
             </div>
           </Col>
         </Row>

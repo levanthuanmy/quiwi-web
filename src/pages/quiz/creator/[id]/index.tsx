@@ -228,7 +228,6 @@ const QuizCreatorPage: NextPage = () => {
     }
   }
 
-
   return (
     <div className="min-vh-100">
       <NavBar showMenuBtn={false} isExpand={false} setIsExpand={() => null} />
@@ -267,7 +266,6 @@ const QuizCreatorPage: NextPage = () => {
                       'h-50px shadow-sm bg-primary text-white fw-medium ',
                       styles.accordionButton
                     )}
-                    
                   >
                     MÃ MỜI XEM QUIZ
                   </Accordion.Button>
@@ -424,34 +422,34 @@ const QuizCreatorPage: NextPage = () => {
       </MyModal>
 
       <MyModal
-          show={showInputNumQuesModal}
-          onHide={() => {
-            setShowInputNumQuesModal(false)
-            setInvitationInputError('')
-          }}
-          header={<Modal.Title>Chọn số câu để tạo</Modal.Title>}
-          size="sm"
-        >
-          <div className="d-flex flex-column gap-3">
-            <MyInput
-              className={'pb-12px'}
-              placeholder={String(quiz?.questions.length)}
-              errorText={invitationInputError}
-              onChange={(e) => {
-                isNaN(Number(e.target.value))
-                  ? setInvitationInputError('Vui lòng nhập số')
-                  : setInvitationInputError('')
-                setNumQues(e.target.value)
-              }}
-            />
-            <MyButton
-              className={`mt-4 fw-medium text-white text-nowrap`}
-              onClick={cloneQuizRandomQuestion}
-            >
-              Tạo bản sao
-            </MyButton>
-          </div>
-        </MyModal>
+        show={showInputNumQuesModal}
+        onHide={() => {
+          setShowInputNumQuesModal(false)
+          setInvitationInputError('')
+        }}
+        header={<Modal.Title>Chọn số câu để tạo</Modal.Title>}
+        size="sm"
+      >
+        <div className="d-flex flex-column gap-3">
+          <MyInput
+            className={'pb-12px'}
+            placeholder={String(quiz?.questions.length)}
+            errorText={invitationInputError}
+            onChange={(e) => {
+              isNaN(Number(e.target.value))
+                ? setInvitationInputError('Vui lòng nhập số')
+                : setInvitationInputError('')
+              setNumQues(e.target.value)
+            }}
+          />
+          <MyButton
+            className={`mt-4 fw-medium text-white text-nowrap`}
+            onClick={cloneQuizRandomQuestion}
+          >
+            Tạo bản sao
+          </MyButton>
+        </div>
+      </MyModal>
     </div>
   )
 }

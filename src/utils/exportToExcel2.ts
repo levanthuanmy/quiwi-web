@@ -182,9 +182,9 @@ const generateOverviewInformation = (
  * Lấy dữ liệu tổng kết của user để báo cáo overall ở table sheet thứ 1
  * @param player player
  * @param rank rank
- * @returns string[] là một row trong excel
+ * @returns string[] là một row trong excel - [0] là rank, [1] là nickname, [2] là điểm tổng, [3] là số câu đúng, [4] là số câu sai, [5] là điểm thang 10
  */
-const getPlayerFinalScore = (player: TDetailPlayer, rank: number) => {
+export const getPlayerFinalScore = (player: TDetailPlayer, rank: number) => {
   const rs = []
 
   rs.push(rank + 1)
