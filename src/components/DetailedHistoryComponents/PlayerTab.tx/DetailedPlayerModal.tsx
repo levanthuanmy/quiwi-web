@@ -50,7 +50,8 @@ const DetailedPlayerModal: FC<{
             </div>
 
             <div className="ps-2 py-2  border-bottom border-secondary">
-              <b>Số câu đúng:</b> {correctAnswers} / {player?.gameRounds?.length} câu
+              <b>Số câu đúng:</b> {correctAnswers} /{' '}
+              {player?.gameRounds?.length} câu
             </div>
 
             <div className="ps-2 py-2  border-bottom border-secondary">
@@ -62,21 +63,41 @@ const DetailedPlayerModal: FC<{
             </div>
           </Col>
         </Row>
-        <div className="p-2">
-          <Row className="fw-bold border-bottom  border-dark  py-3 px-2 bg-light">
-            <Col xs={8} lg={4}>
+        <div className="p-2 d-flex flex-column  flex-nowrap overflow-x-scroll ">
+          <Row className="fw-bold bg-light    flex-nowrap">
+            <Col
+              xs={8}
+              lg={4}
+              className=" py-3 bg-light border-bottom  border-dark "
+            >
               Câu hỏi
             </Col>
-            <Col lg={3} className="d-none d-lg-flex">
+            <Col
+              lg={3}
+              className="d-none d-lg-flex   py-3 bg-light border-bottom  border-dark "
+            >
               Loại câu hỏi
             </Col>
-            <Col lg={2} xl={3} className="d-none d-lg-flex">
+            <Col
+              xs={3}
+              lg={2}
+              xl={3}
+              className="d-flex  py-3 bg-light border-bottom  border-dark "
+            >
               Câu trả lời
             </Col>
-            <Col className="text-center" xs={4} lg={2} xl={1}>
+            <Col
+              className="text-center  py-3 bg-light border-bottom  border-dark "
+              xs={3}
+              lg={2}
+              xl={1}
+            >
               Đúng/Sai
             </Col>
-            <Col lg={1} className="d-none d-lg-flex">
+            <Col
+              xs={2} lg={1}
+              className="d-flex  py-3 bg-light border-bottom  border-dark "
+            >
               Điểm
             </Col>
           </Row>
@@ -103,11 +124,16 @@ const DetailedPlayerModal: FC<{
               gameRound.question?.question || ''
             )
             return (
-              <Row key={idx} className="border p-2 ">
-                <Col xs={8} lg={4} title={question}>
+              <Row key={idx} className="flex-nowrap">
+                <Col
+                  xs={8}
+                  lg={4}
+                  title={question}
+                  className="py-2  border-bottom "
+                >
                   <span className="pe-3">{idx + 1}</span> {question}
                 </Col>
-                <Col lg={3} className="d-none d-lg-flex">
+                <Col lg={3} className="d-none d-lg-flex py-2 border-bottom ">
                   {
                     QUESTION_TYPE_MAPPING_TO_TEXT[
                       gameRound.question?.type ?? '10SG'
@@ -115,17 +141,23 @@ const DetailedPlayerModal: FC<{
                   }
                 </Col>
                 <Col
+                  xs={3}
                   lg={2}
                   xl={3}
-                  className="d-none d-lg-flex"
+                  className="d-flex  border-bottom py-2"
                   title={answers.join(', ')}
                 >
                   {answers.join(', ')}
                 </Col>
-                <Col className="text-center" xs={4} lg={2} xl={1}>
+                <Col
+                  className="text-center border-bottom py-2 "
+                  xs={3}
+                  lg={2}
+                  xl={1}
+                >
                   {isCorrect}
                 </Col>
-                <Col lg={1} className="d-none d-lg-flex">
+                <Col xs={2} lg={1} className="d-flex  border-bottom py-2 ">
                   {gameRound.score?.toFixed(2)}
                 </Col>
               </Row>
