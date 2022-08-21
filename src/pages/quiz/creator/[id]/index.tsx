@@ -9,6 +9,7 @@ import AddingQuestionButtons from '../../../../components/AddingQuestionButtons/
 import QuizBannerWithTitle from '../../../../components/CardQuizInfo/QuizBannerWithTitle/QuizBannerWithTitle'
 import ItemQuestion from '../../../../components/ItemQuestion/ItemQuestion'
 import MyButton from '../../../../components/MyButton/MyButton'
+import MyInput from '../../../../components/MyInput/MyInput'
 import MyModal from '../../../../components/MyModal/MyModal'
 import NavBar from '../../../../components/NavBar/NavBar'
 import QuestionCreator from '../../../../components/QuestionCreator/QuestionCreator'
@@ -51,6 +52,9 @@ const QuizCreatorPage: NextPage = () => {
   const addQuestionRef = useRef<any>(null)
   const authContext = useAuth()
   const [errorMessage, setError] = useState('')
+  const [showInputNumQuesModal, setShowInputNumQuesModal] = useState(false)
+  const [numQues, setNumQues] = useState('')
+  const [invitationInputError, setInvitationInputError] = useState<string>('')
 
   useEffect(() => {
     const questionType = router.query?.type?.toString()
@@ -201,6 +205,30 @@ const QuizCreatorPage: NextPage = () => {
     }
   }
 
+  const cloneQuizRandomQuestion = async () => {
+    try {
+      if (numQues === '' || isNaN(Number(numQues))) {
+        setInvitationInputError('Vui lòng nhập số')
+      } else {
+        if (quiz && authContext.isAuth && authContext.getUser()) {
+          const res = await get<TApiResponse<TQuiz>>(
+            `/api/quizzes/quiz/${quiz.id}/clone/${numQues}`,
+            true
+          )
+          if (res.response) {
+            router.push(`/quiz/creator/${res.response.id}`)
+            setShowInputNumQuesModal(false)
+          } else {
+            setError(_.get(res, 'message', 'Có lỗi xảy ra'))
+          }
+        }
+      }
+    } catch (error) {
+      setError(_.get(error, 'message', 'Có lỗi xảy ra'))
+    }
+  }
+
+
   return (
     <div className="min-vh-100">
       <NavBar showMenuBtn={false} isExpand={false} setIsExpand={() => null} />
@@ -311,6 +339,18 @@ const QuizCreatorPage: NextPage = () => {
             <div className="mt-3">
               <MyButton
                 className="text-white w-100 d-flex align-items-center justify-content-between text-uppercase fw-medium"
+                onClick={() => {
+                  setShowInputNumQuesModal(true)
+                }}
+              >
+                Tạo một bản sao với số câu hỏi random
+                <div className="bi bi-plus-lg fs-18px" />
+              </MyButton>
+            </div>
+
+            <div className="mt-3">
+              <MyButton
+                className="text-white w-100 d-flex align-items-center justify-content-between text-uppercase fw-medium"
                 onClick={handlePlay}
               >
                 Bắt đầu ngay
@@ -382,6 +422,36 @@ const QuizCreatorPage: NextPage = () => {
       >
         <div className="text-center fw-medium fs-16px">{errorMessage}</div>
       </MyModal>
+
+      <MyModal
+          show={showInputNumQuesModal}
+          onHide={() => {
+            setShowInputNumQuesModal(false)
+            setInvitationInputError('')
+          }}
+          header={<Modal.Title>Chọn số câu để tạo</Modal.Title>}
+          size="sm"
+        >
+          <div className="d-flex flex-column gap-3">
+            <MyInput
+              className={'pb-12px'}
+              placeholder={String(quiz?.questions.length)}
+              errorText={invitationInputError}
+              onChange={(e) => {
+                isNaN(Number(e.target.value))
+                  ? setInvitationInputError('Vui lòng nhập số')
+                  : setInvitationInputError('')
+                setNumQues(e.target.value)
+              }}
+            />
+            <MyButton
+              className={`mt-4 fw-medium text-white text-nowrap`}
+              onClick={cloneQuizRandomQuestion}
+            >
+              Tạo bản sao
+            </MyButton>
+          </div>
+        </MyModal>
     </div>
   )
 }
