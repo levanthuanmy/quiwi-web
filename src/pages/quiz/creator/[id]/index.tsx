@@ -7,6 +7,7 @@ import { Accordion, Card, Col, Container, Modal, Row } from 'react-bootstrap'
 import { useToasts } from 'react-toast-notifications'
 import AddingQuestionButtons from '../../../../components/AddingQuestionButtons/AddingQuestionButtons'
 import QuizBannerWithTitle from '../../../../components/CardQuizInfo/QuizBannerWithTitle/QuizBannerWithTitle'
+import HelpToolTip from '../../../../components/HelpToolTip/HelpToolTip'
 import ItemQuestion from '../../../../components/ItemQuestion/ItemQuestion'
 import MyButton from '../../../../components/MyButton/MyButton'
 import MyInput from '../../../../components/MyInput/MyInput'
@@ -263,7 +264,7 @@ const QuizCreatorPage: NextPage = () => {
                 <Accordion.Item eventKey="0" className={styles.accordionItem}>
                   <Accordion.Button
                     className={classNames(
-                      'h-50px shadow-sm bg-primary text-white fw-medium ',
+                      'ps-3 h-50px shadow-sm bg-primary text-white fw-medium ',
                       styles.accordionButton
                     )}
                   >
@@ -309,6 +310,17 @@ const QuizCreatorPage: NextPage = () => {
                 </Accordion.Item>
               </Accordion>
             </div>
+            <div className="mt-3">
+              <MyButton
+                className="text-white w-100 d-flex align-items-center justify-content-between text-uppercase fw-medium mb-3"
+                onClick={()=>{
+                  router.push(`/quiz/creator/${quizId}/history`)
+                }}
+              >
+                Xem lịch sử của các mã mời đã tạo
+                <div className="bi bi-clipboard2-data fs-18px" />
+              </MyButton>
+            </div>
 
             <div className="mt-3">
               <MyButton
@@ -325,25 +337,41 @@ const QuizCreatorPage: NextPage = () => {
             </div>
 
             <div className="mt-3">
-              <MyButton
-                className="text-white w-100 d-flex align-items-center justify-content-between text-uppercase fw-medium"
-                onClick={cloneQuiz}
-              >
-                Tạo một bản sao
-                <div className="bi bi-plus-lg fs-18px" />
-              </MyButton>
-            </div>
+              <Accordion className={styles.accordion}>
+                <Accordion.Item eventKey="0" className={styles.accordionItem}>
+                  <Accordion.Button
+                    className={classNames(
+                      'ps-3  h-50px shadow-sm bg-primary text-white fw-medium ',
+                      styles.accordionButton
+                    )}
+                  >
+                    TẠO BẢN SAO
+                  </Accordion.Button>
+                  <Accordion.Body>
+                    <MyButton
+                      className="text-white w-100 d-flex align-items-center justify-content-between text-uppercase fw-medium mb-3"
+                      onClick={cloneQuiz}
+                    >
+                      Tạo một bản sao
+                      <div className="bi bi-clipboard fs-18px" />
+                    </MyButton>
 
-            <div className="mt-3">
-              <MyButton
-                className="text-white w-100 d-flex align-items-center justify-content-between text-uppercase fw-medium"
-                onClick={() => {
-                  setShowInputNumQuesModal(true)
-                }}
-              >
-                Tạo một bản sao với số câu hỏi random
-                <div className="bi bi-plus-lg fs-18px" />
-              </MyButton>
+                    <MyButton
+                      className="text-white w-100 d-flex align-items-center justify-content-between text-uppercase fw-medium"
+                      onClick={() => {
+                        setShowInputNumQuesModal(true)
+                      }}
+                    >
+                      Tạo với số câu hỏi ngẫu nhiên
+                      <HelpToolTip>
+                        Chọn số lượng câu hỏi trong bộ đề, tạo một bản sao tương
+                        tự và ngẫu nhiên sắp xếp chúng lại
+                      </HelpToolTip>
+                      <div className="bi bi-clipboard fs-18px" />
+                    </MyButton>
+                  </Accordion.Body>
+                </Accordion.Item>
+              </Accordion>
             </div>
 
             <div className="mt-3">
