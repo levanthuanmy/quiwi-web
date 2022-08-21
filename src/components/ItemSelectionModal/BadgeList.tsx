@@ -20,11 +20,8 @@ export const BadgeList: FC<{
   return (
     <>
       {userBadges?.map((userBadge, idx) => {
-        const goals =
-          userBadge?.badge?.badgeRequirements?.reduce(
-            (previousValue, currentValue) => previousValue + currentValue.goal,
-            0
-          ) || 1
+        const goals = userBadge?.badge?.badgeRequirements ? userBadge.badge.badgeRequirements[userBadge.badge.badgeRequirements.length - 1].goal : 1
+
         const progress = (userBadge.process / goals) * 100
         return (
           <div key={idx} className={classNames('mx-2 p-2')}>
@@ -53,7 +50,7 @@ export const BadgeList: FC<{
           <ModalBadge
             userBadge={userBadges[indexChosen]}
             onClose={() => setShow(false)}
-            setCurrentBadge={()=>setCurrentBadge(userBadges[indexChosen])}
+            setCurrentBadge={() => setCurrentBadge(userBadges[indexChosen])}
           ></ModalBadge>
         </Modal>
       ) : null}
