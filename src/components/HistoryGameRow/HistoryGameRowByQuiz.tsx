@@ -12,6 +12,7 @@ const HistoryGameRowByQuiz: FC<{
   gameHistory: TGameHistory
   secretKey?: string
 }> = ({ gameHistory, secretKey }) => {
+console.log('==== ~ gameHistory', gameHistory)
   const player = gameHistory.players[0]
   return (
     <tr className="bg-light rounded-14px">
@@ -22,7 +23,7 @@ const HistoryGameRowByQuiz: FC<{
           'cursor-pointer text-wrap px-0'
         )}
         onClick={() => {
-          router.push(`/history/${gameHistory.id}?invitationCode=${secretKey}`)
+          router.push(`/quiz/creator/${gameHistory.quizId}/history/${gameHistory.id}?invitationCode=${secretKey}`)
         }}
       >
         <div className={classNames('ps-3 py-3 fw-medium ')}>
