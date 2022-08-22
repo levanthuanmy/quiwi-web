@@ -38,6 +38,7 @@ body {
   font-style: normal;
   color: #798795;
   overflow-x: hidden;
+  display: block !important;
 }
 
 * {
@@ -2329,8 +2330,6 @@ p {
   background-color: #009883;
 }
 
-
-
 .blog-details-comment-form .comment-form-title {
   font-size: 32px;
   font-weight: 700;
@@ -2349,7 +2348,6 @@ p {
 .blog-details-comment-form .comment-form-title span {
   font-weight: 400;
 }
-
 
 .blog-sidebar-wrapper {
   border: 1px solid #dedede4f;
@@ -2385,6 +2383,5 @@ p {
   color: #fff;
   border-color: #798795;
 }
-
 
 /*# sourceMappingURL=style.css.map */

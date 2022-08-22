@@ -6,9 +6,10 @@ import Head from 'next/head'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import Script from 'next/script'
-import { FC, useEffect, useMemo, useState } from 'react'
+import React, { FC, useEffect, useMemo, useState } from 'react'
 import { useToasts } from 'react-toast-notifications'
 import useSWR from 'swr'
+import Loading from '../../components/Loading/Loading'
 import { get } from '../../libs/api'
 import {
   TApiResponse,
@@ -45,6 +46,8 @@ const WelcomePage: FC = () => {
 
   useEffect(() => {
     history.scrollRestoration = 'manual'
+
+    document.getElementsByTagName('body')[0].style.display = 'none'
     // scrollTo(0, 0)
     // client side rendering only
     setShouldRender(true)
