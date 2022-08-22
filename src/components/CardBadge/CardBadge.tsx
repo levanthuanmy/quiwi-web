@@ -16,19 +16,18 @@ const CardBadge: FC<IBadgeItem> = (props) => {
     <div
       onClick={props.onClick}
       className={classNames(
-        'rounded-14px h-100 cursor-pointer p-12px',
+        'rounded-8px h-100 cursor-pointer p-12px',
         styles.container
       )}
     >
-      <div className="p-12px text-center">
+      <div className="p-22 text-center">
         <Image
           src={props.image}
           roundedCircle
           width={70}
           height={70}
           alt="badge"
-          fluid={true}
-          className="shadow-sm"
+          className="shadow-sm object-fit-cover"
         />
       </div>
       <div className="text-center fw-medium">{props.title}</div>

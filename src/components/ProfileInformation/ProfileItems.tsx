@@ -59,10 +59,6 @@ const ProfileItems: FC<{
           ) : (
             <Loading />
           )}
-          {/* 
-      <div className="text-center border-top pt-12px pb-1 text-secondary opacity-75">
-        Xem Tất Cả
-      </div> */}
         </div>
       </div>
     </Col>

@@ -51,6 +51,9 @@ const MyHead: FC = () => {
       <link rel="preconnect" href={API_URL} />
       <link rel="dns-prefetch" href={API_URL} />
 
+      <link rel="preconnect" href={webUrl} />
+      <link rel="dns-prefetch" href={webUrl} />
+
       <link rel="preconnect" href="https://i.picsum.photos" />
       <link rel="dns-prefetch" href="https://i.picsum.photos" />
 
