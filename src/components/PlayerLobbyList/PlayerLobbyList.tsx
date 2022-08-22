@@ -16,10 +16,10 @@ const PlayerLobbyList: FC<PlayerLobbyListProps> = (props: PlayerLobbyListProps) 
 
   const colors: string[] = [
     '#009883',
-    '#E86262',
+    // '#E86262',
     // '#22B139',
-    '#EF154A',
-    '#EF6415',
+    // '#EF154A',
+    // '#EF6415',
     '#A9C77E',
     '#B89A61',
     '#AB89A6',
