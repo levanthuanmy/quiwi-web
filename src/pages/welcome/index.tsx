@@ -48,6 +48,11 @@ const WelcomePage: FC = () => {
     history.scrollRestoration = 'manual'
 
     document.getElementsByTagName('body')[0].style.display = 'none'
+
+    setTimeout(()=>{
+    document.getElementsByTagName('body')[0].style.display = 'block'
+
+    }, 100)
     // scrollTo(0, 0)
     // client side rendering only
     setShouldRender(true)
